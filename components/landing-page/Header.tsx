@@ -1,214 +1,133 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { handleNavigationWithScroll } from "@/lib/scroll-utils";
+import { Montserrat } from "next/font/google";
+import {
+  Menu,
+  X,
+  TrendingUp,
+  ShieldCheck,
+  Info,
+  Home,
+  Headset,
+  Briefcase,
+} from "lucide-react";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+});
 
 export default function Header() {
-  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme } = useTheme();
   const pathname = usePathname();
-  const router = useRouter();
-
-  const isActive = (href: string) => {
-    // Handle home route specifically
-    if (href === "/") {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
-  };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
+  const linkStyles = (href: string, exact: boolean = true) => {
+    const isActive = exact ? pathname === href : pathname.startsWith(href);
+    return `px-4 py-3 md:py-2 text-[15px] md:text-[14px] font-bold tracking-wide transition-all rounded-xl md:rounded-full flex items-center gap-3 md:gap-0 hover:text-foreground ${
+      isActive
+        ? "text-foreground bg-black/[0.08] dark:bg-white/[0.1] shadow-sm"
+        : "text-muted-foreground hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
+    }`;
+  };
+
   return (
-    <header className="fixed top-4 left-0 right-0 z-50 px-4">
-      {/* Header Card */}
-<div className="mx-auto max-w-7xl bg-card/95 backdrop-blur border border-border rounded-2xl px-4 py-3 sm:px-5 sm:py-3 md:px-6 md:py-3">
-        <div className="flex items-center justify-between relative">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src={
-                mounted
-                  ? theme === "dark"
-                    ? "https://i.postimg.cc/sxJDwVCf/printer-logo-lyt.png"
-                    : "https://i.postimg.cc/zfMLgX89/printer-logo-dark.png"
-                  : "https://i.postimg.cc/zfMLgX89/printer-logo-dark.png"
-              }
-              alt="Printer Logo"
-              width={32}
-              height={32}
-              priority
-              className="object-contain rounded-[10px] md:w-10 md:h-10"
-            />
-            <span className="text-[18px] md:text-xl font-extrabold italic tracking-wider">
-              PRINTER
-            </span>
-          </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-17">
+          
+          {/* LOGO */}
+          <span
+            className={`${montserrat.className} 
+            text-[20px] md:text-2xl font-black italic tracking-tight bg-gradient-to-b from-foreground
+            to-foreground/40 bg-clip-text text-transparent uppercase`}>
+            SECURE RISE
+          </span>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium text-muted-foreground">
-            <button 
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigationWithScroll(
-                  pathname,
-                  '/',
-                  'youtube-channel',
-                  router
-                );
-              }}
-              className={`hover:text-primary transition-colors cursor-pointer ${pathname === '/' ? 'text-primary font-semibold' : ''}`}
-            >
-              Our Channel
-            </button>
-            <Link 
-              href="/landing-page/education" 
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/education') ? 'text-primary font-semibold' : ''}`}
-            >
-              Education
-            </Link>
-            <Link 
-              href="/landing-page/subscriptions" 
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/subscriptions') ? 'text-primary font-semibold' : ''}`}
-            >
-              Subscriptions 
-            </Link>
-
-            <Link 
-              href="/landing-page/testimonials" 
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/testimonials') ? 'text-primary font-semibold' : ''}`}
-            >
-              Testimonials
-            </Link>
-
-            <Button asChild className="ml-4 py-5 text-[17px] font-semibold rounded-xl">
-              <Link href="https://t.me/istancapitalfx">Get Started</Link>
-            </Button>
+          {/* DESKTOP NAVIGATION */}
+          <nav className="hidden md:flex items-center gap-1 bg-black/[0.02] dark:bg-white/[0.02] border border-border/50 px-2 py-1.5 rounded-full">
+            <Link href="/" className={linkStyles("/")}>Home</Link>
+            <Link href="/landing-page/investment-plan" className={linkStyles("/landing-page/investment-plan")}>Investment Plans</Link>
+            <Link href="/landing-page/about" className={linkStyles("/landing-page/about")}>About Us</Link>
+            <Link href="/landing-page/contact-us" className={linkStyles("/landing-page/contact-us")}>Contact Page</Link>
           </nav>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="md:hidden h-12 flex items-center justify-center"
-            aria-label="Open menu"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
+          {/* RIGHT SECTION: AUTH */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Desktop Auth */}
+            <div className="hidden md:flex items-center gap-3">
+              <Button asChild variant="ghost" className="px-5 py-6 text-[14px] font-bold cursor-pointer">
+                <Link href="/auth/login">Sign In</Link>
+              </Button>
+              <Button asChild className="px-4 py-6 text-[14px] font-bold rounded-xl cursor-pointer">
+                <Link href="/auth/register">Start Investing</Link>
+              </Button>
+            </div>
+
+            {/* MOBILE TOGGLE */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 text-foreground"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Backdrop */}
+      {/* MOBILE MENU BACKDROP */}
       <div
         onClick={closeMobileMenu}
-        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-500 md:hidden ${
-          mobileMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden ${
+          mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       />
 
-      {/* Mobile Sidebar */}
+      {/* MOBILE SIDEBAR */}
       <aside
-        className={`fixed right-0 top-0 h-full w-[280px] bg-card border-l border-border shadow-xl z-50
-        rounded-tl-3xl rounded-bl-3xl
-        transform transition-transform duration-500 ease-in-out md:hidden
-        ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed right-0 top-0 h-full w-[300px] bg-background border-l border-border shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-        {/* Close Button */}
-        <button
-          onClick={closeMobileMenu}
-          aria-label="Close menu"
-          className="absolute top-6 right-6 rounded-lg p-2 text-foreground hover:bg-muted transition"
-        >
-          <X className="h-6 w-6" />
-        </button>
-
-        <div className="flex flex-col justify-between h-full px-8 pt-24 pb-8">
-          {/* Links */}
-          <div className="flex flex-col gap-6 text-[17px] font-medium text-muted-foreground">
-            <Link 
-              href="/" 
-              onClick={closeMobileMenu} 
-              className={`hover:text-primary transition-colors ${isActive('/') ? 'text-primary font-semibold' : ''}`}
-            >
-              Home
-            </Link>
-            
-            <button 
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigationWithScroll(
-                  pathname,
-                  '/',
-                  'why-join-us',
-                  router,
-                  closeMobileMenu
-                );
-              }}
-              className={`hover:text-primary transition-colors text-left w-full ${pathname === '/' ? 'text-primary font-semibold' : ''}`}
-            >
-              Why Join Printer
+        <div className="p-6 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-8">
+            <span className="font-black italic tracking-widest text-xs opacity-50 uppercase">Menu</span>
+            <button onClick={closeMobileMenu} className="p-2 hover:bg-muted rounded-full">
+              <X className="h-6 w-6" />
             </button>
-            <button 
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigationWithScroll(
-                  pathname,
-                  '/',
-                  'youtube-channel',
-                  router,
-                  closeMobileMenu
-                );
-              }}
-              className={`hover:text-primary transition-colors text-left w-full ${pathname === '/' ? 'text-primary font-semibold' : ''}`}
-            >
-              View Our Channel
-            </button>
-            
-            <Link 
-              href="/landing-page/education" 
-              onClick={closeMobileMenu}
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/education') ? 'text-primary font-semibold' : ''}`}
-            >
-              Who This Is For
-            </Link>
-             <Link 
-              href="/landing-page/testimonials" 
-              onClick={closeMobileMenu}
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/testimonials') ? 'text-primary font-semibold' : ''}`}
-            >
-              Students Testimonials
-            </Link>
-            <Link 
-              href="/landing-page/subscriptions" 
-              onClick={closeMobileMenu} 
-              className={`hover:text-primary transition-colors ${isActive('/landing-page/subscriptions') ? 'text-primary font-semibold' : ''}`}
-            >
-              Printers Subscriptions
-            </Link>
           </div>
 
-          {/* Bottom CTA */}
-          <Button
-            asChild
-            size="lg"
-            className="w-full py-6 text-[17px] font-semibold rounded-xl"
-          >
-            <Link href="https://t.me/istancapitalfx" onClick={closeMobileMenu}>
-              Get Started
+          <nav className="flex flex-col gap-1">
+            <Link href="/" onClick={closeMobileMenu} className={linkStyles("/")}>
+              Home
             </Link>
-          </Button>
+            <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
+              Help Center
+            </Link>
+            <Link href="/investment-plan" onClick={closeMobileMenu} className={linkStyles("/investment-plan")}>
+              Investment Plans
+            </Link>
+            <Link href="/landing-page/about" onClick={closeMobileMenu} className={linkStyles("/landing-page/about")}>
+              About SECURE RISE
+            </Link>
+          </nav>
+
+          <div className="mt-auto flex flex-col gap-3 border-t border-border pt-6">
+            <Button variant="outline" asChild className="py-6 rounded-xl text-sm font-bold">
+              <Link href="/auth/login" onClick={closeMobileMenu}>Login Account</Link>
+            </Button>
+            <Button asChild className="py-6 rounded-xl text-sm font-bold">
+              <Link href="/auth/register" onClick={closeMobileMenu}>Create Account</Link>
+            </Button>
+            <p className="text-center text-[11px] text-muted-foreground mt-2 px-4">
+              By joining, you agree to our Terms of Service and Risk Disclosure.
+            </p>
+          </div>
         </div>
       </aside>
     </header>

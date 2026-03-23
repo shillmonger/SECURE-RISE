@@ -1,16 +1,17 @@
 "use client"
 
-import { useTheme } from "next-themes"
+import { useTheme } from "./custom-theme-provider"
 import { Sun, Moon, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useMounted } from "@/hooks/useMounted"
 
 export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [isLoading, setIsLoading] = useState(true)
 
+  // Small delay to prevent flash of incorrect theme
   useEffect(() => {
-    setMounted(true)
     const timer = setTimeout(() => setIsLoading(false), 100)
     return () => clearTimeout(timer)
   }, [])
@@ -44,5 +45,6 @@ export default function ThemeToggle() {
     >
       <Icon size={22} />
     </button>
+
   );
 }

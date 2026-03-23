@@ -1,16 +1,23 @@
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
-import CookieConsent from "@/components/CookieConsent";
+import { Geist, Geist_Mono } from "next/font/google";
 
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  weight: "variable",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  weight: "variable",
+});
 
 export const metadata = {
-  title: "Printer",
-  description:
-    "Forex mentor helping traders master strategy, risk management, and long-term consistency.",
-  icons: {
-    icon: "https://i.postimg.cc/rytG8pg3/shillmonger.png",
-  },
+  title: "Secure Rise",
+  description: "You Invest, We Trade",
 };
 
 export const viewport = {
@@ -26,34 +33,43 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geist.variable} ${geistMono.variable}`}
+    >
+      <body className="min-h-screen bg-background text-foreground font-sans">
         <Providers>
           <div className="min-h-screen transition-colors duration-300">
             {children}
+
             <Toaster
               position="top-center"
+              closeButton={false}
+              richColors={false}
               toastOptions={{
+                className: `
+      bg-transparent
+      border-0
+      shadow-none
+      rounded-none
+      p-0
+      text-sm
+      font-medium
+    `,
                 classNames: {
-                  toast:
-                    "group !text-white !shadow-lg !rounded-lg !font-medium !p-4",
-                  description: "!text-white",
-                  actionButton: "!bg-white/20 hover:!bg-white/30 !text-white",
-                  cancelButton: "!bg-white/20 hover:!bg-white/30 !text-white",
-                  // Solid success (green) toast
-                  success: "!bg-green-500",
-                  // Solid error (red) toast
-                  error: "!bg-red-500",
+                  toast: "!text-foreground",
+                  success: "!text-green-500",
+                  error: "!text-red-500",
+                  info: "!text-yellow-500",
+                  description: "hidden",
+                  actionButton: "hidden",
+                  cancelButton: "hidden",
                 },
               }}
-              richColors={false}
-              closeButton
             />
           </div>
         </Providers>
-
-
-        <CookieConsent /> 
       </body>
     </html>
   );

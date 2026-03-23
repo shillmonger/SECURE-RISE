@@ -1,21 +1,3 @@
-// "use client"
-
-// import dynamic from "next/dynamic"
-
-// const ThemeToggle = dynamic(() => import("../ThemeToggle"), { ssr: false })
-
-// export default function Nav() {
-//   return (
-//     <nav className="flex justify-end">
-//       <div>
-//         <ThemeToggle />
-//       </div>
-//     </nav>
-//   )
-// }
-
-
-
 "use client"
 
 import dynamic from "next/dynamic"
@@ -24,7 +6,11 @@ import { ArrowUp } from "lucide-react"
 
 const ThemeToggle = dynamic(() => import("../ThemeToggle"), { ssr: false })
 
-export default function Nav() {
+interface ThemeAndScrollProps {
+  children?: React.ReactNode
+}
+
+export default function ThemeAndScroll({ children }: ThemeAndScrollProps) {
   const [showScrollTop, setShowScrollTop] = useState(false)
 
   useEffect(() => {
@@ -42,10 +28,14 @@ export default function Nav() {
   }, [])
 
   return (
-    <nav className="flex justify-end">
-      <div>
-        <ThemeToggle />
-      </div>
+    <>
+      <nav className="flex justify-end">
+        <div>
+          <ThemeToggle />
+        </div>
+      </nav>
+      
+      {children}
 
       {showScrollTop && (
         <button
@@ -53,7 +43,7 @@ export default function Nav() {
             window.scrollTo({ top: 0, behavior: "smooth" })
           }
           className="
-            fixed bottom-25 sm:right-6 right-2 z-[100]
+            fixed bottom-25 sm:right-6 right-2 z-[50]          
             bg-primary text-primary-foreground
             w-12 h-12 rounded-lg
             flex items-center justify-center
@@ -66,6 +56,6 @@ export default function Nav() {
           <ArrowUp className="w-5 h-5" />
         </button>
       )}
-    </nav>
+    </>
   )
 }

@@ -1,17 +1,16 @@
 'use client';
 
-import { ThemeProvider } from "./theme-provider";
+import { CustomThemeProvider } from "./custom-theme-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider
+    <CustomThemeProvider
       attribute="class"
       defaultTheme="system"
       enableSystem
-      disableTransitionOnChange
       storageKey="printer-theme"
     >
       {children}
-    </ThemeProvider>
+    </CustomThemeProvider>
   );
 }
