@@ -42,12 +42,14 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 md:h-17">
           
           {/* LOGO */}
+          <Link href="/">
           <span
             className={`${montserrat.className} 
             text-[20px] md:text-2xl font-black italic tracking-tight bg-gradient-to-b from-foreground
             to-foreground/40 bg-clip-text text-transparent uppercase`}>
             SECURE RISE
           </span>
+          </Link>
 
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden md:flex items-center gap-1 bg-black/[0.02] dark:bg-white/[0.02] border border-border/50 px-2 py-1.5 rounded-full">
@@ -109,7 +111,7 @@ export default function Header() {
             <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
               Help Center
             </Link>
-            <Link href="/investment-plan" onClick={closeMobileMenu} className={linkStyles("/investment-plan")}>
+            <Link href="/landing-page/investment-plan" onClick={closeMobileMenu} className={linkStyles("/landing-page/investment-plan")}>
               Investment Plans
             </Link>
             <Link href="/landing-page/about" onClick={closeMobileMenu} className={linkStyles("/landing-page/about")}>
