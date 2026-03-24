@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CookieConsent() {
+  const [mounted, setMounted] = useState(false);
   const [consent, setConsent] = useState<"accepted" | "declined" | null>(() => {
     if (typeof window === "undefined") return null;
     return localStorage.getItem("cookieConsent") as
@@ -11,6 +12,10 @@ export default function CookieConsent() {
       | "declined"
       | null;
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [closed, setClosed] = useState(false);
 
@@ -27,7 +32,7 @@ export default function CookieConsent() {
 
   return (
     <AnimatePresence>
-      {consent === null && !closed && (
+      {mounted && consent === null && !closed && (
         <>
           {/* 1. THE BLUR OVERLAY */}
           <motion.div
