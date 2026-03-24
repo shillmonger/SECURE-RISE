@@ -20,7 +20,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative mx-auto max-w-[1400px] min-h-[100vh] lg:px-8 flex items-center justify-center overflow-hidden">
+    <section className="relative mx-auto max-w-[1400px] min-h-[110vh] lg:px-8 flex items-center justify-center overflow-hidden">
       {/* BACKGROUND IMAGE WITH OVERLAY */}
       <div className="absolute inset-0 z-0 flex justify-end">
         {isMounted && (
@@ -76,7 +76,7 @@ export default function HeroSection() {
               className="w-full sm:w-auto px-8 py-7 cursor-pointer text-md font-extrabold rounded-xl hover:scale-105 transition-transform"
             >
               <Link
-                href="/auth/register"
+                href="/auth-page/register"
                 className="flex items-center gap-2"
               >
                 $20 Claim
@@ -89,7 +89,7 @@ export default function HeroSection() {
               size="lg"
               className="w-full sm:w-auto px-8 py-7 cursor-pointer text-md font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
             >
-              <Link href="/auth/login" className="flex items-center gap-2">
+              <Link href="/auth-page/login" className="flex items-center gap-2">
                 SIGN IN
               </Link>
             </Button>

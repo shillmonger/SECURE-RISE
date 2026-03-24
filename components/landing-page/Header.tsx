@@ -64,10 +64,10 @@ export default function Header() {
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center gap-3">
               <Button asChild variant="ghost" className="px-5 py-6 text-[14px] font-bold cursor-pointer">
-                <Link href="/auth/login">Sign In</Link>
+                <Link href="/auth-page/login">Sign In</Link>
               </Button>
               <Button asChild className="px-4 py-6 text-[14px] font-bold rounded-xl cursor-pointer">
-                <Link href="/auth/register">Start Investing</Link>
+                <Link href="/auth-page/register">Start Investing</Link>
               </Button>
             </div>
 
@@ -121,10 +121,10 @@ export default function Header() {
 
           <div className="mt-auto flex flex-col gap-3 border-t border-border pt-6">
             <Button variant="outline" asChild className="py-6 rounded-xl text-sm font-bold">
-              <Link href="/auth/login" onClick={closeMobileMenu}>Login Account</Link>
+              <Link href="/auth-page/login" onClick={closeMobileMenu}>Login Account</Link>
             </Button>
             <Button asChild className="py-6 rounded-xl text-sm font-bold">
-              <Link href="/auth/register" onClick={closeMobileMenu}>Create Account</Link>
+              <Link href="/auth-page/register" onClick={closeMobileMenu}>Create Account</Link>
             </Button>
             <p className="text-center text-[11px] text-muted-foreground mt-2 px-4">
               By joining, you agree to our Terms of Service and Risk Disclosure.
