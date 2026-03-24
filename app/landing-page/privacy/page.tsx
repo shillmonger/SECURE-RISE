@@ -56,7 +56,7 @@ export default function TermsOfService() {
           <motion.h2 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter mb-4 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent"
+            className="text-4xl md:text-7xl font-black uppercase italic  tracking-tighter mb-4 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent"
           >
             Terms of Service
           </motion.h2>
@@ -95,12 +95,12 @@ export default function TermsOfService() {
         </aside>
 
         {/* Terms Content */}
-        <div className="flex-1 max-w-4xl">
+        <div className="flex-1 max-w-5xl">
           <div className="bg-card border border-border rounded-[2.5rem] p-5 md:p-16 shadow-sm">
             
             {/* Section 1: Acceptance */}
             <div id="acceptance" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 1. Acceptance of Terms
               </h3>
@@ -111,7 +111,7 @@ export default function TermsOfService() {
 
             {/* Section 2: Eligibility */}
             <div id="eligibility" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 2. User Eligibility
               </h3>
@@ -122,7 +122,7 @@ export default function TermsOfService() {
 
             {/* Section 3: Investment & Bonus */}
             <div id="investment" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 3. Investment & Registration Bonus
               </h3>
@@ -141,7 +141,7 @@ export default function TermsOfService() {
 
             {/* Section 4: Risks */}
             <div id="trading" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 4. Trading & Financial Risk
               </h3>
@@ -158,7 +158,7 @@ export default function TermsOfService() {
 
             {/* Section 5: Withdrawals */}
             <div id="withdrawals" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 5. Withdrawals & Payouts
               </h3>
@@ -179,7 +179,7 @@ export default function TermsOfService() {
 
             {/* Section 6: Account Security */}
             <div id="security" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 6. Account Security
               </h3>
@@ -190,7 +190,7 @@ export default function TermsOfService() {
 
             {/* Section 7: Prohibited Conduct */}
             <div id="prohibited" className="scroll-mt-32 mb-20">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 7. Prohibited Conduct
               </h3>
@@ -215,7 +215,7 @@ export default function TermsOfService() {
 
             {/* Section 8: Governing Law */}
             <div id="governing" className="scroll-mt-32">
-              <h3 className="text-3xl font-black italic tracking-tighter mb-8 flex items-center gap-4">
+              <h3 className="text-2xl font-black  tracking-tighter mb-8 flex items-center gap-4">
                 <span className="w-2 h-10 bg-primary rounded-full" />
                 8. Governing Law
               </h3>

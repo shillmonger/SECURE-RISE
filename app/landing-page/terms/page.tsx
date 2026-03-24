@@ -93,7 +93,7 @@ export default function TermsAndConditions() {
         </aside>
 
         {/* Content Area */}
-        <div className="flex-1 max-w-3xl">
+        <div className="flex-1 max-w-5xl">
           <div className="bg-card border border-border rounded-[2.5rem] p-5 md:p-12 shadow-sm relative">
             
             <div id="introduction" className="scroll-mt-32 mb-16">
