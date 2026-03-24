@@ -108,14 +108,20 @@ export default function Header() {
             <Link href="/" onClick={closeMobileMenu} className={linkStyles("/")}>
               Home
             </Link>
-            <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
-              Help Center
-            </Link>
             <Link href="/landing-page/investment-plan" onClick={closeMobileMenu} className={linkStyles("/landing-page/investment-plan")}>
-              Investment Plans
+              Our Plans
             </Link>
             <Link href="/landing-page/about" onClick={closeMobileMenu} className={linkStyles("/landing-page/about")}>
               About SECURE RISE
+            </Link>
+            <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
+              Contact Page
+            </Link>
+            <Link href="/landing-page/privacy" onClick={closeMobileMenu} className={linkStyles("/landing-page/privacy")}>
+              Privacy Policy
+            </Link>
+            <Link href="/landing-page/terms" onClick={closeMobileMenu} className={linkStyles("/landing-page/terms")}>
+              Terms & Condition
             </Link>
           </nav>
 
