@@ -44,9 +44,9 @@ export default function StatsGrid() {
   const community = useCounter(1000, 2200, active);
 
   const avatars = [
-    "https://i.pravatar.cc/150?u=10",
+    "https://i.postimg.cc/0yJ0FsJS/LE-MAC.jpg",
     "https://i.pravatar.cc/150?u=21",
-    "https://i.pravatar.cc/150?u=32",
+    "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
     "https://i.pravatar.cc/150?u=43",
     "https://i.pravatar.cc/150?u=54",
   ];
@@ -130,7 +130,7 @@ export default function StatsGrid() {
         </div>
 
         {/* Community */}
-        <div className="md:col-span-7 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:-translate-y-1">
+        <div className="md:col-span-7 rounded-3xl border bg-card/50 border-primary/10 p-8 flex  md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:-translate-y-1">
           <div>
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-2 font-mono">Community Members</p>
             <h3 className="text-5xl font-black tracking-tighter">
@@ -142,7 +142,7 @@ export default function StatsGrid() {
                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Users className="w-5 h-5 text-primary" /></div>
                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center"><ArrowUpRight className="w-5 h-5 text-primary-foreground" /></div>
             </div>
-            <p className="text-[10px] tracking-widest uppercase text-muted-foreground/40 font-mono">Discord • Telegram • X</p>
+            <p className="text-[10px] tracking-widest uppercase text-muted-foreground/40 font-mono">Telegram • X</p>
           </div>
         </div>
 
