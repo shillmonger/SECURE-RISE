@@ -1,5 +1,7 @@
 "use client";
+
 import { ArrowRight, Gift } from "lucide-react";
+import Link from "next/link";
 
 export default function PromoSection() {
   return (
@@ -32,10 +34,12 @@ export default function PromoSection() {
             Bonus becomes withdrawable alongside your first investment payout.
           </p>
 
+<Link href="/auth-page/register">
           <button className="bg-white text-primary cursor-pointer dark:bg-black dark:text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all flex items-center gap-3 shadow-lg">
             Get Started Now
             <ArrowRight className="w-4 h-4" />
           </button>
+          </Link>
         </div>
       </div>
     </section>
