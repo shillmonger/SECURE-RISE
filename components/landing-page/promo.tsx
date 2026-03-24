@@ -10,7 +10,7 @@ export default function PromoSection() {
         <img 
           src="https://i.postimg.cc/VLY13dbh/install-pwa-removebg-preview.png" 
           alt="" 
-          className="absolute bottom-0 right-0 w-[250px] md:w-[350px] h-auto object-contain opacity-40 md:opacity-100 pointer-events-none translate-x-10 translate-y-10 lg:translate-x-0 lg:translate-y-5"
+          className="absolute bottom-0 right-0 w-[250px] md:w-[350px] h-auto object-contain opacity-60 md:opacity-100 pointer-events-none translate-x-10 translate-y-10 lg:translate-x-0 lg:translate-y-5"
         />
 
         {/* Decorative Blur */}

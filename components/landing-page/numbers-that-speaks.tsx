@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Headphones, Globe, Users, Trophy, ArrowUpRight } from "lucide-react";
 
@@ -177,10 +178,12 @@ export default function StatsGrid() {
 
       {/* --- CTA --- */}
       <div className="mt-10 text-center">
-        <button className="bg-primary cursor-pointer text-primary-foreground px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform flex items-center gap-3 mx-auto shadow-xl shadow-primary/20">
-          Get Started Now
-          <ArrowUpRight className="w-5 h-5" />
-        </button>
+        <Link href="/auth-page/register">
+          <button className="bg-primary cursor-pointer text-primary-foreground px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform flex items-center gap-3 mx-auto shadow-xl shadow-primary/20">
+            Get Started Now
+            <ArrowUpRight className="w-5 h-5" />
+          </button>
+        </Link>
       </div>
     </section>
   );

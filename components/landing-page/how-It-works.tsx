@@ -73,8 +73,7 @@ export default function WhyPlatformSection() {
         </div>
 
         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">
-          How It{" "}
-          <span className="text-primary">Works</span>
+          How It Works
         </h2>
 
         <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">

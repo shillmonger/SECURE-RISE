@@ -7,10 +7,11 @@ import CookieConsent from "@/components/landing-page/CookieConsent";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
-import StatsGrid from "@/components/landing-page/stats-grid";
-import WhyPlatformSection from "@/components/landing-page/why-platform-section";
+import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
+import HowItWorks from "@/components/landing-page/how-It-works";
 import FAQ from "@/components/landing-page/faq";
 import RiskProtection from "@/components/landing-page/risk-protection";
+import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 
 export default function HomePage() {
   return (
@@ -26,15 +27,18 @@ export default function HomePage() {
         <Promo />
 
         {/* section 3 */}
-        <StatsGrid />
+        <NumbersThatSpeaks />
 
         {/* section 4 */}
-        <WhyPlatformSection />
+        <HowItWorks/>
 
         {/* section 5 */}
-        <FAQ />
+        <ProfitBlueprint />
 
         {/* section 6 */}
+        <FAQ />
+
+        {/* section 7 */}
         <RiskProtection />
       </main>
 

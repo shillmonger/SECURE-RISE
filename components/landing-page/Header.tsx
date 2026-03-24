@@ -56,6 +56,7 @@ export default function Header() {
             <Link href="/" className={linkStyles("/")}>Home</Link>
             <Link href="/landing-page/investment-plan" className={linkStyles("/landing-page/investment-plan")}>Investment Plans</Link>
             <Link href="/landing-page/about" className={linkStyles("/landing-page/about")}>About Us</Link>
+            <Link href="/landing-page/testimonials" className={linkStyles("/landing-page/testimonials")}>Testimonials</Link>
             <Link href="/landing-page/contact-us" className={linkStyles("/landing-page/contact-us")}>Contact Page</Link>
           </nav>
 
@@ -116,6 +117,9 @@ export default function Header() {
             </Link>
             <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
               Contact Page
+            </Link>
+            <Link href="/landing-page/testimonials" onClick={closeMobileMenu} className={linkStyles("/landing-page/testimonials")}>
+              Testimonials
             </Link>
             <Link href="/landing-page/privacy" onClick={closeMobileMenu} className={linkStyles("/landing-page/privacy")}>
               Privacy Policy
