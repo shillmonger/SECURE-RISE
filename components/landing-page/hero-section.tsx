@@ -20,11 +20,11 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative mx-auto max-w-[1400px] lg:px-8 flex items-center justify-center overflow-hidden py-20 md:py-32 lg:py-48">
+    <section className="relative mx-auto max-w-[1400px] lg:px-8 flex items-center justify-center overflow-hidden py-30 md:py-32 lg:py-48">
       {/* BACKGROUND IMAGE WITH OVERLAY */}
       <div className="absolute inset-0 z-0 flex justify-end">
         {isMounted && (
-          <div className="hidden md:block w-full md:w-3/4 lg:w-3/8 relative h-full">
+          <div className="hidden md:block w-full md:w-3/4 lg:w-3/7 relative h-full">
   <Image
     src="https://i.postimg.cc/B67QthXv/Gemini_Generated_Image_h2ldy5h2ldy5h2ld_removebg_preview.png"
     alt="SECURE RISE Trading"
