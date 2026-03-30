@@ -24,15 +24,15 @@ export default function HeroSection() {
       {/* BACKGROUND IMAGE WITH OVERLAY */}
       <div className="absolute inset-0 z-0 flex justify-end">
         {isMounted && (
-          <div className="w-full md:w-3/4 lg:w-4/5 relative h-full">
-            <Image
-              src="https://i.postimg.cc/DfYmtbhw/Chat-GPT-Image-Mar-22-2026-11-49-57-PM.png"
-              alt="SECURE RISE Trading"
-              fill
-              className="object-cover object-center transition-opacity duration-700"
-              priority
-            />
-          </div>
+          <div className="hidden md:block w-full md:w-3/4 lg:w-3/8 relative h-full">
+  <Image
+    src="https://i.postimg.cc/B67QthXv/Gemini_Generated_Image_h2ldy5h2ldy5h2ld_removebg_preview.png"
+    alt="SECURE RISE Trading"
+    fill
+    className="object-cover object-center transition-opacity duration-700"
+    priority
+  />
+</div>
         )}
 
         {/* Gradient Overlay */}

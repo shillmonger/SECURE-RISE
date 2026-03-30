@@ -9,6 +9,7 @@ import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
+// import VoiceAIButton from "@/components/landing-page/VoiceAIButton";
 import FAQ from "@/components/landing-page/faq";
 import RiskProtection from "@/components/landing-page/risk-protection";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
@@ -36,9 +37,13 @@ export default function HomePage() {
         <ProfitBlueprint />
 
         {/* section 6 */}
-        <FAQ />
+      {/* <VoiceAIButton /> */}
+
 
         {/* section 7 */}
+        <FAQ />
+
+        {/* section 8 */}
         <RiskProtection />
       </main>
 

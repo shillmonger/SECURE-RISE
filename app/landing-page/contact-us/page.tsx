@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
+import FAQ from "@/components/landing-page/faq";
 import Footer from "@/components/landing-page/Footer";
 
 import Link from "next/link";
@@ -256,6 +257,7 @@ export default function ContactUsPage() {
 
       <ThemeAndScroll />
       <CookieConsent />
+      <FAQ />
       <Footer />
     </main>
   );

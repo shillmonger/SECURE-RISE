@@ -2,7 +2,8 @@
 
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
-import CookieConsent from "@/components/landing-page/CookieConsent";    
+import CookieConsent from "@/components/landing-page/CookieConsent";
+import HowItWorks from "@/components/landing-page/how-It-works";
 import Footer from "@/components/landing-page/Footer";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"; 
 import { Check, ArrowRight, Lock, TrendingUp } from "lucide-react"; 
@@ -177,6 +178,7 @@ export default function SubscriptionPage() {
                 </div>
             </section>
 
+            <HowItWorks />
             <ThemeAndScroll />
             <CookieConsent />
             <Footer />
