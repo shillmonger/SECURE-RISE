@@ -20,7 +20,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative mx-auto max-w-[1400px] min-h-[110vh] lg:px-8 flex items-center justify-center overflow-hidden">
+    <section className="relative mx-auto max-w-[1400px] lg:px-8 flex items-center justify-center overflow-hidden py-20 md:py-32 lg:py-48">
       {/* BACKGROUND IMAGE WITH OVERLAY */}
       <div className="absolute inset-0 z-0 flex justify-end">
         {isMounted && (
