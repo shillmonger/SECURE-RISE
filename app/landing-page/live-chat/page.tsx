@@ -1,18 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
+import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import FAQ from "@/components/landing-page/faq";
 import { MessageCircle, Clock, ShieldCheck, Headphones, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LetsTalkPage() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const previousPathname = useRef(pathname);
 
+  // Load Tawk.to chat widget
   useEffect(() => {
     if (document.getElementById("tawk-script")) return;
     (window as any).Tawk_API = (window as any).Tawk_API || {};
@@ -25,15 +23,36 @@ export default function LetsTalkPage() {
     document.body.appendChild(s1);
   }, []);
 
-  // Route change detection - refresh when navigating away from live-chat
+  // Intercept ALL anchor clicks while on this page.
+  // Forces a hard reload to the destination so Tawk.to is cleanly
+  // torn down — Next.js soft navigation keeps the widget alive otherwise.
   useEffect(() => {
-    if (previousPathname.current === "/landing-page/live-chat" && pathname !== "/landing-page/live-chat") {
-      setTimeout(() => {
-        window.location.reload();
-      }, 0);
-    }
-    previousPathname.current = pathname;
-  }, [pathname]);
+    const handleClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest("a");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+
+      // Skip: external, hash-only, download, new-tab links
+      if (
+        href.startsWith("http") ||
+        href.startsWith("//") ||
+        href.startsWith("#") ||
+        anchor.hasAttribute("download") ||
+        anchor.target === "_blank"
+      ) return;
+
+      // Internal navigation — force a full page load to destination
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = href;
+    };
+
+    // Capture phase so we intercept before Next.js's own router handler
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
+  }, []);
 
   return (
     <main className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col">
@@ -93,7 +112,6 @@ export default function LetsTalkPage() {
                     <p className="text-primary-foreground/70 text-sm">A live agent is ready for you</p>
                   </div>
                 </div>
-                {/* Online indicator */}
                 <div className="flex items-center gap-2 mt-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
                   <span className="text-primary-foreground/80 text-sm font-medium">Support team is online</span>
@@ -143,7 +161,6 @@ export default function LetsTalkPage() {
 
             {/* Sidebar */}
             <aside className="space-y-6">
-              {/* Support Channels */}
               <div className="bg-card border border-border rounded-[1.5rem] p-8 shadow-sm">
                 <h3 className="font-black uppercase italic tracking-tighter text-lg mb-6">
                   Other Channels
@@ -174,7 +191,6 @@ export default function LetsTalkPage() {
                 </div>
               </div>
 
-              {/* Trust Badge */}
               <div className="bg-primary p-8 rounded-[1.5rem] text-primary-foreground shadow-lg">
                 <ShieldCheck className="h-8 w-8 mb-4 opacity-80" />
                 <h4 className="font-black uppercase italic tracking-tighter text-lg mb-2">
@@ -185,7 +201,6 @@ export default function LetsTalkPage() {
                 </p>
               </div>
 
-              {/* Response Promise */}
               <div className="bg-card border border-border rounded-[1.5rem] p-8 shadow-sm">
                 <Clock className="h-6 w-6 text-primary mb-3" />
                 <h4 className="font-bold mb-1">Response Guarantee</h4>
@@ -199,6 +214,7 @@ export default function LetsTalkPage() {
         </div>
       </div>
 
+      <ThemeAndScroll />
       <CookieConsent />
       <FAQ />
       <Footer />
