@@ -80,7 +80,7 @@ export default function Translate() {
   }, [pathname]); // 👈 re-run when route changes
 
   return (
-    <div className="fixed bottom-6 left-5 z-50">
+    <div className="fixed bottom-6 left-5 z-10">
       <div className="gtranslate_wrapper"></div>
     </div>
   );

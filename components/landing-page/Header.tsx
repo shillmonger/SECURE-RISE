@@ -9,7 +9,7 @@ import {
   Menu,
   X,
   TrendingUp,
-  ShieldCheck,
+  MessageCircle,
   Info,
   Home,
   Headset,
@@ -63,14 +63,42 @@ export default function Header() {
           {/* RIGHT SECTION: AUTH */}
           <div className="flex items-center gap-2 md:gap-3">
             {/* Desktop Auth */}
-            <div className="hidden md:flex items-center gap-3">
-              <Button asChild variant="ghost" className="px-5 py-6 text-[14px] font-bold cursor-pointer">
-                <Link href="/auth-page/login">Sign In</Link>
-              </Button>
-              <Button asChild className="px-4 py-6 text-[14px] font-bold rounded-xl cursor-pointer">
-                <Link href="/auth-page/register">Start Investing</Link>
-              </Button>
-            </div>
+<div className="hidden md:flex items-center gap-3">
+
+<Button
+  asChild
+  className="relative px-3 py-3 bg-gray-200 text-black hover:bg-gray-300 border-none shadow-none cursor-pointer overflow-visible"
+>
+  <Link href="/landing-page/live-chat" className="flex items-center justify-center">
+
+    {/* Ping ring */}
+    <span className="absolute inset-0 rounded-xl bg-gray-300 animate-ping opacity-60 pointer-events-none" />
+
+    {/* Wiggle icon */}
+    <span className="animate-[wiggle_3s_ease-in-out_infinite]">
+      <MessageCircle size={30} />
+    </span>
+
+    {/* Live badge with bouncing dots */}
+    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black border-2 border-white flex items-center justify-center">
+      <span className="flex gap-px">
+        <span className="w-[2.5px] h-[2.5px] rounded-full bg-white animate-bounce [animation-delay:0ms]" />
+        <span className="w-[2.5px] h-[2.5px] rounded-full bg-white animate-bounce [animation-delay:150ms]" />
+        <span className="w-[2.5px] h-[2.5px] rounded-full bg-white animate-bounce [animation-delay:300ms]" />
+      </span>
+    </span>
+  </Link>
+</Button>
+
+  <Button asChild variant="ghost" className="px-5 py-6 text-[14px] font-bold cursor-pointer">
+    <Link href="/auth-page/login">Sign In</Link>
+  </Button>
+
+  <Button asChild className="px-4 py-6 text-[14px] font-bold rounded-xl cursor-pointer">
+    <Link href="/auth-page/register">Start Investing</Link>
+  </Button>
+
+</div>
 
             {/* MOBILE TOGGLE */}
             <button
@@ -106,17 +134,17 @@ export default function Header() {
           </div>
 
           <nav className="flex flex-col gap-1">
-            {/* <Link href="/" onClick={closeMobileMenu} className={linkStyles("/")}>
-              Home
-            </Link> */}
             <Link href="/landing-page/investment-plan" onClick={closeMobileMenu} className={linkStyles("/landing-page/investment-plan")}>
               Our Plans
             </Link>
-            <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
-              Contact Page
+            <Link href="/landing-page/live-chat" onClick={closeMobileMenu} className={linkStyles("/landing-page/live-chat")}>
+              Live Chat
             </Link>
             <Link href="/landing-page/testimonials" onClick={closeMobileMenu} className={linkStyles("/landing-page/testimonials")}>
               Testimonials
+            </Link>
+            <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
+              Contact Page
             </Link>
             <Link href="/landing-page/privacy" onClick={closeMobileMenu} className={linkStyles("/landing-page/privacy")}>
               Privacy Policy

@@ -111,6 +111,7 @@ export default function Footer() {
           <h3 className="text-lg font-bold uppercase tracking-tight bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent">Investor Area</h3>
           <ul className="space-y-2 text-muted-foreground">
             <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
+            <li><Link href="/landing-page/live-chat" className="hover:text-primary transition-colors">Live Chat</Link></li>
             <li><Link href="/auth-page/login" className="hover:text-primary transition-colors">Investor Signin</Link></li>
             <li><Link href="/auth-page/register" className="hover:text-primary transition-colors">Investor Signup</Link></li>
             <li><Link href="/landing-page/contact-us" className="hover:text-primary transition-colors">Support Center</Link></li>

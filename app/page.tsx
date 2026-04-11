@@ -5,11 +5,11 @@ import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
+import FAQ from "@/components/landing-page/faq";
 import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
-import FAQ from "@/components/landing-page/faq";
 import RiskProtection from "@/components/landing-page/risk-protection";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 
