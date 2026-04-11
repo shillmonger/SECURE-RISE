@@ -14,6 +14,8 @@ import {
   Cpu
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa6";
+import Translator from "@/components/landing-page/translator";
+
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -179,6 +181,9 @@ export default function Footer() {
           Use of this site constitutes acceptance of our Risk Disclosure.
         </p>
       </div>
+
+  <Translator />
+
     </footer>
   );
 }
