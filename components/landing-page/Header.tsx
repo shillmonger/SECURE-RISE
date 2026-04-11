@@ -53,7 +53,7 @@ export default function Header() {
 
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden md:flex items-center gap-1 bg-black/[0.02] dark:bg-white/[0.02] border border-border/50 px-2 py-1.5 rounded-full">
-            <Link href="/" className={linkStyles("/")}>Home</Link>
+            {/* <Link href="/" className={linkStyles("/")}>Home</Link> */}
             <Link href="/landing-page/investment-plan" className={linkStyles("/landing-page/investment-plan")}>Investment Plans</Link>
             <Link href="/landing-page/about" className={linkStyles("/landing-page/about")}>About Us</Link>
             <Link href="/landing-page/testimonials" className={linkStyles("/landing-page/testimonials")}>Testimonials</Link>
@@ -93,7 +93,7 @@ export default function Header() {
 
       {/* MOBILE SIDEBAR */}
       <aside
-        className={`fixed right-0 top-0 h-full w-[300px] bg-background border-l border-border shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed right-0 top-0 h-full w-full bg-background border-l border-border shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out md:hidden ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -106,14 +106,11 @@ export default function Header() {
           </div>
 
           <nav className="flex flex-col gap-1">
-            <Link href="/" onClick={closeMobileMenu} className={linkStyles("/")}>
+            {/* <Link href="/" onClick={closeMobileMenu} className={linkStyles("/")}>
               Home
-            </Link>
+            </Link> */}
             <Link href="/landing-page/investment-plan" onClick={closeMobileMenu} className={linkStyles("/landing-page/investment-plan")}>
               Our Plans
-            </Link>
-            <Link href="/landing-page/about" onClick={closeMobileMenu} className={linkStyles("/landing-page/about")}>
-              About SECURE RISE
             </Link>
             <Link href="/landing-page/contact-us" onClick={closeMobileMenu} className={linkStyles("/landing-page/contact-us")}>
               Contact Page
@@ -126,6 +123,9 @@ export default function Header() {
             </Link>
             <Link href="/landing-page/terms" onClick={closeMobileMenu} className={linkStyles("/landing-page/terms")}>
               Terms & Condition
+            </Link>
+            <Link href="/landing-page/about" onClick={closeMobileMenu} className={linkStyles("/landing-page/about")}>
+              About SECURE RISE
             </Link>
           </nav>
 

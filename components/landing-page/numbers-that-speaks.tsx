@@ -45,7 +45,7 @@ export default function StatsGrid() {
   const community = useCounter(1000, 2200, active);
 
   const avatars = [
-    "https://i.postimg.cc/0yJ0FsJS/LE-MAC.jpg",
+    "https://randomuser.me/api/portraits/men/32.jpg",
     "https://i.pravatar.cc/150?u=21",
     "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
     "https://i.pravatar.cc/150?u=43",
@@ -108,7 +108,7 @@ export default function StatsGrid() {
                   className="w-12 h-12 rounded-full border-2 border-background -ml-3 first:ml-0 transition-all" />
               ))}
               <div className="w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-bold bg-primary/10 border-2 border-background text-primary -ml-3 font-mono">
-                +82k
+                +1.2k
               </div>
             </div>
           </div>

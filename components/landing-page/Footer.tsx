@@ -13,6 +13,7 @@ import {
   Activity,
   Cpu
 } from "lucide-react";
+import { FaDiscord } from "react-icons/fa6";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -22,9 +23,10 @@ const montserrat = Montserrat({
 
 export default function Footer() {
   const socialLinks = [
+    { name: "Telegram", icon: <Send size={24} />, href: "https://t.me/secure_rise" },
     { name: "YouTube", icon: <Youtube size={24} />, href: "#" },
+    { name: "Discord", icon: <FaDiscord size={24} />, href: "#" },
     { name: "X (Twitter)", icon: <Twitter size={24} />, href: "#" },
-    { name: "Telegram", icon: <Send size={24} />, href: "#" },
     { name: "Instagram", icon: <Instagram size={24} />, href: "#" },
   ];
 
@@ -78,6 +80,7 @@ export default function Footer() {
             Traded Wallets
           </h3>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link href="#" className="hover:text-primary transition-colors">Coin EX</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">Trust Wallet</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">Solflare Wallet</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">Binance Wallet</Link></li>
@@ -92,6 +95,7 @@ export default function Footer() {
             Trading Tools
           </h3>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link href="#" className="hover:text-primary transition-colors">Exness</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">C Trader</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">Trade Locker</Link></li>
             <li><Link href="#" className="hover:text-primary transition-colors">Match Trader</Link></li>
@@ -104,6 +108,7 @@ export default function Footer() {
         <div className="flex flex-col space-y-4">
           <h3 className="text-lg font-bold uppercase tracking-tight bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent">Investor Area</h3>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
             <li><Link href="/auth-page/login" className="hover:text-primary transition-colors">Investor Signin</Link></li>
             <li><Link href="/auth-page/register" className="hover:text-primary transition-colors">Investor Signup</Link></li>
             <li><Link href="/landing-page/contact-us" className="hover:text-primary transition-colors">Support Center</Link></li>

@@ -25,14 +25,14 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0 flex justify-end">
         {isMounted && (
           <div className="hidden md:block w-full md:w-3/4 lg:w-3/7 relative h-full">
-  <Image
-    src="https://i.postimg.cc/B67QthXv/Gemini_Generated_Image_h2ldy5h2ldy5h2ld_removebg_preview.png"
-    alt="SECURE RISE Trading"
-    fill
-    className="object-cover object-center transition-opacity duration-700"
-    priority
-  />
-</div>
+            <Image
+              src="https://i.postimg.cc/B67QthXv/Gemini_Generated_Image_h2ldy5h2ldy5h2ld_removebg_preview.png"
+              alt="SECURE RISE Trading"
+              fill
+              className="object-cover object-center transition-opacity duration-700"
+              priority
+            />
+          </div>
         )}
 
         {/* Gradient Overlay */}
@@ -63,9 +63,8 @@ export default function HeroSection() {
 
           {/* SUBTEXT */}
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl leading-relaxed">
-            Invest in high-performance assets. We trade. You earn.
-            Experience daily income growth backed by institutional-grade
-            security.
+            Invest in high-performance assets. We trade. You earn. Experience
+            daily income growth backed by institutional-grade security.
           </p>
 
           {/* CTA BUTTONS */}
