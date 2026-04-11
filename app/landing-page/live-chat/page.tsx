@@ -1,15 +1,21 @@
 "use client";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
-import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import FAQ from "@/components/landing-page/faq";
-import { MessageCircle, Clock, ShieldCheck, Headphones, Zap, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  MessageCircle,
+  Clock,
+  ShieldCheck,
+  Headphones,
+  Zap,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 
 export default function LetsTalkPage() {
-
   // Load Tawk.to chat widget
   useEffect(() => {
     if (document.getElementById("tawk-script")) return;
@@ -41,7 +47,8 @@ export default function LetsTalkPage() {
         href.startsWith("#") ||
         anchor.hasAttribute("download") ||
         anchor.target === "_blank"
-      ) return;
+      )
+        return;
 
       // Internal navigation — force a full page load to destination
       e.preventDefault();
@@ -58,33 +65,80 @@ export default function LetsTalkPage() {
     <main className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col">
       <Header />
 
-      <div className="flex-1 py-30 sm:py-20 lg:pt-32">
+      {/* ── Hero (same style as About Us) ────────────────────────── */}
+      <section className="relative h-[55vh] w-full flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop')",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/60 to-black/80" />
+        </div>
+
+        <div className="relative z-10 text-center text-white px-4 max-w-3xl mx-auto">
+          {/* Eyebrow badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-3 py-1.5 mb-5"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="text-[11px] font-medium uppercase tracking-widest text-white/80">
+              Support Center
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter mb-5 text-white"
+          >
+            Live Support
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="text-base md:text-lg font-light tracking-wide text-white/75 max-w-xl mx-auto leading-relaxed"
+          >
+            Connect instantly with our investment support team. Real people,
+            real answers — available around the clock.
+          </motion.p>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+        >
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
+            Scroll
+          </span>
+          <div className="w-[1px] h-8 bg-gradient-to-b from-white/40 to-transparent" />
+        </motion.div>
+      </section>
+
+      <div className="flex-1 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent"
-            >
-              Live Support
-            </motion.h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Connect instantly with our investment support team. Real people, real answers — available around the clock.
-            </p>
-          </div>
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+          
+          {/* Stats Row — 4 items */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
-              { label: "Avg. Response Time", value: "< 2 min", icon: Zap },
+              { label: "Response Time", value: "< 2 min", icon: Zap },
               { label: "Support Availability", value: "24 / 7", icon: Clock },
               { label: "Satisfied Clients", value: "98%", icon: Users },
+              { label: "Issues Resolved", value: "50K+", icon: TrendingUp },
             ].map(({ label, value, icon: Icon }) => (
               <div
                 key={label}
-                className="bg-card border border-border rounded-[1.5rem] p-6 text-center shadow-sm"
+                className="bg-card border border-border rounded-[1.5rem] p-3 py-4 lg:p-5 text-center shadow-sm"
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                   <Icon className="h-5 w-5 text-primary" />
@@ -96,8 +150,7 @@ export default function LetsTalkPage() {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-16">
-
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Chat Card */}
             <div className="lg:col-span-2 bg-card border border-border rounded-[1.5rem] overflow-hidden shadow-sm">
               <div className="bg-primary p-8 md:p-10">
@@ -109,18 +162,24 @@ export default function LetsTalkPage() {
                     <h2 className="text-2xl font-black uppercase italic tracking-tighter text-primary-foreground">
                       Start a Conversation
                     </h2>
-                    <p className="text-primary-foreground/70 text-sm">A live agent is ready for you</p>
+                    <p className="text-primary-foreground/70 text-sm">
+                      A live agent is ready for you
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-                  <span className="text-primary-foreground/80 text-sm font-medium">Support team is online</span>
+                  <span className="text-primary-foreground/80 text-sm font-medium">
+                    Support team is online
+                  </span>
                 </div>
               </div>
 
               <div className="p-8 md:p-10 space-y-6">
                 <p className="text-muted-foreground leading-relaxed">
-                  Whether you have questions about your portfolio, withdrawals, bonuses, or trading cycles — our team is standing by. Click below to open a live chat window and get an instant response.
+                  Whether you have questions about your portfolio, withdrawals,
+                  bonuses, or trading cycles — our team is standing by. Click
+                  below to open a live chat window and get an instant response.
                 </p>
 
                 <ul className="space-y-3">
@@ -132,8 +191,18 @@ export default function LetsTalkPage() {
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-sm">
                       <span className="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                        <svg className="w-3 h-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-3 h-3 text-primary-foreground"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       </span>
                       {item}
@@ -154,7 +223,8 @@ export default function LetsTalkPage() {
                 </button>
 
                 <p className="text-xs text-muted-foreground">
-                  You can also use the chat widget in the bottom-right corner of any page.
+                  You can also use the chat widget in the bottom-right corner of
+                  any page.
                 </p>
               </div>
             </div>
@@ -166,32 +236,56 @@ export default function LetsTalkPage() {
                   Other Channels
                 </h3>
                 <div className="space-y-5">
-                  <div className="flex items-start gap-4">
+                  <a
+                    href="https://t.me/secure_rise"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-4"
+                  >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <Headphones className="h-4 w-4 text-primary" />
                     </div>
+
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Phone Support</p>
-                      <p className="font-bold">+0 (000) 000-000</p>
-                      <p className="text-xs text-muted-foreground">Mon – Sun, 24 hrs</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                        Telegram Support
+                      </p>
+                      <p className="font-bold">@secure_rise</p>
+                      <p className="text-xs text-muted-foreground">
+                        24/7 Support on Telegram
+                      </p>
                     </div>
-                  </div>
+                  </a>
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <svg
+                        className="h-4 w-4 text-primary"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Email Support</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                        Email Support
+                      </p>
                       <p className="font-bold">support@securerise.com</p>
-                      <p className="text-xs text-muted-foreground">Reply within 2 hours</p>
+                      <p className="text-xs text-muted-foreground">
+                        Reply within 2 hours
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-primary p-8 rounded-[1.5rem] text-primary-foreground shadow-lg">
+              {/* <div className="bg-primary p-8 rounded-[1.5rem] text-primary-foreground shadow-lg">
                 <ShieldCheck className="h-8 w-8 mb-4 opacity-80" />
                 <h4 className="font-black uppercase italic tracking-tighter text-lg mb-2">
                   Your Privacy Matters
@@ -199,22 +293,21 @@ export default function LetsTalkPage() {
                 <p className="text-sm opacity-80 leading-relaxed">
                   All chat conversations are encrypted end-to-end. We never share your data with third parties.
                 </p>
-              </div>
+              </div> */}
 
               <div className="bg-card border border-border rounded-[1.5rem] p-8 shadow-sm">
                 <Clock className="h-6 w-6 text-primary mb-3" />
                 <h4 className="font-bold mb-1">Response Guarantee</h4>
                 <p className="text-sm text-muted-foreground">
-                  If we don't respond within 5 minutes via live chat, we'll follow up by email within the hour.
+                  If we don't respond within 5 minutes via live chat, we'll
+                  follow up by email within the hour.
                 </p>
               </div>
             </aside>
           </div>
-
         </div>
       </div>
 
-      <ThemeAndScroll />
       <CookieConsent />
       <FAQ />
       <Footer />
