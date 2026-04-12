@@ -27,7 +27,7 @@ export default function AboutUs() {
         "We believe in starting your journey on the right foot. Every new user receives a $20 instant credit. This bonus is fully withdrawable alongside your very first investment payout.",
       // Dollar bills / cash reward — bonus/gift theme
       image:
-        "https://i.postimg.cc/Zqd5Tnx4/bonus.jpg",
+        "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=2070&auto=format&fit=crop",
       cta: "Claim Bonus",
     },
     {

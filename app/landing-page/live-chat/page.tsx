@@ -143,7 +143,7 @@ export default function LetsTalkPage() {
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
-                <p className="text-3xl font-black tracking-tighter">{value}</p>
+                <p className="text-2xl font-black tracking-tighter">{value}</p>
                 <p className="text-sm text-muted-foreground mt-1">{label}</p>
               </div>
             ))}
@@ -211,16 +211,16 @@ export default function LetsTalkPage() {
                 </ul>
 
                 <button
-                  onClick={() => {
-                    if ((window as any).Tawk_API) {
-                      (window as any).Tawk_API.maximize();
-                    }
-                  }}
-                  className="w-full sm:w-auto px-10 h-14 bg-primary text-primary-foreground hover:scale-105 transition-transform rounded-xl font-bold uppercase tracking-tighter italic flex items-center gap-2 cursor-pointer"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Open Live Chat
-                </button>
+  onClick={() => {
+    if ((window as any).Tawk_API) {
+      (window as any).Tawk_API.maximize();
+    }
+  }}
+  className="w-full sm:w-auto px-10 h-14 bg-primary text-primary-foreground hover:scale-105 transition-transform rounded-xl font-bold uppercase tracking-tighter italic flex items-center justify-center gap-2 text-center cursor-pointer"
+>
+  <MessageCircle className="h-4 w-4" />
+  <span>Open Live Chat</span>
+</button>
 
                 <p className="text-xs text-muted-foreground">
                   You can also use the chat widget in the bottom-right corner of
