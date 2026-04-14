@@ -10,7 +10,7 @@ interface HeaderProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
-interface SellerData {
+interface UserData {
   name: string;
   email: string;
   businessName?: string;
@@ -18,12 +18,12 @@ interface SellerData {
 }
 
 export default function SellerHeader({ sidebarOpen, setSidebarOpen }: HeaderProps) {
-  const [seller, setSeller] = useState<SellerData | null>(null);
+  const [seller, setSeller] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
-    const fetchSellerData = async () => {
+    const fetchUserData = async () => {
       try {
         const response = await fetch('/api/seller/profile');
         if (response.ok) {
@@ -31,7 +31,6 @@ export default function SellerHeader({ sidebarOpen, setSidebarOpen }: HeaderProp
           setSeller({
             name: data.name,
             email: data.email,
-            businessName: data.businessName,
             profileImage: data.profileImage
           });
         }
@@ -42,7 +41,7 @@ export default function SellerHeader({ sidebarOpen, setSidebarOpen }: HeaderProp
       }
     };
 
-    fetchSellerData();
+    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -120,10 +119,10 @@ export default function SellerHeader({ sidebarOpen, setSidebarOpen }: HeaderProp
         <div className="flex items-center gap-3 sm:pl-6 sm:border-l border-border">
           <div className="text-right hidden lg:block">
             <p className="text-xs font-black uppercase tracking-tight leading-none text-foreground">
-              {isLoading ? 'Loading...' : seller?.name || 'Seller'}
+              {isLoading ? 'Loading...' : seller?.name || 'User'}
             </p>
             <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter mt-1">
-              {isLoading ? 'Loading...' : seller?.email || 'Seller email'}
+              {isLoading ? 'Loading...' : seller?.email || 'User email'}
             </p>
           </div>
           

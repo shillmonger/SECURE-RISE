@@ -123,85 +123,13 @@ export default function DashboardPage() {
                 </Card>
               ))}
             </div>
-
-            {/* Welcome Bonus Card */}
-            {user?.welcomeBonus === 20 && (
-              <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Welcome Bonus Activated!
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-blue-100 mb-4">
-                    Congratulations! Your $20 welcome bonus has been credited to your account. 
-                    Start investing and watch your portfolio grow!
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-blue-100">Bonus Amount</p>
-                      <p className="text-2xl font-bold">${user.welcomeBonus.toFixed(2)}</p>
-                    </div>
-                    <button className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                      Start Investing
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <button className="w-full text-left p-4 border rounded-lg hover:bg-accent transition-colors">
-                    <h3 className="font-semibold">Make a Deposit</h3>
-                    <p className="text-sm text-muted-foreground">Add funds to your account</p>
-                  </button>
-                  <button className="w-full text-left p-4 border rounded-lg hover:bg-accent transition-colors">
-                    <h3 className="font-semibold">View Investment Plans</h3>
-                    <p className="text-sm text-muted-foreground">Explore our investment options</p>
-                  </button>
-                  <button className="w-full text-left p-4 border rounded-lg hover:bg-accent transition-colors">
-                    <h3 className="font-semibold">Transaction History</h3>
-                    <p className="text-sm text-muted-foreground">View your past transactions</p>
-                  </button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <span className="text-sm font-medium">Account Status</span>
-                    <span className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                      Active
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <span className="text-sm font-medium">Account Type</span>
-                    <span className="text-sm capitalize">
-                      {user?.role.join(', ') || 'User'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <span className="text-sm font-medium">Total Withdrawals</span>
-                    <span className="text-sm font-semibold">
-                      ${user?.totalWithdrawal.toFixed(2) || '0.00'}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            
           </div>
         </main>
       </div>
+
+
+      <UserNav />
     </div>
   );
 }
