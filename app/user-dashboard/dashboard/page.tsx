@@ -142,7 +142,7 @@ export default function UserOverviewPage() {
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
-            {/* 1️⃣ Welcome & Investment Snapshot */}
+            {/*Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
                 <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
@@ -161,13 +161,13 @@ export default function UserOverviewPage() {
               </div>
               <Link
                 href="/user-dashboard/invest"
-                className="bg-primary text-primary-foreground px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20 w-full md:w-auto block text-center"
+                className="bg-primary text-primary-foreground px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto block text-center"
               >
                 Start Investing
               </Link>
             </section>
 
-            {/* 2️⃣ Quick Stats Summary */}
+            {/*Quick Stats Summary */}
             <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat, i) => (
                 <Link
@@ -198,7 +198,7 @@ export default function UserOverviewPage() {
             <div className="lg:flex lg:items-stretch grid grid-cols-1 gap-8">
               {/* Left Column: Active Plans & History */}
               <div className="lg:flex-1 lg:w-2/3 flex flex-col space-y-10">
-                {/* 3️⃣ Active Investment Plans (Alert Style) */}
+                {/*Active Investment Plans (Alert Style) */}
                 <section className="space-y-4">
                   <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-primary" /> Active
@@ -230,7 +230,7 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/* 4️⃣ Recent Transactions Section - NOW STRETCHED TO FILL SPACE */}
+                {/*Recent Transactions Section - NOW STRETCHED TO FILL SPACE */}
                 <section className="space-y-4 flex-1 flex flex-col">
                   <div className="flex justify-between items-end">
                     <h2 className="text-sm font-black uppercase tracking-widest">
@@ -263,9 +263,10 @@ export default function UserOverviewPage() {
                 </section>
               </div>
 
+
               {/* Right Column: Wallet & Notifications */}
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
-                {/* 5️⃣ Account Summary Panel */}
+                {/*Account Summary Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <PiggyBank className="w-4 h-4 text-primary" /> Account
@@ -295,7 +296,7 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/* 6️⃣ Notifications Panel */}
+                {/*Notifications Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <Bell className="w-4 h-4 text-primary" /> Alerts
@@ -319,7 +320,7 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/* 8️⃣ Help & Support Shortcut - flex-grow ensures this sits comfortably at the bottom if needed */}
+                {/*Help & Support Shortcut*/}
                 <section className="bg-primary/5 border border-primary/20 rounded-3xl p-6 flex-1">
                   <HelpCircle className="w-8 h-8 text-primary mb-4" />
                   <h3 className="text-sm font-black uppercase italic tracking-tighter">
@@ -350,7 +351,7 @@ export default function UserOverviewPage() {
               <div className="flex justify-between items-end mb-8">
                 <div>
                   <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
-                    Unlockable Rewards
+                    Rewards
                   </h2>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Current Total Deposit:{" "}
@@ -362,7 +363,7 @@ export default function UserOverviewPage() {
 
                 <button
                   onClick={() => setTotalDeposit(500)} // Testing button
-                  className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group bg-secondary px-3 py-1.5 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground transition-all"
+                  className="text-[10px] font-black uppercase tracking-widest cursor-pointer flex items-center gap-1 group bg-secondary px-3 py-1.5 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   View Tiers{" "}
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

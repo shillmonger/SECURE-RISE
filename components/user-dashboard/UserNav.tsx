@@ -2,17 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Wallet, Package, BarChart3, Truck, PlusCircle, UserCheck, Settings } from "lucide-react";
-
+import {
+  LayoutDashboard,
+  BarChart3,
+  PiggyBank,
+  Wallet,
+  Settings,
+} from "lucide-react";
 export default function UserNav() {
   const pathname = usePathname();
+  const basePath = "/user-dashboard";
 
   const navItems = [
-    { name: "Add Item", href: "/general-dashboard/seller-dashboard/add-product", icon: PlusCircle },
-    { name: "Order Hub", href: "/general-dashboard/seller-dashboard/orders-management", icon: Truck },
-    { name: "Dashboard", href: "/general-dashboard/seller-dashboard/dashboard", icon: LayoutGrid },
-    { name: "Analytics", href: "/general-dashboard/seller-dashboard/analytics", icon: BarChart3 },
-    { name: "Setting", href: "/general-dashboard/seller-dashboard/profile-settings", icon: Settings },
+    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
+    { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
+    { name: "Deposit", icon: PiggyBank, href: `${basePath}/deposit` },
+    { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];
 
   const isActive = (href: string) =>

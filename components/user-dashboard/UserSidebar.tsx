@@ -10,7 +10,8 @@ import {
   BarChart3,
   BriefcaseBusiness,
   ArrowUpCircle,
-  ArrowDownCircle,
+  Wallet,
+  PiggyBank,
   History,
   Users,
   BadgeDollarSign,
@@ -36,15 +37,15 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
   const sidebarItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "My Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
-    { name: "Deposit", icon: ArrowUpCircle, href: `${basePath}/deposit` },
-    { name: "Withdraw", icon: ArrowDownCircle, href: `${basePath}/withdraw` },
-    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+    { name: "Deposit", icon: PiggyBank, href: `${basePath}/deposit` },
     { name: "Referrals", icon: Users, href: `${basePath}/referrals` },
-    { name: "Earnings", icon: BadgeDollarSign, href: `${basePath}/earnings` },
-    { name: "Support", icon: HeadphonesIcon, href: `${basePath}/support` },
+    { name: "My Earnings", icon: BadgeDollarSign, href: `${basePath}/earnings` },
+    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+    { name: "My Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
+    { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
     { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
-    { name: "Settings", icon: Settings, href: `${basePath}/settings` },
+    { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
   ];
 
   return (
@@ -61,7 +62,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-72 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-50 w-full md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
@@ -120,14 +121,16 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-background border border-border rounded-[2rem] shadow-2xl w-full max-w-sm p-8 text-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-md p-4">
+          <div className="bg-background border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center">
             <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
               <LogOut className="w-8 h-8 text-foreground" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Logout?</h2>
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
-              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-6 py-3 rounded-xl bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest">Stay</button>
+              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-6 py-3 rounded-lg bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest">
+                Stay
+              </button>
               <button 
                 onClick={async () => {
                   try {
@@ -141,7 +144,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
                     setShowLogoutConfirm(false);
                   }
                 }} 
-                className="flex-1 px-6 py-3 rounded-xl bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
+                className="flex-1 px-6 py-3 rounded-lg bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
                 Exit
               </button>

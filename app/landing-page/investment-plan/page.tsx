@@ -11,50 +11,50 @@ import { Check, ArrowRight, Lock, TrendingUp } from "lucide-react";
 export default function SubscriptionPage() { 
     const accessPlans = [ 
         { 
-            amount: 50, 
+            amount: 100, 
             type: "Starter Rise", 
-            fee: "$50", 
+            fee: "$100", 
             duration: "Daily ROI",
             tradingVolume: "Standard",
             benefits: ["Daily profit topping", "Secure trade execution", "$20 Welcome bonus eligible", "24/7 Support access"]
         }, 
         { 
-            amount: 100, 
+            amount: 200, 
             type: "Basic Growth", 
-            fee: "$100", 
+            fee: "$200", 
             duration: "Daily ROI",
             tradingVolume: "Enhanced",
             benefits: ["Priority trade allocation", "Daily earnings tracking", "Bonus withdrawable on payout", "Secure capital protection"]
         },
         { 
-            amount: 200, 
+            amount: 500, 
             type: "Pro Trader", 
-            fee: "$200", 
+            fee: "$500", 
             duration: "Daily ROI",
             tradingVolume: "Premium",
             popular: true,
             benefits: ["Diversified trade pool", "Accelerated daily returns", "Full bonus integration", "Priority withdrawal processing"]
         },
         { 
-            amount: 500, 
+            amount: 1000, 
             type: "Advanced Wealth", 
-            fee: "$500", 
+            fee: "$1000", 
             duration: "Daily ROI",
             tradingVolume: "High Performance",
             benefits: ["Institutional grade trading", "Maximized daily yields", "Dedicated account monitor", "Exclusive market insights"]
         }, 
         { 
-            amount: 1000, 
+            amount: 5000, 
             type: "Elite Investor", 
-            fee: "$1000", 
+            fee: "$5000", 
             duration: "Daily ROI",
             tradingVolume: "Institutional",
             benefits: ["Custom trade strategies", "Real-time audit access", "VIP support line", "Multi-layer security"]
         },
         { 
-            amount: 5000, 
+            amount: 10000, 
             type: "Secure Partner", 
-            fee: "$5000", 
+            fee: "$10000", 
             duration: "Daily ROI",
             tradingVolume: "Unlimited",
             benefits: ["Founder-level trade pools", "Maximized profit limits", "Direct admin consulting", "Lifetime secure insurance"]
