@@ -5,15 +5,55 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import Footer from "@/components/landing-page/Footer"
-import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
-
+import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll"
+import { toast } from "sonner"
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || 'Login successful!');
+        setTimeout(() => {
+          router.push('/user-dashboard/dashboard');
+        }, 1000);
+      } else {
+        toast.error(data.error || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -23,7 +63,7 @@ export default function LoginPage() {
         <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden">
           <Card className="overflow-hidden bg-card border border-border rounded-3xl shadow-lg">
             <CardContent className="p-0">
-              <form className="p-6 md:p-8">
+              <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -41,17 +81,17 @@ export default function LoginPage() {
                       name="email"
                       className="p-5 text-[15px]"
                       type="email"
-                      placeholder="shillmonger@example.com"
+                      placeholder="secure@example.com"
                       disabled={isLoading}
                     />
                   </div>
 
                   <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div>
+                      <div className="flex items-center justify-between">
                         <Label htmlFor="password">Password</Label>
                         <Link
-                          href="/forgot-password"
+                          href="/auth-page/forgot-password"
                           className="ml-2 text-sm underline-offset-2 hover:underline"
                         >
                           Forgot password?

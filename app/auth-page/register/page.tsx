@@ -5,15 +5,60 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import Footer from "@/components/landing-page/Footer"
-import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
+import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll"
+import { toast } from "sonner"
 
 export default function SignupPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || 'Account created successfully!');
+        setTimeout(() => {
+          router.push('/user-dashboard/dashboard');
+        }, 1500);
+      } else {
+        toast.error(data.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex px-3 py-10 min-h-screen flex-col items-center justify-center bg-background text-foreground p-6 md:p-10 transition-colors duration-300">
@@ -22,7 +67,7 @@ export default function SignupPage() {
       <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden mb-20">
         <Card className="overflow-hidden bg-card border border-border rounded-3xl shadow-lg">
           <CardContent className="p-0">
-            <form className="p-6 md:p-8">
+            <form className="p-6 md:p-8" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Create your account</h1>
@@ -38,7 +83,7 @@ export default function SignupPage() {
                     name="name"
                     type="text"
                     className="p-5 text-[15px]"
-                    placeholder="shillmonger"
+                    placeholder="secure rise"
                     required
                     disabled={isLoading}
                   />
@@ -51,7 +96,7 @@ export default function SignupPage() {
                     name="email"
                     type="email"
                     className="p-5 text-[15px]"
-                    placeholder="shillmonger@example.com"
+                    placeholder="secure@example.com"
                     required
                     disabled={isLoading}
                   />
