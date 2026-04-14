@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+// import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   BarChart3,
@@ -18,7 +20,6 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-import Image from "next/image";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -27,30 +28,28 @@ interface SidebarProps {
 
 export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const basePath = "/user-dashboard";
 
-  // Updated base path to match the investment context
-  const basePath = "/user-dashboard/dashboard";
-
+  // Navigation Items updated to your specific list
   const sidebarItems = [
-    { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}` },
-    { name: "Invest", icon: BarChart3, href: `/user-dashboard/invest` },
-    { name: "My Investments", icon: BriefcaseBusiness, href: `/user-dashboard/my-investments` },
-    { name: "Deposit", icon: ArrowUpCircle, href: `/user-dashboard/deposit` },
-    { name: "Withdraw", icon: ArrowDownCircle, href: `/user-dashboard/withdraw` },
-    { name: "Transactions", icon: History, href: `/user-dashboard/transactions` },
-    { name: "Referrals", icon: Users, href: `/user-dashboard/referrals` },
-    { name: "Earnings", icon: BadgeDollarSign, href: `/user-dashboard/earnings` },
-    { name: "Support", icon: HeadphonesIcon, href: `/user-dashboard/support` },
-    { name: "Notifications", icon: Bell, href: `/user-dashboard/notifications` },
-    { name: "Settings", icon: Settings, href: `/user-dashboard/settings` },
+    { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
+    { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
+    { name: "My Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
+    { name: "Deposit", icon: ArrowUpCircle, href: `${basePath}/deposit` },
+    { name: "Withdraw", icon: ArrowDownCircle, href: `${basePath}/withdraw` },
+    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+    { name: "Referrals", icon: Users, href: `${basePath}/referrals` },
+    { name: "Earnings", icon: BadgeDollarSign, href: `${basePath}/earnings` },
+    { name: "Support", icon: HeadphonesIcon, href: `${basePath}/support` },
+    { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
+    { name: "Settings", icon: Settings, href: `${basePath}/settings` },
   ];
-
-  const isActive = (href: string) => pathname === href;
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
@@ -62,50 +61,45 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-full lg:w-[18%] transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-50 w-72 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
-        <div className="flex items-center justify-between h-20 px-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8">
-              <img 
-                src="https://i.postimg.cc/wTzh3Wpt/favicon-ico.png" 
-                alt="Secure Rise Logo" 
-                className="object-contain"
-              />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-black uppercase tracking-tighter italic text-foreground">
-                Secure <span className="text-muted-foreground">Rise</span>
-              </h1>
-              <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
-                Secure your future
-              </p>
-            </div>
+        <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
+          <div className="flex flex-col">
+            <h1 className="text-xl font-black uppercase tracking-tighter italic text-foreground">
+              SECURE<span className="text-muted-foreground italic">RISE</span>
+            </h1>
+            <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
+              You Investments, Our Traders
+            </p>
           </div>
-          <button className="lg:hidden p-2" onClick={() => setSidebarOpen(false)}>
+          
+          <button 
+            className="lg:hidden p-2 rounded-xl bg-secondary text-foreground" 
+            onClick={() => setSidebarOpen(false)}
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-col justify-between h-[calc(100vh-5rem)]">
-          <nav className="px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col justify-between h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)]">
+          <nav className="px-4 py-6 space-y-1 overflow-y-auto">
             {sidebarItems.map(({ name, icon: Icon, href }) => {
-              const active = isActive(href);
+              const active = pathname === href;
               return (
                 <Link
                   key={name}
                   href={href}
-                  className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
+                  className={`group flex items-center px-4 py-2.5 rounded-sm transition-all duration-200 ${
                     active
                       ? "bg-foreground text-background shadow-lg shadow-black/10"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
-                  <Icon className={`w-5 h-5 mr-3 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className="text-[11px] font-black uppercase tracking-widest">{name}</span>
+                  <Icon className={`w-5 h-5 mr-5 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span className="text-[12px] font-black uppercase tracking-widest">{name}</span>
                 </Link>
               );
             })}
@@ -132,11 +126,21 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
               <LogOut className="w-8 h-8 text-foreground" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Logout?</h2>
-            <p className="text-muted-foreground text-sm mb-6">Are you sure you want to exit your session?</p>
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-6 py-3 rounded-xl bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest">Stay</button>
               <button 
-                onClick={() => setShowLogoutConfirm(false)} 
+                onClick={async () => {
+                  try {
+                    // await signOut({ redirect: false });
+                    router.push("/auth-page/login");
+                    toast.success("Successfully signed out");
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                    toast.error("Failed to sign out.");
+                  } finally {
+                    setShowLogoutConfirm(false);
+                  }
+                }} 
                 className="flex-1 px-6 py-3 rounded-xl bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
                 Exit
