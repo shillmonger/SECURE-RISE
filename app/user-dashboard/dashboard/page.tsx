@@ -75,7 +75,6 @@ export default function UserOverviewPage() {
     },
   ];
 
-
   // 2. Dummy Data Array
   const unlockables = [
     {
@@ -84,7 +83,8 @@ export default function UserOverviewPage() {
       minDeposit: 100,
       reward: "2x ROI for 2 days",
       icon: <Zap className="w-5 h-5 text-yellow-500" />,
-      image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=300",
     },
     {
       id: 2,
@@ -92,7 +92,8 @@ export default function UserOverviewPage() {
       minDeposit: 200,
       reward: "2x ROI for 3 days + Fast Payouts",
       icon: <TrendingUp className="w-5 h-5 text-green-500" />,
-      image: "https://images.unsplash.com/photo-1642104704074-907c0698bcd9?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=300",
     },
     {
       id: 3,
@@ -100,7 +101,8 @@ export default function UserOverviewPage() {
       minDeposit: 500,
       reward: "2x ROI for 4 days + Advanced Plans",
       icon: <ShieldCheck className="w-5 h-5 text-blue-500" />,
-      image: "https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=300",
     },
     {
       id: 4,
@@ -108,7 +110,8 @@ export default function UserOverviewPage() {
       minDeposit: 1000,
       reward: "2.5x ROI for 5 days + AI Bot",
       icon: <Bot className="w-5 h-5 text-purple-500" />,
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=300",
     },
     {
       id: 5,
@@ -116,7 +119,8 @@ export default function UserOverviewPage() {
       minDeposit: 5000,
       reward: "3x ROI for 7 days + Copy Trading",
       icon: <Users className="w-5 h-5 text-orange-500" />,
-      image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=300",
     },
     {
       id: 6,
@@ -124,7 +128,8 @@ export default function UserOverviewPage() {
       minDeposit: 10000,
       reward: "3x ROI for 10 days + Funded Account",
       icon: <Building className="w-5 h-5 text-cyan-500" />,
-      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=300",
     },
   ];
 
@@ -339,96 +344,109 @@ export default function UserOverviewPage() {
               </div>
             </div>
 
-
-
- {/* Unlockable Rewards */}
+            {/* Unlockable Rewards */}
             <section className="pt-10 border-t border-border relative">
-      {/* Header Section */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
-            Unlockable Rewards
-          </h2>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-            Current Total Deposit: <span className="text-primary">${totalDeposit.toLocaleString()}</span>
-          </p>
-        </div>
-        
-        <button 
-          onClick={() => setTotalDeposit(500)} // Testing button
-          className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group bg-secondary px-3 py-1.5 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground transition-all"
-        >
-          View Tiers <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
-
-      {/* Grid of Tiers */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {unlockables.map((item) => {
-          const isLocked = totalDeposit < item.minDeposit;
-          
-          return (
-            <div 
-              key={item.id} 
-              className={`relative overflow-hidden bg-card border rounded-3xl p-4 transition-all duration-500 group
-                ${isLocked ? 'border-border opacity-70 grayscale' : 'border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.1)] grayscale-0'}
-              `}
-            >
-              {/* Image Header */}
-              <div className="aspect-[16/9] rounded-2xl mb-4 overflow-hidden relative">
-                <img 
-                  src={item.image} 
-                  alt={item.title} 
-                  className={`w-full h-full object-cover transition-transform duration-700 ${!isLocked && 'group-hover:scale-110'}`}
-                />
-                {isLocked && (
-                  <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
-                    <div className="bg-background/80 p-3 rounded-full border border-border shadow-xl">
-                      <Lock className="w-6 h-6 text-muted-foreground" />
-                    </div>
-                  </div>
-                )}
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-[9px] font-black px-2 py-1 rounded-full uppercase text-white border border-white/10">
-                  Min. Deposit: ${item.minDeposit}
-                </div>
-              </div>
-
-              {/* Reward Content */}
-              <div className="flex items-start justify-between gap-2">
+              {/* Header Section */}
+              <div className="flex justify-between items-end mb-8">
                 <div>
-                  <h3 className="text-sm font-black uppercase italic leading-none mb-1 flex items-center gap-2">
-                    {item.icon}
-                    {item.title}
-                  </h3>
-                  <p className={`text-[11px] font-bold uppercase ${isLocked ? 'text-muted-foreground' : 'text-primary'}`}>
-                    {item.reward}
+                  <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
+                    Unlockable Rewards
+                  </h2>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    Current Total Deposit:{" "}
+                    <span className="text-primary">
+                      ${totalDeposit.toLocaleString()}
+                    </span>
                   </p>
                 </div>
-                
-                <div className={`p-2 rounded-xl border transition-all ${isLocked ? 'bg-muted border-border text-muted-foreground' : 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 cursor-pointer hover:scale-110'}`}>
-                   {isLocked ? <Lock className="w-4 h-4" /> : <Zap className="w-4 h-4 fill-current" />}
-                </div>
+
+                <button
+                  onClick={() => setTotalDeposit(500)} // Testing button
+                  className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group bg-secondary px-3 py-1.5 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground transition-all"
+                >
+                  View Tiers{" "}
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </button>
               </div>
 
-              {/* Progress Indicator */}
-              {isLocked && (
-                <div className="mt-4 pt-3 border-t border-border/50">
-                  <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-primary h-full transition-all duration-1000" 
-                      style={{ width: `${Math.min((totalDeposit / item.minDeposit) * 100, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-[8px] font-black uppercase text-muted-foreground mt-1 text-right">
-                    {Math.floor((totalDeposit / item.minDeposit) * 100)}% to Unlock
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </section>
+              {/* Grid of Tiers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {unlockables.map((item) => {
+                  const isLocked = totalDeposit < item.minDeposit;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`relative overflow-hidden bg-card border rounded-3xl p-4 transition-all duration-500 group
+                ${isLocked ? "border-border opacity-70 grayscale" : "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.1)] grayscale-0"}
+              `}
+                    >
+                      {/* Image Header */}
+                      <div className="aspect-[16/9] rounded-2xl mb-4 overflow-hidden relative">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className={`w-full h-full object-cover transition-transform duration-700 ${!isLocked && "group-hover:scale-110"}`}
+                        />
+                        {isLocked && (
+                          <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
+                            <div className="bg-background/80 p-3 rounded-full border border-border shadow-xl">
+                              <Lock className="w-6 h-6 text-muted-foreground" />
+                            </div>
+                          </div>
+                        )}
+                        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-[9px] font-black px-2 py-1 rounded-full uppercase text-white border border-white/10">
+                          Min. Deposit: ${item.minDeposit}
+                        </div>
+                      </div>
+
+                      {/* Reward Content */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="text-sm font-black uppercase italic leading-none mb-1 flex items-center gap-2">
+                            {item.icon}
+                            {item.title}
+                          </h3>
+                          <p
+                            className={`text-[11px] font-bold uppercase ${isLocked ? "text-muted-foreground" : "text-primary"}`}
+                          >
+                            {item.reward}
+                          </p>
+                        </div>
+
+                        <div
+                          className={`p-2 rounded-xl border transition-all ${isLocked ? "bg-muted border-border text-muted-foreground" : "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 cursor-pointer hover:scale-110"}`}
+                        >
+                          {isLocked ? (
+                            <Lock className="w-4 h-4" />
+                          ) : (
+                            <Zap className="w-4 h-4 fill-current" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Progress Indicator */}
+                      {isLocked && (
+                        <div className="mt-4 pt-3 border-t border-border/50">
+                          <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                            <div
+                              className="bg-primary h-full transition-all duration-1000"
+                              style={{
+                                width: `${Math.min((totalDeposit / item.minDeposit) * 100, 100)}%`,
+                              }}
+                            />
+                          </div>
+                          <p className="text-[8px] font-black uppercase text-muted-foreground mt-1 text-right">
+                            {Math.floor((totalDeposit / item.minDeposit) * 100)}
+                            % to Unlock
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           </div>
         </main>
       </div>
