@@ -9,10 +9,11 @@ import {
   LayoutDashboard,
   BarChart3,
   BriefcaseBusiness,
-  ArrowUpCircle,
+  Trophy,
   Wallet,
   PiggyBank,
   History,
+  Crown,
   Users,
   BadgeDollarSign,
   HeadphonesIcon,
@@ -43,6 +44,8 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "My Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
     { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
+    { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
     { name: "Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
     { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
     { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
@@ -62,7 +65,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-full md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-50 w-full md:w-65 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">

@@ -14,9 +14,9 @@ export default function UserNav() {
   const basePath = "/user-dashboard";
 
   const navItems = [
-    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Deposit", icon: PiggyBank, href: `${basePath}/deposit` },
+    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];

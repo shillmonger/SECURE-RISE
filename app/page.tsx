@@ -11,6 +11,7 @@ import Promo from "@/components/landing-page/promo";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
 import RiskProtection from "@/components/landing-page/risk-protection";
+import Testimonials from "@/components/landing-page/Testimonials";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 
 export default function HomePage() {
@@ -30,16 +31,18 @@ export default function HomePage() {
         <NumbersThatSpeaks />
 
         {/* section 4 */}
-        <HowItWorks/>
+        <HowItWorks />
 
         {/* section 5 */}
         <ProfitBlueprint />
 
         {/* section 6 */}
 
-
         {/* section 7 */}
         <FAQ />
+
+        {/* section 8 */}
+        <Testimonials />
 
         {/* section 8 */}
         <RiskProtection />

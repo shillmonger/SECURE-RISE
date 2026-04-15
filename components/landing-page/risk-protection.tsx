@@ -11,7 +11,7 @@ const montserrat = Montserrat({
 
 export default function RiskProtection() {
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-10 pb-30 w-full">
+    <section className="mx-auto max-w-[1400px] px-4 py-10 w-full">
       {/* Header Content — OUTSIDE the card */}
       <div className="text-center mb-8 px-6">
         <h2

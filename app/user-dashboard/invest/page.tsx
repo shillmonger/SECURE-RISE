@@ -20,8 +20,24 @@ import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface Plan {
+  id: number;
+  name: string;
+  min: number;
+  max: number | null;
+  roiPerDay: number;
+  duration: number;
+  icon: React.ReactNode;
+  color: string;
+  accent: string;
+  border: string;
+  badge: string | null;
+  perks: string[];
+}
+
 // ─── Plan Data ────────────────────────────────────────────────────────────────
-const plans = [
+const plans: Plan[] = [
   {
     id: 1,
     name: "Starter Rise",
@@ -119,8 +135,8 @@ function InvestmentCalculator() {
 
   const ROI_PER_DAY = 0.20; // 20% per day
   const dailyEarnings = amount * ROI_PER_DAY;
-  const totalProfit   = dailyEarnings * days;
-  const totalReturn   = amount + totalProfit;
+  const totalProfit = dailyEarnings * days;
+  const totalReturn = amount + totalProfit;
 
   return (
     <section className="space-y-6">
@@ -264,85 +280,98 @@ function InvestmentCalculator() {
 }
 
 // ─── Plan Card ────────────────────────────────────────────────────────────────
-function PlanCard({ plan }: { plan: (typeof plans)[0] }) {
+function PlanCard({ plan }: { plan: Plan }) {
   const dailyEarnings = plan.min * 0.20;
-  const totalProfit   = dailyEarnings * plan.duration;
-  const totalReturn   = plan.min + totalProfit;
+  const totalProfit = dailyEarnings * plan.duration;
+  const totalReturn = plan.min + totalProfit;
 
   return (
     <div
-      className={`relative bg-card border ${plan.border} rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all duration-300`}
+      className={`relative bg-card border ${plan.border} rounded-3xl cursor-pointer overflow-hidden group hover:scale-[1.02] hover:shadow-xl hover:shadow-${plan.accent.split('-')[1]}-500/10 transition-all duration-500 ease-out`}
     >
-      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${plan.color.replace("/20", "").replace("/5", "")}`} />
+      {/* Top gradient line */}
+      <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${plan.color.replace("/20", "").replace("/5", "")}`} />
 
+      {/* Badge */}
       {plan.badge && (
-        <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1">
-          <Star className="w-2.5 h-2.5 fill-current" />
+        <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-primary/20 animate-pulse">
+          <Star className="w-3 h-3 fill-current" />
           {plan.badge}
         </div>
       )}
 
       <div className="p-6 space-y-5">
+        {/* Header */}
         <div className="flex items-start gap-3">
-          <div className={`p-2.5 rounded-xl bg-gradient-to-br ${plan.color} ${plan.accent} border ${plan.border}`}>
+          <div className={`p-3 rounded-xl bg-gradient-to-br ${plan.color} ${plan.accent} border ${plan.border} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
             {plan.icon}
           </div>
-          <div>
-            <h3 className="text-sm font-black uppercase italic tracking-tight leading-none">{plan.name}</h3>
-            <p className="text-[10px] text-muted-foreground font-bold uppercase mt-0.5">
+          <div className="flex-1">
+            <h3 className="text-sm font-black uppercase italic tracking-tight leading-tight">{plan.name}</h3>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase mt-1">
               Min: ${plan.min.toLocaleString()}
               {plan.max ? ` – $${plan.max.toLocaleString()}` : "+"}
             </p>
           </div>
         </div>
 
-        <div className="bg-muted/30 rounded-2xl p-4 text-center">
-          <p className={`text-4xl font-black italic tracking-tighter ${plan.accent}`}>
+        {/* ROI Display */}
+        <div className={`bg-gradient-to-br ${plan.color} rounded-2xl p-5 text-center border ${plan.border} shadow-inner`}>
+          <p className={`text-5xl font-black italic tracking-tighter ${plan.accent} drop-shadow-sm`}>
             {plan.roiPerDay}%
           </p>
-          <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">
+          <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-1">
             Daily ROI · {plan.duration} Days
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-muted/20 rounded-xl p-2">
-            <p className={`text-xs font-black ${plan.accent}`}>+${dailyEarnings.toLocaleString()}</p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-muted/40 rounded-xl p-3 text-center border border-border/50 hover:bg-muted/60 transition-colors">
+            <p className={`text-sm font-black ${plan.accent}`}>+${dailyEarnings.toLocaleString()}</p>
             <p className="text-[8px] uppercase font-bold text-muted-foreground mt-0.5">Per Day</p>
           </div>
-          <div className="bg-muted/20 rounded-xl p-2">
-            <p className="text-xs font-black">{plan.duration}d</p>
+          <div className="bg-muted/40 rounded-xl p-3 text-center border border-border/50 hover:bg-muted/60 transition-colors">
+            <p className="text-sm font-black">{plan.duration}d</p>
             <p className="text-[8px] uppercase font-bold text-muted-foreground mt-0.5">Duration</p>
           </div>
-          <div className="bg-muted/20 rounded-xl p-2">
-            <p className="text-xs font-black">${totalReturn.toLocaleString()}</p>
+          <div className="bg-muted/40 rounded-xl p-3 text-center border border-border/50 hover:bg-muted/60 transition-colors">
+            <p className="text-sm font-black">${totalReturn.toLocaleString()}</p>
             <p className="text-[8px] uppercase font-bold text-muted-foreground mt-0.5">Returned</p>
           </div>
         </div>
 
-        {/* Example earnings note */}
-        <p className="text-[9px] text-muted-foreground uppercase font-bold text-center bg-muted/20 rounded-xl py-2 px-3">
-          ${plan.min.toLocaleString()} deposit → +${totalProfit.toLocaleString()} profit in {plan.duration} days
-        </p>
+        {/* Example Note */}
+        <div className="bg-muted/30 rounded-xl py-3 px-4 border border-border/30">
+          <p className="text-[9px] text-muted-foreground uppercase font-bold text-center leading-relaxed">
+            ${plan.min.toLocaleString()} deposit → <span className={plan.accent}>+${totalProfit.toLocaleString()}</span> profit in {plan.duration} days
+          </p>
+        </div>
 
-        <ul className="space-y-1.5">
-          {plan.perks.map((perk, i) => (
-            <li key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase text-muted-foreground">
-              <CheckCircle2 className={`w-3 h-3 ${plan.accent} shrink-0`} />
+        {/* Perks */}
+        <ul className="space-y-2">
+          {plan.perks.map((perk: string, i: number) => (
+            <li key={i} className="flex items-center gap-2.5 text-[10px] font-bold uppercase text-muted-foreground hover:text-foreground transition-colors">
+              <div className={`p-0.5 rounded-full bg-${plan.accent.split('-')[1]}-500/10`}>
+                <CheckCircle2 className={`w-3.5 h-3.5 ${plan.accent}`} />
+              </div>
               {perk}
             </li>
           ))}
         </ul>
 
+        {/* CTA Button */}
         <Link
           href={`/user-dashboard/deposit?plan=${plan.id}`}
-          className="block w-full text-center bg-primary text-primary-foreground py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-primary/20"
+          className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group/btn"
         >
-          Invest Now <ArrowRight className="inline w-3 h-3 ml-1" />
+          Invest Now
+          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
         </Link>
 
-        <p className="text-center text-[9px] text-muted-foreground uppercase font-bold">
-          Min deposit: ${plan.min.toLocaleString()}
+        {/* Min Deposit */}
+        <p className="text-center text-[9px] text-muted-foreground uppercase font-bold opacity-70">
+          Minimum deposit: ${plan.min.toLocaleString()}
         </p>
       </div>
     </div>

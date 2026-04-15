@@ -199,34 +199,36 @@ export default function UserOverviewPage() {
               {/* Left Column: Active Plans & History */}
               <div className="lg:flex-1 lg:w-2/3 flex flex-col space-y-10">
                 {/*Active Investment Plans (Alert Style) */}
-                <section className="space-y-4">
-                  <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-primary" /> Active
-                    Trade
+                <section className="bg-card border border-border rounded-3xl p-6">
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-primary" /> Capital
+                    Protection
                   </h2>
-                  <div className="bg-foreground text-background p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
-                      <div className="w-16 h-16 bg-muted/20 rounded-2xl flex items-center justify-center border-2 border-primary/30">
-                        <BarChart3 className="w-8 h-8 text-white dark:text-black" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-widest opacity-70">
-                          Status: Awaiting Deposit
-                        </p>
-                        <h3 className="text-sm font-black uppercase italic tracking-tighter">
-                          No active trading plan running
-                        </h3>
-                        <p className="text-[10px] font-medium opacity-60 mt-1 uppercase">
-                          Choose a plan to start earning 10% daily ROI
-                        </p>
-                      </div>
+
+                  <div className="space-y-4">
+                    <p className="text-[11px] leading-relaxed text-muted-foreground font-medium">
+                      We stand by our strategies. If a trade results in a loss
+                      of capital,
+                      <span className="text-foreground font-bold">
+                        {" "}
+                        SECURE RISE covers it 100%
+                      </span>
+                      . We refund your full investment plus an additional
+                      <span className="text-primary font-bold">
+                        {" "}
+                        20% compensation
+                      </span>
+                      —withdrawable immediately.
+                    </p>
+
+                    <div className="pt-2">
+                      <Link
+                        href="/user-dashboard/trades"
+                        className="block w-full text-center py-3 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-primary/10"
+                      >
+                        Trade Now
+                      </Link>
                     </div>
-                    <Link
-                      href="/user-dashboard/invest"
-                      className="w-full md:w-auto bg-background text-foreground px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-center hover:bg-muted"
-                    >
-                      View Plans
-                    </Link>
                   </div>
                 </section>
 
@@ -262,7 +264,6 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
               </div>
-
 
               {/* Right Column: Wallet & Notifications */}
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
