@@ -123,7 +123,7 @@ function InvestmentCalculator() {
   const totalReturn   = amount + totalProfit;
 
   return (
-    <section className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6">
+    <section className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-primary/10 rounded-xl">
           <Calculator className="w-5 h-5 text-primary" />
@@ -138,7 +138,7 @@ function InvestmentCalculator() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* ── Inputs ── */}
-        <div className="space-y-6">
+        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 space-y-6">
 
           {/* Amount Slider */}
           <div>
