@@ -140,7 +140,7 @@ export default function WithdrawPage() {
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-2xl px-5 py-4 hover:border-foreground/50 transition-all"
+                          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-xl px-5 py-3 hover:border-foreground/50 transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-background border flex items-center justify-center">
@@ -197,7 +197,7 @@ export default function WithdrawPage() {
                         type="text"
                         readOnly
                         value={selectedCrypto.address}
-                        className="w-full bg-muted/20 border-2 border-border rounded-2xl p-5 pr-12 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
+                        className="w-full bg-muted/20 border-2 border-border rounded-xl p-4 pr-12 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                     <p className="text-[9px] font-black uppercase text-primary tracking-widest px-1">
@@ -226,7 +226,7 @@ export default function WithdrawPage() {
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-muted/30 border-2 border-border rounded-2xl p-3 pl-12 text-2xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
+                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-2 pl-12 text-xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
                         placeholder="0.00"
                       />
                     </div>
@@ -245,7 +245,7 @@ export default function WithdrawPage() {
       type="button"
       onClick={handleSendOtp}
       disabled={isSendingOtp}
-      className="bg-primary text-primary-foreground cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all border border-primary flex items-center justify-center disabled:opacity-50"
+      className="bg-primary text-primary-foreground cursor-pointer px-4 py-1.5 rounded-sm text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all border border-primary flex items-center justify-center disabled:opacity-50"
     >
       {isSendingOtp ? (
         <Loader2 className="w-3 h-3 animate-spin" />
@@ -260,7 +260,7 @@ export default function WithdrawPage() {
       type="text"
       value={otp}
       onChange={(e) => setOtp(e.target.value)}
-      className="w-full bg-muted/30 border-2 border-border rounded-2xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
+      className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
       placeholder="****"
     />
   </div>
@@ -268,7 +268,7 @@ export default function WithdrawPage() {
 
                   <button
                     disabled={isSubmitting || !amount || !otp}
-                    className="w-full bg-foreground text-background py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl disabled:opacity-20"
+                    className="w-full bg-foreground text-background py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl disabled:opacity-20"
                   >
                     {isSubmitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
