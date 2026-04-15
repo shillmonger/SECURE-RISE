@@ -30,31 +30,31 @@ const SUPPORTED_CRYPTOS = [
   {
     name: "Bitcoin",
     symbol: "BTC",
-    icon: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
+    icon: "https://i.postimg.cc/pLhcx2Vd/bitcoin-128.png",
     address: "bc1qnw5qxtvsayve32042dkruqnrcwx32r8vw4yfmd",
   },
   {
     name: "Solana",
     symbol: "SOL",
-    icon: "https://cryptologos.cc/logos/solana-sol-logo.png",
+    icon: "https://i.postimg.cc/FzHG6vnh/solana-128.png",
     address: "Cgt3agGCp4ce5SfSuixJn3N1ByizfvLcNJeeYDWJha4D",
   },
   {
     name: "Tether",
     symbol: "USDT",
-    icon: "https://cryptologos.cc/logos/tether-usdt-logo.png",
+    icon: "https://i.postimg.cc/nLKkcr6W/tether-128.png",
     address: "TBdVHRagTQvoZ1o38Q3Gn5wUHFWFdLWuGX",
   },
   {
     name: "Ethereum",
     symbol: "ETH",
-    icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+    icon: "https://i.postimg.cc/gJNH85kG/ethereum-128.png",
     address: "0xc28938a688215b45328068A6B5204f33e3051440",
   },
   {
     name: "USD Coin",
     symbol: "USDC",
-    icon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
+    icon: "https://i.postimg.cc/NGCx0WzT/usdc-128.png",
     address: "0xc28938a688215b45328068A6B5204f33e3051440",
   },
 ];
@@ -72,6 +72,13 @@ const WITHDRAW_HISTORY = [
     amount: 120.0,
     method: "BTC",
     status: "pending",
+    date: "Apr 14, 2026",
+  },
+  {
+    id: "WID-119",
+    amount: 350.0,
+    method: "SOL",
+    status: "rejected",
     date: "Apr 14, 2026",
   },
 ];
@@ -140,7 +147,7 @@ export default function WithdrawPage() {
                               <img
                                 src={selectedCrypto.icon}
                                 alt={selectedCrypto.name}
-                                className="w-5 h-5"
+                                className="w-10"
                               />
                             </div>
                             <div className="text-left">
@@ -165,7 +172,7 @@ export default function WithdrawPage() {
                             <img
                               src={coin.icon}
                               alt={coin.name}
-                              className="w-5 h-5"
+                              className="w-6 h-6"
                             />
                             <span className="font-black text-xs uppercase italic">
                               {coin.name}
@@ -226,33 +233,38 @@ export default function WithdrawPage() {
                   </div>
 
                   {/* OTP Section */}
-                  <div className="space-y-3 pt-4 border-t border-border/50">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      04. Two-Factor Authentication
-                    </label>
-                    <div className="flex gap-3">
-                      <input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        className="flex-1 min-w-60 bg-muted/30 border-2 border-border rounded-2xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-foreground focus:outline-none transition-all"
-                        placeholder="******"
-                      />
+                 {/* OTP Section */}
+<div className="space-y-3 pt-4 border-t border-border/50">
+  {/* Flex container for Label and Button */}
+  <div className="flex items-center justify-between">
+    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+      04. Email Authentication
+    </label>
+    
+    <button
+      type="button"
+      onClick={handleSendOtp}
+      disabled={isSendingOtp}
+      className="bg-primary text-primary-foreground cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all border border-primary flex items-center justify-center disabled:opacity-50"
+    >
+      {isSendingOtp ? (
+        <Loader2 className="w-3 h-3 animate-spin" />
+      ) : (
+        "Send OTP"
+      )}
+    </button>
+  </div>
 
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        disabled={isSendingOtp}
-                        className="w-full sm:w-auto bg-muted cursor-pointer text-foreground px-3 sm:px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/80 transition-all border border-border flex items-center justify-center"
-                      >
-                        {isSendingOtp ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Send OTP"
-                        )}
-                      </button>
-                    </div>
-                  </div>
+  <div className="flex">
+    <input
+      type="text"
+      value={otp}
+      onChange={(e) => setOtp(e.target.value)}
+      className="w-full bg-muted/30 border-2 border-border rounded-2xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
+      placeholder="****"
+    />
+  </div>
+</div>
 
                   <button
                     disabled={isSubmitting || !amount || !otp}
@@ -340,12 +352,18 @@ export default function WithdrawPage() {
                           </p>
                           <div className="flex items-center justify-end gap-1">
                             {log.status === "completed" ? (
-                              <CheckCircle2 className="w-3 h-3 text-primary" />
+                              <CheckCircle2 className="w-3 h-3 text-green-500" />
+                            ) : log.status === "pending" ? (
+                              <Clock className="w-3 h-3 text-amber-700" />
                             ) : (
-                              <Clock className="w-3 h-3 text-muted-foreground" />
+                              <XCircle className="w-3 h-3 text-red-500" />
                             )}
                             <p
-                              className={`text-[8px] font-black uppercase tracking-widest ${log.status === "completed" ? "text-primary" : "text-muted-foreground"}`}
+                              className={`text-[8px] font-black uppercase tracking-widest ${
+                                log.status === "completed" ? "text-green-500" : 
+                                log.status === "pending" ? "text-amber-700" : 
+                                "text-red-500"
+                              }`}
                             >
                               {log.status}
                             </p>

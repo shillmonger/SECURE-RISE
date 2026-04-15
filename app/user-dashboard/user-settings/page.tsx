@@ -37,11 +37,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const SUPPORTED_CRYPTOS = [
-  { name: "Bitcoin", symbol: "BTC", icon: "https://cryptologos.cc/logos/bitcoin-btc-logo.png" },
-  { name: "Solana", symbol: "SOL", icon: "https://cryptologos.cc/logos/solana-sol-logo.png" },
-  { name: "Tether", symbol: "USDT", icon: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-  { name: "Ethereum", symbol: "ETH", icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png" },
-  { name: "USD Coin", symbol: "USDC", icon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png" },
+  { name: "Bitcoin", symbol: "BTC", icon: "https://i.postimg.cc/pLhcx2Vd/bitcoin-128.png" },
+  { name: "Solana", symbol: "SOL", icon: "https://i.postimg.cc/FzHG6vnh/solana-128.png" },
+  { name: "Tether", symbol: "USDT", icon: "https://i.postimg.cc/nLKkcr6W/tether-128.png" },
+  { name: "Ethereum", symbol: "ETH", icon: "https://i.postimg.cc/gJNH85kG/ethereum-128.png" },
+  { name: "USD Coin", symbol: "USDC", icon: "https://i.postimg.cc/NGCx0WzT/usdc-128.png" },
 ];
 
 interface PayoutAddress {
@@ -391,7 +391,7 @@ export default function UserSettingsPage() {
                     {payoutAddresses.length > 0 && (
                       <button
                         onClick={handleAddNew}
-                        className="flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
+                        className="flex items-center cursor-pointer gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
                       >
                         <Plus className="w-4 h-4" /> Add New
                       </button>
@@ -421,13 +421,13 @@ export default function UserSettingsPage() {
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => handleEdit(item)}
-                              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                              className="p-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(item.id)}
-                              className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                              className="p-2 text-muted-foreground cursor-pointer hover:text-destructive transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -444,10 +444,10 @@ export default function UserSettingsPage() {
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Payout Currency</label>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button type="button" className="w-full flex items-center justify-between gap-3 bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm hover:bg-muted/50 transition-colors">
+                            <button type="button" className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm hover:bg-muted/50 transition-colors">
                               <div className="flex items-center gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-background border flex items-center justify-center">
-                                  <img src={selectedCrypto.icon} alt={selectedCrypto.name} className="w-4 h-4" />
+                                <div className="w-8 h-8 rounded-lg bg-background border flex items-center justify-center">
+                                  <img src={selectedCrypto.icon} alt={selectedCrypto.name} className="w-10" />
                                 </div>
                                 <span className="font-bold">{selectedCrypto.name}</span>
                                 <span className="text-xs text-muted-foreground font-bold uppercase tracking-wide">{selectedCrypto.symbol}</span>
@@ -458,7 +458,7 @@ export default function UserSettingsPage() {
                           <DropdownMenuContent className="w-full min-w-[240px]">
                             {SUPPORTED_CRYPTOS.map((coin) => (
                               <DropdownMenuItem key={coin.symbol} onClick={() => setSelectedCrypto(coin)} className="flex items-center gap-3 cursor-pointer">
-                                <img src={coin.icon} alt={coin.name} className="w-5 h-5" />
+                                <img src={coin.icon} alt={coin.name} className="w-6 h-6" />
                                 <span className="font-bold">{coin.name}</span>
                                 <span className="ml-auto text-xs text-muted-foreground">({coin.symbol})</span>
                               </DropdownMenuItem>
@@ -490,11 +490,11 @@ export default function UserSettingsPage() {
                         <button
                           type="submit"
                           disabled={isSavingPayout}
-                          className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                          className="flex-1 bg-primary cursor-pointer text-primary-foreground py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                           {isSavingPayout ? (
                             <>
-                              <Loader2 className="w-4 h-4 animate-spin" /> Saving...
+                              <Loader2 className="w-4 h-4 cursor-pointer animate-spin" /> Saving...
                             </>
                           ) : editingId ? (
                             "Update Wallet Address"
@@ -511,7 +511,7 @@ export default function UserSettingsPage() {
                               setEditingId(null);
                               setWalletAddress("");
                             }}
-                            className="flex-1 border border-border py-3 rounded-xl font-bold text-sm hover:bg-muted"
+                            className="flex-1 border border-border cursor-pointer py-3 rounded-xl font-bold text-sm hover:bg-muted"
                           >
                             Cancel
                           </button>
