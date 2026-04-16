@@ -39,7 +39,7 @@ export default function CookieConsent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-background/40 backdrop-blur-md"
+            className="fixed inset-0 z-[100] bg-background/0 backdrop-blur-md"
           />
 
           {/* 2. THE CENTERED CARD */}
@@ -97,17 +97,17 @@ export default function CookieConsent() {
                 </p>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-3">
+                <div className="flex  gap-3">
                   <button
                     onClick={() => handleConsent("accepted")}
-                    className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg
+                    className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-lg
                                hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg cursor-pointer"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleConsent("declined")}
-                    className="w-full py-4 rounded-2xl bg-secondary/50 text-secondary-foreground font-medium
+                    className="w-full py-4 rounded-xl bg-secondary/50 text-secondary-foreground font-medium
                                hover:bg-secondary transition-colors cursor-pointer"
                   >
                     No thanks

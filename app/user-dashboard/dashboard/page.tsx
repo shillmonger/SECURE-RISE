@@ -79,12 +79,12 @@ export default function UserOverviewPage() {
   const unlockables = [
     {
       id: 1,
-      title: "Starter Acceleration",
-      minDeposit: 100,
-      reward: "2x ROI for 2 days",
-      icon: <Zap className="w-5 h-5 text-yellow-500" />,
+      title: "$20 Welcome Bonus",
+      minDeposit: 0,
+      reward: "After Registration - Unlock Now",
+      icon: <Gift className="w-5 h-5 text-green-500" />,
       image:
-        "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=300",
+        "https://i.postimg.cc/1XLMdWCC/1.jpg",
     },
     {
       id: 2,
@@ -93,7 +93,7 @@ export default function UserOverviewPage() {
       reward: "2x ROI for 3 days + Fast Payouts",
       icon: <TrendingUp className="w-5 h-5 text-green-500" />,
       image:
-        "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=300",
+        "https://i.postimg.cc/9MLnLYjW/2.jpg",
     },
     {
       id: 3,
@@ -102,7 +102,7 @@ export default function UserOverviewPage() {
       reward: "2x ROI for 4 days + Advanced Plans",
       icon: <ShieldCheck className="w-5 h-5 text-blue-500" />,
       image:
-        "https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=300",
+        "https://i.postimg.cc/YSfVWwnH/3.jpg",
     },
     {
       id: 4,
@@ -111,7 +111,7 @@ export default function UserOverviewPage() {
       reward: "2.5x ROI for 5 days + AI Bot",
       icon: <Bot className="w-5 h-5 text-purple-500" />,
       image:
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=300",
+        "https://i.postimg.cc/ZKC1D2Rx/4.jpg",
     },
     {
       id: 5,
@@ -120,7 +120,7 @@ export default function UserOverviewPage() {
       reward: "3x ROI for 7 days + Copy Trading",
       icon: <Users className="w-5 h-5 text-orange-500" />,
       image:
-        "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=300",
+      "https://i.postimg.cc/9Q9sc9yF/6.jpg",
     },
     {
       id: 6,
@@ -129,7 +129,7 @@ export default function UserOverviewPage() {
       reward: "3x ROI for 10 days + Funded Account",
       icon: <Building className="w-5 h-5 text-cyan-500" />,
       image:
-        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=300",
+      "https://i.postimg.cc/ZnDX5Ff3/5.jpg",
     },
   ];
 
@@ -363,7 +363,7 @@ export default function UserOverviewPage() {
                 </div>
 
                 <button
-                  onClick={() => setTotalDeposit(500)} // Testing button
+                  onClick={() => setTotalDeposit(15000)} // Testing button - unlock all
                   className="text-[10px] font-black uppercase tracking-widest cursor-pointer flex items-center gap-1 group bg-secondary px-3 py-1.5 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   View Tiers{" "}
@@ -388,7 +388,7 @@ export default function UserOverviewPage() {
                         <img
                           src={item.image}
                           alt={item.title}
-                          className={`w-full h-full object-cover transition-transform duration-700 ${!isLocked && "group-hover:scale-110"}`}
+                          className={`w-full h-full cursor-pointer object-cover transition-transform duration-700 ${!isLocked && "group-hover:scale-110"}`}
                         />
                         {isLocked && (
                           <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
@@ -417,7 +417,7 @@ export default function UserOverviewPage() {
                         </div>
 
                         <div
-                          className={`p-2 rounded-xl border transition-all ${isLocked ? "bg-muted border-border text-muted-foreground" : "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 cursor-pointer hover:scale-110"}`}
+                          className={`p-3 rounded-lg border transition-all ${isLocked ? "bg-muted border-border text-muted-foreground" : "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 cursor-pointer hover:scale-110"}`}
                         >
                           {isLocked ? (
                             <Lock className="w-4 h-4" />
@@ -428,22 +428,19 @@ export default function UserOverviewPage() {
                       </div>
 
                       {/* Progress Indicator */}
-                      {isLocked && (
-                        <div className="mt-4 pt-3 border-t border-border/50">
-                          <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                            <div
-                              className="bg-primary h-full transition-all duration-1000"
-                              style={{
-                                width: `${Math.min((totalDeposit / item.minDeposit) * 100, 100)}%`,
-                              }}
-                            />
-                          </div>
-                          <p className="text-[8px] font-black uppercase text-muted-foreground mt-1 text-right">
-                            {Math.floor((totalDeposit / item.minDeposit) * 100)}
-                            % to Unlock
-                          </p>
+                      <div className="mt-4 pt-3 border-t border-border/50">
+                        <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                          <div
+                            className="bg-primary h-full transition-all duration-1000"
+                            style={{
+                              width: `${item.minDeposit === 0 ? 100 : Math.min((totalDeposit / item.minDeposit) * 100, 100)}%`,
+                            }}
+                          />
                         </div>
-                      )}
+                        <p className="text-[8px] font-black uppercase text-muted-foreground mt-1 text-right">
+                          {item.minDeposit === 0 ? "100% Unlocked" : isLocked ? `${Math.floor((totalDeposit / item.minDeposit) * 100)}% to Unlock` : "100% Unlocked"}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}

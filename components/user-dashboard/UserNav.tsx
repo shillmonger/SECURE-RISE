@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   BarChart3,
-  PiggyBank,
+  CreditCard,
   Wallet,
   Settings,
 } from "lucide-react";
@@ -15,7 +15,7 @@ export default function UserNav() {
 
   const navItems = [
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Deposit", icon: PiggyBank, href: `${basePath}/deposit` },
+    { name: "Deposit", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
