@@ -39,7 +39,6 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
-    { name: "Earnings So Far", icon: BadgeDollarSign, href: `${basePath}/earnings` },
     { name: "Referrals & Affiliate", icon: Users, href: `${basePath}/referrals` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Live Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
