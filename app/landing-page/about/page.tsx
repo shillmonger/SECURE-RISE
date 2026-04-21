@@ -230,7 +230,7 @@ export default function AboutUs() {
       </section>
 
       {/* ── Bottom divider ───────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto w-full px-4 lg:px-8 pb-8">
+      <div className="max-w-7xl mx-auto w-full px-4 lg:px-8 pb-20">
         <div className="flex items-center gap-4">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
           <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium whitespace-nowrap">
