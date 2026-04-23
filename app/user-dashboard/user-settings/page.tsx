@@ -57,13 +57,13 @@ export default function UserSettingsPage() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const darkMode = resolvedTheme === "dark";
 
-  // Personal Info State (now includes username & country)
+  // Personal Info State
   const [personalInfo, setPersonalInfo] = useState({
-    username: "shillmonger",
-    name: "Alex Rivera",
-    email: "alex@example.com",
-    phone: "+234 801 234 5678",
-    country: "Nigeria",
+    username: "",
+    name: "",
+    email: "",
+    phone: "",
+    country: "",
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -81,11 +81,13 @@ export default function UserSettingsPage() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   // Profile image
-  const [profileImage, setProfileImage] = useState("https://github.com/shadcn.png");
+  const [profileImage, setProfileImage] = useState<string>("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Member since
   const [memberSince, setMemberSince] = useState("");
+  // User role
+  const [userRole, setUserRole] = useState<string>("");
 
   // Crypto Payout Settings
   const [payoutAddresses, setPayoutAddresses] = useState<PayoutAddress[]>([]);
@@ -94,24 +96,59 @@ export default function UserSettingsPage() {
   const [showAddForm, setShowAddForm] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Load payout addresses from localStorage
+  // Load user profile data
   useEffect(() => {
-    const saved = localStorage.getItem("payoutAddresses");
-    if (saved) setPayoutAddresses(JSON.parse(saved));
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/profile');
+        const data = await response.json();
+        
+        if (data.success) {
+          const user = data.user;
+          setPersonalInfo({
+            username: user.username || "",
+            name: user.fullName || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            country: user.country || "",
+          });
+          setProfileImage(user.profileImage || "");
+          setUserRole(user.role?.[0] || "user");
+          setMemberSince(new Date(user.createdAt).toLocaleString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }).toUpperCase());
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        toast.error('Failed to load profile data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
+  // Load crypto addresses from database
   useEffect(() => {
-    localStorage.setItem("payoutAddresses", JSON.stringify(payoutAddresses));
-  }, [payoutAddresses]);
-
-  // Fake profile load
-  useEffect(() => {
-    const fetchProfile = async () => {
-      await new Promise((res) => setTimeout(res, 600));
-      setMemberSince("MAR 12, 2025");
-      setIsLoading(false);
+    const fetchCryptoAddresses = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/crypto-addresses');
+        const data = await response.json();
+        
+        if (data.success) {
+          setPayoutAddresses(data.cryptoAddresses);
+        }
+      } catch (error) {
+        console.error('Error fetching crypto addresses:', error);
+      }
     };
-    fetchProfile();
+
+    fetchCryptoAddresses();
   }, []);
 
   const toggleTheme = () => {
@@ -124,7 +161,7 @@ export default function UserSettingsPage() {
   };
 
   // Save Payout Address (Add or Update)
-  const handleSavePayoutAddress = (e: React.FormEvent) => {
+  const handleSavePayoutAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!walletAddress.trim()) {
       toast.error("Please enter a wallet address");
@@ -133,31 +170,48 @@ export default function UserSettingsPage() {
 
     setIsSavingPayout(true);
 
-    setTimeout(() => {
-      if (editingId) {
-        setPayoutAddresses((prev) =>
-          prev.map((item) =>
-            item.id === editingId
-              ? { ...item, crypto: selectedCrypto, address: walletAddress.trim() }
-              : item
-          )
-        );
-        toast.success("Address updated successfully");
+    try {
+      const url = editingId 
+        ? '/api/user-dashboard/crypto-addresses' 
+        : '/api/user-dashboard/crypto-addresses';
+      const method = editingId ? 'PUT' : 'POST';
+      
+      const body = editingId 
+        ? { id: editingId, crypto: selectedCrypto, address: walletAddress.trim() }
+        : { crypto: selectedCrypto, address: walletAddress.trim() };
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(editingId ? "Address updated successfully" : "New payout address added");
+        
+        // Refetch addresses to get updated list
+        const fetchResponse = await fetch('/api/user-dashboard/crypto-addresses');
+        const fetchData = await fetchResponse.json();
+        if (fetchData.success) {
+          setPayoutAddresses(fetchData.cryptoAddresses);
+        }
+        
+        setWalletAddress("");
+        setShowAddForm(false);
         setEditingId(null);
       } else {
-        const newAddress: PayoutAddress = {
-          id: Date.now().toString(),
-          crypto: selectedCrypto,
-          address: walletAddress.trim(),
-        };
-        setPayoutAddresses((prev) => [...prev, newAddress]);
-        toast.success("New payout address added");
+        toast.error(data.error || 'Failed to save address');
       }
-
-      setWalletAddress("");
-      setShowAddForm(false);
+    } catch (error) {
+      console.error('Error saving address:', error);
+      toast.error('Failed to save address');
+    } finally {
       setIsSavingPayout(false);
-    }, 600);
+    }
   };
 
   const handleEdit = (address: PayoutAddress) => {
@@ -167,10 +221,26 @@ export default function UserSettingsPage() {
     setShowAddForm(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Delete this payout address?")) return;
-    setPayoutAddresses((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Address deleted");
+    
+    try {
+      const response = await fetch(`/api/user-dashboard/crypto-addresses?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Address deleted");
+        setPayoutAddresses(prev => prev.filter(item => item.id !== id));
+      } else {
+        toast.error(data.error || 'Failed to delete address');
+      }
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      toast.error('Failed to delete address');
+    }
   };
 
   const handleAddNew = () => {
@@ -180,31 +250,115 @@ export default function UserSettingsPage() {
     setShowAddForm(true);
   };
 
-  // Fake profile update
-  const handleProfileUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsUpdating(true);
-    setTimeout(() => {
-      toast.success("Profile updated successfully");
-      setIsUpdating(false);
-    }, 800);
+  // Profile image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/user-dashboard/profile/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProfileImage(data.imageUrl);
+        toast.success('Profile image uploaded successfully');
+      } else {
+        toast.error(data.error || 'Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
-  // Fake password update
-  const handlePasswordUpdate = (e: React.FormEvent) => {
+  // Profile update
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+
+    try {
+      const response = await fetch('/api/user-dashboard/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: personalInfo.username,
+          fullName: personalInfo.name,
+          phone: personalInfo.phone,
+          country: personalInfo.country,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Profile updated successfully');
+      } else {
+        toast.error(data.error || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Password update
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match");
       return;
     }
+    
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+
     setIsUpdatingPassword(true);
-    setTimeout(() => {
-      toast.success("Password updated successfully");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+
+    try {
+      const response = await fetch('/api/user-dashboard/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Password updated successfully");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(data.error || 'Failed to update password');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      toast.error('Failed to update password');
+    } finally {
       setIsUpdatingPassword(false);
-    }, 800);
+    }
   };
 
   return (
@@ -239,15 +393,29 @@ export default function UserSettingsPage() {
                   <div className="flex flex-col items-center">
                     <div className="relative mb-6">
                       <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary bg-muted shadow-2xl">
-                        <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                        <img 
+                          src={profileImage || "https://github.com/shadcn.png"} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover" 
+                        />
                       </div>
                       <label className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2.5 rounded-xl cursor-pointer hover:bg-primary/90 transition-colors shadow-lg">
-                        <Camera className="w-5 h-5" />
-                        <input type="file" accept="image/*" className="hidden" disabled={isUploadingImage} />
+                        {isUploadingImage ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Camera className="w-5 h-5" />
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          disabled={isUploadingImage}
+                          onChange={handleImageUpload}
+                        />
                       </label>
                     </div>
-                    <p className="text-sm font-black uppercase">{personalInfo.name}</p>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">Buyer Account</p>
+                    <p className="text-sm font-black uppercase">{personalInfo.username}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">Investor Account</p>
                   </div>
                 </div>
 
@@ -258,6 +426,12 @@ export default function UserSettingsPage() {
                   </div>
                   <h3 className="text-sm font-black uppercase tracking-widest mb-4">Account Status</h3>
                   <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-muted-foreground uppercase">Role</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-black uppercase border border-primary/20">
+                        {userRole || "USER"}
+                      </span>
+                    </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-muted-foreground uppercase">Verification</span>
                       <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-black uppercase border border-green-500/20">Verified</span>
@@ -370,7 +544,7 @@ export default function UserSettingsPage() {
                       <button
                         type="submit"
                         disabled={isUpdating}
-                        className="w-full md:w-auto bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full md:w-auto cursor-pointer bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {isUpdating ? (
                           <>

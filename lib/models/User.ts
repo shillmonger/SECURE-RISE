@@ -1,5 +1,15 @@
 import { ObjectId } from 'mongodb';
 
+export interface CryptoAddress {
+  id: string;
+  crypto: {
+    name: string;
+    symbol: string;
+    icon: string;
+  };
+  address: string;
+}
+
 export interface User {
   _id?: ObjectId;
   username: string;
@@ -16,6 +26,11 @@ export interface User {
   updatedAt: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  profileImage?: string;
+  fullName?: string;
+  phone?: string;
+  country?: string;
+  cryptoAddresses?: CryptoAddress[];
 }
 
 export const createDefaultUser = (userData: {
