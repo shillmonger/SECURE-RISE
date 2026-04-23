@@ -14,6 +14,7 @@ import {
   Shield,
   AlertCircle,
   Eye,
+  Phone,
   EyeOff,
   Wallet,
   Plus,
@@ -354,6 +355,7 @@ export default function UserSettingsPage() {
                     <div className="space-y-1 md:col-span-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Phone Number</label>
                       <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                           name="phone"
                           type="tel"

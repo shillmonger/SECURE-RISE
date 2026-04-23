@@ -436,11 +436,11 @@ export default function InvestPage() {
             </div>
 
             {/* Trust strip */}
-            <section className="border-t border-border pt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <section className="border-t border-border pt-8 grid grid-cols-2 sm:grid-cols-2 gap-4 text-center">
               {[
                 { icon: ShieldCheck,  title: "Secure & Protected",  desc: "All investments are insured and secured" },
                 { icon: Zap,          title: "Instant Activation",   desc: "Plans activate immediately after deposit" },
-                { icon: CheckCircle2, title: "Daily Withdrawals",    desc: "Withdraw your earnings every 7 days" },
+                // { icon: CheckCircle2, title: "Daily Withdrawals",    desc: "Withdraw your earnings every 7 days" },
               ].map((t, i) => (
                 <div key={i} className="flex flex-col items-center gap-2 p-4">
                   <t.icon className="w-6 h-6 text-primary" />

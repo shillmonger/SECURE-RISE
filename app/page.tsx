@@ -8,6 +8,7 @@ import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import FAQ from "@/components/landing-page/faq";
 import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
+import LiveMarkets from "@/components/landing-page/LiveMarkets";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
 import RiskProtection from "@/components/landing-page/risk-protection";
@@ -34,6 +35,7 @@ export default function HomePage() {
         <HowItWorks />
 
         {/* section 5 */}
+        <LiveMarkets />
         <ProfitBlueprint />
 
         {/* section 6 */}
