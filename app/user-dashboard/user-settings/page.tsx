@@ -96,6 +96,11 @@ export default function UserSettingsPage() {
   const [showAddForm, setShowAddForm] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // Confirmation dialog state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Load user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -222,10 +227,16 @@ export default function UserSettingsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this payout address?")) return;
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
     
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/user-dashboard/crypto-addresses?id=${id}`, {
+      const response = await fetch(`/api/user-dashboard/crypto-addresses?id=${deleteTargetId}`, {
         method: 'DELETE',
       });
 
@@ -233,14 +244,23 @@ export default function UserSettingsPage() {
 
       if (data.success) {
         toast.success("Address deleted");
-        setPayoutAddresses(prev => prev.filter(item => item.id !== id));
+        setPayoutAddresses(prev => prev.filter(item => item.id !== deleteTargetId));
       } else {
         toast.error(data.error || 'Failed to delete address');
       }
     } catch (error) {
       console.error('Error deleting address:', error);
       toast.error('Failed to delete address');
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmOpen(false);
+      setDeleteTargetId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setDeleteTargetId(null);
   };
 
   const handleAddNew = () => {
@@ -544,7 +564,7 @@ export default function UserSettingsPage() {
                       <button
                         type="submit"
                         disabled={isUpdating}
-                        className="w-full md:w-auto cursor-pointer bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full md:w-full cursor-pointer bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {isUpdating ? (
                           <>
@@ -782,7 +802,7 @@ export default function UserSettingsPage() {
                     <button
                       type="submit"
                       disabled={isUpdatingPassword || !currentPassword || !newPassword || !confirmPassword || !passwordsMatch}
-                      className="bg-primary w-full md:w-auto text-primary-foreground cursor-pointer px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="bg-primary w-full md:w-full text-primary-foreground cursor-pointer px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-primary/10 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {isUpdatingPassword ? (
                         <>
@@ -826,6 +846,51 @@ export default function UserSettingsPage() {
 
         <UserNav />
       </div>
+
+      {/* Custom Confirmation Dialog */}
+      {deleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-2xl shadow-2xl border border-border max-w-md w-full p-6 transform transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <Trash2 className="w-6 h-6 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black uppercase tracking-tighter">Delete Payout Address</h3>
+                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+              </div>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-6">
+              Are you sure you want to delete this payout address? Any future payouts to this address will fail.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={cancelDelete}
+                disabled={isDeleting}
+                className="flex-1 border border-border cursor-pointer py-3 rounded-xl font-bold text-sm hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="flex-1 bg-destructive cursor-pointer text-white py-3 rounded-xl font-bold text-sm hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete Address"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
