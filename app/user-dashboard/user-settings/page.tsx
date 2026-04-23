@@ -634,7 +634,7 @@ export default function UserSettingsPage() {
                     <button
                       onClick={() => {
                         toast.success("Logged out successfully");
-                        router.push("/auth/login");
+                        router.push("/auth-page/login");
                       }}
                       className="flex-1 text-xs font-black uppercase tracking-widest py-3 px-4 rounded-xl border border-destructive text-destructive hover:bg-destructive hover:text-white transition-all cursor-pointer"
                     >
