@@ -187,7 +187,7 @@ export default function LeaderboardPage() {
               </section>
 
               {/* ── Mobile Slider ── */}
-              <section className="relative flex lg:hidden items-center justify-center pt-10 pb-12 px-12 mt-8 rounded-[1.5rem] bg-card border border-border overflow-hidden">
+              <section className="relative flex lg:hidden items-center justify-center pb-12 px-5 mt-8 rounded-[1.5rem] bg-card border border-border overflow-hidden">
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-[1.5rem]" />
 
                 <button
