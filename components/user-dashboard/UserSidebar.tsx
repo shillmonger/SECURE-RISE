@@ -66,7 +66,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-full md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-50 w-80 md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
