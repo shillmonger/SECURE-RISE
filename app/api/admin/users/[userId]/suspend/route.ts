@@ -35,9 +35,9 @@ const authenticateAdmin = async (request: NextRequest) => {
   return { error: null, status: 200, user, db };
 };
 
-export async function PUT(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     if (!userId) {
       return NextResponse.json(
