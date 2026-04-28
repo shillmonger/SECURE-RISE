@@ -110,12 +110,16 @@ export async function GET(request: NextRequest) {
     const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
     const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
 
+    // Get investment plans count
+    const investmentsCollection = db.collection('investments');
+    const investmentPlansCount = await investmentsCollection.countDocuments();
+
     // Format stats for frontend
     const formattedStats = [
       { label: "Total Users", value: totalUsers.toString(), icon: "Users", color: "text-blue-500", bg: "bg-blue-500/10" },
       { label: "Active Users", value: activeUsers.toString(), icon: "UserCheck", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Blocked Users", value: blockedUsers.toString(), icon: "UserMinus", color: "text-red-500", bg: "bg-red-500/10" },
-      { label: "Investment Plans", value: "0", icon: "Layers", color: "text-purple-500", bg: "bg-purple-500/10" },
+      { label: "Investment Plans", value: investmentPlansCount.toString(), icon: "Layers", color: "text-purple-500", bg: "bg-purple-500/10" },
       { label: "Total Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
       { label: "Total Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },

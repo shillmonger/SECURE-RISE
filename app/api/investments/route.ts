@@ -163,6 +163,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request);
+    console.log('Auth user:', authUser);
+    
     if (!authUser?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -172,6 +174,8 @@ export async function GET(request: NextRequest) {
 
     // Get user
     const user = await db.collection<User>('users').findOne({ email: authUser.email });
+    console.log('Found user:', user?._id);
+    
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -181,6 +185,9 @@ export async function GET(request: NextRequest) {
       .find({ userId: user._id })
       .sort({ createdAt: -1 })
       .toArray();
+    
+    console.log('Found investments:', investments.length);
+    console.log('Investment sample:', investments[0]);
 
     return NextResponse.json({ investments });
 

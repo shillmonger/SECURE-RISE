@@ -52,6 +52,7 @@ export default function UserOverviewPage() {
     totalDeposit: 0,
   });
   const [recentDeposits, setRecentDeposits] = useState<any[]>([]);
+  const [activeInvestments, setActiveInvestments] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -89,6 +90,24 @@ export default function UserOverviewPage() {
           setRecentDeposits(depositsResult.deposits.slice(0, 5)); // Show only 5 most recent
         }
 
+        // Fetch user investments
+        const investmentsResponse = await fetch('/api/investments');
+        const investmentsResult = await investmentsResponse.json();
+        
+        console.log('Investments API response:', investmentsResult);
+        
+        // The API returns { investments: [...] }
+        const investments = investmentsResult.investments || [];
+        
+        if (Array.isArray(investments)) {
+          const activeCount = investments.filter(inv => inv.status === 'active').length;
+          setActiveInvestments(activeCount);
+          console.log('Active investments count:', activeCount);
+          console.log('All investments:', investments);
+        } else {
+          console.log('Investments API returned non-array:', investmentsResult);
+        }
+
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
@@ -108,8 +127,8 @@ export default function UserOverviewPage() {
       link: "/user-dashboard/deposit",
     },
     {
-      label: "Active investment",
-      value: `$${financialData.welcomeBonus.toFixed(2)}`,
+      label: "Active Investments",
+      value: activeInvestments.toString(),
       icon: Gift,
       link: "/user-dashboard/earnings",
     },
