@@ -31,7 +31,7 @@ export default function RiskProtection() {
         {/* Main Image Section — top of card */}
         <div className="relative w-full h-[350px] md:h-[1000px] bg-gradient-to-b from-primary/5 to-transparent">
           <Image
-            src="https://i.postimg.cc/vTFvT4Vj/secure-rise.png"
+            src="https://i.postimg.cc/593BS6dv/secure-rise.png"
             alt="Capital Protection"
             fill
             // Removed scale-95 from mobile, added object-cover to ensure full width/height
