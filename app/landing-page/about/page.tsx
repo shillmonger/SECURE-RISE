@@ -38,7 +38,7 @@ export default function AboutUs() {
         "Our name is our promise. Secure Rise employs military-grade encryption and secure withdrawal protocols to ensure your funds and data are protected at every stage of your investment.",
       // Padlock / cybersecurity digital lock
       image:
-        "https://i.postimg.cc/xTzH4fWq/Strong-Passwords.jpg",
+        "https://i.postimg.cc/y6PG31Lb/Strong-Passwords.jpg",
       cta: "Security Protocols",
     },
     {
@@ -49,7 +49,7 @@ export default function AboutUs() {
         "Markets never sleep, and neither do we. Our team of financial experts and technical support are available 24/7 to assist with your portfolio management and technical inquiries.",
       // Professional support team / headset operator in modern office
       image:
-        "https://i.postimg.cc/vZKJHv0H/Delivering-247.jpg",
+        "https://i.postimg.cc/d3t4jCWP/Delivering-247.jpg",
       cta: "Meet The Team",
     },
     {
@@ -60,7 +60,7 @@ export default function AboutUs() {
         "Gain an edge with live data feeds. We provide our investors with the same high-level market insights used by institutional traders, ensuring complete visibility into how your trades perform.",
       // Live trading screens / multi-monitor Bloomberg-style setup
       image:
-        "https://i.postimg.cc/0yKtZ1Cp/Forex.jpg",
+        "https://i.postimg.cc/g0FsBQM3/Forex.jpg",
       cta: "Market Insights",
     },
     {
