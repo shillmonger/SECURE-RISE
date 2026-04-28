@@ -39,41 +39,89 @@ export default function UserOverviewPage() {
   const [loading, setLoading] = useState(true);
   const [totalDeposit, setTotalDeposit] = useState(0);
 
-  // Mock data states (Remove backend logic as requested)
+  // State for real user data
   const [userData, setUserData] = useState({
     name: "Investor",
     country: "Global",
   });
+  const [financialData, setFinancialData] = useState({
+    accountBalance: 0,
+    welcomeBonus: 0,
+    totalProfits: 0,
+    totalWithdrawal: 0,
+    totalDeposit: 0,
+  });
+  const [recentDeposits, setRecentDeposits] = useState<any[]>([]);
 
   useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    const fetchUserData = async () => {
+      try {
+        // Fetch user info
+        const userResponse = await fetch('/api/user/info');
+        const userResult = await userResponse.json();
+        
+        if (userResult.success) {
+          setUserData({
+            name: userResult.user.fullName || userResult.user.username,
+            country: userResult.user.country || "Global",
+          });
+        }
+
+        // Fetch financial data
+        const financialResponse = await fetch('/api/user-dashboard/financial-data');
+        const financialResult = await financialResponse.json();
+        
+        if (financialResult.success) {
+          setFinancialData({
+            accountBalance: financialResult.financialData.accountBalance,
+            welcomeBonus: financialResult.financialData.welcomeBonus,
+            totalProfits: financialResult.financialData.totalProfits,
+            totalWithdrawal: financialResult.financialData.totalWithdrawal,
+            totalDeposit: financialResult.financialData.totalDeposit,
+          });
+        }
+
+        // Fetch recent deposits
+        const depositsResponse = await fetch('/api/user-dashboard/deposit?userId=' + userResult.user.id);
+        const depositsResult = await depositsResponse.json();
+        
+        if (depositsResult.success) {
+          setRecentDeposits(depositsResult.deposits.slice(0, 5)); // Show only 5 most recent
+        }
+
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
-  // Updated Stats for Secure Rise
+  // Updated Stats based on real data
   const stats = [
     {
       label: "Account Balance",
-      value: "$0.00",
+      value: `$${financialData.accountBalance.toFixed(2)}`,
       icon: Wallet,
       link: "/user-dashboard/deposit",
     },
     {
-      label: "Welcome Bonus",
-      value: "$20.00",
+      label: "Active investment",
+      value: `$${financialData.welcomeBonus.toFixed(2)}`,
       icon: Gift,
       link: "/user-dashboard/earnings",
     },
     {
       label: "Total Profits",
-      value: "$0.00",
+      value: `$${financialData.totalProfits.toFixed(2)}`,
       icon: TrendingUp,
       link: "/user-dashboard/earnings",
     },
     {
       label: "Total Deposits",
-      value: "$0.00",
+      value: `$${financialData.totalDeposit.toFixed(2)}`,
       icon: ArrowDownCircle,
       link: "/user-dashboard/transactions",
     },
@@ -569,7 +617,7 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/*Recent Transactions Section - NOW STRETCHED TO FILL SPACE */}
+                {/*Recent Transactions Section */}
                 <section className="space-y-4 flex-1 flex flex-col">
                   <div className="flex justify-between items-end">
                     <h2 className="text-sm font-black uppercase tracking-widest">
@@ -582,22 +630,63 @@ export default function UserOverviewPage() {
                       Full Ledger
                     </Link>
                   </div>
-                  <div className="bg-card border border-border rounded-3xl overflow-hidden divide-y divide-border flex-1 flex items-center justify-center">
-                    <div className="p-12 text-center">
-                      <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-sm font-black uppercase tracking-tighter mb-2">
-                        No transactions yet
-                      </p>
-                      <p className="text-[10px] text-muted-foreground uppercase mb-6">
-                        Once you deposit or earn, they will appear here
-                      </p>
-                      <Link
-                        href="/user-dashboard/deposit"
-                        className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
-                      >
-                        Make First Deposit
-                      </Link>
-                    </div>
+                  <div className="bg-card border border-border rounded-3xl overflow-hidden divide-y divide-border flex-1">
+                    {recentDeposits.length === 0 ? (
+                      <div className="p-12 text-center">
+                        <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-sm font-black uppercase tracking-tighter mb-2">
+                          No transactions yet
+                        </p>
+                        <p className="text-[10px] text-muted-foreground uppercase mb-6">
+                          Once you deposit or earn, they will appear here
+                        </p>
+                        <Link
+                          href="/user-dashboard/deposit"
+                          className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+                        >
+                          Make First Deposit
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-border">
+                        {recentDeposits.map((deposit, index) => (
+                          <div key={index} className="p-4 hover:bg-muted/30 transition-colors">
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 bg-green-500/10 rounded-lg">
+                                  <ArrowDownCircle className="w-4 h-4 text-green-500" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-black uppercase tracking-tighter">
+                                    Deposit
+                                  </p>
+                                  <p className="text-[10px] text-muted-foreground uppercase">
+                                    {deposit.paymentMethod}
+                                  </p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-1">
+                                    {new Date(deposit.createdAt).toLocaleDateString()} • {new Date(deposit.createdAt).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-black text-green-500">
+                                  +${deposit.amount.toFixed(2)}
+                                </p>
+                                <span className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                  deposit.status === 'approved' 
+                                    ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                                    : deposit.status === 'rejected'
+                                    ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                                    : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                                }`}>
+                                  {deposit.status}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </section>
               </div>
