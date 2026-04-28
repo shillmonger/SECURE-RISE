@@ -30,11 +30,11 @@ interface Deposit {
 const getStatusClasses = (status: string) => {
   switch (status) {
     case "approved":
-      return "bg-teal-500/10 text-teal-600 border-teal-500/20";
+      return "bg-green-500/10 text-green-600 border-green-500/20";
     case "rejected":
       return "bg-red-500/10 text-red-600 border-red-500/20";
     default:
-      return "bg-primary/10 text-primary border-primary/20";
+      return "bg-orange-700/10 text-orange-700 border-orange-700/20";
   }
 };
 
@@ -164,6 +164,23 @@ export default function AdminPaymentsPage() {
       {status}
     </div>
   );
+
+  if (loading && deposits.length === 0) {
+    return (
+      <div className="flex h-screen overflow-hidden bg-background">
+        <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="w-12 h-12 animate-spin text-primary" />
+              <span className="text-muted-foreground font-medium">Loading deposits...</span>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

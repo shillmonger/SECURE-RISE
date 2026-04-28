@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
+import { toast } from "sonner";
 
 import { 
   ChevronRight, 
@@ -78,11 +79,74 @@ const MakePaymentPage = () => {
     if (file) setSelectedFile(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedFile) {
+      toast.error('Please upload proof of transfer');
+      return;
+    }
+
     setIsSubmitting(true);
-    // Logic for submission goes here
-    setTimeout(() => setIsSubmitting(false), 2000);
+    
+    try {
+      // Get user info from server using auth token
+      const userResponse = await fetch('/api/user/info');
+      
+      if (!userResponse.ok) {
+        toast.error('Please log in to submit a deposit');
+        return;
+      }
+      
+      const userData = await userResponse.json();
+      
+      if (!userData.success || !userData.user) {
+        toast.error('Please log in to submit a deposit');
+        return;
+      }
+      
+      const user = userData.user;
+      
+      const formData = new FormData();
+      formData.append('amount', amount);
+      formData.append('paymentMethod', paymentMethod.name);
+      formData.append('proofImage', selectedFile);
+      formData.append('userId', user.id);
+      formData.append('username', user.username);
+      formData.append('userEmail', user.email);
+
+      console.log('Submitting deposit with data:', {
+        amount,
+        paymentMethod: paymentMethod.name,
+        userId: user.id,
+        username: user.username,
+        userEmail: user.email,
+        fileSelected: !!selectedFile
+      });
+
+      const response = await fetch('/api/user-dashboard/deposit', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      console.log('Deposit submission response:', result);
+
+      if (response.ok && result.success) {
+        toast.success(`Deposit submitted successfully! Transaction ID: ${result.transactionId}`);
+        // Redirect to deposit history page after a short delay
+        setTimeout(() => {
+          window.location.href = '/user-dashboard/deposit';
+        }, 2000);
+      } else {
+        toast.error(result.error || 'Failed to submit deposit');
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      toast.error('Failed to submit deposit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,9 +174,9 @@ const MakePaymentPage = () => {
               </Link>
             </div>
 
-            <div className="bg-card border border-border rounded-[1.5rem] overflow-hidden shadow-2xl">
+            <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
               {/* Method Indicator Bar */}
-              <div className="bg-foreground p-6 text-background flex justify-between flex-wrap items-center gap-4">
+              <div className="bg-foreground p-4 text-background flex justify-between flex-wrap items-center gap-4">
   <div className="flex items-center gap-4">
     <div className="bg-background/20 p-3 rounded-xl">
       <Zap className="w-5 h-5 text-background" />
@@ -128,14 +192,14 @@ const MakePaymentPage = () => {
     </div>
   </div>
 
-  {/* 👇 Push this to the far right */}
+  {/* Push this to the far right */}
   <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
   <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
     Required Amount
   </p>
-  <p className="text-2xl font-black italic tracking-tighter">
-    ${parseFloat(amount).toLocaleString()}
-  </p>
+  <p className="text-2xl font-black italic tracking-tighter text-green-500">
+  ${parseFloat(amount).toLocaleString()}
+</p>
 </div>
 </div>
 
@@ -146,8 +210,8 @@ const MakePaymentPage = () => {
                   {/* Left Side: Visual/QR */}
                   <div className="space-y-6">
                     <div className="relative group">
-                      <div className="relative flex flex-col items-center justify-center p-10 bg-background border-2 border-dashed border-border rounded-[1.5rem]">
-                        <div className="bg-foreground p-4 rounded-[1rem] shadow-xl mb-6">
+                      <div className="relative flex flex-col items-center justify-center p-10 bg-background border-2 border-dashed border-border rounded-[1rem]">
+                        <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
                           {qrCodeUrl ? (
                             <img src={qrCodeUrl} alt="QR Code" className="w-40 h-40 invert" />
                           ) : (
@@ -169,12 +233,12 @@ const MakePaymentPage = () => {
                         Official {paymentMethod.name} Address
                       </label>
                       <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-2xl p-5 pr-14 text-sm font-black italic leading-relaxed">
+                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-5 pr-14 text-sm font-black italic leading-relaxed">
   {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
 </div>
                         <button 
                           onClick={handleCopy}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
+                          className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
                         >
                           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         </button>
@@ -198,7 +262,7 @@ const MakePaymentPage = () => {
                           onChange={handleFileSelect}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                         />
-                        <div className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all ${
+                        <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all ${
                           selectedFile ? 'border-primary bg-primary/5' : 'border-border bg-muted/10 group-hover:border-foreground/40'
                         }`}>
                           <Upload className={`w-6 h-6 ${selectedFile ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -216,10 +280,10 @@ const MakePaymentPage = () => {
                    <button 
                     type="submit"
                     disabled={isSubmitting || !selectedFile}
-                    className="w-full md:w-auto bg-foreground text-background px-5 py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
+                    className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <>Submitting <Loader2 className="w-4 h-4 animate-spin" /></>
                     ) : (
                       <>Submit For Review <CheckCircle2 className="w-4 h-4" /></>
                     )}

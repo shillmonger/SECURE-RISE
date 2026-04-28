@@ -75,29 +75,40 @@ export async function GET(request: NextRequest) {
       accountBalance: 0
     };
 
-    // Get recent transactions (mock data for now)
-    const recentTransactions = [
-      {
-        id: 'TXN001',
+    // Get real deposit transactions
+    const depositsCollection = db.collection('deposits');
+    const deposits = await depositsCollection
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+
+    // Get user information for deposits
+    const userIds = deposits.map(d => d.userId);
+    const users = await usersCollection.find({ _id: { $in: userIds } }).toArray();
+    const userMap: { [key: string]: any } = {};
+    users.forEach(user => {
+      userMap[user._id.toString()] = user;
+    });
+
+    // Format recent transactions
+    const recentTransactions = deposits.map(deposit => {
+      const user = userMap[deposit.userId.toString()];
+      return {
+        id: deposit.transactionId || deposit._id.toString(),
         type: 'Deposit',
-        amount: 1000.00,
-        status: 'Approved',
-        user: 'John Doe',
-        email: 'john@example.com',
-        paymentMethod: 'Bitcoin',
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'TXN002',
-        type: 'Withdrawal',
-        amount: 500.00,
-        status: 'Pending',
-        user: 'Jane Smith',
-        email: 'jane@example.com',
-        paymentMethod: 'Ethereum',
-        createdAt: new Date(Date.now() - 3600000).toISOString()
-      }
-    ];
+        amount: deposit.amount,
+        status: deposit.status.charAt(0).toUpperCase() + deposit.status.slice(1),
+        user: user?.fullName || user?.username || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        paymentMethod: deposit.paymentMethod,
+        createdAt: deposit.createdAt
+      };
+    });
+
+    // Calculate pending deposits amount
+    const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
+    const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
 
     // Format stats for frontend
     const formattedStats = [
@@ -106,7 +117,7 @@ export async function GET(request: NextRequest) {
       { label: "Blocked Users", value: blockedUsers.toString(), icon: "UserMinus", color: "text-red-500", bg: "bg-red-500/10" },
       { label: "Investment Plans", value: "0", icon: "Layers", color: "text-purple-500", bg: "bg-purple-500/10" },
       { label: "Total Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
-      { label: "Pending Deposit", value: "$0", icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
       { label: "Total Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
       { label: "Pending Withdrawal", value: "$0", icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
     ];

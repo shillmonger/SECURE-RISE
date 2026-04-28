@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   DollarSign, 
@@ -12,7 +12,8 @@ import {
   ArrowRight,
   ShieldCheck,
   CreditCard,
-  Plus
+  Plus,
+  Loader2
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -20,19 +21,14 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DepositRecord {
-  id: string;
+  _id: string;
+  transactionId: string;
   paymentMethod: string;
   amount: number;
   status: 'pending' | 'approved' | 'rejected';
-  date: string;
+  createdAt: string;
+  proofImage?: string;
 }
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const MOCK_DEPOSITS: DepositRecord[] = [
-  { id: "DEP-101", paymentMethod: "USDT TRC20", amount: 1500, status: "pending", date: "Apr 14, 2026" },
-  { id: "DEP-102", paymentMethod: "Bitcoin", amount: 500, status: "approved", date: "Apr 10, 2026" },
-  { id: "DEP-103", paymentMethod: "Ethereum", amount: 2400, status: "rejected", date: "Apr 05, 2026" },
-];
 
 const PAYMENT_METHODS = [
   { name: "Bitcoin", ticker: "BTC" },
@@ -51,16 +47,55 @@ const DepositPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [amount, setAmount] = useState("100");
   const [selectedMethod, setSelectedMethod] = useState("USDT TRC20");
+  const [deposits, setDeposits] = useState<DepositRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const totalApproved = MOCK_DEPOSITS
-    .filter(d => d.status === 'approved')
-    .reduce((acc, curr) => acc + curr.amount, 0);
+  useEffect(() => {
+    fetchDeposits();
+  }, []);
+
+  const fetchDeposits = async () => {
+    try {
+      // Get user info from server using auth token
+      const userResponse = await fetch('/api/user/info');
+      
+      if (!userResponse.ok) {
+        console.log('User not authenticated, skipping deposit fetch');
+        setLoading(false);
+        return;
+      }
+      
+      const userData = await userResponse.json();
+      
+      if (!userData.success || !userData.user) {
+        console.log('Invalid user data, skipping deposit fetch');
+        setLoading(false);
+        return;
+      }
+      
+      const user = userData.user;
+      const response = await fetch(`/api/user-dashboard/deposit?userId=${user.id}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDeposits(data.deposits || []);
+      }
+    } catch (error) {
+      console.error('Error fetching deposits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalApproved = deposits
+    .filter((d: DepositRecord) => d.status === 'approved')
+    .reduce((acc: number, curr: DepositRecord) => acc + curr.amount, 0);
 
   const getStatusStyles = (status: string) => {
     switch (status) {
-      case "approved": return { icon: <CheckCircle2 className="w-3 h-3 text-primary" />, text: "text-primary" };
+      case "approved": return { icon: <CheckCircle2 className="w-3 h-3 text-green-500" />, text: "text-green-500" };
       case "rejected": return { icon: <XCircle className="w-3 h-3 text-red-500" />, text: "text-red-500" };
-      default: return { icon: <Clock className="w-3 h-3 text-muted-foreground" />, text: "text-muted-foreground" };
+      default: return { icon: <Clock className="w-3 h-3 text-orange-700" />, text: "text-orange-700" };
     }
   };
 
@@ -89,7 +124,7 @@ const DepositPage = () => {
               
               {/* Left Side: Form */}
               <div className="flex-1 space-y-8">
-                <div className="bg-card border border-border rounded-[1.5rem] p-5 md:p-7 shadow-sm">
+                <div className="bg-card border border-border rounded-[1rem] p-5 md:p-7 shadow-sm">
                   
                   {/* Amount Input */}
                   <div className="space-y-4 mb-10">
@@ -118,7 +153,7 @@ const DepositPage = () => {
                         <button
                           key={method.name}
                           onClick={() => setSelectedMethod(method.name)}
-                          className={`flex items-center justify-between cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
+                          className={`flex items-center justify-between cursor-pointer px-5 py-3  rounded-xl border-2 transition-all duration-300 ${
                             selectedMethod === method.name
                               ? "bg-foreground border-foreground shadow-xl scale-[1.02]"
                               : "bg-background border-border hover:border-muted-foreground/50"
@@ -143,8 +178,8 @@ const DepositPage = () => {
                   </div>
 
                   {/* Action */}
-                  <Link href={`/user-dashboard/deposit/${selectedMethod.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <button className="w-full bg-foreground cursor-pointer text-background py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl">
+                  <Link href={`/user-dashboard/deposit/${selectedMethod.toLowerCase().replace(/\s+/g, '-')}?amount=${amount}`}>
+                    <button className="w-full bg-foreground cursor-pointer text-background py-5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl">
                       Proceed to Checkout <ArrowRight className="w-4 h-4" />
                     </button>
                   </Link>
@@ -155,7 +190,7 @@ const DepositPage = () => {
               <div className="w-full lg:w-[380px] space-y-6">
                 
                 {/* Total Funded Card */}
-                <div className="bg-foreground text-background p-5 md:p-6 rounded-[1.5rem] relative overflow-hidden group">
+                <div className="bg-foreground text-background p-5 md:p-6 rounded-[1rem] relative overflow-hidden group">
                   <DollarSign className="absolute -right-4 -top-4 w-24 h-24 opacity-10" />
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">Total Funded Balance</p>
                   <h3 className="text-4xl font-black italic tracking-tighter">
@@ -164,7 +199,7 @@ const DepositPage = () => {
                 </div>
 
                 {/* History Section */}
-                <div className="bg-card border border-border rounded-[1.5rem] p-5 md:p-6 space-y-6">
+                <div className="bg-card border border-border rounded-[1rem] p-5 md:p-6 space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <History className="w-4 h-4 text-muted-foreground" />
@@ -174,28 +209,38 @@ const DepositPage = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {MOCK_DEPOSITS.map((deposit) => {
-                      const style = getStatusStyles(deposit.status);
-                      return (
-                        <div key={deposit.id} className="bg-muted/30 border border-border/50 p-4 rounded-2xl flex items-center justify-between group hover:border-foreground/20 transition-all">
-                          <div>
-                            <p className="text-xs font-black uppercase italic tracking-tight">{deposit.paymentMethod}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              {style.icon}
-                              <span className="text-[9px] font-black uppercase text-muted-foreground">{deposit.date}</span>
+                    {loading ? (
+                      <div className="flex items-center justify-center py-10 opacity-40">
+                        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                        <p className="text-[10px] font-black uppercase tracking-widest">Loading...</p>
+                      </div>
+                    ) : deposits.length > 0 ? (
+                      deposits.slice(0, 5).map((deposit: DepositRecord) => {
+                        const style = getStatusStyles(deposit.status);
+                        const formattedDate = new Date(deposit.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                        return (
+                          <div key={deposit._id} className="bg-muted/30 border border-border/50 p-4 rounded-lg flex items-center justify-between group hover:border-foreground/20 transition-all">
+                            <div>
+                              <p className="text-xs font-black uppercase italic tracking-tight">{deposit.paymentMethod}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                {style.icon}
+                                <span className="text-[9px] font-black uppercase text-muted-foreground">{formattedDate}</span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-black italic tracking-tighter">${deposit.amount.toLocaleString()}</p>
+                              <p className={`text-[8px] font-black uppercase tracking-widest ${style.text}`}>
+                                {deposit.status}
+                              </p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-sm font-black italic tracking-tighter">${deposit.amount.toLocaleString()}</p>
-                            <p className={`text-[8px] font-black uppercase tracking-widest ${style.text}`}>
-                              {deposit.status}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {MOCK_DEPOSITS.length === 0 && (
+                        );
+                      })
+                    ) : (
                       <div className="text-center py-10 opacity-40">
                         <Wallet className="w-10 h-10 mx-auto mb-2" />
                         <p className="text-[10px] font-black uppercase tracking-widest">No history found</p>
