@@ -721,17 +721,9 @@ export default function UserOverviewPage() {
                   <div className="space-y-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground font-medium uppercase text-[10px]">
-                        Verification
-                      </span>
-                      <span className="font-black text-[10px] text-yellow-500 uppercase">
-                        Pending
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground font-medium uppercase text-[10px]">
                         Active Trades
                       </span>
-                      <span className="font-black text-[10px]">0</span>
+                      <span className="font-black text-[10px]">{activeInvestments}</span>
                     </div>
                     <Link
                       href="/user-dashboard/support"
