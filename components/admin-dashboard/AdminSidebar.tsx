@@ -6,20 +6,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   LayoutDashboard,
-  BarChart3,
-  BriefcaseBusiness,
-  Trophy,
   Wallet,
-  CreditCard,
-  History,
-  Crown,
-  Swords,
-  Users,
-  Lock,
-  HeadphonesIcon,
-  Bell,
   Settings,
+  User,
+  Briefcase,
   LogOut,
+  UserCog,
+  IdCard,
+  Users,
+  X,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -27,27 +22,21 @@ interface SidebarProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
-export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const basePath = "/user-dashboard";
+  const basePath = "/admin-dashboard";
 
-  const sidebarLinks = [
+  const sidebarItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
-    { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
-    { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Live Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
-    { name: "Profit Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
-    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
-    { name: "Client Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-    { name: "Top Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
-    { name: "Trending Challenges", icon: Swords, href: `#` },
-    { name: "Referrals & Affiliate", icon: Users, href: `${basePath}/referrals` },
-    { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
-    { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
-    { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
-    { name: "Switch 2 Admin", icon: Lock, href: `/admin-dashboard/dashboard` },
+    { name: "Manage Deposite", icon: Wallet, href: `${basePath}/manage-deposite` },
+    { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
+    { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
+    { name: "User Management", icon: Users, href: `${basePath}/user-management` },
+    { name: "Investment Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
+    { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc-verification` },
+    { name: "Switch to User", icon: User, href: "/user-dashboard/dashboard" },
   ];
 
   return (
@@ -73,7 +62,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
               SECURE<span className="text-muted-foreground italic"> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
-              Your Investments, Our Traders
+              Management Portal
             </p>
           </div>
           
@@ -81,13 +70,14 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
             className="lg:hidden p-2 rounded-xl bg-secondary text-foreground" 
             onClick={() => setSidebarOpen(false)}
           >
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Navigation */}
         <div className="flex flex-col justify-between h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)]">
           <nav className="px-4 py-5 space-y-1 overflow-y-auto">
-            {sidebarLinks.map(({ name, icon: Icon, href }) => {
+            {sidebarItems.map(({ name, icon: Icon, href }) => {
               const active = pathname === href;
               return (
                 <Link
@@ -133,10 +123,16 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
                 Stay
               </button>
               <button 
-                onClick={() => {
-                  router.push("/auth-page/login");
-                  toast.success("Successfully signed out");
-                  setShowLogoutConfirm(false);
+                onClick={async () => {
+                  try {
+                    router.push("/auth-page/login");
+                    toast.success("Successfully signed out");
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                    toast.error("Failed to sign out.");
+                  } finally {
+                    setShowLogoutConfirm(false);
+                  }
                 }} 
                 className="flex-1 px-6 py-3 rounded-lg bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >
