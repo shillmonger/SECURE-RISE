@@ -21,6 +21,7 @@ import {
   Bell,
   Settings,
   LogOut,
+  Calculator,
   X,
 } from "lucide-react";
 
@@ -45,6 +46,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Profit Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
     { name: "Top Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
+    { name: "Plan Calculator", icon: Calculator, href: `#` },
     { name: "Trending Challenges", icon: Swords, href: `#` },
     { name: "Referrals & Affiliate", icon: Users, href: `${basePath}/referrals` },
     { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
@@ -75,7 +77,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
               SECURE<span className="text-muted-foreground italic">RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
-              You Investments, Our Traders
+              Your Investments, Our Traders
             </p>
           </div>
           
@@ -111,10 +113,10 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
           </nav>
 
           {/* Logout Section */}
-          <div className="p-4 border-t border-border">
+          <div className="flex item-center justify-center px-4 border-t border-border">
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-xl group"
+              className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
             >
               <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
               <span className="text-xs font-black uppercase tracking-widest">Logout</span>
