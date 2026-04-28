@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart2,
   FileText,
@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   ArrowUpRight,
 } from "lucide-react";
+import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
@@ -244,14 +245,37 @@ function InvestmentCard({ inv }: { inv: Investment }) {
 export default function MyInvestmentsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<InvestmentStatus | "all">("active");
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInvestments();
+  }, []);
+
+  const fetchInvestments = async () => {
+    try {
+      const response = await fetch('/api/investments');
+      if (response.ok) {
+        const data = await response.json();
+        setInvestments(data.investments || []);
+      } else {
+        toast.error('Failed to fetch investments');
+      }
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+      toast.error('Failed to fetch investments');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredInvestments = activeTab === "all" 
-    ? mockInvestments 
-    : mockInvestments.filter(inv => inv.status === activeTab);
+    ? investments 
+    : investments.filter(inv => inv.status === activeTab);
 
-  const totalPlans = mockInvestments.length;
-  const totalProfit = mockInvestments.reduce((sum, inv) => sum + inv.profitEarned, 0);
-  const totalWithdrawal = mockInvestments
+  const totalPlans = investments.length;
+  const totalProfit = investments.reduce((sum, inv) => sum + inv.profitEarned, 0);
+  const totalWithdrawal = investments
     .filter(inv => inv.status === 'completed' || inv.status === 'expired')
     .reduce((sum, inv) => sum + inv.investmentAmount + inv.profitEarned, 0);
 
@@ -316,7 +340,20 @@ export default function MyInvestmentsPage() {
             </div>
 
             {/* Investments Grid */}
-            {filteredInvestments.length > 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-card border border-border rounded-3xl p-6 animate-pulse">
+                    <div className="h-4 bg-muted rounded w-1/3 mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-3 bg-muted rounded w-full"></div>
+                      <div className="h-3 bg-muted rounded w-3/4"></div>
+                      <div className="h-3 bg-muted rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredInvestments.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
                 {filteredInvestments.map((inv) => (
                   <InvestmentCard key={inv.id} inv={inv} />

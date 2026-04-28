@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Zap,
   TrendingUp,
@@ -16,9 +16,11 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+import InvestmentModal from "@/components/user-dashboard/InvestmentModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Plan {
@@ -129,7 +131,7 @@ const plans: Plan[] = [
 //   Daily earnings  = amount × 20%          → $100 × 0.20 = $20/day
 //   Total profit    = dailyEarnings × days  → $20  × 2    = $40
 //   Total returned  = amount + totalProfit  → $100 + $40  = $140
-function InvestmentCalculator() {
+function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelectedPlan: (plan: Plan) => void; setIsModalOpen: (isOpen: boolean) => void }) {
   const [amount, setAmount] = useState(500);
   const [days, setDays] = useState(7);
 
@@ -267,12 +269,16 @@ function InvestmentCalculator() {
             </div>
           </div>
 
-          <Link
-            href="/user-dashboard/deposit"
-            className="w-full text-center bg-primary text-primary-foreground py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
+          <button
+            onClick={() => {
+              const defaultPlan = plans.find(p => amount >= p.min && (!p.max || amount <= p.max)) || plans[0];
+              setSelectedPlan(defaultPlan);
+              setIsModalOpen(true);
+            }}
+            className="w-full text-center cursor-pointer bg-primary text-primary-foreground py-4 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
           >
             Invest ${amount.toLocaleString()} Now →
-          </Link>
+          </button>
         </div>
       </div>
     </section>
@@ -280,7 +286,7 @@ function InvestmentCalculator() {
 }
 
 // ─── Plan Card ────────────────────────────────────────────────────────────────
-function PlanCard({ plan }: { plan: Plan }) {
+function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: Plan) => void }) {
   const dailyEarnings = plan.min * 0.20;
   const totalProfit = dailyEarnings * plan.duration;
   const totalReturn = plan.min + totalProfit;
@@ -361,13 +367,13 @@ function PlanCard({ plan }: { plan: Plan }) {
         </ul>
 
         {/* CTA Button */}
-        <Link
-          href={`/user-dashboard/deposit?plan=${plan.id}`}
-          className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+        <button
+          onClick={() => onInvestClick(plan)}
+          className="block w-full text-center cursor-pointer bg-primary text-primary-foreground py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group/btn"
         >
           Invest Now
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-        </Link>
+        </button>
 
         {/* Min Deposit */}
         <p className="text-center text-[9px] text-muted-foreground uppercase font-bold opacity-70">
@@ -381,10 +387,62 @@ function PlanCard({ plan }: { plan: Plan }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function InvestPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userBalance, setUserBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const calcRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchUserBalance();
+  }, []);
+
+  const fetchUserBalance = async () => {
+    try {
+      const response = await fetch('/api/user/profile');
+      if (response.ok) {
+        const data = await response.json();
+        setUserBalance(data.user.accountBalance || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching user balance:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const scrollToCalc = () => {
     calcRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleInvestClick = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setIsModalOpen(true);
+  };
+
+  const handleInvestConfirm = async (planId: number, amount: number) => {
+    try {
+      const response = await fetch('/api/investments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planId, amount }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Investment failed');
+      }
+
+      // Update user balance
+      setUserBalance(prev => prev - amount);
+      
+      return data;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
@@ -425,14 +483,14 @@ export default function InvestPage() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {plans.map((plan) => (
-                  <PlanCard key={plan.id} plan={plan} />
+                  <PlanCard key={plan.id} plan={plan} onInvestClick={handleInvestClick} />
                 ))}
               </div>
             </section>
 
             {/* Calculator */}
             <div ref={calcRef}>
-              <InvestmentCalculator />
+              <InvestmentCalculator setSelectedPlan={setSelectedPlan} setIsModalOpen={setIsModalOpen} />
             </div>
 
             {/* Trust strip */}
@@ -454,6 +512,17 @@ export default function InvestPage() {
         </main>
       </div>
       <UserNav />
+      
+      {/* Investment Modal */}
+      {selectedPlan && (
+        <InvestmentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          plan={selectedPlan}
+          userBalance={userBalance}
+          onConfirm={handleInvestConfirm}
+        />
+      )}
     </div>
   );
 }
