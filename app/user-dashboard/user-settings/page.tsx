@@ -87,7 +87,7 @@ export default function UserSettingsPage() {
   // Member since
   const [memberSince, setMemberSince] = useState("");
   // User role
-  const [userRole, setUserRole] = useState<string>("");
+  const [userRole, setUserRole] = useState<string[]>([]);
 
   // Crypto Payout Settings
   const [payoutAddresses, setPayoutAddresses] = useState<PayoutAddress[]>([]);
@@ -118,7 +118,7 @@ export default function UserSettingsPage() {
             country: user.country || "",
           });
           setProfileImage(user.profileImage || "");
-          setUserRole(user.role?.[0] || "user");
+          setUserRole(user.role || ["user"]);
           setMemberSince(new Date(user.createdAt).toLocaleString('en-US', { 
             month: 'short', 
             day: 'numeric',
@@ -449,7 +449,7 @@ export default function UserSettingsPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-muted-foreground uppercase">Role</span>
                       <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-black uppercase border border-primary/20">
-                        {userRole || "USER"}
+                        {userRole.join(", ").toUpperCase() || "USER"}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">

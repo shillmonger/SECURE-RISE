@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -31,7 +31,25 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
   const pathname = usePathname();
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [userRole, setUserRole] = useState<string[]>([]);
   const basePath = "/user-dashboard";
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/profile');
+        const data = await response.json();
+        
+        if (data.success && data.user.role) {
+          setUserRole(data.user.role);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const sidebarLinks = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
@@ -47,7 +65,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
     { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
     { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
-    { name: "Switch 2 Admin", icon: Lock, href: `/admin-dashboard/dashboard` },
+    ...(userRole.includes('admin') ? [{ name: "Switch 2 Admin", icon: Lock, href: `/admin-dashboard/dashboard` }] : []),
   ];
 
   return (
