@@ -78,7 +78,7 @@ export default function CookieConsent() {
               {/* Cookie Illustration */}
               <div className="flex justify-center mb-6">
                 <img
-                  src="https://i.postimg.cc/8CWMKzWF/favicon-ico.png"
+                  src="https://i.postimg.cc/wTzh3Wpt/favicon-ico.png"
                   alt="Cookie"
                   className="w-30 h-30 object-contain drop-shadow-2xl"
                 />

@@ -79,7 +79,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
             </p>
           </div>
           
-          <button 
+          <button   
             className="lg:hidden p-2 rounded-xl bg-secondary text-foreground" 
             onClick={() => setSidebarOpen(false)}
           >
