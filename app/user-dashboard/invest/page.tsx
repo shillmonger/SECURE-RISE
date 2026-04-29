@@ -268,17 +268,6 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
               </p>
             </div>
           </div>
-
-          <button
-            onClick={() => {
-              const defaultPlan = plans.find(p => amount >= p.min && (!p.max || amount <= p.max)) || plans[0];
-              setSelectedPlan(defaultPlan);
-              setIsModalOpen(true);
-            }}
-            className="w-full text-center cursor-pointer bg-primary text-primary-foreground py-4 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
-          >
-            Invest ${amount.toLocaleString()} Now →
-          </button>
         </div>
       </div>
     </section>

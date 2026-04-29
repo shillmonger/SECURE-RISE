@@ -129,7 +129,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-80 md:w-70 flex flex-col transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none h-screen`}
+        } fixed inset-y-0 left-0 z-50 w-100 md:w-70 flex flex-col transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none h-screen`}
       >
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
@@ -253,8 +253,8 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-md p-4">
-          <div className="bg-background border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10  backdrop-blur-sm p-4">
+          <div className="bg-background border border-border rounded-[1rem] shadow-2xl w-full max-w-sm p-8 text-center">
             <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
               <LogOut className="w-8 h-8 text-foreground" />
             </div>
