@@ -31,9 +31,9 @@ interface DepositRecord {
 }
 
 const PAYMENT_METHODS = [
+  { name: "USDT TRC20", ticker: "USDT" },
   { name: "Bitcoin", ticker: "BTC" },
   { name: "Ethereum", ticker: "ETH" },
-  { name: "USDT TRC20", ticker: "USDT" },
   { name: "USDT ERC20", ticker: "USDT" },
   { name: "Solana", ticker: "SOL" },
   { name: "Litecoin", ticker: "LTC" },

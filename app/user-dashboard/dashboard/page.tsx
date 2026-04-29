@@ -41,6 +41,7 @@ export default function UserOverviewPage() {
 
   // State for real user data
   const [userData, setUserData] = useState({
+    // username: "",
     name: "Investor",
     country: "Global",
   });
@@ -63,7 +64,7 @@ export default function UserOverviewPage() {
         
         if (userResult.success) {
           setUserData({
-            name: userResult.user.fullName || userResult.user.username,
+            name: userResult.user.username || userResult.user.fullName,
             country: userResult.user.country || "Global",
           });
         }
@@ -565,7 +566,7 @@ export default function UserOverviewPage() {
               </div>
               <Link
                 href="/user-dashboard/invest"
-                className="bg-primary text-primary-foreground px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto block text-center"
+                className="bg-primary text-primary-foreground px-4 py-4 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto block text-center"
               >
                 Start Investing
               </Link>
