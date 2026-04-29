@@ -832,7 +832,7 @@ export default function UserOverviewPage() {
                               <button
                                 onClick={() => setActivityPage(Math.max(1, activityPage - 1))}
                                 disabled={activityPage === 1}
-                                className={`p-2 rounded-lg transition-colors ${
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
                                   activityPage === 1
                                     ? "text-muted-foreground cursor-not-allowed"
                                     : "text-foreground hover:bg-muted/50"
@@ -848,7 +848,7 @@ export default function UserOverviewPage() {
                               <button
                                 onClick={() => setActivityPage(Math.min(totalPages, activityPage + 1))}
                                 disabled={activityPage === totalPages}
-                                className={`p-2 rounded-lg transition-colors ${
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
                                   activityPage === totalPages
                                     ? "text-muted-foreground cursor-not-allowed"
                                     : "text-foreground hover:bg-muted/50"
@@ -892,129 +892,168 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/* Notifications Panel */}
-                <section className="bg-card border border-border rounded-3xl p-6">
-                  <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-primary" /> Alerts
-                  </h2>
-                  <div className="max-h-64 space-y-6">
-                    {/* Welcome bonus alert */}
-                    <div className="flex gap-3 relative">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                      <div>
-                        <p className="text-[11px] font-black uppercase tracking-tight">
-                          Welcome to Secure Rise
-                        </p>
-                        <p className="text-xs text-muted-foreground leading-tight mt-0.5">
-                          Your $20 registration bonus has been added to your
-                          balance.
-                        </p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
-                          Just Now
-                        </p>
-                      </div>
-                    </div>
+                <section className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-primary" />
+                      Alerts
+                    </h2>
+                    <Link
+                      href="/user-dashboard/alerts"
+                      className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+                    >
+                      View All
+                    </Link>
+                  </div>
 
-                    {/* Daily profit alerts */}
+                  <div className="bg-card border border-border rounded-3xl overflow-hidden">
                     {(() => {
-                      const allProfitAlerts: any[] = [];
+                      // Combine all alerts
+                      const allAlerts: any[] = [];
 
+                      // Welcome bonus alert (always first)
+                      allAlerts.push({
+                        id: 'welcome-bonus',
+                        type: 'welcome',
+                        isNew: true,
+                        title: 'Welcome to Secure Rise',
+                        message: 'Your $20 registration bonus has been added to your balance.',
+                        time: 'Just Now'
+                      });
+
+                      // Add profit alerts
                       userInvestments.forEach((investment) => {
                         if (
                           investment.profitHistory &&
                           investment.profitHistory.length > 0
                         ) {
-                          investment.profitHistory
-                            .slice(-2)
-                            .forEach((profit: any, index: number) => {
-                              allProfitAlerts.push({
-                                key: `${investment._id}-profit-${index}`,
-                                profit,
-                                planName: investment.planName,
-                              });
+                          investment.profitHistory.forEach((profit: any, index: number) => {
+                            allAlerts.push({
+                              id: `${investment._id}-profit-${index}`,
+                              type: 'profit',
+                              isNew: false,
+                              title: 'Daily Profit Added',
+                              message: `$${profit.amount.toFixed(2)} added from ${investment.planName} plan (${profit.rate}% ROI)`,
+                              time: new Date(profit.timestamp).toLocaleDateString(),
+                              timestamp: new Date(profit.timestamp)
                             });
+                          });
                         }
                       });
 
-                      allProfitAlerts.sort(
-                        (a, b) =>
-                          new Date(b.profit.timestamp).getTime() -
-                          new Date(a.profit.timestamp).getTime()
+                      // Show investment active message if no profits yet
+                      if (userInvestments.length > 0 &&
+                        userInvestments.every((inv) => !inv.profitHistory || inv.profitHistory.length === 0)) {
+                        allAlerts.push({
+                          id: 'investment-active',
+                          type: 'investment',
+                          isNew: false,
+                          title: 'Investment Active',
+                          message: 'Your investments are active. Daily profits will be added here.',
+                          time: 'Pending'
+                        });
+                      }
+
+                      // Add withdrawal alerts
+                      recentWithdrawals.forEach((withdrawal, index) => {
+                        allAlerts.push({
+                          id: `withdrawal-${index}`,
+                          type: 'withdrawal',
+                          isNew: false,
+                          title: `Withdrawal ${withdrawal.status === 'approved' ? 'Approved' : withdrawal.status === 'rejected' ? 'Rejected' : 'Pending'}`,
+                          message: withdrawal.status === 'approved' ? 
+                            `$${withdrawal.amount.toFixed(2)} has been sent to your ${withdrawal.method || 'crypto'} wallet` :
+                           withdrawal.status === 'rejected' ? 
+                            `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected` :
+                            `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`,
+                          time: withdrawal.id
+                        });
+                      });
+
+                      // Sort by date (newest first) - keep welcome bonus at top
+                      const sortedAlerts = [allAlerts[0], ...allAlerts.slice(1).sort((a, b) => {
+                        if (a.timestamp && b.timestamp) {
+                          return b.timestamp.getTime() - a.timestamp.getTime();
+                        }
+                        return 0;
+                      })];
+
+                      // Pagination logic
+                      const totalAlertPages = Math.ceil(sortedAlerts.length / alertsPerPage);
+                      const startIndex = (alertsPage - 1) * alertsPerPage;
+                      const endIndex = startIndex + alertsPerPage;
+                      const paginatedAlerts = sortedAlerts.slice(startIndex, endIndex);
+
+                      return (
+                        <>
+                          <div className="max-h-80 overflow-y-scroll divide-y divide-border scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                            {paginatedAlerts.length > 0 ? (
+                              paginatedAlerts.map((alert) => (
+                                <div key={alert.id} className="p-4 hover:bg-muted/30 transition-colors flex gap-3">
+                                  <div className="flex-shrink-0 mt-1.5">
+                                    {alert.isNew ? (
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                    ) : (
+                                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                                    )}
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-foreground">
+                                      {alert.title}
+                                    </p>
+                                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                                      {alert.message}
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground mt-2">
+                                      {alert.time}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="p-8 text-center">
+                                <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                                <p className="text-sm font-medium">No alerts yet</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Pagination Controls for Alerts */}
+                          {totalAlertPages > 1 && (
+                            <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
+                              <button
+                                onClick={() => setAlertsPage(Math.max(1, alertsPage - 1))}
+                                disabled={alertsPage === 1}
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                  alertsPage === 1
+                                    ? "text-muted-foreground cursor-not-allowed"
+                                    : "text-foreground hover:bg-muted/50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </button>
+
+                              <span className="text-xs font-medium text-muted-foreground">
+                                Page {alertsPage} of {totalAlertPages}
+                              </span>
+
+                              <button
+                                onClick={() => setAlertsPage(Math.min(totalAlertPages, alertsPage + 1))}
+                                disabled={alertsPage === totalAlertPages}
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                  alertsPage === totalAlertPages
+                                    ? "text-muted-foreground cursor-not-allowed"
+                                    : "text-foreground hover:bg-muted/50"
+                                }`}
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </>
                       );
-                      const limitedAlerts = allProfitAlerts.slice(0, 2);
-
-                      return limitedAlerts.map((alert) => (
-                        <div key={alert.key} className="flex gap-3 relative">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                          <div>
-                            <p className="text-[11px] font-black uppercase tracking-tight">
-                              Daily Profit Added
-                            </p>
-                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
-                              ${alert.profit.amount.toFixed(2)} added from{" "}
-                              {alert.planName} plan ({alert.profit.rate}% ROI)
-                            </p>
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
-                              {new Date(
-                                alert.profit.timestamp
-                              ).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      ));
                     })()}
-
-                    {/* Show message if no profits yet */}
-                    {userInvestments.length > 0 &&
-                      userInvestments.every(
-                        (inv) =>
-                          !inv.profitHistory || inv.profitHistory.length === 0
-                      ) && (
-                        <div className="flex gap-3 relative">
-                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5 shrink-0" />
-                          <div>
-                            <p className="text-[11px] font-black uppercase tracking-tight">
-                              Investment Active
-                            </p>
-                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
-                              Your investments are active. Daily profits will be
-                              added here.
-                            </p>
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
-                              Pending
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Withdrawal alerts */}
-                      {recentWithdrawals.slice(0, 2).map((withdrawal, index) => (
-                        <div key={`withdrawal-${index}`} className="flex gap-3 relative">
-                          <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-                            withdrawal.status === 'approved' ? 'bg-green-500' : 
-                            withdrawal.status === 'rejected' ? 'bg-red-500' : 
-                            'bg-yellow-500'
-                          }`} />
-                          <div>
-                            <p className="text-[11px] font-black uppercase tracking-tight">
-                              Withdrawal {withdrawal.status === 'approved' ? 'Approved' : 
-                                         withdrawal.status === 'rejected' ? 'Rejected' : 
-                                         'Pending'}
-                            </p>
-                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
-                              {withdrawal.status === 'approved' ? 
-                                `$${withdrawal.amount.toFixed(2)} has been sent to your ${withdrawal.method || 'crypto'} wallet` :
-                               withdrawal.status === 'rejected' ? 
-                                `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected` :
-                                `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`
-                              }
-                            </p>
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
-                              {withdrawal.id}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
                   </div>
                 </section>
 
