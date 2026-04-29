@@ -122,28 +122,28 @@ export default function UserOverviewPage() {
   // Updated Stats based on real data
   const stats = [
     {
-      label: "Account Balance",
+      label: "Acc Balance",
       value: `$${financialData.accountBalance.toFixed(2)}`,
       icon: Wallet,
-      link: "/user-dashboard/deposit",
+      link: "#",
     },
     {
-      label: "Active Investments",
+      label: "Act Investments",
       value: activeInvestments.toString(),
       icon: Gift,
-      link: "/user-dashboard/earnings",
+      link: "#",
     },
     {
       label: "Total Profits",
       value: `$${financialData.totalProfits.toFixed(2)}`,
       icon: TrendingUp,
-      link: "/user-dashboard/earnings",
+      link: "#",
     },
     {
       label: "Total Deposits",
       value: `$${financialData.totalDeposit.toFixed(2)}`,
       icon: ArrowDownCircle,
-      link: "/user-dashboard/transactions",
+      link: "#",
     },
   ];
 

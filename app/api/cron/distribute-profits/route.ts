@@ -29,11 +29,12 @@ export async function GET(request: NextRequest) {
 
     for (const investment of activeInvestments) {
       try {
-        // Check if profit was already distributed today
+        // Check if profit was already distributed today (check by calendar date, not 24 hours)
         const lastProfitDate = investment.lastProfitDate || investment.startDate;
-        const daysSinceLastProfit = Math.floor((now.getTime() - lastProfitDate.getTime()) / (1000 * 60 * 60 * 24));
+        const lastProfitDateStr = lastProfitDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        const currentDateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
 
-        if (daysSinceLastProfit < 1) {
+        if (lastProfitDateStr === currentDateStr) {
           continue; // Skip if already processed today
         }
 
@@ -64,11 +65,14 @@ export async function GET(request: NextRequest) {
           }
         );
 
-        // Update user's total profits
+        // Update user's total profits and account balance
         await db.collection<User>('users').updateOne(
           { _id: investment.userId },
           { 
-            $inc: { totalProfits: dailyProfit },
+            $inc: { 
+              totalProfits: dailyProfit,
+              accountBalance: dailyProfit
+            },
             $set: { updatedAt: now }
           }
         );
@@ -95,6 +99,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    
     return NextResponse.json({
       success: true,
       message: 'Profit distribution completed',
