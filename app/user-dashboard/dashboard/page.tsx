@@ -59,6 +59,7 @@ export default function UserOverviewPage() {
   });
 
   const [recentDeposits, setRecentDeposits] = useState<any[]>([]);
+  const [recentWithdrawals, setRecentWithdrawals] = useState<any[]>([]);
   const [activeInvestments, setActiveInvestments] = useState(0);
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
@@ -109,6 +110,16 @@ export default function UserOverviewPage() {
         console.log("Investments API response:", investmentsResult);
 
         const investments = investmentsResult.investments || [];
+
+        // Fetch withdrawals
+        const withdrawalsResponse = await fetch("/api/withdraw");
+        const withdrawalsResult = await withdrawalsResponse.json();
+        
+        console.log("Withdrawals API response:", withdrawalsResult);
+        
+        if (withdrawalsResult.withdrawals) {
+          setRecentWithdrawals(withdrawalsResult.withdrawals.slice(0, 5));
+        }
 
         if (Array.isArray(investments)) {
           const activeCount = investments.filter(
@@ -660,6 +671,23 @@ export default function UserOverviewPage() {
                         });
                       });
 
+                      // Add withdrawals
+                      recentWithdrawals.forEach((withdrawal) => {
+                        activities.push({
+                          type: "withdrawal",
+                          data: withdrawal,
+                          date: new Date(withdrawal.date),
+                          icon: TrendingDown,
+                          iconBg: "bg-red-500/10",
+                          iconColor: "text-red-500",
+                          title: "Withdrawal",
+                          subtitle: `${withdrawal.method || 'Unknown'} - ${withdrawal.id}`,
+                          amount: `-$${withdrawal.amount.toFixed(2)}`,
+                          amountColor: "text-red-500",
+                          status: withdrawal.status,
+                        });
+                      });
+
                       // Add investments
                       userInvestments.forEach((investment) => {
                         activities.push({
@@ -958,6 +986,35 @@ export default function UserOverviewPage() {
                           </div>
                         </div>
                       )}
+
+                      {/* Withdrawal alerts */}
+                      {recentWithdrawals.slice(0, 2).map((withdrawal, index) => (
+                        <div key={`withdrawal-${index}`} className="flex gap-3 relative">
+                          <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                            withdrawal.status === 'approved' ? 'bg-green-500' : 
+                            withdrawal.status === 'rejected' ? 'bg-red-500' : 
+                            'bg-yellow-500'
+                          }`} />
+                          <div>
+                            <p className="text-[11px] font-black uppercase tracking-tight">
+                              Withdrawal {withdrawal.status === 'approved' ? 'Approved' : 
+                                         withdrawal.status === 'rejected' ? 'Rejected' : 
+                                         'Pending'}
+                            </p>
+                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                              {withdrawal.status === 'approved' ? 
+                                `$${withdrawal.amount.toFixed(2)} has been sent to your ${withdrawal.method || 'crypto'} wallet` :
+                               withdrawal.status === 'rejected' ? 
+                                `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected` :
+                                `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`
+                              }
+                            </p>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
+                              {withdrawal.id}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </section>
 
