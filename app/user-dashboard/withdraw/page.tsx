@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ChevronDown,
   Wallet,
@@ -19,10 +19,37 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Adjust based on your shadcn path
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+
+// Types
+interface CryptoAddress {
+  id: string;
+  crypto: {
+    name: string;
+    symbol: string;
+    icon: string;
+  };
+  address: string;
+}
+
+interface WithdrawalHistory {
+  id: string;
+  amount: number;
+  method: string;
+  status: "pending" | "approved" | "rejected";
+  date: string;
+  destinationAddress: string;
+}
+
+interface UserData {
+  accountBalance: number;
+  cryptoAddresses: CryptoAddress[];
+  withdrawals: WithdrawalHistory[];
+}
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
@@ -90,18 +117,143 @@ export default function WithdrawPage() {
   const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [withdrawalHistory, setWithdrawalHistory] = useState<
+    WithdrawalHistory[]
+  >([]);
 
-  const availableBalance = 12450.5;
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
-  const handleWithdraw = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 2000);
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("/api/withdraw");
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      setUserData({
+        accountBalance: data.accountBalance,
+        cryptoAddresses: data.cryptoAddresses,
+        withdrawals: data.withdrawals,
+      });
+      setWithdrawalHistory(data.withdrawals);
+    } catch (error) {
+      toast.error("Failed to fetch user data");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSendOtp = () => {
+  const getUserAddressForCrypto = (cryptoSymbol: string) => {
+    if (!userData?.cryptoAddresses) return "";
+    const address = userData.cryptoAddresses.find(
+      (addr) => addr.crypto.symbol === cryptoSymbol,
+    );
+    return address?.address || "";
+  };
+
+  const handleSendOtp = async () => {
+    if (!amount || parseFloat(amount) < 100) {
+      toast.error("Minimum withdrawal amount is $100");
+      return;
+    }
+
+    if (userData && parseFloat(amount) > userData.accountBalance) {
+      toast.error("Insufficient balance");
+      return;
+    }
+
+    const destinationAddress = getUserAddressForCrypto(selectedCrypto.symbol);
+    if (!destinationAddress) {
+      toast.error(`No ${selectedCrypto.name} address found in your profile`);
+      return;
+    }
+
     setIsSendingOtp(true);
-    setTimeout(() => setIsSendingOtp(false), 1500);
+    try {
+      const response = await fetch("/api/withdraw/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          crypto: selectedCrypto,
+          destinationAddress,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        toast.success("OTP sent to your email");
+      }
+    } catch (error) {
+      toast.error("Failed to send OTP");
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!amount || parseFloat(amount) < 100) {
+      toast.error("Minimum withdrawal amount is $100");
+      return;
+    }
+
+    if (!otp || otp.length !== 4) {
+      toast.error("Please enter the 4-digit OTP");
+      return;
+    }
+
+    const destinationAddress = getUserAddressForCrypto(selectedCrypto.symbol);
+    if (!destinationAddress) {
+      toast.error(`No ${selectedCrypto.name} address found in your profile`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/withdraw", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          crypto: selectedCrypto,
+          destinationAddress,
+          otp,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        toast.success("Withdrawal request submitted successfully");
+        // Reset form
+        setAmount("");
+        setOtp("");
+        // Refresh data
+        fetchUserData();
+      }
+    } catch (error) {
+      toast.error("Failed to submit withdrawal");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -129,7 +281,7 @@ export default function WithdrawPage() {
               <div className="flex-1">
                 <form
                   onSubmit={handleWithdraw}
-                  className="bg-card border border-border rounded-[1.5rem] p-6 md:p-10 shadow-sm space-y-8"
+                  className="bg-card border border-border rounded-[1rem] p-6 md:p-10 shadow-sm space-y-8"
                 >
                   {/* Currency Selection */}
                   <div className="space-y-3">
@@ -196,7 +348,12 @@ export default function WithdrawPage() {
                       <input
                         type="text"
                         readOnly
-                        value={selectedCrypto.address}
+                        value={getUserAddressForCrypto(selectedCrypto.symbol)}
+                        placeholder={
+                          loading
+                            ? "Loading..."
+                            : `No ${selectedCrypto.name} address found`
+                        }
                         className="w-full bg-muted/20 border-2 border-border rounded-xl p-4 pr-12 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
                       />
                     </div>
@@ -214,7 +371,10 @@ export default function WithdrawPage() {
                       <p className="text-[10px] font-black uppercase text-muted-foreground">
                         Available:{" "}
                         <span className="text-foreground">
-                          ${availableBalance.toLocaleString()}
+                          $
+                          {loading
+                            ? "Loading..."
+                            : userData?.accountBalance?.toLocaleString() || "0"}
                         </span>
                       </p>
                     </div>
@@ -233,42 +393,42 @@ export default function WithdrawPage() {
                   </div>
 
                   {/* OTP Section */}
-                 {/* OTP Section */}
-<div className="space-y-3 pt-4 border-t border-border/50">
-  {/* Flex container for Label and Button */}
-  <div className="flex items-center justify-between">
-    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-      04. Email Authentication
-    </label>
-    
-    <button
-      type="button"
-      onClick={handleSendOtp}
-      disabled={isSendingOtp}
-      className="bg-primary text-primary-foreground cursor-pointer px-4 py-1.5 rounded-sm text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all border border-primary flex items-center justify-center disabled:opacity-50"
-    >
-      {isSendingOtp ? (
-        <Loader2 className="w-3 h-3 animate-spin" />
-      ) : (
-        "Send OTP"
-      )}
-    </button>
-  </div>
+                  {/* OTP Section */}
+                  <div className="space-y-3 pt-4 border-t border-border/50">
+                    {/* Flex container for Label and Button */}
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        04. Email Authentication
+                      </label>
 
-  <div className="flex">
-    <input
-      type="text"
-      value={otp}
-      onChange={(e) => setOtp(e.target.value)}
-      className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
-      placeholder="****"
-    />
-  </div>
-</div>
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        disabled={isSendingOtp}
+                        className="bg-primary text-primary-foreground cursor-pointer px-4 py-1.5 rounded-sm text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all border border-primary flex items-center justify-center disabled:opacity-50"
+                      >
+                        {isSendingOtp ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          "Send OTP"
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex">
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
+                        placeholder="****"
+                      />
+                    </div>
+                  </div>
 
                   <button
                     disabled={isSubmitting || !amount || !otp}
-                    className="w-full bg-foreground text-background py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl disabled:opacity-20"
+                    className="w-full bg-foreground cursor-pointer text-background py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl disabled:opacity-20"
                   >
                     {isSubmitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -284,7 +444,7 @@ export default function WithdrawPage() {
               {/* Right: Stats & History */}
               <div className="w-full lg:w-[400px] space-y-6">
                 {/* Withdrawal Rules */}
-                <div className="bg-foreground text-background p-4 md:p-5 rounded-[1.5rem] space-y-6 relative overflow-hidden">
+                <div className="bg-foreground text-background p-4 md:p-5 rounded-[1rem] space-y-6 relative overflow-hidden">
                   <Info className="absolute -right-4 -top-4 w-24 h-24 opacity-10" />
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
                     Withdrawal Rules
@@ -313,8 +473,7 @@ export default function WithdrawPage() {
                   </div>
                 </div>
 
-                {/* History Block */}
-                <div className="bg-card border border-border rounded-[1.5rem] p-4 md:p-5 space-y-6">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <History className="w-4 h-4 text-muted-foreground" />
@@ -322,55 +481,66 @@ export default function WithdrawPage() {
                         Withdrawal Logs
                       </p>
                     </div>
-                    <button className="text-[9px] font-black uppercase tracking-widest text-primary border-b border-primary/30">
-                      View All
-                    </button>
                   </div>
 
                   <div className="space-y-3">
-                    {WITHDRAW_HISTORY.map((log) => (
-                      <div
-                        key={log.id}
-                        className="bg-muted/30 border border-border/50 p-4 rounded-2xl flex items-center justify-between group hover:border-foreground/20 transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-background rounded-lg">
-                            <Wallet className="w-4 h-4 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-black uppercase italic tracking-tight">
-                              {log.method} Payout
-                            </p>
-                            <p className="text-[9px] font-black uppercase text-muted-foreground">
-                              {log.date}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-black italic tracking-tighter">
-                            -${log.amount.toLocaleString()}
-                          </p>
-                          <div className="flex items-center justify-end gap-1">
-                            {log.status === "completed" ? (
-                              <CheckCircle2 className="w-3 h-3 text-green-500" />
-                            ) : log.status === "pending" ? (
-                              <Clock className="w-3 h-3 text-amber-700" />
-                            ) : (
-                              <XCircle className="w-3 h-3 text-red-500" />
-                            )}
-                            <p
-                              className={`text-[8px] font-black uppercase tracking-widest ${
-                                log.status === "completed" ? "text-green-500" : 
-                                log.status === "pending" ? "text-amber-700" : 
-                                "text-red-500"
-                              }`}
-                            >
-                              {log.status}
-                            </p>
-                          </div>
-                        </div>
+                    {loading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                        <p className="text-xs">Loading withdrawal history...</p>
                       </div>
-                    ))}
+                    ) : withdrawalHistory.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Wallet className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-xs">No withdrawals yet</p>
+                      </div>
+                    ) : (
+                      withdrawalHistory.map((log) => (
+                        <div
+                          key={log.id}
+                          className="bg-muted/30 border border-border/50 p-4 rounded-xl flex items-center justify-between group hover:border-foreground/20 transition-all"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-background rounded-lg">
+                              <Wallet className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-black uppercase italic tracking-tight">
+                                {log.method} Payout
+                              </p>
+                              <p className="text-[9px] font-black uppercase text-muted-foreground">
+                                {log.date}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-black italic tracking-tighter">
+                              -${log.amount.toLocaleString()}
+                            </p>
+                            <div className="flex items-center justify-end gap-1">
+                              {log.status === "approved" ? (
+                                <CheckCircle2 className="w-3 h-3 text-green-500" />
+                              ) : log.status === "pending" ? (
+                                <Clock className="w-3 h-3 text-amber-700" />
+                              ) : (
+                                <XCircle className="w-3 h-3 text-red-500" />
+                              )}
+                              <p
+                                className={`text-[8px] font-black uppercase tracking-widest ${
+                                  log.status === "approved"
+                                    ? "text-green-500"
+                                    : log.status === "pending"
+                                      ? "text-amber-700"
+                                      : "text-red-500"
+                                }`}
+                              >
+                                {log.status}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>

@@ -20,20 +20,27 @@ import AdminNav from "@/components/admin-dashboard/AdminNav";
 
 interface Withdrawal {
   _id: string;
-  userId: {
-    _id: string;
+  withdrawalId: string;
+  userId: string;
+  username: string;
+  userEmail: string;
+  userInfo?: {
     username: string;
-    fullName: string;
     email: string;
+    fullName: string;
   };
   amount: number;
-  netAmount: number;
-  charge: number;
-  address: string;
-  paymentMethod: string;
-  status: 'pending' | 'completed' | 'rejected';
+  crypto: {
+    name: string;
+    symbol: string;
+    icon: string;
+  };
+  destinationAddress: string;
+  status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt: string;
+  approvedAt?: string;
+  rejectionReason?: string;
 }
 
 export default function AdminPayoutsPage() {
@@ -74,7 +81,7 @@ export default function AdminPayoutsPage() {
     const newStats = {
       total: withdrawalData.length,
       pending: withdrawalData.filter(w => w.status === 'pending').length,
-      completed: withdrawalData.filter(w => w.status === 'completed').length,
+      completed: withdrawalData.filter(w => w.status === 'approved').length,
       rejected: withdrawalData.filter(w => w.status === 'rejected').length
     };
     setStats(newStats);
@@ -95,12 +102,12 @@ export default function AdminPayoutsPage() {
 
       const data = await response.json();
       
-      if (data.success) {
+      if (data.error) {
+        toast.error(data.error || 'Failed to update withdrawal');
+      } else {
         toast.success(data.message);
         // Refresh the data
         fetchWithdrawals();
-      } else {
-        toast.error(data.error || 'Failed to update withdrawal');
       }
     } catch (error) {
       toast.error('Network error. Please try again.');
@@ -116,9 +123,11 @@ export default function AdminPayoutsPage() {
 
   const filteredWithdrawals = withdrawals.filter(withdrawal => {
     const matchesSearch = searchTerm === '' || 
-      withdrawal.userId?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      withdrawal.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      withdrawal.userId?.username?.toLowerCase().includes(searchTerm.toLowerCase());
+      withdrawal.userInfo?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      withdrawal.userInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      withdrawal.userInfo?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      withdrawal.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      withdrawal.userEmail?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -170,7 +179,7 @@ export default function AdminPayoutsPage() {
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
-                <option value="completed">Approved</option>
+                <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
               </select>
             </div>
@@ -198,24 +207,23 @@ export default function AdminPayoutsPage() {
                   <tr>
                     <th className="px-6 py-4">Investor</th>
                     <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4 hidden md:table-cell">Net Amount</th>
-                    <th className="px-6 py-4 hidden lg:table-cell">Wallet</th>
-                    <th className="px-6 py-4 hidden md:table-cell">Method</th>
+                    <th className="px-6 py-4">Address</th>
+                    <th className="px-6 py-4">Method</th>
                     <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 hidden sm:table-cell">Date</th>
+                    <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {loading ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
+                      <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                         Loading withdrawals...
                       </td>
                     </tr>
                   ) : filteredWithdrawals.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8">
+                      <td colSpan={7} className="px-6 py-8">
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
                             <Wallet className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -234,40 +242,35 @@ export default function AdminPayoutsPage() {
                       <tr key={withdrawal._id} className="group hover:bg-muted/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-foreground">{withdrawal.userId?.fullName || 'Unknown User'}</span>
-                            <span className="text-[11px] text-muted-foreground">{withdrawal.userId?.email || 'No email'}</span>
+                            <span className="text-sm font-bold text-foreground">{withdrawal.userInfo?.fullName || withdrawal.username || 'Unknown User'}</span>
+                            <span className="text-[11px] text-muted-foreground">{withdrawal.userInfo?.email || withdrawal.userEmail || 'No email'}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-foreground">{formatAmount(withdrawal.amount)}</span>
-                            {withdrawal.charge > 0 && (
-                              <span className="text-[10px] text-muted-foreground">Fee: ${withdrawal.charge}</span>
-                            )}
+                            <span className="text-[10px] text-muted-foreground">{withdrawal.crypto.symbol}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 hidden md:table-cell">
-                          <span className="text-sm font-bold text-teal-600">{formatAmount(withdrawal.netAmount)}</span>
-                        </td>
-                        <td className="px-6 py-4 hidden lg:table-cell">
+                        <td className="px-6 py-4">
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <Wallet className="w-3 h-3" />
-                            <span className="text-xs font-mono">{formatAddress(withdrawal.address)}</span>
+                            <span className="text-xs font-mono">{withdrawal.destinationAddress}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 hidden md:table-cell">
-                          <span className="text-xs font-medium text-muted-foreground uppercase">{withdrawal.paymentMethod}</span>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-medium text-muted-foreground uppercase">{withdrawal.crypto.symbol}</span>
                         </td>
                         <td className="px-6 py-4">
                           <div className={`flex items-center w-fit px-3 py-1 text-[10px] font-bold uppercase rounded-full border ${
-                            withdrawal.status === 'completed' ? 'bg-teal-500/10 text-teal-600 border-teal-500/20' : 
+                            withdrawal.status === 'approved' ? 'bg-teal-500/10 text-teal-600 border-teal-500/20' : 
                             withdrawal.status === 'rejected' ? 'bg-red-500/10 text-red-600 border-red-500/20' : 
                             'bg-primary/10 text-primary border-primary/20'
                           }`}>
-                            {withdrawal.status === 'completed' ? 'Approved' : withdrawal.status}
+                            {withdrawal.status === 'approved' ? 'Approved' : withdrawal.status}
                           </div>
                         </td>
-                        <td className="px-6 py-4 hidden sm:table-cell">
+                        <td className="px-6 py-4">
                           <span className="text-xs text-muted-foreground font-medium">{formatDate(withdrawal.createdAt)}</span>
                         </td>
                         <td className="px-6 py-4">
@@ -275,14 +278,14 @@ export default function AdminPayoutsPage() {
                             {withdrawal.status === "pending" ? (
                               <>
                                 <button 
-                                  onClick={() => handleAction(withdrawal._id, 'approve', withdrawal.userId.fullName)}
+                                  onClick={() => handleAction(withdrawal.withdrawalId, 'approve', withdrawal.userInfo?.fullName || withdrawal.username)}
                                   className="p-3 bg-teal-500/10 text-teal-600 cursor-pointer rounded-lg hover:bg-teal-500 hover:text-white transition-all shadow-sm"
                                   title="Approve"
                                 >
                                   <Check className="w-4 h-4" />
                                 </button>
                                 <button 
-                                  onClick={() => handleAction(withdrawal._id, 'reject', withdrawal.userId.fullName)}
+                                  onClick={() => handleAction(withdrawal.withdrawalId, 'reject', withdrawal.userInfo?.fullName || withdrawal.username)}
                                   className="p-3 bg-red-500/10 text-red-500 cursor-pointer rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
                                   title="Reject"
                                 >
@@ -290,7 +293,7 @@ export default function AdminPayoutsPage() {
                                 </button>
                               </>
                             ) : (
-                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter italic px-2">Completed</span>
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter italic px-2">Processed</span>
                             )}
                           </div>
                         </td>

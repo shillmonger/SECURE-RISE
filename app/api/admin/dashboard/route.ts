@@ -91,8 +91,39 @@ export async function GET(request: NextRequest) {
       userMap[user._id.toString()] = user;
     });
 
-    // Format recent transactions
-    const recentTransactions = deposits.map(deposit => {
+    // Get withdrawal transactions
+    const withdrawalsCollection = db.collection('withdrawals');
+    const withdrawals = await withdrawalsCollection
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+
+    // Get user information for withdrawals
+    const withdrawalUserIds = withdrawals.map(w => w.userId);
+    const withdrawalUsers = await usersCollection.find({ _id: { $in: withdrawalUserIds } }).toArray();
+    const withdrawalUserMap: { [key: string]: any } = {};
+    withdrawalUsers.forEach(user => {
+      withdrawalUserMap[user._id.toString()] = user;
+    });
+
+    // Format withdrawal transactions
+    const withdrawalTransactions = withdrawals.map(withdrawal => {
+      const user = withdrawalUserMap[withdrawal.userId.toString()];
+      return {
+        id: withdrawal.withdrawalId || withdrawal._id.toString(),
+        type: 'Withdrawal',
+        amount: withdrawal.amount,
+        status: withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1),
+        user: user?.fullName || user?.username || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        paymentMethod: withdrawal.crypto?.symbol || 'Unknown',
+        createdAt: withdrawal.createdAt
+      };
+    });
+
+    // Format deposit transactions
+    const depositTransactions = deposits.map(deposit => {
       const user = userMap[deposit.userId.toString()];
       return {
         id: deposit.transactionId || deposit._id.toString(),
@@ -106,6 +137,11 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Combine and sort all transactions by date
+    const allTransactions = [...depositTransactions, ...withdrawalTransactions]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10); // Keep only the 10 most recent
+
     // Calculate pending deposits amount
     const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
     const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
@@ -113,6 +149,10 @@ export async function GET(request: NextRequest) {
     // Get investment plans count
     const investmentsCollection = db.collection('investments');
     const investmentPlansCount = await investmentsCollection.countDocuments();
+
+    // Calculate pending withdrawals amount
+    const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
+    const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
 
     // Format stats for frontend
     const formattedStats = [
@@ -123,13 +163,13 @@ export async function GET(request: NextRequest) {
       { label: "Total Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
       { label: "Total Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
-      { label: "Pending Withdrawal", value: "$0", icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Pending Withdrawal", value: `$${pendingWithdrawalsTotal.toFixed(2)}`, icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
     ];
 
     return NextResponse.json({
       success: true,
       stats: formattedStats,
-      recentTransactions
+      recentTransactions: allTransactions
     });
 
   } catch (error) {

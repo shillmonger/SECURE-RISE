@@ -216,7 +216,11 @@ export default function AdminDashboardPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <ArrowDownLeft className="w-3 h-3 text-teal-500" />
+                            {transaction.type === 'Deposit' ? (
+                              <ArrowDownLeft className="w-3 h-3 text-teal-500" />
+                            ) : (
+                              <ArrowUpRight className="w-3 h-3 text-red-500" />
+                            )}
                             <span className="text-sm text-foreground font-semibold">
                               {transaction.type}
                             </span>

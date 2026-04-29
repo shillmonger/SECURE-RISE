@@ -781,3 +781,611 @@ export const sendDepositStatusEmail = async (userEmail: string, depositData: {
     throw error;
   }
 };
+
+export const sendWithdrawalOTP = async (userEmail: string, username: string, otpCode: string, amount: number, cryptoName: string) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Withdrawal OTP - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .otp-box {
+          background: #09090b;
+          color: #ffffff;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .otp-label {
+          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.8;
+          margin-bottom: 12px;
+          display: block;
+        }
+        .otp-code {
+          font-size: 36px;
+          font-weight: 800;
+          letter-spacing: 10px;
+          font-family: 'Courier New', Courier, monospace;
+          margin: 10px 0;
+        }
+        .withdrawal-info {
+          background: #f4f4f5;
+          padding: 20px;
+          border-radius: 12px;
+          margin: 24px 0;
+        }
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+        .info-label {
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          opacity: 0.7;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .security-list {
+          margin: 24px 0;
+          padding: 0;
+          list-style: none;
+        }
+        .security-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+          font-size: 14px;
+          color: #4b5563;
+        }
+        .bullet {
+          color: #09090b;
+          font-weight: bold;
+          margin-right: 10px;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Withdrawal Verification</h1>
+          <p class="subtitle">Enter the code below to confirm your withdrawal</p>
+        </div>
+
+        <p>Hi <strong>${username}</strong>,</p>
+        
+        <p>You have initiated a withdrawal request. Use the verification code below to proceed:</p>
+
+        <div class="withdrawal-info">
+          <div class="info-row">
+            <span class="info-label">Amount</span>
+            <span class="info-value">$${amount.toLocaleString()}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Currency</span>
+            <span class="info-value">${cryptoName}</span>
+          </div>
+        </div>
+
+        <div class="otp-box">
+          <span class="otp-label">Verification Code</span>
+          <div class="otp-code">${otpCode}</div>
+          <p style="margin: 10px 0 0 0; font-size: 13px; opacity: 0.8;">Expires in 5 minutes</p>
+        </div>
+
+        <div class="security-list">
+          <div class="security-item">
+            <span class="bullet">!</span> Never share this verification code with anyone.
+          </div>
+          <div class="security-item">
+            <span class="bullet">!</span> Secure Rise staff will never ask for this code.
+          </div>
+          <div class="security-item">
+            <span class="bullet">!</span> If you didn't request this withdrawal, contact support immediately.
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: 'Withdrawal Verification Code - Secure Rise',
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Withdrawal OTP email sent successfully');
+  } catch (error) {
+    console.error('Error sending withdrawal OTP email:', error);
+    throw error;
+  }
+};
+
+export const sendWithdrawalNotificationToAdmins = async (withdrawalData: {
+  withdrawalId: string;
+  username: string;
+  userEmail: string;
+  amount: number;
+  crypto: {
+    name: string;
+    symbol: string;
+    icon: string;
+  };
+  destinationAddress: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Withdrawal Request - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .alert-box {
+          background: #fbbf24;
+          color: #09090b;
+          padding: 24px;
+          border-radius: 16px;
+          margin: 24px 0;
+          text-align: center;
+        }
+        .withdrawal-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+          word-break: break-all;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          margin: 32px 0;
+        }
+        .btn {
+          flex: 1;
+          padding: 16px 24px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+          display: block;
+        }
+        .btn-review {
+          background: #09090b;
+          color: white;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">New Withdrawal Request</h1>
+          <p class="subtitle">A user has submitted a withdrawal for review</p>
+        </div>
+
+        <div class="alert-box">
+          <div class="info-label">Withdrawal Amount</div>
+          <div class="withdrawal-amount">$${withdrawalData.amount.toLocaleString()}</div>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">${withdrawalData.crypto.name} (${withdrawalData.crypto.symbol})</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">User</div>
+            <div class="info-value">${withdrawalData.username}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">${withdrawalData.userEmail}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Withdrawal ID</div>
+            <div class="info-value">${withdrawalData.withdrawalId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Currency</div>
+            <div class="info-value">${withdrawalData.crypto.name}</div>
+          </div>
+        </div>
+
+        <div class="info-item" style="margin: 24px 0;">
+          <div class="info-label">Destination Address</div>
+          <div class="info-value">${withdrawalData.destinationAddress}</div>
+        </div>
+
+        <div class="action-buttons">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/investment-payouts" class="btn btn-review">
+            Review Withdrawal
+          </a>
+        </div>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This is an automated notification. Please review the withdrawal promptly.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Get all admin users
+  const db = await connectToDatabase();
+  const usersCollection = db.collection('users');
+  const adminUsers = await usersCollection.find({ role: 'admin' }).toArray();
+
+  // Send email to all admins
+  const emailPromises = adminUsers.map(async (admin: any) => {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: admin.email,
+      subject: `New Withdrawal Request - ${withdrawalData.username} - $${withdrawalData.amount.toLocaleString()}`,
+      html: htmlContent,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Withdrawal notification sent to admin: ${admin.email}`);
+    } catch (error) {
+      console.error(`Error sending withdrawal notification to ${admin.email}:`, error);
+    }
+  });
+
+  await Promise.all(emailPromises);
+};
+
+export const sendWithdrawalStatusEmail = async (userEmail: string, withdrawalData: {
+  username: string;
+  amount: number;
+  crypto: {
+    name: string;
+    symbol: string;
+  };
+  destinationAddress: string;
+  status: 'approved' | 'rejected';
+  rejectionReason?: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  const isApproved = withdrawalData.status === 'approved';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Withdrawal ${isApproved ? 'Approved' : 'Rejected'} - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .status-box {
+          background: ${isApproved ? '#22c55e' : '#ef4444'};
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .status-label {
+          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.8;
+          margin-bottom: 8px;
+        }
+        .status-text {
+          font-size: 32px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .withdrawal-amount {
+          font-size: 24px;
+          font-weight: 700;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+          word-break: break-all;
+        }
+        .rejection-reason {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #991b1b;
+          padding: 16px;
+          border-radius: 12px;
+          margin: 24px 0;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Withdrawal ${isApproved ? 'Approved' : 'Rejected'}</h1>
+          <p class="subtitle">Your withdrawal request has been reviewed</p>
+        </div>
+
+        <div class="status-box">
+          <div class="status-label">Status</div>
+          <div class="status-text">${isApproved ? 'APPROVED' : 'REJECTED'}</div>
+          <div class="withdrawal-amount">$${withdrawalData.amount.toLocaleString()}</div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">${withdrawalData.crypto.name} (${withdrawalData.crypto.symbol})</p>
+        </div>
+
+        ${!isApproved && withdrawalData.rejectionReason ? `
+          <div class="rejection-reason">
+            <div class="info-label">Rejection Reason</div>
+            <div>${withdrawalData.rejectionReason}</div>
+          </div>
+        ` : ''}
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Currency</div>
+            <div class="info-value">${withdrawalData.crypto.name}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Destination Address</div>
+            <div class="info-value">${withdrawalData.destinationAddress}</div>
+          </div>
+        </div>
+
+        ${isApproved ? `
+          <p style="text-align: center; margin: 24px 0;">
+            The funds have been sent to your designated wallet address. Please allow some time for the transaction to be processed on the blockchain.
+          </p>
+        ` : ''}
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/withdraw" class="cta-button">
+          View Withdrawal History
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Withdrawal ${isApproved ? 'Approved' : 'Rejected'} - Secure Rise`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Withdrawal ${isApproved ? 'approval' : 'rejection'} email sent to ${userEmail}`);
+  } catch (error) {
+    console.error(`Error sending withdrawal ${isApproved ? 'approval' : 'rejection'} email:`, error);
+    throw error;
+  }
+};
