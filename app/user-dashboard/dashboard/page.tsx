@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Wallet,
@@ -26,25 +25,30 @@ import {
   DollarSign,
   RefreshCw,
 } from "lucide-react";
-
 import Link from "next/link";
 import { getGreeting } from "@/lib/utils";
-
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+
+// Helper function to format numbers with K notation
+const formatNumber = (num: number): string => {
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "k";
+  }
+  return num.toString();
+};
 
 export default function UserOverviewPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [totalDeposit, setTotalDeposit] = useState(0);
 
-  // State for real user data
   const [userData, setUserData] = useState({
-    // username: "",
     name: "Investor",
     country: "Global",
   });
+
   const [financialData, setFinancialData] = useState({
     accountBalance: 0,
     welcomeBonus: 0,
@@ -52,16 +56,17 @@ export default function UserOverviewPage() {
     totalWithdrawal: 0,
     totalDeposit: 0,
   });
+
   const [recentDeposits, setRecentDeposits] = useState<any[]>([]);
   const [activeInvestments, setActiveInvestments] = useState(0);
+  const [userInvestments, setUserInvestments] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Fetch user info
-        const userResponse = await fetch('/api/user/info');
+        const userResponse = await fetch("/api/user/info");
         const userResult = await userResponse.json();
-        
+
         if (userResult.success) {
           setUserData({
             name: userResult.user.username || userResult.user.fullName,
@@ -69,10 +74,11 @@ export default function UserOverviewPage() {
           });
         }
 
-        // Fetch financial data
-        const financialResponse = await fetch('/api/user-dashboard/financial-data');
+        const financialResponse = await fetch(
+          "/api/user-dashboard/financial-data"
+        );
         const financialResult = await financialResponse.json();
-        
+
         if (financialResult.success) {
           setFinancialData({
             accountBalance: financialResult.financialData.accountBalance,
@@ -83,34 +89,35 @@ export default function UserOverviewPage() {
           });
         }
 
-        // Fetch recent deposits
-        const depositsResponse = await fetch('/api/user-dashboard/deposit?userId=' + userResult.user.id);
+        const depositsResponse = await fetch(
+          "/api/user-dashboard/deposit?userId=" + userResult.user.id
+        );
         const depositsResult = await depositsResponse.json();
-        
+
         if (depositsResult.success) {
-          setRecentDeposits(depositsResult.deposits.slice(0, 5)); // Show only 5 most recent
+          setRecentDeposits(depositsResult.deposits.slice(0, 5));
         }
 
-        // Fetch user investments
-        const investmentsResponse = await fetch('/api/investments');
+        const investmentsResponse = await fetch("/api/investments");
         const investmentsResult = await investmentsResponse.json();
-        
-        console.log('Investments API response:', investmentsResult);
-        
-        // The API returns { investments: [...] }
-        const investments = investmentsResult.investments || [];
-        
-        if (Array.isArray(investments)) {
-          const activeCount = investments.filter(inv => inv.status === 'active').length;
-          setActiveInvestments(activeCount);
-          console.log('Active investments count:', activeCount);
-          console.log('All investments:', investments);
-        } else {
-          console.log('Investments API returned non-array:', investmentsResult);
-        }
 
+        console.log("Investments API response:", investmentsResult);
+
+        const investments = investmentsResult.investments || [];
+
+        if (Array.isArray(investments)) {
+          const activeCount = investments.filter(
+            (inv) => inv.status === "active"
+          ).length;
+          setActiveInvestments(activeCount);
+          setUserInvestments(investments);
+          console.log("Active investments count:", activeCount);
+          console.log("All investments:", investments);
+        } else {
+          console.log("Investments API returned non-array:", investmentsResult);
+        }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       } finally {
         setLoading(false);
       }
@@ -119,11 +126,10 @@ export default function UserOverviewPage() {
     fetchUserData();
   }, []);
 
-  // Updated Stats based on real data
   const stats = [
     {
       label: "Acc Balance",
-      value: `$${financialData.accountBalance.toFixed(2)}`,
+      value: `$${formatNumber(financialData.accountBalance)}`,
       icon: Wallet,
       link: "#",
     },
@@ -135,19 +141,18 @@ export default function UserOverviewPage() {
     },
     {
       label: "Total Profits",
-      value: `$${financialData.totalProfits.toFixed(2)}`,
+      value: `$${formatNumber(financialData.totalProfits)}`,
       icon: TrendingUp,
       link: "#",
     },
     {
       label: "Total Deposits",
-      value: `$${financialData.totalDeposit.toFixed(2)}`,
+      value: `$${formatNumber(financialData.totalDeposit)}`,
       icon: ArrowDownCircle,
       link: "#",
     },
   ];
 
-  // Market Data Interface and State
   interface MarketData {
     symbol: string;
     name: string;
@@ -166,9 +171,7 @@ export default function UserOverviewPage() {
   const [lastUpdate, setLastUpdate] = useState("");
   const [formattedTime, setFormattedTime] = useState("");
 
-  // 20 mixed pairs: crypto and forex alternated
   const allPairs: MarketData[] = [
-    // Crypto
     {
       symbol: "BTC/USD",
       name: "Bitcoin",
@@ -178,7 +181,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "bitcoin",
     },
-    // Forex
     {
       symbol: "XAUUSD",
       name: "Gold vs US Dollar",
@@ -189,7 +191,6 @@ export default function UserOverviewPage() {
       baseFlag: "us",
       quoteFlag: "us",
     },
-    // Crypto
     {
       symbol: "ETH/USD",
       name: "Ethereum",
@@ -199,7 +200,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "ethereum",
     },
-    // Forex
     {
       symbol: "EURUSD",
       name: "Euro vs US Dollar",
@@ -210,7 +210,6 @@ export default function UserOverviewPage() {
       baseFlag: "eu",
       quoteFlag: "us",
     },
-    // Crypto
     {
       symbol: "BNB/USD",
       name: "Binance Coin",
@@ -220,18 +219,16 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "binancecoin",
     },
-    // Forex
     {
       symbol: "GBPUSD",
       name: "British Pound vs US Dollar",
       price: 1.2723,
       change: -0.0089,
-      changePercent: -0.70,
+      changePercent: -0.7,
       type: "forex",
       baseFlag: "gb",
       quoteFlag: "us",
     },
-    // Crypto
     {
       symbol: "SOL/USD",
       name: "Solana",
@@ -241,18 +238,16 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "solana",
     },
-    // Forex
     {
       symbol: "USDJPY",
       name: "US Dollar vs Japanese Yen",
       price: 149.87,
       change: 0.45,
-      changePercent: 0.30,
+      changePercent: 0.3,
       type: "forex",
       baseFlag: "us",
       quoteFlag: "jp",
     },
-    // Crypto
     {
       symbol: "ADA/USD",
       name: "Cardano",
@@ -262,7 +257,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "cardano",
     },
-    // Forex
     {
       symbol: "AUDUSD",
       name: "Australian Dollar vs US Dollar",
@@ -273,7 +267,6 @@ export default function UserOverviewPage() {
       baseFlag: "au",
       quoteFlag: "us",
     },
-    // Crypto
     {
       symbol: "XRP/USD",
       name: "Ripple",
@@ -283,7 +276,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "ripple",
     },
-    // Forex
     {
       symbol: "USDCAD",
       name: "US Dollar vs Canadian Dollar",
@@ -294,7 +286,6 @@ export default function UserOverviewPage() {
       baseFlag: "us",
       quoteFlag: "ca",
     },
-    // Crypto
     {
       symbol: "DOGE/USD",
       name: "Dogecoin",
@@ -304,18 +295,16 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "dogecoin",
     },
-    // Forex
     {
       symbol: "NZDUSD",
       name: "New Zealand Dollar vs US Dollar",
       price: 0.6123,
       change: 0.0012,
-      changePercent: 0.20,
+      changePercent: 0.2,
       type: "forex",
       baseFlag: "nz",
       quoteFlag: "us",
     },
-    // Crypto
     {
       symbol: "DOT/USD",
       name: "Polkadot",
@@ -325,7 +314,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "polkadot",
     },
-    // Forex
     {
       symbol: "USDCHF",
       name: "US Dollar vs Swiss Franc",
@@ -336,7 +324,6 @@ export default function UserOverviewPage() {
       baseFlag: "us",
       quoteFlag: "ch",
     },
-    // Crypto
     {
       symbol: "TRXUSDT",
       name: "TRON",
@@ -346,7 +333,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "tron",
     },
-    // Forex
     {
       symbol: "EURGBP",
       name: "Euro vs British Pound",
@@ -357,7 +343,6 @@ export default function UserOverviewPage() {
       baseFlag: "eu",
       quoteFlag: "gb",
     },
-    // Crypto
     {
       symbol: "AVAX/USD",
       name: "Avalanche",
@@ -367,7 +352,6 @@ export default function UserOverviewPage() {
       type: "crypto",
       coinId: "avalanche-2",
     },
-    // Forex
     {
       symbol: "USDHKD",
       name: "US Dollar vs Hong Kong Dollar",
@@ -381,25 +365,25 @@ export default function UserOverviewPage() {
   ];
 
   useEffect(() => {
-    // Fetch crypto logos from CoinGecko and prepare forex data
     const fetchMarketData = async () => {
       try {
-        // Get only crypto pairs for CoinGecko API
-        const cryptoPairs = allPairs.filter(pair => pair.type === "crypto");
-        const coinIds = cryptoPairs.map((crypto) => crypto.coinId).join(",");
+        const cryptoPairs = allPairs.filter((pair) => pair.type === "crypto");
+        const coinIds = cryptoPairs
+          .map((crypto) => crypto.coinId)
+          .join(",");
         const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`,
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`
         );
         const data = await response.json();
 
-        // Create a map of coinId to image for quick lookup
         const cryptoImageMap = new Map();
         cryptoPairs.forEach((crypto) => {
-          const coinGeckoData = data.find((item: any) => item.id === crypto.coinId);
+          const coinGeckoData = data.find(
+            (item: any) => item.id === crypto.coinId
+          );
           cryptoImageMap.set(crypto.coinId, coinGeckoData?.image || "");
         });
 
-        // Update all pairs maintaining original mixed order
         const updatedData = allPairs.map((pair) => {
           if (pair.type === "crypto" && pair.coinId) {
             return {
@@ -407,7 +391,7 @@ export default function UserOverviewPage() {
               image: cryptoImageMap.get(pair.coinId) || "",
             };
           }
-          return pair; // Forex pairs remain unchanged
+          return pair;
         });
 
         setMarketData(updatedData);
@@ -421,16 +405,13 @@ export default function UserOverviewPage() {
 
     fetchMarketData();
 
-    // Update time every second
     const updateTime = () => {
       const now = new Date();
       setFormattedTime(now.toLocaleTimeString());
     };
-
     updateTime();
     const timeInterval = setInterval(updateTime, 1000);
 
-    // Simulate real-time price updates every 2 seconds
     const priceInterval = setInterval(() => {
       setMarketData((prevData) =>
         prevData.map((item) => ({
@@ -438,7 +419,7 @@ export default function UserOverviewPage() {
           price: item.price + (Math.random() - 0.5) * item.price * 0.001,
           change: (Math.random() - 0.5) * item.price * 0.002,
           changePercent: (Math.random() - 0.5) * 2,
-        })),
+        }))
       );
       setLastUpdate(new Date().toISOString());
     }, 2000);
@@ -464,7 +445,11 @@ export default function UserOverviewPage() {
   const formatChange = (change: number, changePercent: number) => {
     const isPositive = change >= 0;
     return (
-      <div className={`flex items-center gap-1 whitespace-nowrap ${isPositive ? "text-green-500" : "text-red-500"}`}>
+      <div
+        className={`flex items-center gap-1 whitespace-nowrap ${
+          isPositive ? "text-green-500" : "text-red-500"
+        }`}
+      >
         {isPositive ? (
           <TrendingUp className="w-3 h-3 flex-shrink-0" />
         ) : (
@@ -478,20 +463,17 @@ export default function UserOverviewPage() {
     );
   };
 
-  // Mini Sparkline Component for Trend Visualization
   const MiniSparkline = ({ isPositive }: { isPositive: boolean }) => {
     const generateSparklineData = () => {
       const points = 8;
       const data = [];
       let baseValue = 50;
-
       for (let i = 0; i < points; i++) {
         const volatility = Math.random() * 20 - 10;
         const trend = isPositive ? i * 2 : -i * 2;
         baseValue += volatility + trend * 0.5;
         data.push(Math.max(10, Math.min(90, baseValue)));
       }
-
       return data;
     };
 
@@ -512,7 +494,9 @@ export default function UserOverviewPage() {
       <div className="relative w-12 h-6">
         <svg
           viewBox="0 0 100 100"
-          className={`w-full h-full ${isPositive ? "text-green-500" : "text-red-500"}`}
+          className={`w-full h-full ${
+            isPositive ? "text-green-500" : "text-red-500"
+          }`}
         >
           <path
             d={pathData}
@@ -541,13 +525,12 @@ export default function UserOverviewPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
-            {/*Welcome & Investment Snapshot */}
+
+            {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
                 <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
@@ -572,7 +555,7 @@ export default function UserOverviewPage() {
               </Link>
             </section>
 
-            {/*Quick Stats Summary */}
+            {/* Quick Stats Summary */}
             <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat, i) => (
                 <Link
@@ -603,13 +586,13 @@ export default function UserOverviewPage() {
             <div className="lg:flex lg:items-stretch grid grid-cols-1 gap-8">
               {/* Left Column: Active Plans & History */}
               <div className="lg:flex-1 lg:w-2/3 flex flex-col space-y-10">
-                {/*Active Investment Plans (Alert Style) */}
+
+                {/* Active Investment Plans (Alert Style) */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-primary" /> Capital
                     Protection
                   </h2>
-
                   <div className="space-y-4">
                     <p className="text-[11px] leading-relaxed text-muted-foreground font-medium">
                       We stand by our strategies. If a trade results in a loss
@@ -625,7 +608,6 @@ export default function UserOverviewPage() {
                       </span>
                       —withdrawable immediately.
                     </p>
-
                     <div className="pt-2">
                       <Link
                         href="/user-dashboard/trades"
@@ -637,7 +619,7 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/*Recent Transactions Section */}
+                {/* Recent Transactions Section */}
                 <section className="space-y-4 flex-1 flex flex-col">
                   <div className="flex justify-between items-end">
                     <h2 className="text-sm font-black uppercase tracking-widest">
@@ -650,70 +632,182 @@ export default function UserOverviewPage() {
                       Full Ledger
                     </Link>
                   </div>
-                  <div className="bg-card border border-border rounded-3xl overflow-hidden divide-y divide-border flex-1">
-                    {recentDeposits.length === 0 ? (
-                      <div className="p-12 text-center">
-                        <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-sm font-black uppercase tracking-tighter mb-2">
-                          No transactions yet
-                        </p>
-                        <p className="text-[10px] text-muted-foreground uppercase mb-6">
-                          Once you deposit or earn, they will appear here
-                        </p>
-                        <Link
-                          href="/user-dashboard/deposit"
-                          className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
-                        >
-                          Make First Deposit
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-border">
-                        {recentDeposits.map((deposit, index) => (
-                          <div key={index} className="p-4 hover:bg-muted/30 transition-colors">
-                            <div className="flex justify-between items-start">
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 bg-green-500/10 rounded-lg">
-                                  <ArrowDownCircle className="w-4 h-4 text-green-500" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-black uppercase tracking-tighter">
-                                    Deposit
-                                  </p>
-                                  <p className="text-[10px] text-muted-foreground uppercase">
-                                    {deposit.paymentMethod}
-                                  </p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-1">
-                                    {new Date(deposit.createdAt).toLocaleDateString()} • {new Date(deposit.createdAt).toLocaleTimeString()}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-sm font-black text-green-500">
-                                  +${deposit.amount.toFixed(2)}
-                                </p>
-                                <span className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                                  deposit.status === 'approved' 
-                                    ? 'bg-green-500/10 text-green-500 border-green-500/20'
-                                    : deposit.status === 'rejected'
-                                    ? 'bg-red-500/10 text-red-500 border-red-500/20'
-                                    : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-                                }`}>
-                                  {deposit.status}
-                                </span>
-                              </div>
-                            </div>
+
+                  <div className="bg-card border border-border rounded-3xl overflow-hidden flex-1">
+                    {(() => {
+                      // Combine deposits and investment activities
+                      const activities: any[] = [];
+
+                      // Add deposits
+                      recentDeposits.forEach((deposit) => {
+                        activities.push({
+                          type: "deposit",
+                          data: deposit,
+                          date: new Date(deposit.createdAt),
+                          icon: ArrowDownCircle,
+                          iconBg: "bg-green-500/10",
+                          iconColor: "text-green-500",
+                          title: "Deposit",
+                          subtitle: deposit.paymentMethod,
+                          amount: `+$${deposit.amount.toFixed(2)}`,
+                          amountColor: "text-green-500",
+                          status: deposit.status,
+                        });
+                      });
+
+                      // Add investments
+                      userInvestments.forEach((investment) => {
+                        activities.push({
+                          type: "investment",
+                          data: investment,
+                          date: new Date(investment.startDate),
+                          icon: Gift,
+                          iconBg: "bg-blue-500/10",
+                          iconColor: "text-blue-500",
+                          title: "Investment",
+                          subtitle: investment.planName,
+                          amount: `$${investment.investmentAmount.toFixed(2)}`,
+                          amountColor: "text-blue-500",
+                          status: investment.status,
+                        });
+                      });
+
+                      // Add profit history from investments
+                      userInvestments.forEach((investment) => {
+                        if (
+                          investment.profitHistory &&
+                          investment.profitHistory.length > 0
+                        ) {
+                          investment.profitHistory.forEach((profit: any) => {
+                            activities.push({
+                              type: "profit",
+                              data: { ...profit, planName: investment.planName },
+                              date: new Date(profit.timestamp),
+                              icon: TrendingUp,
+                              iconBg: "bg-purple-500/10",
+                              iconColor: "text-purple-500",
+                              title: "ROI Profit",
+                              subtitle: `${investment.planName} - ${profit.rate}%`,
+                              amount: `+$${profit.amount.toFixed(2)}`,
+                              amountColor: "text-purple-500",
+                              status: "completed",
+                            });
+                          });
+                        }
+                      });
+
+                      // Sort by date (most recent first)
+                      activities.sort(
+                        (a, b) => b.date.getTime() - a.date.getTime()
+                      );
+
+                      const recentActivities = activities.slice(0, 5);
+                      const hasMoreActivities = activities.length > 5;
+
+                      if (recentActivities.length === 0) {
+                        return (
+                          <div className="p-12 text-center">
+                            <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-sm font-black uppercase tracking-tighter mb-2">
+                              No activity yet
+                            </p>
+                            <p className="text-[10px] text-muted-foreground uppercase mb-6">
+                              Once you deposit or invest, they will appear here
+                            </p>
+                            <Link
+                              href="/user-dashboard/deposit"
+                              className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+                            >
+                              Get Started
+                            </Link>
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        );
+                      }
+
+                      return (
+                        <div>
+                          <div className="max-h-96 overflow-y-scroll divide-y divide-border scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                            {activities.map((activity, index) => (
+                              <div
+                                key={index}
+                                className="p-4 hover:bg-muted/30 transition-colors"
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div className="flex items-start gap-3">
+                                    <div
+                                      className={`p-2 ${activity.iconBg} rounded-lg`}
+                                    >
+                                      <activity.icon
+                                        className={`w-4 h-4 ${activity.iconColor}`}
+                                      />
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-black uppercase tracking-tighter">
+                                        {activity.title}
+                                      </p>
+                                      <p className="text-[10px] text-muted-foreground uppercase">
+                                        {activity.subtitle}
+                                      </p>
+                                      <p className="text-[9px] text-muted-foreground uppercase mt-1">
+                                        {activity.date.toLocaleDateString()} •{" "}
+                                        {activity.date.toLocaleTimeString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p
+                                      className={`text-sm font-black ${activity.amountColor}`}
+                                    >
+                                      {activity.amount}
+                                    </p>
+                                    {activity.type === "deposit" && (
+                                      <span
+                                        className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                          activity.status === "approved"
+                                            ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                            : activity.status === "rejected"
+                                            ? "bg-red-500/10 text-red-500 border-red-500/20"
+                                            : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                                        }`}
+                                      >
+                                        {activity.status}
+                                      </span>
+                                    )}
+                                    {activity.type === "investment" && (
+                                      <span
+                                        className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                          activity.status === "active"
+                                            ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                            : activity.status === "completed"
+                                            ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                            : "bg-gray-500/10 text-gray-500 border-gray-500/20"
+                                        }`}
+                                      >
+                                        {activity.status}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          {hasMoreActivities && (
+                            <div className="p-2 text-center text-xs text-muted-foreground border-t border-border">
+                              Scroll to see {activities.length - 5} more
+                              activities
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </section>
               </div>
 
               {/* Right Column: Wallet & Notifications */}
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
-                {/*Account Summary Panel */}
+
+                {/* Account Summary Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <PiggyBank className="w-4 h-4 text-primary" /> Account
@@ -724,7 +818,9 @@ export default function UserOverviewPage() {
                       <span className="text-muted-foreground font-medium uppercase text-[10px]">
                         Active Trades
                       </span>
-                      <span className="font-black text-[10px]">{activeInvestments}</span>
+                      <span className="font-black text-[10px]">
+                        {activeInvestments}
+                      </span>
                     </div>
                     <Link
                       href="/user-dashboard/support"
@@ -735,12 +831,13 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                {/*Notifications Panel */}
+                {/* Notifications Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <Bell className="w-4 h-4 text-primary" /> Alerts
                   </h2>
-                  <div className="space-y-6">
+                  <div className="max-h-64 overflow-y-auto space-y-6">
+                    {/* Welcome bonus alert */}
                     <div className="flex gap-3 relative">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                       <div>
@@ -756,10 +853,82 @@ export default function UserOverviewPage() {
                         </p>
                       </div>
                     </div>
+
+                    {/* Daily profit alerts */}
+                    {(() => {
+                      const allProfitAlerts: any[] = [];
+
+                      userInvestments.forEach((investment) => {
+                        if (
+                          investment.profitHistory &&
+                          investment.profitHistory.length > 0
+                        ) {
+                          investment.profitHistory
+                            .slice(-2)
+                            .forEach((profit: any, index: number) => {
+                              allProfitAlerts.push({
+                                key: `${investment._id}-profit-${index}`,
+                                profit,
+                                planName: investment.planName,
+                              });
+                            });
+                        }
+                      });
+
+                      allProfitAlerts.sort(
+                        (a, b) =>
+                          new Date(b.profit.timestamp).getTime() -
+                          new Date(a.profit.timestamp).getTime()
+                      );
+                      const limitedAlerts = allProfitAlerts.slice(0, 2);
+
+                      return limitedAlerts.map((alert) => (
+                        <div key={alert.key} className="flex gap-3 relative">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
+                          <div>
+                            <p className="text-[11px] font-black uppercase tracking-tight">
+                              Daily Profit Added
+                            </p>
+                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                              ${alert.profit.amount.toFixed(2)} added from{" "}
+                              {alert.planName} plan ({alert.profit.rate}% ROI)
+                            </p>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
+                              {new Date(
+                                alert.profit.timestamp
+                              ).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+
+                    {/* Show message if no profits yet */}
+                    {userInvestments.length > 0 &&
+                      userInvestments.every(
+                        (inv) =>
+                          !inv.profitHistory || inv.profitHistory.length === 0
+                      ) && (
+                        <div className="flex gap-3 relative">
+                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5 shrink-0" />
+                          <div>
+                            <p className="text-[11px] font-black uppercase tracking-tight">
+                              Investment Active
+                            </p>
+                            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                              Your investments are active. Daily profits will be
+                              added here.
+                            </p>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">
+                              Pending
+                            </p>
+                          </div>
+                        </div>
+                      )}
                   </div>
                 </section>
 
-                {/*Help & Support Shortcut*/}
+                {/* Help & Support Shortcut */}
                 <section className="bg-primary/5 border border-primary/20 rounded-3xl p-6 flex-1">
                   <HelpCircle className="w-8 h-8 text-primary mb-4" />
                   <h3 className="text-sm font-black uppercase italic tracking-tighter">
@@ -784,150 +953,173 @@ export default function UserOverviewPage() {
               </div>
             </div>
 
-            {/* Live data fetch  */}
-           <section className="pt-10 border-t border-border relative">
-  {/* Header Section */}
-  <div className="flex  justify-between mb-8 gap-4">
-    <div>
-      <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
-        <Activity className="w-6 h-6 text-primary" />
-        Live  Markets
-      </h2>
-      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-        Real-time Cryptocurrency Prices
-      </p>
-    </div>
-
-    {/* <div className="flex items-center gap-4 w-full md:w-auto"> */}
-      <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-        <RefreshCw className="w-3 h-3 animate-spin text-primary" />
-        <span className="hidden sm:inline">Last Update:</span> {formattedTime}
-      </div>
-    {/* </div> */}
-  </div>
-
-  {/* Market Data Container */}
-  <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-xl">
-    {/* Table Header - Hidden on very small screens or made scrollable */}
-    <div className="overflow-x-auto">
-      <div className="min-w-[600px] w-full">
-        {/* Header Row */}
-        <div className="flex justify-between items-center bg-muted/50 border-b border-border px-6 py-4">
-          <div className="flex-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Asset</div>
-          <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">Price</div>
-          <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">24h Change</div>
-          <div className="flex-1 text-center text-[9px] font-black uppercase tracking-widest text-muted-foreground">Trend</div>
-          <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">Type</div>
-        </div>
-
-        {/* Data Rows */}
-        <div className="divide-y divide-border/50">
-          {marketLoading
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex justify-between items-center px-6 py-4 animate-pulse">
-                  <div className="flex-1 h-4 bg-muted rounded w-24"></div>
-                  <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
-                  <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
-                  <div className="flex-1 h-4 bg-muted rounded w-12 mx-auto"></div>
-                  <div className="flex-1 h-4 bg-muted rounded w-10 ml-auto"></div>
+            {/* Live Markets */}
+            <section className="pt-10 border-t border-border relative">
+              {/* Header Section */}
+              <div className="flex justify-between mb-8 gap-4">
+                <div>
+                  <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
+                    <Activity className="w-6 h-6 text-primary" />
+                    Live Markets
+                  </h2>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    Real-time Cryptocurrency Prices
+                  </p>
                 </div>
-              ))
-            : marketData.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center px-6 py-4 hover:bg-muted/30 transition-colors flex-nowrap"
-                >
-                  {/* 1. Asset */}
-                  <div className="flex-1 flex items-center gap-3 min-w-0">
-                    <div className="relative flex-shrink-0">
-                      {item.type === "crypto" ? (
-                        // Crypto logos
-                        item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-8 h-8 rounded-full object-cover border border-border"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20">
-                            <span className="text-[10px] font-black text-orange-500">{item.symbol.slice(0, 2)}</span>
-                          </div>
-                        )
-                      ) : (
-                        // Forex flags
-                        <div className="flex -space-x-2">
-                          {item.baseFlag && (
-                            <img
-                              src={`https://flagcdn.com/${item.baseFlag}.svg`}
-                              alt="Base currency"
-                              className="w-6 h-6 rounded-full object-cover border-2 border-background"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
-                          )}
-                          {item.quoteFlag && (
-                            <img
-                              src={`https://flagcdn.com/${item.quoteFlag}.svg`}
-                              alt="Quote currency"
-                              className="w-6 h-6 rounded-full object-cover border-2 border-background"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
-                          )}
-                          {(!item.baseFlag || !item.quoteFlag) && (
-                            <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
-                              <span className="text-[10px] font-black text-blue-500">{item.symbol.slice(0, 2)}</span>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                  <RefreshCw className="w-3 h-3 animate-spin text-primary" />
+                  <span className="hidden sm:inline">Last Update:</span>{" "}
+                  {formattedTime}
+                </div>
+              </div>
+
+              {/* Market Data Container */}
+              <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <div className="min-w-[600px] w-full">
+                    {/* Header Row */}
+                    <div className="flex justify-between items-center bg-muted/50 border-b border-border px-6 py-4">
+                      <div className="flex-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Asset
+                      </div>
+                      <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Price
+                      </div>
+                      <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        24h Change
+                      </div>
+                      <div className="flex-1 text-center text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Trend
+                      </div>
+                      <div className="flex-1 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Type
+                      </div>
+                    </div>
+
+                    {/* Data Rows */}
+                    <div className="divide-y divide-border/50">
+                      {marketLoading
+                        ? Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex justify-between items-center px-6 py-4 animate-pulse"
+                            >
+                              <div className="flex-1 h-4 bg-muted rounded w-24"></div>
+                              <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
+                              <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
+                              <div className="flex-1 h-4 bg-muted rounded w-12 mx-auto"></div>
+                              <div className="flex-1 h-4 bg-muted rounded w-10 ml-auto"></div>
                             </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <div className="truncate">
-                      <div className="font-black text-sm uppercase tracking-tighter leading-none">{item.symbol}</div>
-                      <div className="text-[10px] text-muted-foreground font-medium truncate">{item.name}</div>
-                    </div>
-                  </div>
+                          ))
+                        : marketData.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center px-6 py-4 hover:bg-muted/30 transition-colors flex-nowrap"
+                            >
+                              {/* 1. Asset */}
+                              <div className="flex-1 flex items-center gap-3 min-w-0">
+                                <div className="relative flex-shrink-0">
+                                  {item.type === "crypto" ? (
+                                    item.image ? (
+                                      <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-8 h-8 rounded-full object-cover border border-border"
+                                      />
+                                    ) : (
+                                      <div className="w-8 h-8 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20">
+                                        <span className="text-[10px] font-black text-orange-500">
+                                          {item.symbol.slice(0, 2)}
+                                        </span>
+                                      </div>
+                                    )
+                                  ) : (
+                                    <div className="flex -space-x-2">
+                                      {item.baseFlag && (
+                                        <img
+                                          src={`https://flagcdn.com/${item.baseFlag}.svg`}
+                                          alt="Base currency"
+                                          className="w-6 h-6 rounded-full object-cover border-2 border-background"
+                                          onError={(e) => {
+                                            e.currentTarget.style.display =
+                                              "none";
+                                          }}
+                                        />
+                                      )}
+                                      {item.quoteFlag && (
+                                        <img
+                                          src={`https://flagcdn.com/${item.quoteFlag}.svg`}
+                                          alt="Quote currency"
+                                          className="w-6 h-6 rounded-full object-cover border-2 border-background"
+                                          onError={(e) => {
+                                            e.currentTarget.style.display =
+                                              "none";
+                                          }}
+                                        />
+                                      )}
+                                      {(!item.baseFlag || !item.quoteFlag) && (
+                                        <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
+                                          <span className="text-[10px] font-black text-blue-500">
+                                            {item.symbol.slice(0, 2)}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="truncate">
+                                  <div className="font-black text-sm uppercase tracking-tighter leading-none">
+                                    {item.symbol}
+                                  </div>
+                                  <div className="text-[10px] text-muted-foreground font-medium truncate">
+                                    {item.name}
+                                  </div>
+                                </div>
+                              </div>
 
-                  {/* 2. Price */}
-                  <div className="flex-1 text-right">
-                    <div className="font-bold text-sm tracking-tight">
-                      {formatPrice(item.price, item.type)}
-                    </div>
-                  </div>
+                              {/* 2. Price */}
+                              <div className="flex-1 text-right">
+                                <div className="font-bold text-sm tracking-tight">
+                                  {formatPrice(item.price, item.type)}
+                                </div>
+                              </div>
 
-                  {/* 3. Change */}
-                  <div className="flex-1 text-right">
-                    <div className="inline-block">
-                       {formatChange(item.change, item.changePercent)}
-                    </div>
-                  </div>
+                              {/* 3. Change */}
+                              <div className="flex-1 text-right">
+                                <div className="inline-block">
+                                  {formatChange(item.change, item.changePercent)}
+                                </div>
+                              </div>
 
-                  {/* 4. Trend */}
-                  <div className="flex-1 flex justify-center">
-                    <div className="w-16">
-                      <MiniSparkline isPositive={item.changePercent >= 0} />
-                    </div>
-                  </div>
+                              {/* 4. Trend */}
+                              <div className="flex-1 flex justify-center">
+                                <div className="w-16">
+                                  <MiniSparkline
+                                    isPositive={item.changePercent >= 0}
+                                  />
+                                </div>
+                              </div>
 
-                  {/* 5. Type */}
-                  <div className="flex-1 flex justify-end">
-                    <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                      item.type === "crypto"
-                        ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
-                        : "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                    }`}>
-                      {item.type}
-                    </span>
+                              {/* 5. Type */}
+                              <div className="flex-1 flex justify-end">
+                                <span
+                                  className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                    item.type === "crypto"
+                                      ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
+                                      : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                  }`}
+                                >
+                                  {item.type}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                    </div>
                   </div>
                 </div>
-              ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+              </div>
+            </section>
+
           </div>
         </main>
       </div>
