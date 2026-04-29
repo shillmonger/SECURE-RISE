@@ -6,6 +6,7 @@ import {
   TrendingUp,
   ArrowDownCircle,
   ChevronRight,
+  ChevronLeft,
   AlertCircle,
   PiggyBank,
   Clock,
@@ -60,6 +61,8 @@ export default function UserOverviewPage() {
   const [recentDeposits, setRecentDeposits] = useState<any[]>([]);
   const [activeInvestments, setActiveInvestments] = useState(0);
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
+  const [activityPage, setActivityPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -701,10 +704,13 @@ export default function UserOverviewPage() {
                         (a, b) => b.date.getTime() - a.date.getTime()
                       );
 
-                      const recentActivities = activities.slice(0, 5);
-                      const hasMoreActivities = activities.length > 5;
+                      const totalPages = Math.ceil(activities.length / itemsPerPage);
+                      const startIndex = (activityPage - 1) * itemsPerPage;
+                      const endIndex = startIndex + itemsPerPage;
+                      const paginatedActivities = activities.slice(startIndex, endIndex);
+                      const hasMoreActivities = activities.length > itemsPerPage;
 
-                      if (recentActivities.length === 0) {
+                      if (paginatedActivities.length === 0 && activityPage === 1) {
                         return (
                           <div className="p-12 text-center">
                             <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -727,7 +733,7 @@ export default function UserOverviewPage() {
                       return (
                         <div>
                           <div className="max-h-96 overflow-y-scroll divide-y divide-border scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
-                            {activities.map((activity, index) => (
+                            {paginatedActivities.map((activity, index) => (
                               <div
                                 key={index}
                                 className="p-4 hover:bg-muted/30 transition-colors"
@@ -791,10 +797,35 @@ export default function UserOverviewPage() {
                               </div>
                             ))}
                           </div>
-                          {hasMoreActivities && (
-                            <div className="p-2 text-center text-xs text-muted-foreground border-t border-border">
-                              Scroll to see {activities.length - 5} more
-                              activities
+                          {totalPages > 1 && (
+                            <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
+                              <button
+                                onClick={() => setActivityPage(Math.max(1, activityPage - 1))}
+                                disabled={activityPage === 1}
+                                className={`p-2 rounded-lg transition-colors ${
+                                  activityPage === 1
+                                    ? "text-muted-foreground cursor-not-allowed"
+                                    : "text-foreground hover:bg-muted/50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </button>
+                              
+                              <span className="text-xs font-medium text-muted-foreground">
+                                Page {activityPage} of {totalPages}
+                              </span>
+                              
+                              <button
+                                onClick={() => setActivityPage(Math.min(totalPages, activityPage + 1))}
+                                disabled={activityPage === totalPages}
+                                className={`p-2 rounded-lg transition-colors ${
+                                  activityPage === totalPages
+                                    ? "text-muted-foreground cursor-not-allowed"
+                                    : "text-foreground hover:bg-muted/50"
+                                }`}
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
                             </div>
                           )}
                         </div>
@@ -884,7 +915,7 @@ export default function UserOverviewPage() {
 
                       return limitedAlerts.map((alert) => (
                         <div key={alert.key} className="flex gap-3 relative">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                           <div>
                             <p className="text-[11px] font-black uppercase tracking-tight">
                               Daily Profit Added
