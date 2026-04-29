@@ -63,6 +63,8 @@ export default function UserOverviewPage() {
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 5;
+  const [alertsPage, setAlertsPage] = useState(1);
+  const alertsPerPage = 3;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -867,7 +869,7 @@ export default function UserOverviewPage() {
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <Bell className="w-4 h-4 text-primary" /> Alerts
                   </h2>
-                  <div className="max-h-64 overflow-y-auto space-y-6">
+                  <div className="max-h-64 space-y-6">
                     {/* Welcome bonus alert */}
                     <div className="flex gap-3 relative">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />

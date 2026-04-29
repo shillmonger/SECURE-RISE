@@ -294,13 +294,13 @@ export default function WithdrawPage() {
                       <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
                         Minimum Amount
                       </span>
-                      <span className="text-sm font-black italic">$50.00</span>
+                      <span className="text-sm font-black italic">$100.00</span>
                     </div>
                     <div className="flex justify-between items-center border-b border-background/10 pb-2">
                       <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
                         Processing Fee
                       </span>
-                      <span className="text-sm font-black italic">1.5%</span>
+                      <span className="text-sm font-black italic">0%</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
