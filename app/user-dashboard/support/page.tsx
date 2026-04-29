@@ -100,7 +100,7 @@ export default function SupportPage() {
         <main className="flex-1 overflow-y-auto">
           {/* Hero Section */}
           <section className="relative h-[40vh] min-h-[300px] w-full flex items-center justify-center overflow-hidden bg-foreground">
-            <div className="absolute inset-0 opacity-80 grayscale">
+            <div className="absolute inset-0 opacity-90 grayscale">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070"
                 className="w-full h-full object-cover"
@@ -132,7 +132,7 @@ export default function SupportPage() {
               ].map((stat, i) => (
                 <div
                   key={i}
-                  className="bg-card border border-border rounded-3xl p-6 shadow-xl flex flex-col items-center text-center"
+                  className="bg-card border border-border rounded-xl p-6 shadow-xl flex flex-col items-center text-center"
                 >
                   <stat.icon className="w-5 h-5 text-primary mb-2" />
                   <p className="text-xl font-black italic tracking-tighter">

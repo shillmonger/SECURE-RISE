@@ -643,7 +643,7 @@ export default function UserOverviewPage() {
                     </p>
                     <div className="pt-2">
                       <Link
-                        href="/user-dashboard/trades"
+                        href="/user-dashboard/invest"
                         className="block w-full text-center py-3 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-primary/10"
                       >
                         Trade Now

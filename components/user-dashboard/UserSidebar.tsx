@@ -14,6 +14,8 @@ import {
   History,
   Crown,
   Swords,
+  PieChart,
+  Activity,
   Users,
   Lock,
   HeadphonesIcon,
@@ -21,6 +23,8 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  Shield,
+  MessageSquare,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -68,9 +72,10 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Live Investments", icon: BriefcaseBusiness, href: `${basePath}/my-investments` },
-    { name: "Profit Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Live Investments", icon: Activity, href: `${basePath}/my-investments` },
+    { name: "Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+    { name: "Analytics", icon: PieChart, href: `${basePath}/analytics` },
     {
       name: "Community",
       icon: Users,
@@ -78,7 +83,8 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
         { name: "Challenges", icon: Swords, href: `#` },
-        { name: "Referrals", icon: Users, href: `${basePath}/referrals` },
+        { name: "Referrals", icon: Users, href: `#` },
+        { name: "Give Feedback", icon: MessageSquare, href: `#` },
       ],
     },
     {
@@ -87,6 +93,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       children: [
         { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
         { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
+        { name: "KYC Verification", icon: Shield, href: `#` },
         { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
         ...(userRole.includes("admin")
           ? [{ name: "Switch 2 Admin", icon: Lock, href: `/admin-dashboard/dashboard` }]
