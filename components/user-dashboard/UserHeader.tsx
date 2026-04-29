@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -27,16 +28,17 @@ export default function UserHeader({ sidebarOpen, setSidebarOpen }: HeaderProps)
   const [isLoading, setIsLoading] = useState(true);
 
   // Notification count replaces cart item count
-  const [notificationCount] = useState(5);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationLoading, setNotificationLoading] = useState(true);
 
   // Default profile image constant
   const defaultProfileImage = "https://github.com/shadcn.png";
 
-  // Fetch user data on component mount
+  // Fetch user data and notification count on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/user-dashboard/profile');
+        const response = await fetch('/api/user/info');
         const data = await response.json();
 
         if (data.success) {
@@ -47,6 +49,9 @@ export default function UserHeader({ sidebarOpen, setSidebarOpen }: HeaderProps)
             profileImage: userData.profileImage || "",
             fullName: userData.fullName || "",
           });
+
+          // Fetch notification count
+          await fetchNotificationCount(userData.id);
         } else {
           console.error('Failed to fetch user data:', data.error);
           // Keep default values if fetch fails
@@ -56,10 +61,56 @@ export default function UserHeader({ sidebarOpen, setSidebarOpen }: HeaderProps)
         toast.error('Failed to load user data');
       } finally {
         setIsLoading(false);
+        setNotificationLoading(false);
       }
     };
 
-    fetchUserData();
+    const fetchNotificationCount = async (userId: string) => {
+      try {
+        // Fetch deposits
+        const depositsResponse = await fetch(`/api/user-dashboard/deposit?userId=${userId}`);
+        const depositsResult = await depositsResponse.json();
+        
+        // Fetch withdrawals
+        const withdrawalsResponse = await fetch("/api/withdraw");
+        const withdrawalsResult = await withdrawalsResponse.json();
+        
+        // Fetch investments
+        const investmentsResponse = await fetch("/api/investments");
+        const investmentsResult = await investmentsResponse.json();
+
+        let unreadCount = 0;
+
+        // Count unread deposits (pending ones)
+        if (depositsResult.success && depositsResult.deposits) {
+          unreadCount += depositsResult.deposits.filter((d: any) => d.status !== 'approved').length;
+        }
+
+        // Count unread withdrawals (pending ones)
+        if (withdrawalsResult.withdrawals) {
+          unreadCount += withdrawalsResult.withdrawals.filter((w: any) => w.status !== 'approved').length;
+        }
+
+        // Count ROI notifications (all profit history items are unread initially)
+        if (investmentsResult.investments) {
+          investmentsResult.investments.forEach((investment: any) => {
+            if (investment.profitHistory && investment.profitHistory.length > 0) {
+              unreadCount += investment.profitHistory.length;
+            }
+            // Count active investments as unread
+            if (investment.status === 'active') {
+              unreadCount += 1;
+            }
+          });
+        }
+
+        setNotificationCount(unreadCount);
+      } catch (error) {
+        console.error('Error fetching notification count:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -87,14 +138,14 @@ export default function UserHeader({ sidebarOpen, setSidebarOpen }: HeaderProps)
         {/* Crypto dropdown removed as requested */}
 
         {/* Notification Bell replaced the Cart Icon */}
-        <button className="p-2 hover:bg-secondary rounded-full relative cursor-pointer">
+        <Link href="/user-dashboard/notifications" className="p-2 hover:bg-secondary rounded-full relative cursor-pointer">
           <Bell className="h-5 w-5" />
-          {notificationCount > 0 && (
+          {!notificationLoading && notificationCount > 0 && (
             <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black rounded-full h-4 w-4 flex items-center justify-center border-2 border-background">
               {notificationCount > 99 ? '99+' : notificationCount}
             </span>
           )}
-        </button>
+        </Link>
 
         <div className="flex items-center gap-3 pl-4 border-l border-border">
           <div className="text-right hidden lg:block">

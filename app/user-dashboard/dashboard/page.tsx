@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   ArrowRight,
+  ArrowUpRight,
   Lock,
   Zap,
   Bot,
@@ -63,7 +64,7 @@ export default function UserOverviewPage() {
   const [activeInvestments, setActiveInvestments] = useState(0);
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
   const alertsPerPage = 3;
 
@@ -147,24 +148,40 @@ export default function UserOverviewPage() {
       label: "Acc Balance",
       value: `$${formatNumber(financialData.accountBalance)}`,
       icon: Wallet,
-      link: "#",
-    },
-    {
-      label: "Act Investments",
-      value: activeInvestments.toString(),
-      icon: Gift,
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-500",
+      hoverBg: "group-hover:bg-blue-500/10",
+      hoverColor: "group-hover:text-blue-500",
       link: "#",
     },
     {
       label: "Total Profits",
       value: `$${formatNumber(financialData.totalProfits)}`,
       icon: TrendingUp,
+      iconBg: "bg-green-500/10",
+      iconColor: "text-green-500",
+      hoverBg: "group-hover:bg-green-500/10",
+      hoverColor: "group-hover:text-green-500",
       link: "#",
     },
     {
       label: "Total Deposits",
       value: `$${formatNumber(financialData.totalDeposit)}`,
       icon: ArrowDownCircle,
+      iconBg: "bg-orange-500/10",
+      iconColor: "text-orange-500",
+      hoverBg: "group-hover:bg-orange-500/10",
+      hoverColor: "group-hover:text-orange-500",
+      link: "#",
+    },
+    {
+      label: "Total Withdrawal",
+      value: `$${formatNumber(financialData.totalWithdrawal)}`,
+      icon: ArrowUpRight,
+      iconBg: "bg-purple-500/10",
+      iconColor: "text-purple-500",
+      hoverBg: "group-hover:bg-purple-500/10",
+      hoverColor: "group-hover:text-purple-500",
       link: "#",
     },
   ];
@@ -580,8 +597,8 @@ export default function UserOverviewPage() {
                   className="bg-card border border-border p-5 rounded-2xl group hover:border-primary transition-all"
                 >
                   <div className="flex justify-between items-start mb-3">
-                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                      <stat.icon className="w-5 h-5" />
+                    <div className={`p-2 ${stat.iconBg} rounded-lg ${stat.hoverBg} ${stat.hoverColor} transition-colors`}>
+                      <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
