@@ -71,7 +71,7 @@ export default function TransactionsPage() {
         const depositsResult = await depositsResponse.json();
         
         // Fetch withdrawals
-        const withdrawalsResponse = await fetch("/api/withdraw");
+        const withdrawalsResponse = await fetch(`/api/withdraw?userId=${userResult.user.id}`);
         const withdrawalsResult = await withdrawalsResponse.json();
         
         // Fetch investments
@@ -98,15 +98,36 @@ export default function TransactionsPage() {
 
         // Process withdrawals
         if (withdrawalsResult.withdrawals) {
-          withdrawalsResult.withdrawals.forEach((withdrawal: any) => {
+          console.log('Withdrawal data received:', withdrawalsResult.withdrawals);
+          withdrawalsResult.withdrawals.forEach((withdrawal: any, index: number) => {
+            // API returns processed data, not raw MongoDB data
+            const withdrawalId = withdrawal.id || `withdrawal-${index}`;
+            const method = withdrawal.method || 'Unknown';
+            const status = withdrawal.status || 'unknown';
+            const amount = withdrawal.amount || 0;
+            const date = withdrawal.date || new Date().toLocaleDateString();
+            
+            // Parse the date string to get timestamp
+            const dateObj = new Date(date);
+            const timestamp = dateObj.toLocaleTimeString();
+            
+            console.log('Processing withdrawal:', {
+              withdrawalId,
+              method,
+              amount,
+              status,
+              date,
+              timestamp
+            });
+            
             allTransactions.push({
-              id: withdrawal.withdrawalId || withdrawal._id,
+              id: withdrawalId,
               type: 'withdrawal',
-              amount: withdrawal.amount,
-              method: `${withdrawal.crypto?.name || 'Unknown'} - ${withdrawal.crypto?.symbol || ''}`,
-              status: withdrawal.status,
-              date: new Date(withdrawal.createdAt).toLocaleDateString(),
-              timestamp: new Date(withdrawal.createdAt).toLocaleTimeString(),
+              amount: amount,
+              method: method,
+              status: status,
+              date: date,
+              timestamp: timestamp,
               rawData: withdrawal
             });
           });
@@ -276,7 +297,7 @@ export default function TransactionsPage() {
                   const status = getStatusStyle(txn.status);
                   return (
                     <div 
-                      key={txn.id}
+                      key={txn.id || `txn-${Math.random()}`}
                       className="group bg-card border border-border cursor-pointer rounded-[1rem] p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-foreground/40 transition-all hover:shadow-xl"
                     >
                       {/* Left: Type and Info */}
@@ -291,7 +312,7 @@ export default function TransactionsPage() {
                               {status.icon} {txn.status}
                             </span>
                           </div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {txn.id} • {txn.date} at {txn.timestamp}</p>
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {txn.id ? txn.id.substring(0, 4) + '........' : 'Unknown'} {txn.date} at {txn.timestamp}</p>
                         </div>
                       </div>
 
@@ -318,7 +339,7 @@ export default function TransactionsPage() {
 
             {/* Pagination Button */}
             <div className="flex justify-center pt-6">
-              <button className="px-10 py-4 bg-muted/30 border border-border cursor-pointer rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+              <button className="px-4 py-4 bg-muted/30 border border-border cursor-pointer rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
                 Load More Activity
               </button>
             </div>
