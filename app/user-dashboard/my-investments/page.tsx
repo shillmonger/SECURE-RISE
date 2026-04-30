@@ -82,7 +82,7 @@ function InvestmentCard({ inv }: { inv: Investment }) {
             <p className="text-lg font-black text-blue-500 tracking-tighter text-indigo-500">${inv.investmentAmount.toLocaleString()}</p>
           </div>
           <div className="space-y-1 border-x border-border px-4">
-            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block">Total Profit</span>
+            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block">Profit</span>
             <p className="text-lg font-black tracking-tighter text-green-500">${inv.profitEarned.toLocaleString()}</p>
           </div>
           <div className="space-y-1 text-right">
@@ -153,7 +153,7 @@ function InvestmentCard({ inv }: { inv: Investment }) {
           </button>
           <Link 
             href="/user-dashboard/invest" 
-            className="cursor-pointer px-4 bg-primary text-primary-foreground hover:opacity-90 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+            className="cursor-pointer px-2 lg-px-4 bg-primary text-primary-foreground hover:opacity-90 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             Reinvest
