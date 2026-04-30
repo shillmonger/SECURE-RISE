@@ -93,17 +93,21 @@ function InvestmentCard({ inv }: { inv: Investment }) {
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Maturity Progress</span>
-            <span className="text-xs font-black italic">{inv.completionPercentage}%</span>
-          </div>
-          <div className="h-2 w-full bg-muted rounded-full overflow-hidden border border-border">
-            <div 
-              className="h-full bg-foreground rounded-full transition-all duration-1000"
-              style={{ width: `${inv.completionPercentage}%` }}
-            />
-          </div>
-        </div>
+  <div className="flex justify-between items-end">
+    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+      Maturity Progress
+    </span>
+    <span className="text-xs font-black italic">
+      {Math.round(inv.completionPercentage)}%
+    </span>
+  </div>
+  <div className="h-2 w-full bg-muted rounded-full overflow-hidden border border-border">
+    <div 
+      className="h-full bg-foreground rounded-full transition-all duration-1000"
+      style={{ width: `${inv.completionPercentage}%` }}
+    />
+  </div>
+</div>
 
         {/* Dynamic Detail Section */}
         {showDetails && (
