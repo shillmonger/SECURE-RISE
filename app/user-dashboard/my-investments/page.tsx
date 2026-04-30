@@ -57,14 +57,14 @@ function InvestmentCard({ inv }: { inv: Investment }) {
     <div className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group">
       
       {/* Header */}
-      <div className="bg-foreground p-6 text-background flex justify-between items-center relative overflow-hidden">
+      <div className="bg-foreground p-4 lg:p-6 text-background flex justify-between items-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 -rotate-45 translate-x-16 -translate-y-16" />
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className={`w-2 h-2 rounded-full animate-pulse ${statusColors[inv.status]}`} />
             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">{inv.status}</p>
           </div>
-          <h3 className="text-2xl font-black italic uppercase tracking-tighter leading-none">{inv.planName}</h3>
+          <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter leading-none">{inv.planName}</h3>
         </div>
         <div className="text-right">
           <p className="text-[10px] font-black uppercase opacity-60 mb-1">Yield Rate</p>
@@ -74,7 +74,7 @@ function InvestmentCard({ inv }: { inv: Investment }) {
         </div>
       </div>
 
-      <div className="p-6 space-y-5">
+      <div className="p-4 md:p-6 space-y-5">
         {/* Core Stats Grid */}
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-1">
