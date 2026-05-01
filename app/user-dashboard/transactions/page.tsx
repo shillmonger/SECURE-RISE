@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  RefreshCcw, 
-  ShoppingBag, 
-  Filter, 
+import {
+  ArrowUpRight,
+  RefreshCcw,
+  Filter,
   Search,
   ChevronRight,
+  ChevronLeft,
   Download,
   Calendar,
   CheckCircle2,
@@ -16,17 +15,22 @@ import {
   XCircle,
   Gift,
   TrendingUp,
-  ArrowDownCircle
+  ArrowDownCircle,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
-import Link from "next/link";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = 'deposit' | 'withdrawal' | 'investment' | 'roi';
-type TransactionStatus = 'completed' | 'pending' | 'failed' | 'approved' | 'rejected' | 'active';
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi";
+type TransactionStatus =
+  | "completed"
+  | "pending"
+  | "failed"
+  | "approved"
+  | "rejected"
+  | "active";
 
 interface Transaction {
   id: string;
@@ -39,142 +43,129 @@ interface Transaction {
   rawData?: any;
 }
 
-const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: "TXN-99210", type: "roi", amount: 450.00, method: "Daily Profit", status: "completed", date: "Apr 14, 2026", timestamp: "12:45 PM" },
-  { id: "TXN-99209", type: "withdrawal", amount: 1200.00, method: "Bitcoin", status: "pending", date: "Apr 13, 2026", timestamp: "09:20 AM" },
-  { id: "TXN-99208", type: "investment", amount: 5000.00, method: "Gold Plan", status: "completed", date: "Apr 12, 2026", timestamp: "03:15 PM" },
-  { id: "TXN-99207", type: "deposit", amount: 2500.00, method: "USDT TRC20", status: "completed", date: "Apr 10, 2026", timestamp: "11:00 AM" },
-  { id: "TXN-99206", type: "roi", amount: 120.50, method: "Starter Plan", status: "completed", date: "Apr 10, 2026", timestamp: "12:00 PM" },
-];
+const ITEMS_PER_PAGE = 50;
 
 export default function TransactionsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterType, setFilterType] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch real data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data
         const userResponse = await fetch("/api/user/info");
         const userResult = await userResponse.json();
-        
-        if (userResult.success) {
-          setUserData(userResult.user);
-        }
 
-        // Fetch deposits
-        const depositsResponse = await fetch(`/api/user-dashboard/deposit?userId=${userResult.user.id}`);
+        const depositsResponse = await fetch(
+          `/api/user-dashboard/deposit?userId=${userResult.user.id}`
+        );
         const depositsResult = await depositsResponse.json();
-        
-        // Fetch withdrawals
-        const withdrawalsResponse = await fetch(`/api/withdraw?userId=${userResult.user.id}`);
+
+        const withdrawalsResponse = await fetch(
+          `/api/withdraw?userId=${userResult.user.id}`
+        );
         const withdrawalsResult = await withdrawalsResponse.json();
-        
-        // Fetch investments
+
         const investmentsResponse = await fetch("/api/investments");
         const investmentsResult = await investmentsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
-        // Process deposits
         if (depositsResult.success && depositsResult.deposits) {
           depositsResult.deposits.forEach((deposit: any) => {
             allTransactions.push({
               id: deposit.transactionId || deposit._id,
-              type: 'deposit',
+              type: "deposit",
               amount: deposit.amount,
               method: deposit.paymentMethod,
               status: deposit.status,
               date: new Date(deposit.createdAt).toLocaleDateString(),
               timestamp: new Date(deposit.createdAt).toLocaleTimeString(),
-              rawData: deposit
+              rawData: deposit,
             });
           });
         }
 
-        // Process withdrawals
         if (withdrawalsResult.withdrawals) {
-          console.log('Withdrawal data received:', withdrawalsResult.withdrawals);
-          withdrawalsResult.withdrawals.forEach((withdrawal: any, index: number) => {
-            // API returns processed data, not raw MongoDB data
-            const withdrawalId = withdrawal.id || `withdrawal-${index}`;
-            const method = withdrawal.method || 'Unknown';
-            const status = withdrawal.status || 'unknown';
-            const amount = withdrawal.amount || 0;
-            const date = withdrawal.date || new Date().toLocaleDateString();
-            
-            // Parse the date string to get timestamp
-            const dateObj = new Date(date);
-            const timestamp = dateObj.toLocaleTimeString();
-            
-            console.log('Processing withdrawal:', {
-              withdrawalId,
-              method,
-              amount,
-              status,
-              date,
-              timestamp
-            });
-            
-            allTransactions.push({
-              id: withdrawalId,
-              type: 'withdrawal',
-              amount: amount,
-              method: method,
-              status: status,
-              date: date,
-              timestamp: timestamp,
-              rawData: withdrawal
-            });
-          });
+          withdrawalsResult.withdrawals.forEach(
+            (withdrawal: any, index: number) => {
+              const withdrawalId =
+                withdrawal.id || `withdrawal-${index}`;
+              const method = withdrawal.method || "Unknown";
+              const status = withdrawal.status || "unknown";
+              const amount = withdrawal.amount || 0;
+              const date =
+                withdrawal.date || new Date().toLocaleDateString();
+              const dateObj = new Date(date);
+              const timestamp = dateObj.toLocaleTimeString();
+
+              allTransactions.push({
+                id: withdrawalId,
+                type: "withdrawal",
+                amount,
+                method,
+                status,
+                date,
+                timestamp,
+                rawData: withdrawal,
+              });
+            }
+          );
         }
 
-        // Process investments
         if (investmentsResult.investments) {
           investmentsResult.investments.forEach((investment: any) => {
             allTransactions.push({
               id: investment._id,
-              type: 'investment',
+              type: "investment",
               amount: investment.investmentAmount,
               method: investment.planName,
               status: investment.status,
               date: new Date(investment.startDate).toLocaleDateString(),
-              timestamp: new Date(investment.startDate).toLocaleTimeString(),
-              rawData: investment
+              timestamp: new Date(
+                investment.startDate
+              ).toLocaleTimeString(),
+              rawData: investment,
             });
 
-            // Add profit history as ROI transactions
-            if (investment.profitHistory && investment.profitHistory.length > 0) {
+            if (
+              investment.profitHistory &&
+              investment.profitHistory.length > 0
+            ) {
               investment.profitHistory.forEach((profit: any) => {
                 allTransactions.push({
                   id: `ROI-${investment._id}-${profit.timestamp}`,
-                  type: 'roi',
+                  type: "roi",
                   amount: profit.amount,
                   method: `${investment.planName} - ${profit.rate}% ROI`,
-                  status: 'completed',
+                  status: "completed",
                   date: new Date(profit.timestamp).toLocaleDateString(),
-                  timestamp: new Date(profit.timestamp).toLocaleTimeString(),
-                  rawData: { ...profit, investment }
+                  timestamp: new Date(
+                    profit.timestamp
+                  ).toLocaleTimeString(),
+                  rawData: { ...profit, investment },
                 });
               });
             }
           });
         }
 
-        // Sort by date (most recent first)
         allTransactions.sort((a, b) => {
-          const dateA = new Date(a.rawData?.createdAt || a.rawData?.timestamp || Date.now());
-          const dateB = new Date(b.rawData?.createdAt || b.rawData?.timestamp || Date.now());
+          const dateA = new Date(
+            a.rawData?.createdAt || a.rawData?.timestamp || Date.now()
+          );
+          const dateB = new Date(
+            b.rawData?.createdAt || b.rawData?.timestamp || Date.now()
+          );
           return dateB.getTime() - dateA.getTime();
         });
 
         setTransactions(allTransactions);
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        console.error("Error fetching transactions:", error);
       } finally {
         setLoading(false);
       }
@@ -183,165 +174,417 @@ export default function TransactionsPage() {
     fetchData();
   }, []);
 
-  const filteredTransactions = filterType === 'all' 
-    ? transactions 
-    : transactions.filter(txn => txn.type === filterType);
+  // ─── Filtering ──────────────────────────────────────────────────────────────
+  const filteredTransactions = transactions.filter((txn) => {
+    const matchType = filterType === "all" || txn.type === filterType;
+    const q = searchQuery.toLowerCase();
+    const matchSearch =
+      !q ||
+      txn.id.toLowerCase().includes(q) ||
+      txn.method.toLowerCase().includes(q);
+    return matchType && matchSearch;
+  });
 
-  const getIcon = (type: TransactionType) => {
+  // Reset page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterType, searchQuery]);
+
+  // ─── Pagination ─────────────────────────────────────────────────────────────
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE)
+  );
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+  const truncateId = (id: string) => {
+    if (!id) return "Unknown";
+    return id.length > 10 ? id.substring(0, 10) + "…………" : id;
+  };
+
+  const getTypeIcon = (type: TransactionType) => {
     switch (type) {
-      case 'deposit': return <ArrowDownCircle className="w-4 h-4 text-green-500" />;
-      case 'withdrawal': return <ArrowUpRight className="w-4 h-4 text-red-500" />;
-      case 'investment': return <Gift className="w-4 h-4 text-blue-500" />;
-      case 'roi': return <TrendingUp className="w-4 h-4 text-purple-500" />;
+      case "deposit":
+        return (
+          <div className="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+            <ArrowDownCircle className="w-4 h-4 text-green-500" />
+          </div>
+        );
+      case "withdrawal":
+        return (
+          <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <ArrowUpRight className="w-4 h-4 text-red-500" />
+          </div>
+        );
+      case "investment":
+        return (
+          <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+            <Gift className="w-4 h-4 text-blue-500" />
+          </div>
+        );
+      case "roi":
+        return (
+          <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+            <TrendingUp className="w-4 h-4 text-purple-500" />
+          </div>
+        );
     }
   };
 
-  const getStatusStyle = (status: TransactionStatus) => {
-    switch (status) {
-      case 'completed': 
-      case 'approved': 
-        return { icon: <CheckCircle2 className="w-3 h-3" />, color: "text-green-500 bg-green-500/10" };
-      case 'pending': 
-        return { icon: <Clock className="w-3 h-3" />, color: "text-amber-700 bg-amber-700/10" };
-      case 'failed':
-      case 'rejected': 
-        return { icon: <XCircle className="w-3 h-3" />, color: "text-red-500 bg-red-500/10" };
-      case 'active': 
-        return { icon: <RefreshCcw className="w-3 h-3" />, color: "text-blue-500 bg-blue-500/10" };
-      default:
-        return { icon: <Clock className="w-3 h-3" />, color: "text-gray-500 bg-gray-500/10" };
-    }
+  const getStatusBadge = (status: TransactionStatus) => {
+    const map: Record<
+      TransactionStatus,
+      { icon: React.ReactNode; cls: string; label: string }
+    > = {
+      completed: {
+        icon: <CheckCircle2 className="w-3 h-3" />,
+        cls: "text-green-400 bg-green-500/10 border border-green-500/20",
+        label: "Completed",
+      },
+      approved: {
+        icon: <CheckCircle2 className="w-3 h-3" />,
+        cls: "text-green-400 bg-green-500/10 border border-green-500/20",
+        label: "Approved",
+      },
+      pending: {
+        icon: <Clock className="w-3 h-3" />,
+        cls: "text-amber-400 bg-amber-500/10 border border-amber-500/20",
+        label: "Pending",
+      },
+      failed: {
+        icon: <XCircle className="w-3 h-3" />,
+        cls: "text-red-400 bg-red-500/10 border border-red-500/20",
+        label: "Failed",
+      },
+      rejected: {
+        icon: <XCircle className="w-3 h-3" />,
+        cls: "text-red-400 bg-red-500/10 border border-red-500/20",
+        label: "Rejected",
+      },
+      active: {
+        icon: <RefreshCcw className="w-3 h-3" />,
+        cls: "text-blue-400 bg-blue-500/10 border border-blue-500/20",
+        label: "Active",
+      },
+    };
+
+    const s = map[status] ?? {
+      icon: <Clock className="w-3 h-3" />,
+      cls: "text-muted-foreground bg-muted border border-border",
+      label: status,
+    };
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${s.cls}`}
+      >
+        {s.icon}
+        {s.label}
+      </span>
+    );
   };
+
+  const getActionBadge = (type: TransactionType) => {
+    const map: Record<TransactionType, { label: string; cls: string }> = {
+      deposit: {
+        label: "Deposit",
+        cls: "text-green-400 bg-green-500/10 border border-green-500/20",
+      },
+      withdrawal: {
+        label: "Withdrawal",
+        cls: "text-red-400 bg-red-500/10 border border-red-500/20",
+      },
+      investment: {
+        label: "Investment",
+        cls: "text-blue-400 bg-blue-500/10 border border-blue-500/20",
+      },
+      roi: {
+        label: "ROI",
+        cls: "text-purple-400 bg-purple-500/10 border border-purple-500/20",
+      },
+    };
+
+    const a = map[type];
+    return (
+      <span
+        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${a.cls}`}
+      >
+        {a.label}
+      </span>
+    );
+  };
+
+  const getAmountColor = (type: TransactionType) => {
+    if (type === "deposit" || type === "roi") return "text-green-400";
+    if (type === "withdrawal" || type === "investment") return "text-red-400";
+    return "text-foreground";
+  };
+
+  const getAmountPrefix = (type: TransactionType) =>
+    type === "deposit" || type === "roi" ? "+" : "-";
+
+  // ─── Skeleton rows ───────────────────────────────────────────────────────────
+  const SkeletonRow = () => (
+    <tr className="border-b border-border/40 animate-pulse">
+      {[...Array(7)].map((_, i) => (
+        <td key={i} className="px-4 py-4">
+          <div className="h-4 bg-muted rounded w-3/4"></div>
+        </td>
+      ))}
+    </tr>
+  );
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
-      <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <UserSidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
-        <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <UserHeader
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto space-y-8">
-            
-            {/* Page Title & Export */}
+          <div className="max-w-7xl mx-auto space-y-6">
+
+            {/* ── Page Title ── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
                   TRS History
                 </h1>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
-                  {loading ? 'Loading transactions...' : `Total of ${filteredTransactions.length} processed transactions`}
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                  {loading
+                    ? "Loading transactions…"
+                    : `${filteredTransactions.length} transaction${filteredTransactions.length !== 1 ? "s" : ""}`}
                 </p>
               </div>
-              <button className="hidden md:flex items-center justify-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all">
+              <button className="hidden md:flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all">
                 <Download className="w-4 h-4" /> Export CSV
               </button>
             </div>
 
-            {/* Filter Bar */}
-            <div className="bg-card border border-border rounded-[1rem] p-4 flex flex-wrap items-center gap-4">
-              <div className="flex-1 min-w-[200px] relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input 
-                  type="text" 
-                  placeholder="Search ID or Method..." 
-                  className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-xs font-bold focus:outline-none focus:border-foreground transition-all"
+            {/* ── Filter Bar ── */}
+            <div className="bg-card border border-border rounded-2xl p-4 flex flex-wrap items-center gap-3">
+              {/* Search */}
+              <div className="flex-1 min-w-[180px] relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search ID or method…"
+                  className="w-full bg-muted/30 border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs font-bold focus:outline-none focus:border-foreground transition-all"
                 />
               </div>
-              
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                {['all', 'deposit', 'withdrawal', 'investment', 'roi'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setFilterType(type)}
-                    className={`px-5 py-3 rounded-xl cursor-pointer text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                      filterType === type 
-                        ? "bg-foreground text-background border-foreground shadow-lg" 
-                        : "bg-background text-muted-foreground border-border hover:border-muted-foreground/50"
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              <button className="p-3 border cursor-pointer border-border rounded-xl hover:bg-muted transition-all">
-                <Calendar className="w-4 h-4" />
-              </button>
+
+              {/* Type filters */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
+                {["all", "deposit", "withdrawal", "investment", "roi"].map(
+                  (type) => (
+                    <button
+                      key={type}
+                      onClick={() => setFilterType(type)}
+                      className={`px-4 py-2.5 rounded-xl cursor-pointer text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+                        filterType === type
+                          ? "bg-foreground text-background border-foreground shadow-lg"
+                          : "bg-background text-muted-foreground border-border hover:border-muted-foreground/50"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  )
+                )}
+                <button className="p-2.5 border border-border rounded-xl hover:bg-muted transition-all">
+                  <Calendar className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* ── Table Card ── */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+              {/* Table with horizontal scrolling */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-border/60 bg-muted/20">
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+                        Icon
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+                        Symbol / Method
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+                        Transaction ID
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+                        Date
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+                        Status
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right whitespace-nowrap">
+                        Amount
+                      </th>
+                      <th className="px-5 py-4 text-[12px] font-black uppercase tracking-[0.2em] text-muted-foreground text-center whitespace-nowrap">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      [...Array(6)].map((_, i) => <SkeletonRow key={i} />)
+                    ) : paginatedTransactions.length === 0 ? (
+                      <tr>
+                        <td colSpan={7}>
+                          <div className="py-20 text-center space-y-3 opacity-30">
+                            <Filter className="w-10 h-10 mx-auto" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em]">
+                              No transactions found
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedTransactions.map((txn) => (
+                        <tr
+                          key={txn.id || Math.random()}
+                          className="border-b border-border/30 hover:bg-muted/10 transition-colors group"
+                        >
+                          {/* Icon */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            {getTypeIcon(txn.type)}
+                          </td>
+
+                          {/* Symbol / Method */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <p className="text-sm font-black italic uppercase tracking-tight">
+                              {txn.method}
+                            </p>
+                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+                              {txn.type}
+                            </p>
+                          </td>
+
+                          {/* ID */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <span className="text-[12px] font-mono font-bold text-muted-foreground">
+                              {truncateId(txn.id)}
+                            </span>
+                          </td>
+
+                          {/* Date */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <p className="text-sm font-bold">{txn.date}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              {txn.timestamp}
+                            </p>
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            {getStatusBadge(txn.status)}
+                          </td>
+
+                          {/* Amount */}
+                          <td className="px-5 py-4 text-right whitespace-nowrap">
+                            <span
+                              className={`text-base font-black italic ${getAmountColor(txn.type)}`}
+                            >
+                              {getAmountPrefix(txn.type)}$
+                              {txn.amount.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                              })}
+                            </span>
+                          </td>
+
+                          {/* Action */}
+                          <td className="px-5 py-4 text-center whitespace-nowrap">
+                            {getActionBadge(txn.type)}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
 
-            </div>
 
-            {/* Transactions List */}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="bg-card border border-border rounded-[1rem] p-4 md:p-6 animate-pulse">
-                      <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-muted"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-muted rounded w-1/3"></div>
-                          <div className="h-3 bg-muted rounded w-1/2"></div>
-                        </div>
-                        <div className="h-6 bg-muted rounded w-20"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : filteredTransactions.length === 0 ? (
-                <div className="py-20 text-center space-y-4 opacity-20 border-2 border-dashed border-border rounded-[3rem]">
-                   <Filter className="w-12 h-12 mx-auto" />
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">No transactions found for this filter</p>
-                </div>
-              ) : (
-                filteredTransactions.map((txn) => {
-                  const status = getStatusStyle(txn.status);
-                  return (
-                    <div 
-                      key={txn.id || `txn-${Math.random()}`}
-                      className="group bg-card border border-border cursor-pointer rounded-[1rem] p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-foreground/40 transition-all hover:shadow-xl"
+              {/* ── Pagination ── */}
+              {!loading && filteredTransactions.length > 0 && (
+                <div className="border-t border-border/40 px-5 py-4 flex items-center justify-between gap-4">
+<p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest"> 
+                     Page {currentPage} of {totalPages} &nbsp;·&nbsp;{" "}
+                    {filteredTransactions.length} results
+                  </p>
+
+                  <div className="flex justify-end items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setCurrentPage((p) => Math.max(1, p - 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="w-9 h-9 rounded-xl cursor-pointer border border-border flex items-center justify-center hover:bg-foreground hover:text-background hover:border-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
-                      {/* Left: Type and Info */}
-                      <div className="flex items-center gap-5">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-border group-hover:bg-foreground group-hover:text-background transition-all duration-300`}>
-                          {getIcon(txn.type)}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3">
-                            <h4 className="text-sm font-black italic uppercase tracking-tight">{txn.method}</h4>
-                            <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter flex items-center gap-1 ${status.color}`}>
-                              {status.icon} {txn.status}
-                            </span>
-                          </div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {txn.id ? txn.id.substring(0, 4) + '........' : 'Unknown'} {txn.date} at {txn.timestamp}</p>
-                        </div>
-                      </div>
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
 
-                      {/* Right: Amount and Action */}
-                      <div className="flex items-center justify-between md:justify-end gap-8 border-t md:border-t-0 pt-4 md:pt-0 border-border/50">
-                        <div className="text-right">
-                          <p className={`text-xl font-black italic tracking-tighter ${
-                            (txn.type === 'withdrawal' || txn.type === 'investment') ? 'text-red-500' : 
-                            (txn.type === 'deposit' || txn.type === 'roi') ? 'text-green-500' : 'text-foreground'
-                          }`}>
-                            {txn.type === 'withdrawal' || txn.type === 'investment' ? '-' : '+'}${txn.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </p>
-                          <p className="text-[9px] font-black uppercase text-muted-foreground tracking-[0.2em]">{txn.type}</p>
-                        </div>
-                        <button className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-foreground hover:text-background transition-all">
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
+                    {/* Page number pills */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(
+                        (p) =>
+                          p === 1 ||
+                          p === totalPages ||
+                          Math.abs(p - currentPage) <= 1
+                      )
+                      .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                        if (idx > 0 && p - (arr[idx - 1] as number) > 1)
+                          acc.push("…");
+                        acc.push(p);
+                        return acc;
+                      }, [])
+                      .map((p, i) =>
+                        p === "…" ? (
+                          <span
+                            key={`ellipsis-${i}`}
+                            className="text-[10px] text-muted-foreground px-1"
+                          >
+                            …
+                          </span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => setCurrentPage(p as number)}
+                            className={`w-9 h-9 rounded-xl cursor-pointer border text-[10px] font-black transition-all ${
+                              currentPage === p
+                                ? "bg-foreground text-background border-foreground"
+                                : "border-border hover:bg-muted"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )}
+
+                    <button
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="w-9 h-9 rounded-xl cursor-pointer border border-border flex items-center justify-center hover:bg-foreground hover:text-background hover:border-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               )}
-            </div>
-
-            {/* Pagination Button */}
-            <div className="flex justify-center pt-6">
-              <button className="px-4 py-4 bg-muted/30 border border-border cursor-pointer rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                Load More Activity
-              </button>
             </div>
 
           </div>

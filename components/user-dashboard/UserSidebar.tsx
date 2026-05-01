@@ -75,7 +75,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Live Investments", icon: Activity, href: `${basePath}/my-investments` },
     { name: "Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
-    { name: "Analytics", icon: PieChart, href: `${basePath}/analytics` },
+    { name: "Analytics", icon: PieChart, href: `#` },
     {
       name: "Community",
       icon: Users,

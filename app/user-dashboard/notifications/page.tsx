@@ -58,7 +58,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     title: "Deposit Confirmed",
     message: "Your deposit of 0.045 BTC has been successfully processed and verified.",
     time: "5 hours ago",
-    isRead: true
+    isRead: false
   },
   {
     id: "4",
@@ -66,7 +66,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     title: "Withdrawal Sent",
     message: "Your withdrawal request #WID-882 for $500.00 has been completed.",
     time: "1 day ago",
-    isRead: true
+    isRead: false
   }
 ];
 
@@ -74,7 +74,7 @@ const NotificationsPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);<div className="flex items-center justify-center lg:justify-between"></div>
   const [userData, setUserData] = useState<any>(null);
 
   // Fetch real data on component mount
@@ -121,12 +121,16 @@ const NotificationsPage = () => {
         // Process withdrawals as notifications
         if (withdrawalsResult.withdrawals) {
           withdrawalsResult.withdrawals.forEach((withdrawal: any) => {
+            // Use withdrawal.date like the transactions page does
+            const withdrawalDate = withdrawal.date || new Date().toLocaleDateString();
+            const dateObj = new Date(withdrawalDate);
+            
             allNotifications.push({
               id: `withdrawal-${withdrawal._id}`,
               type: 'withdrawal',
               title: 'Withdrawal ' + withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1),
               message: `Your withdrawal request of $${withdrawal.amount.toFixed(2)} via ${withdrawal.crypto?.name || 'Unknown'} has been ${withdrawal.status}.`,
-              time: formatTimeAgo(new Date(withdrawal.createdAt)),
+              time: formatTimeAgo(dateObj),
               isRead: withdrawal.status === 'approved',
               rawData: withdrawal
             });
@@ -273,7 +277,7 @@ const NotificationsPage = () => {
               </div>
               
               <div className="flex items-center gap-3">
-                <button className="flex-1 md:flex-none cursor-pointer bg-muted/50 text-foreground px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all flex items-center justify-center gap-2">
+                <button className="flex-1 md:flex-none cursor-pointer bg-muted/50 text-foreground px-3 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all flex items-center justify-center gap-2">
                   <CheckCircle2 className="w-4 h-4" /> Mark All Read
                 </button>
                 <button className="bg-muted/50 text-foreground cursor-pointer p-3 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all">

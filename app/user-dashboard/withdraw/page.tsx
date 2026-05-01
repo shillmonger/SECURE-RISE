@@ -292,7 +292,7 @@ export default function WithdrawPage() {
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-xl px-5 py-3 hover:border-foreground/50 transition-all"
+                          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-lg px-5 py-2 hover:border-foreground/50 transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-background border flex items-center justify-center">
@@ -354,7 +354,7 @@ export default function WithdrawPage() {
                             ? "Loading..."
                             : `No ${selectedCrypto.name} address found`
                         }
-                        className="w-full bg-muted/20 border-2 border-border rounded-xl p-4 pr-12 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
+                        className="w-full bg-muted/20 border-2 border-border rounded-lg p-3 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                     <p className="text-[9px] font-black uppercase text-primary tracking-widest px-1">
@@ -386,7 +386,7 @@ export default function WithdrawPage() {
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-2 pl-12 text-xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
+                        className="w-full bg-muted/30 border-2 border-border rounded-lg p-2 pl-12 text-xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
                         placeholder="0.00"
                       />
                     </div>
@@ -420,7 +420,7 @@ export default function WithdrawPage() {
                         type="text"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
-                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
+                        className="w-full bg-muted/30 border-2 border-border rounded-lg p-2 text-center text-lg font-black tracking-[0.5em] focus:border-primary focus:outline-none transition-all"
                         placeholder="****"
                       />
                     </div>

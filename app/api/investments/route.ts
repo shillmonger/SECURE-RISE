@@ -246,11 +246,14 @@ async function processDailyROI(investmentId: string) {
       }
     );
 
-    // Update user's total profits
+    // Update user's total profits and account balance
     await db.collection<User>('users').updateOne(
       { _id: investment.userId },
       { 
-        $inc: { totalProfits: dailyProfit },
+        $inc: { 
+          totalProfits: dailyProfit,
+          accountBalance: dailyProfit
+        },
         $set: { updatedAt: now }
       }
     );
