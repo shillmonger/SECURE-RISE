@@ -779,7 +779,7 @@ export default function UserOverviewPage() {
 
                       return (
                         <div>
-                          <div className="max-h-96 overflow-y-scroll divide-y divide-border scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                          <div className="divide-y divide-border">
                             {paginatedActivities.map((activity, index) => (
                               <div
                                 key={index}
@@ -1003,7 +1003,7 @@ export default function UserOverviewPage() {
 
                       return (
                         <>
-                          <div className="max-h-80 overflow-y-scroll divide-y divide-border scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                          <div className="divide-y divide-border">
                             {paginatedAlerts.length > 0 ? (
                               paginatedAlerts.map((alert) => (
                                 <div key={alert.id} className="p-4 hover:bg-muted/30 transition-colors flex gap-3">
@@ -1019,9 +1019,12 @@ export default function UserOverviewPage() {
                                     <p className="text-sm font-semibold text-foreground">
                                       {alert.title}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                                      {alert.message}
-                                    </p>
+                                    <p 
+                                      className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed"
+                                      dangerouslySetInnerHTML={{
+                                        __html: alert.message.replace(/(\$\d+\.\d{2})/g, '<span class="text-green-500 font-semibold">$1</span>')
+                                      }}
+                                    />
                                     <p className="text-[10px] text-muted-foreground mt-2">
                                       {alert.time}
                                     </p>
