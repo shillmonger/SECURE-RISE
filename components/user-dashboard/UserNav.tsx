@@ -30,7 +30,7 @@ export default function UserNav() {
         fixed bottom-0 left-0 right-0 z-50 
         flex justify-around items-center 
         bg-background/95 backdrop-blur-xl
-        py-3 pb-3 rounded-t-[2rem] 
+        py-2 pb-3 rounded-t-[0rem] 
         border-t border-border
         shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] 
         lg:hidden

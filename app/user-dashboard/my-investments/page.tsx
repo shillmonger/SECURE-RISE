@@ -172,7 +172,7 @@ function InvestmentCard({ inv }: { inv: Investment }) {
 
 export default function MyInvestmentsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<InvestmentStatus | "all">("active");
+  const [activeTab, setActiveTab] = useState<InvestmentStatus | "all">("all");
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

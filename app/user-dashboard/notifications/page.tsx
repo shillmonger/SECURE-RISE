@@ -256,16 +256,13 @@ const NotificationsPage = () => {
   };
 
   return (
-    // <div className="flex h-screen overflow-hidden bg-background font-sans">
-    <div className="flex min-h-screen bg-background font-sans">
+    <div className="flex h-screen overflow-hidden bg-background font-sans">
       <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* <div className="flex-1 flex flex-col overflow-hidden text-foreground"> */}
-      <div className="flex-1 flex flex-col text-foreground">
+      <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        {/* <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8"> */}
-        <main className="flex-1 pb-32 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-8">
             
             {/* Page Header */}
