@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Montserrat } from "next/font/google";
 import {
   Youtube,
@@ -26,7 +27,6 @@ const montserrat = Montserrat({
 export default function Footer() {
   const socialLinks = [
     { name: "Telegram", icon: <Send size={24} />, href: "https://t.me/secure_rise" },
-    { name: "YouTube", icon: <Youtube size={24} />, href: "#" },
     { name: "Discord", icon: <FaDiscord size={24} />, href: "#" },
     { name: "X (Twitter)", icon: <Twitter size={24} />, href: "#" },
     { name: "Instagram", icon: <Instagram size={24} />, href: "#" },
@@ -39,20 +39,29 @@ export default function Footer() {
         {/* Logo + Platform Description */}
         <div className="flex flex-col space-y-6 md:col-span-4 lg:col-span-2">
           <div>
-            <Link href="/" className="flex items-center gap-2">
-              <span
-            className={`${montserrat.className} 
-            text-3xl md:text-5xl font-black italic tracking-tight bg-gradient-to-b from-foreground
-            to-foreground/40 bg-clip-text text-transparent uppercase`}>
-            SECURE RISE
-          </span>
-            </Link>
-            <p className="mt-5 leading-relaxed text-muted-foreground max-w-sm">
-              SECURE RISE is a premier managed investment platform. We bridge the gap 
-              between private capital and global financial markets, leveraging the 
-              expertise of seasoned professional traders to execute high-precision 
-              strategies and deliver consistent daily yields for our global investors.
-            </p>
+            <Link href="/" className="flex items-center gap-3 group">
+  {/* Logo Icon */}
+  {/* <Image
+    src="https://i.postimg.cc/wTzh3Wpt/favicon-ico.png"
+    alt="Secure Rise Logo"
+    width={50}
+    height={50}
+    className="drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
+  /> */}
+
+  {/* Text Logo */}
+  <span
+    className={`${montserrat.className} 
+    text-3xl md:text-5xl font-black italic tracking-tight 
+    bg-gradient-to-b from-foreground to-foreground/40 
+    bg-clip-text text-transparent uppercase`}
+  >
+    SECURE RISE
+  </span>
+</Link>
+           <p className="mt-5 leading-relaxed text-muted-foreground max-w-sm">
+  SECURE RISE is a managed investment platform connecting your capital with experienced traders to generate consistent returns in global markets.
+</p>
           </div>
 
           {/* Social Media Links */}

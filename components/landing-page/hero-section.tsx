@@ -79,7 +79,7 @@ export default function HeroSection() {
 
           <div className="space-y-5">
             <h1
-              className={`${montserrat.className} text-3xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
+              className={`${montserrat.className} text-3xl md:text-5xl xl:text-5xl font-black leading-[1.1] uppercase`}
             >
               We connect your funds to {" "}
               <span className="text-blue-500">skilled traders.</span>
@@ -170,7 +170,7 @@ export default function HeroSection() {
 
         {/* CENTER COLUMN: Spans 4 columns */}
         <div className="lg:col-span-4 flex justify-center items-end h-full relative min-h-[450px] lg:min-h-100">
-          <div className="relative w-full max-w-[320px] lg:max-w-[370px] h-full flex items-end justify-center">
+          <div className="relative w-full max-w-[320px] lg:max-w-[350px] h-full flex items-end justify-center">
             <Image
               src="https://i.postimg.cc/QxmVCMZ7/phone-half.png"
               alt="Trading Interface"
@@ -189,7 +189,7 @@ export default function HeroSection() {
         <div className="lg:col-span-2 space-y-10 py-10 lg:py-0 lg:pl-x0 z-20 lg:text-left">
           <div>
             <h2
-              className={`${montserrat.className} text-5xl xl:text-5xl font-black`}
+              className={`${montserrat.className} text-4xl xl:text-4xl font-black`}
             >
               <Counter target={10000} /> +
             </h2>
@@ -198,8 +198,8 @@ export default function HeroSection() {
             </p>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="text-xl font-extrabold uppercase leading-tight">
+          <div className="space-y-2">
+            <h3 className="text-base font-extrabold uppercase leading-tight">
               Advanced technology
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed mx-auto lg:mx-0">

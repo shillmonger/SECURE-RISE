@@ -162,7 +162,7 @@ const MakePaymentPage = () => {
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter">Checkout</h1>
+                <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter">Checkout</h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <ShieldCheck className="w-3 h-3 text-primary" /> Secure Payment Gateway
                 </p>

@@ -55,7 +55,7 @@ export default function StatsGrid() {
   return (
     <section
       ref={ref}
-      className="mx-auto max-w-[1400px] px-4 lg:px-8 py-10 w-full"
+      className="mx-auto max-w-[1400px] px-4 lg:px-8 py-0 pb-25 w-full"
     >
       {/* --- Header (Matches WhyPlatformSection Style) --- */}
       <div className="text-center mb-16">

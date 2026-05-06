@@ -111,7 +111,7 @@ const DepositPage = () => {
             
             {/* Page Title */}
             <section className="space-y-2">
-              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
+              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
                 Fund Balance
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
@@ -148,7 +148,7 @@ const DepositPage = () => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                       <Plus className="w-3 h-3" /> 02. Select Asset
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {PAYMENT_METHODS.map((method) => (
                         <button
                           key={method.name}
@@ -205,7 +205,10 @@ const DepositPage = () => {
                       <History className="w-4 h-4 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest">Recent Activity</p>
                     </div>
+
+                    <Link href="/user-dashboard/transactions">
                     <button className="text-[9px] font-black uppercase tracking-widest text-primary border-b border-primary/30">View All</button>
+                    </Link>
                   </div>
 
                   <div className="space-y-3">

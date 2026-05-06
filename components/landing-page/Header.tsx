@@ -71,7 +71,7 @@ export default function Header() {
               href="/landing-page/investment-plan"
               className={desktopLinkStyles("/landing-page/investment-plan")}
             >
-              Investments
+              Pricing Plans
             </Link>
             <Link
               href="/landing-page/about"
@@ -181,7 +181,7 @@ export default function Header() {
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/investment-plan")}
             >
-              Investment Plans
+               Pricing Plans
             </Link>
             <Link
               href="/landing-page/about"

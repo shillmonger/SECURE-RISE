@@ -23,37 +23,37 @@ export default function WhyPlatformSection() {
       step: "01",
       title: "Create Account",
       desc: "Join SECURE RISE in seconds. Our registration is fast, encrypted, and built to protect your identity from day one.",
-      icon: <UserPlus className="w-[18px] h-[18px]" />,
+      icon: <UserPlus className="w-[18px] h-[18px] text-blue-500" />,
     },
     {
       step: "02",
       title: "Claim $20 Bonus",
       desc: "New members receive a $20 welcome bonus credited to their trading wallet instantly — zero conditions.",
-      icon: <Gift className="w-[18px] h-[18px]" />,
+      icon: <Gift className="w-[18px] h-[18px] text-green-500" />,
     },
     {
       step: "03",
       title: "Add Capital",
       desc: "Deposit funds through secure gateways. Choose the amount you want to put to work in the global markets.",
-      icon: <PlusCircle className="w-[18px] h-[18px]" />,
+      icon: <PlusCircle className="w-[18px] h-[18px] text-purple-500" />,
     },
     {
       step: "04",
       title: "Professional Trading",
       desc: "Expert traders and AI algorithms execute high-frequency trades around the clock to maximize your returns.",
-      icon: <TrendingUp className="w-[18px] h-[18px]" />,
+      icon: <TrendingUp className="w-[18px] h-[18px] text-orange-500" />,
     },
     {
       step: "05",
       title: "Daily Accumulation",
       desc: "Profits are calculated and credited to your account every 24 hours — watch your balance grow without lifting a finger.",
-      icon: <Zap className="w-[18px] h-[18px]" />,
+      icon: <Zap className="w-[18px] h-[18px] text-yellow-500" />,
     },
     {
       step: "06",
       title: "Easy Withdrawals",
       desc: "Your money, your control. Request a withdrawal anytime and receive funds directly to your preferred method.",
-      icon: <CreditCard className="w-[18px] h-[18px]" />,
+      icon: <CreditCard className="w-[18px] h-[18px] text-red-500" />,
     },
   ];
 
@@ -138,7 +138,14 @@ function StepCard({ step }: { step: Step }) {
         <span className="text-[11px] font-semibold uppercase tracking-widest text-primary">
           Step {step.step}
         </span>
-        <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-primary/15 bg-primary/8 text-primary transition-colors duration-200 group-hover:bg-primary/12">
+        <div className={`flex h-10 w-10 items-center justify-center rounded-[10px] border transition-colors duration-200 group-hover:opacity-80 ${
+          step.step === "01" ? "border-blue-500/20 bg-blue-500/10 text-blue-500" :
+          step.step === "02" ? "border-green-500/20 bg-green-500/10 text-green-500" :
+          step.step === "03" ? "border-purple-500/20 bg-purple-500/10 text-purple-500" :
+          step.step === "04" ? "border-orange-500/20 bg-orange-500/10 text-orange-500" :
+          step.step === "05" ? "border-yellow-500/20 bg-yellow-500/10 text-yellow-500" :
+          "border-red-500/20 bg-red-500/10 text-red-500"
+        }`}>
           {step.icon}
         </div>
       </div>

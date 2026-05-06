@@ -81,7 +81,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       icon: Users,
       children: [
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
-        { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
+        { name: "Testimonials", icon: Crown, href: `#` },
         { name: "Challenges", icon: Swords, href: `#` },
         { name: "Referrals", icon: Users, href: `#` },
         { name: "Give Feedback", icon: MessageSquare, href: `#` },

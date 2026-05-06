@@ -83,12 +83,12 @@ export default function SubscriptionPage() {
             {/* Hero Header */} 
             <section className="max-w-7xl mx-auto px-6 lg:px-10 py-24 text-center mt-12"> 
                 <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-full inline-block mb-6 animate-pulse">
-                    🎁 Claim Your $20 Bonus Upon Registration!
+                    🎁 Claim $20 Bonus Upon Registration!
                 </div>
                 <span className="text-primary font-semibold tracking-widest uppercase text-sm mb-4 block">
                     SECURE RISE INVESTMENT
                 </span>
-                <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter mb-6 leading-tight"> 
+                <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mb-6 leading-tight"> 
                     Grow Your Wealth <span className="text-primary">Daily</span>
                 </h1> 
                 <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed"> 

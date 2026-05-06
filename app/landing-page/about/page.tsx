@@ -172,7 +172,7 @@ export default function AboutUs() {
                     !isEven ? "lg:order-2" : ""
                   }`}
                 >
-                  <div className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/40">
+                  <div className="group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-2xl border border-border/40">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -202,14 +202,14 @@ export default function AboutUs() {
                     {String(index + 1).padStart(2, "0")} / {String(sections.length).padStart(2, "0")}
                   </span>
 
-                  <h2 className="text-3xl md:text-[2.5rem] font-black italic tracking-tighter leading-[1.1] text-foreground">
+                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-6">
                     {item.title}
                   </h2>
 
                   {/* Accent line */}
                   <div className="h-[2px] w-12 rounded-full bg-primary" />
 
-                  <p className="text-muted-foreground leading-relaxed text-sm md:text-[0.95rem] font-light">
+                  <p className="text-muted-foreground leading-relaxed text-base md:text-base font-light">
                     {item.description}
                   </p>
 

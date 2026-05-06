@@ -111,7 +111,7 @@ export default function TermsAndConditions() {
       </section>
 
       {/* ── Body ─────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 lg:px-8 py-20 flex flex-col lg:flex-row gap-12 w-full">
+      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 py-20 flex flex-col lg:flex-row gap-12 w-full">
 
         {/* Sticky Sidebar */}
         <aside className="hidden lg:block w-72 shrink-0">
@@ -235,7 +235,7 @@ export default function TermsAndConditions() {
           </div>
 
           {/* ── CTA footer card ── */}
-          <div className="p-8 md:p-12 bg-primary/5 border border-primary/20 rounded-[2rem] text-center">
+          <div className="p-8 md:p-10 bg-primary/5 border border-primary/20 rounded-[1.5rem] text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-5">
               <Scale className="w-5 h-5 text-primary" />
             </div>
@@ -245,7 +245,7 @@ export default function TermsAndConditions() {
             <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
               By clicking &ldquo;Accept&rdquo; or using the platform, you agree to the terms above.
             </p>
-            <button className="bg-primary text-primary-foreground px-10 py-4 rounded-2xl font-black uppercase italic tracking-tighter hover:scale-105 transition-all shadow-lg shadow-primary/20">
+            <button className="bg-primary cursor-pointer text-primary-foreground px-10 py-4 rounded-2xl font-black uppercase italic tracking-tighter hover:scale-105 transition-all shadow-lg shadow-primary/20">
               I Agree to Terms
             </button>
           </div>

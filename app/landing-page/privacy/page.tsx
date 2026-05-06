@@ -111,7 +111,7 @@ export default function TermsOfService() {
       </section>
 
       {/* ── Body ─────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 lg:px-8 py-20 flex flex-col lg:flex-row gap-12 w-full">
+      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 py-20 flex flex-col lg:flex-row gap-12 w-full">
 
         {/* Sticky Sidebar */}
         <aside className="hidden lg:block w-72 shrink-0">

@@ -162,7 +162,7 @@ const testimonialsColumn4 = [
 
 export default function Testimonials() {
   return (
-    <section className="flex-grow mx-auto max-w-[1400px] px-4 py-10 w-full">
+    <section className="flex-grow mx-auto max-w-[1400px] px-4 py-30 lg:py-10 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
         
         {/* LEFT - Text Content */}
@@ -192,7 +192,7 @@ export default function Testimonials() {
         </div>
 
         {/* RIGHT \u2013 Scrolling Columns */}
-        <div className="hidden lg:grid grid-cols-2 gap-6 h-[700px] relative overflow-hidden order-2">
+        <div className="hidden lg:grid grid-cols-2 gap-6 h-[800px] relative overflow-hidden order-2">
           
           {/* COLUMN 1 \u2013 SCROLLING UP */}
           <div className="flex flex-col gap-6 animate-marquee-up hover:[animation-play-state:paused]">

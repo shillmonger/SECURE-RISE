@@ -7,12 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getGreeting(name: string): string {
   const hour = new Date().getHours();
-  let timeGreeting = "Good evening";
+  let timeGreeting = "Evening";
   
   if (hour < 12) {
-    timeGreeting = "Good morning";
+    timeGreeting = "Morning";
   } else if (hour < 18) {
-    timeGreeting = "Good afternoon";
+    timeGreeting = "Afternoon";
   }
   
   return `${timeGreeting}, ${name}!`;
