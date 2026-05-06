@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
 
@@ -85,26 +85,10 @@ function FeatureItem({
 }
 
 export default function FeaturesSection() {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+  const visible = true;
 
   return (
     <section
-      ref={ref}
       className="relative w-full overflow-hidden bg-background py-5 md:py-20"
     >
       {/* Subtle grid texture */}
