@@ -11,7 +11,7 @@ import {
   Trophy,
   Wallet,
   CreditCard,
-  Gift ,
+  Gift,
   History,
   Crown,
   Swords,
@@ -42,12 +42,15 @@ type NavItem =
       children: { name: string; icon: React.ElementType; href: string }[];
     };
 
-export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+export default function UserSidebar({
+  sidebarOpen,
+  setSidebarOpen,
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [userRole, setUserRole] = useState<string[]>([]);
-  
+
   // FIX 1: Set Account to true by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     Account: true,
@@ -74,7 +77,11 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Live Investments", icon: Activity, href: `${basePath}/my-investments` },
+    {
+      name: "Live Investments",
+      icon: Activity,
+      href: `${basePath}/my-investments`,
+    },
     { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
@@ -94,12 +101,30 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       name: "Account",
       icon: Settings,
       children: [
-        { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
-        { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
+        {
+          name: "Notifications",
+          icon: Bell,
+          href: `${basePath}/notifications`,
+        },
+        {
+          name: "Settings & Profile",
+          icon: Settings,
+          href: `${basePath}/user-settings`,
+        },
         { name: "KYC Verification", icon: Shield, href: `#` },
-        { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
+        {
+          name: "Active Support 24/7",
+          icon: HeadphonesIcon,
+          href: `${basePath}/support`,
+        },
         ...(userRole.includes("admin")
-          ? [{ name: "Switch 2 Admin", icon: Lock, href: `/admin-dashboard/dashboard` }]
+          ? [
+              {
+                name: "Switch 2 Admin",
+                icon: Lock,
+                href: `/admin-dashboard/dashboard`,
+              },
+            ]
           : []),
       ],
     },
@@ -108,7 +133,9 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
   useEffect(() => {
     navItems.forEach((item) => {
       if ("children" in item) {
-        const hasActive = item.children.some((child) => pathname === child.href);
+        const hasActive = item.children.some(
+          (child) => pathname === child.href,
+        );
         if (hasActive) {
           setOpenGroups((prev) => ({ ...prev, [item.name]: true }));
         }
@@ -132,7 +159,12 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col rounded-tr-xl rounded-br-xl transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none h-screen`}
+        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col 
+  rounded-tr-xl rounded-br-xl lg:rounded-none
+  transform bg-background border-r border-border 
+  transition-transform duration-300 ease-in-out 
+  lg:translate-x-0 lg:static lg:inset-0 
+  shadow-2xl lg:shadow-none h-screen`}
       >
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
@@ -180,7 +212,9 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
             }
 
             const isOpen = !!openGroups[item.name];
-            const hasActiveChild = item.children.some((c) => pathname === c.href);
+            const hasActiveChild = item.children.some(
+              (c) => pathname === c.href,
+            );
 
             return (
               <div key={item.name} className="flex flex-col">
@@ -228,7 +262,9 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
                         >
                           <child.icon
                             className={`w-4 h-4 flex-shrink-0 transition-transform ${
-                              childActive ? "scale-110" : "group-hover:scale-110"
+                              childActive
+                                ? "scale-110"
+                                : "group-hover:scale-110"
                             }`}
                           />
                           <span className="text-[11px] font-black uppercase tracking-widest">
@@ -251,7 +287,9 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
           >
             <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Logout</span>
+            <span className="text-xs font-black uppercase tracking-widest">
+              Logout
+            </span>
           </button>
         </div>
       </aside>
@@ -259,7 +297,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       {/* Logout Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10  backdrop-blur-sm p-4">
-          <div className="bg-background border border-border rounded-[1rem] shadow-2xl w-full max-w-sm p-8 text-center">
+          <div className="bg-background border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center">
             <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
               <LogOut className="w-8 h-8 text-foreground" />
             </div>

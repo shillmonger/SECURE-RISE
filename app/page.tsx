@@ -13,7 +13,7 @@ import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
 import TradingTools from "@/components/landing-page/trading-tools";
 import RiskProtection from "@/components/landing-page/risk-protection";
-// import Testimonials from "@/components/landing-page/Testimonials";
+import TradingView from "@/components/landing-page/trading-view-slide";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 
 export default function HomePage() {
@@ -25,6 +25,9 @@ export default function HomePage() {
       <main className="min-h-screen pt-0 md:pt-10">
         {/* section 1  */}
         <HeroSection />
+
+        <TradingView />
+
 
         {/* section 2 */}
         <Promo />
@@ -52,7 +55,7 @@ export default function HomePage() {
         <FAQ />
 
         {/* section 8 */}
-        {/* <Testimonials /> */}
+        <TradingView />
 
         {/* section 8 */}
         <RiskProtection />

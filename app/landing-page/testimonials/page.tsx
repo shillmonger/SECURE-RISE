@@ -5,7 +5,9 @@ import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import Footer from "@/components/landing-page/Footer";
 import Testimonials from "@/components/landing-page/Testimonials";
+import TradingView from "@/components/landing-page/trading-view-slide";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
+
 
 export default function TestimonialPage() {
   return (
@@ -16,6 +18,8 @@ export default function TestimonialPage() {
 
       <ThemeAndScroll />
       <NumbersThatSpeaks />
+              <TradingView />
+      
       <Footer />
 
       {/* Tailwind Animation Injections */}
