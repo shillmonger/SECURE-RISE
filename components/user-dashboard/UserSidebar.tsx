@@ -26,6 +26,7 @@ import {
   ChevronDown,
   Shield,
   MessageSquare,
+  X,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -131,7 +132,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-full md:w-70 flex flex-col transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none h-screen`}
+        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col rounded-tr-xl rounded-br-xl transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none h-screen`}
       >
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
@@ -139,13 +140,15 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
               SECURE<span className="text-muted-foreground italic"> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
-              Your Investments, Our Traders
+              You Invest, We Trade
             </p>
           </div>
           <button
-            className="lg:hidden p-2 rounded-xl bg-secondary text-foreground"
+            className="lg:hidden p-2 rounded-lg bg-secondary text-foreground"
             onClick={() => setSidebarOpen(false)}
-          />
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* FIX 2: Added overflow-y-auto and scrollbar styling to make the nav scrollable */}
@@ -263,7 +266,7 @@ export default function UserSidebar({ sidebarOpen, setSidebarOpen }: SidebarProp
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">
               Logout?
             </h2>
-            <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            <div className="flex sm:flex-row gap-3 mt-6">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
                 className="flex-1 px-6 py-3 rounded-lg bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest"
