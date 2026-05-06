@@ -1,4 +1,3 @@
-// components/landing-page/hero-section.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +11,45 @@ const montserrat = Montserrat({
   weight: ["700", "800", "900"],
 });
 
+const AVATARS = [
+  "https://i.postimg.cc/0yJ0FsJS/LE-MAC.jpg",
+  "https://i.postimg.cc/rFsJGWVf/Kamala-Harris.jpg",
+  "https://i.postimg.cc/mZ8jFVsy/Nailed-it.jpg",
+  "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
+];
+
+const BOTTOM_STATS = [
+  {
+    label: "Stat Overview",
+    value: "Scale Rise",
+    sub: "New Opportunities",
+  },
+  { label: "#1 Platform", value: "Top Rated", sub: "Investment Platform" },
+  { label: "Trading Plans", value: "250+", sub: "Investment Options" },
+  // { label: "Active Users", value: "1.2K+", sub: "Trading" },
+  { label: "Avg Daily ROI", value: "10%", sub: "Daily Returns" },
+];
+
+const Counter = ({ target }: { target: number }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const duration = 2000;
+    const increment = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target]);
+  return <>{count.toLocaleString()}</>;
+};
+
 export default function HeroSection() {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -19,29 +57,17 @@ export default function HeroSection() {
     setIsMounted(true);
   }, []);
 
+  if (!isMounted) return <div className="min-h-screen bg-background" />;
+
   return (
-    <section className="relative mx-auto max-w-[1400px] lg:px-8 flex items-center justify-center overflow-hidden py-30 md:py-32 lg:py-48">
-      {/* BACKGROUND IMAGE WITH OVERLAY */}
-      <div className="absolute inset-0 z-0 flex justify-end">
-        {isMounted && (
-          <div className="hidden md:block w-full md:w-3/4 lg:w-3/7 relative h-full">
-            <Image
-              src="https://i.postimg.cc/B67QthXv/Gemini_Generated_Image_h2ldy5h2ldy5h2ld_removebg_preview.png"
-              alt="SECURE RISE Trading"
-              fill
-              className="object-cover object-center transition-opacity duration-700"
-              priority
-            />
-          </div>
-        )}
+    <section className="relative w-full bg-background flex flex-col min-h-screen">
+      {/* MAIN CONTENT GRID - Adjusted to 5-4-3 layout */}
+      <div className="flex-1 relative z-10 mx-auto w-full max-w-[1440px] px-6 lg:px-12 flex flex-col lg:grid lg:grid-cols-12 gap-0 pt-20 lg:pt-5 items-center">
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/30 to-transparent dark:via-background/80" />
-        <div className="absolute inset-0 bg-black/0 md:bg-transparent" />
-      </div>
 
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl lg:max-w-3xl">
+
+        {/* LEFT COLUMN: Expanded to span 5 columns */}
+        <div className="lg:col-span-6 space-y-8 lg:text-left z-20 py-10 lg:py-20">
           {/* TAGLINE */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
             <span className="relative flex h-2 w-2">
@@ -51,24 +77,22 @@ export default function HeroSection() {
             You Invest • We Trade
           </div>
 
-          {/* MAIN HEADING */}
-          <h1
-            className={`${montserrat.className} text-4xl md:text-7xl lg:text-7xl font-black leading-[1.1] tracking-tight text-foreground mb-6 uppercase`}
-          >
-            Scale Your CAPITALS <br />
-            <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-              On SCALE RISE
-            </span>
-          </h1>
-
-          {/* SUBTEXT */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl leading-relaxed">
-            Invest in high-performance assets. We trade. You earn. Experience
-            daily income growth backed by institutional-grade security.
-          </p>
+          <div className="space-y-5">
+            <h1
+              className={`${montserrat.className} text-4xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
+            >
+              We connect your funds to {" "}
+              <span className="text-blue-400">skilled traders.</span>
+            </h1>
+            <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto lg:mx-0">
+              Trade on Bitcoin, Gold, Oil, Apple, Tesla and 6,400+ other
+              world-renowned markets. Our institutional-grade platform ensures
+              your capital scales with precision.
+            </p>
+          </div>
 
           {/* CTA BUTTONS */}
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button
               asChild
               size="lg"
@@ -78,7 +102,7 @@ export default function HeroSection() {
                 href="/auth-page/register"
                 className="flex items-center gap-2"
               >
-                $20 Claim
+                $20 ON SIGNUP
               </Link>
             </Button>
 
@@ -89,80 +113,119 @@ export default function HeroSection() {
               className="w-full sm:w-auto px-8 py-7 cursor-pointer text-md font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
             >
               <Link href="/auth-page/login" className="flex items-center gap-2">
-                SIGN IN
+                SIGN IN NOW
               </Link>
             </Button>
           </div>
 
-          {/* TRUST INDICATOR */}
-          <div className="mt-10 flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-6 opacity-90">
-            {/* STATS GROUP */}
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-foreground leading-none mb-1">
-                  10%
-                </span>
-                <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">
-                  Avg. Daily ROI
-                </span>
-              </div>
-
-              <div className="h-8 w-[1px] bg-border" />
-
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-foreground leading-none mb-1">
-                  256-bit
-                </span>
-                <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">
-                  AES Encryption
-                </span>
-              </div>
+          <div className="flex items-center justify-start lg:justify-start gap-4 flex-wrap pt-2">
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-foreground leading-none mb-1">
+                10%
+              </span>
+              <span className="text-[9px] uppercase tracking-widest font-semibold text-muted-foreground">
+                Avg. Daily ROI
+              </span>
             </div>
-
-            {/* MOBILE SEPARATOR (Optional, only shows on mobile) */}
-            <div className="h-[1px] w-full bg-border md:hidden opacity-50" />
-            <div className="hidden md:block h-8 w-[1px] bg-border" />
-
-            {/* AVATAR STACK GROUP */}
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-3 overflow-hidden">
-                {[
-                  "https://i.postimg.cc/0yJ0FsJS/LE-MAC.jpg",
-                  "https://i.postimg.cc/rFsJGWVf/Kamala-Harris.jpg",
-                  "https://i.postimg.cc/mZ8jFVsy/Nailed-it.jpg",
-                  "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
-                ].map((src, i) => (
+            <div className="h-7 w-px bg-border" />
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-foreground leading-none mb-1">
+                256-bit
+              </span>
+              <span className="text-[9px] uppercase tracking-widest font-semibold text-muted-foreground">
+                AES Encryption
+              </span>
+            </div>
+            <div className="h-7 w-px bg-border" />
+            <div className="flex items-center gap-2.5">
+              <div className="flex -space-x-2.5">
+                {AVATARS.map((src, i) => (
                   <div
                     key={i}
-                    className="inline-block h-13 w-13 rounded-full border-2 border-primary bg-background overflow-hidden flex items-center justify-center"
+                    className="h-12 w-12 cursor-pointer rounded-full border-2 border-primary bg-background overflow-hidden"
                   >
-                    {src ? (
-                      <img
-                        src={src}
-                        alt="User avatar"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-primary/10" />
-                    )}
+                    <img
+                      src={src}
+                      alt="User"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                 ))}
               </div>
-
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground leading-none mb-1">
-                  1.2K+
+                  10.2K+
                 </span>
-                <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">
+                <span className="text-[9px] uppercase tracking-widest font-semibold text-muted-foreground">
                   Realtime Users
                 </span>
               </div>
             </div>
           </div>
         </div>
+
+
+
+
+        {/* CENTER COLUMN: Spans 4 columns */}
+        <div className="lg:col-span-4 flex justify-center items-end h-full relative min-h-[450px] lg:min-h-100">
+          <div className="relative w-full max-w-[320px] lg:max-w-[370px] h-full flex items-end justify-center">
+            <Image
+              src="https://i.postimg.cc/QxmVCMZ7/phone-half.png"
+              alt="Trading Interface"
+              width={450}
+              height={900}
+              className="object-contain object-bottom"
+              priority
+            />
+          </div>
+        </div>
+
+
+
+
+        {/* RIGHT COLUMN: Narrowed to 3 columns */}
+        <div className="lg:col-span-2 space-y-10 py-10 lg:py-0 lg:pl-x0 z-20 lg:text-left">
+          <div>
+            <h2
+              className={`${montserrat.className} text-5xl xl:text-5xl font-black`}
+            >
+              <Counter target={10000} /> +
+            </h2>
+            <p className="text-primary font-bold text-sm tracking-widest uppercase mt-2">
+              Global Traders
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-xl font-extrabold uppercase leading-tight">
+              Advanced technology
+            </h3>
+            <p className="text-muted-foreground text-sm leading-relaxed mx-auto lg:mx-0">
+              We are bringing the future of AI trading technology to companies
+              worldwide.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent z-10" />
+      {/* BOTTOM STATS BAR */}
+      <div className="relative z-30 border-t border-border bg-background w-full pb-5 lg:pb-15">
+        <div className="mx-auto max-w-[1440px] px-0 lg:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-border">
+            {BOTTOM_STATS.map((item, i) => (
+              <div key={i} className="flex flex-col p-6 space-y-1">
+                <span className="text-sm lg:text-sm font-bold uppercase tracking-tighter text-foreground">
+                  {item.label}
+                </span>
+                <span className="text-sm text-muted-foreground leading-none">
+                  {item.sub}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
