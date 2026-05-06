@@ -459,7 +459,7 @@ export default function LiveMarkets() {
   };
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 lg:py-10 w-full">
+    <section className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 lg:pb-20 lg:pt-0 w-full">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
       

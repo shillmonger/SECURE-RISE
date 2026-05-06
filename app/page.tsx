@@ -11,8 +11,9 @@ import Promo from "@/components/landing-page/promo";
 import LiveMarkets from "@/components/landing-page/LiveMarkets";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
+import TradingTools from "@/components/landing-page/trading-tools";
 import RiskProtection from "@/components/landing-page/risk-protection";
-import Testimonials from "@/components/landing-page/Testimonials";
+// import Testimonials from "@/components/landing-page/Testimonials";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 
 export default function HomePage() {
@@ -29,13 +30,20 @@ export default function HomePage() {
         <Promo />
 
         {/* section 3 */}
-        <NumbersThatSpeaks />
+        {/* <NumbersThatSpeaks /> */}
 
         {/* section 4 */}
         <HowItWorks />
 
+
+        <TradingTools />
+
+
+
         {/* section 5 */}
         <LiveMarkets />
+
+
         <ProfitBlueprint />
 
         {/* section 6 */}
@@ -44,7 +52,7 @@ export default function HomePage() {
         <FAQ />
 
         {/* section 8 */}
-        <Testimonials />
+        {/* <Testimonials /> */}
 
         {/* section 8 */}
         <RiskProtection />

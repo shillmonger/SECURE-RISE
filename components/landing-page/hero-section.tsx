@@ -67,7 +67,7 @@ export default function HeroSection() {
 
 
         {/* LEFT COLUMN: Expanded to span 5 columns */}
-        <div className="lg:col-span-6 space-y-8 lg:text-left z-20 py-10 lg:py-20">
+        <div className="lg:col-span-6 space-y-8 lg:text-left z-20 py-10 lg:pt-30 lg:pb-20">
           {/* TAGLINE */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
             <span className="relative flex h-2 w-2">
@@ -79,12 +79,12 @@ export default function HeroSection() {
 
           <div className="space-y-5">
             <h1
-              className={`${montserrat.className} text-4xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
+              className={`${montserrat.className} text-xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
             >
               We connect your funds to {" "}
-              <span className="text-blue-400">skilled traders.</span>
+              <span className="text-blue-500">skilled traders.</span>
             </h1>
-            <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto lg:mx-0">
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto lg:mx-0">
               Trade on Bitcoin, Gold, Oil, Apple, Tesla and 6,400+ other
               world-renowned markets. Our institutional-grade platform ensures
               your capital scales with precision.
@@ -93,10 +93,21 @@ export default function HeroSection() {
 
           {/* CTA BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-4">
+            
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto px-8 py-6 cursor-pointer text-sm font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
+            >
+              <Link href="/auth-page/login" className="flex items-center gap-2">
+                SIGN IN NOW
+              </Link>
+            </Button>
             <Button
               asChild
               size="lg"
-              className="w-full sm:w-auto px-8 py-7 cursor-pointer text-md font-extrabold rounded-xl hover:scale-105 transition-transform"
+              className="w-full sm:w-auto px-8 py-6 cursor-pointer text-sm font-extrabold rounded-xl hover:scale-105 transition-transform"
             >
               <Link
                 href="/auth-page/register"
@@ -106,16 +117,6 @@ export default function HeroSection() {
               </Link>
             </Button>
 
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto px-8 py-7 cursor-pointer text-md font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
-            >
-              <Link href="/auth-page/login" className="flex items-center gap-2">
-                SIGN IN NOW
-              </Link>
-            </Button>
           </div>
 
           <div className="flex items-center justify-start lg:justify-start gap-4 flex-wrap pt-2">
