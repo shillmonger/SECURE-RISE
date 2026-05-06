@@ -32,6 +32,7 @@ import { getGreeting } from "@/lib/utils";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+import GiftMember from "@/components/user-dashboard/GiftMember";
 
 // Helper function to format numbers with K notation
 const formatNumber = (num: number): string => {
@@ -70,6 +71,16 @@ export default function UserOverviewPage() {
   const alertsPerPage = 3;
   const [activityLoading, setActivityLoading] = useState(true);
   const [alertsLoading, setAlertsLoading] = useState(true);
+  const [showGiftPopup, setShowGiftPopup] = useState(false);
+
+  // Show popup when component mounts or when user navigates back to dashboard
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGiftPopup(true);
+    }, 1000); // Show after 1 second to allow page to load
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -569,6 +580,7 @@ export default function UserOverviewPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <GiftMember isOpen={showGiftPopup} onClose={() => setShowGiftPopup(false)} />
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">

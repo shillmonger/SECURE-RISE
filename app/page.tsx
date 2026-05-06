@@ -9,7 +9,6 @@ import FAQ from "@/components/landing-page/faq";
 import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
 import LiveMarkets from "@/components/landing-page/LiveMarkets";
-import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 import HowItWorks from "@/components/landing-page/how-It-works";
 import TradingTools from "@/components/landing-page/trading-tools";
 import RiskProtection from "@/components/landing-page/risk-protection";
@@ -25,40 +24,15 @@ export default function HomePage() {
       <main className="min-h-screen pt-0 md:pt-10">
         {/* section 1  */}
         <HeroSection />
-
         <TradingView />
-
-
-        {/* section 2 */}
         <Promo />
-
-        {/* section 3 */}
-        {/* <NumbersThatSpeaks /> */}
-
-        {/* section 4 */}
         <HowItWorks />
-
-
         <TradingTools />
-
-
-
-        {/* section 5 */}
         <LiveMarkets />
-
-
         <ProfitBlueprint />
-
-        {/* section 6 */}
-
-        {/* section 7 */}
         <FAQ />
-
-        {/* section 8 */}
-        <TradingView />
-
-        {/* section 8 */}
         <RiskProtection />
+        <TradingView />
       </main>
 
       <Footer />
