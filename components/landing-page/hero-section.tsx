@@ -79,7 +79,7 @@ export default function HeroSection() {
 
           <div className="space-y-5">
             <h1
-              className={`${montserrat.className} text-xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
+              className={`${montserrat.className} text-3xl md:text-5xl xl:text-6xl font-black leading-[1.1] uppercase`}
             >
               We connect your funds to {" "}
               <span className="text-blue-500">skilled traders.</span>
