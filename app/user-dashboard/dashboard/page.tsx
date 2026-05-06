@@ -63,6 +63,7 @@ export default function UserOverviewPage() {
   const [recentWithdrawals, setRecentWithdrawals] = useState<any[]>([]);
   const [activeInvestments, setActiveInvestments] = useState(0);
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
+  const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
@@ -122,6 +123,14 @@ export default function UserOverviewPage() {
 
         if (withdrawalsResult.withdrawals) {
           setRecentWithdrawals(withdrawalsResult.withdrawals.slice(0, 5));
+        }
+
+        // Fetch gift history
+        const giftsResponse = await fetch("/api/user-dashboard/gift/history");
+        const giftsResult = await giftsResponse.json();
+
+        if (giftsResult.success) {
+          setGiftHistory(giftsResult.gifts);
         }
 
         if (Array.isArray(investments)) {
@@ -777,6 +786,23 @@ export default function UserOverviewPage() {
                           }
                         });
 
+                        // Add gift history
+                        giftHistory.forEach((gift) => {
+                          activities.push({
+                            type: "gift",
+                            data: gift,
+                            date: new Date(gift.createdAt),
+                            icon: Gift,
+                            iconBg: gift.isSender ? "bg-red-500/10" : "bg-green-500/10",
+                            iconColor: gift.isSender ? "text-red-500" : "text-green-500",
+                            title: gift.title,
+                            subtitle: gift.subtitle,
+                            amount: gift.amountDisplay,
+                            amountColor: gift.amountColor,
+                            status: gift.status,
+                          });
+                        });
+
                         // Sort by date (most recent first)
                         activities.sort(
                           (a, b) => b.date.getTime() - a.date.getTime(),
@@ -1063,6 +1089,19 @@ export default function UserOverviewPage() {
                                   ? `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected`
                                   : `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`,
                             time: withdrawal.id,
+                          });
+                        });
+
+                        // Add gift alerts
+                        giftHistory.forEach((gift, index) => {
+                          allAlerts.push({
+                            id: `gift-${gift._id}`,
+                            type: "gift",
+                            isNew: false,
+                            title: gift.title,
+                            message: gift.message,
+                            time: new Date(gift.createdAt).toLocaleDateString(),
+                            timestamp: new Date(gift.createdAt),
                           });
                         });
 
