@@ -84,7 +84,7 @@ export default function UserOverviewPage() {
         }
 
         const financialResponse = await fetch(
-          "/api/user-dashboard/financial-data"
+          "/api/user-dashboard/financial-data",
         );
         const financialResult = await financialResponse.json();
 
@@ -99,7 +99,7 @@ export default function UserOverviewPage() {
         }
 
         const depositsResponse = await fetch(
-          "/api/user-dashboard/deposit?userId=" + userResult.user.id
+          "/api/user-dashboard/deposit?userId=" + userResult.user.id,
         );
         const depositsResult = await depositsResponse.json();
 
@@ -117,16 +117,16 @@ export default function UserOverviewPage() {
         // Fetch withdrawals
         const withdrawalsResponse = await fetch("/api/withdraw");
         const withdrawalsResult = await withdrawalsResponse.json();
-        
+
         console.log("Withdrawals API response:", withdrawalsResult);
-        
+
         if (withdrawalsResult.withdrawals) {
           setRecentWithdrawals(withdrawalsResult.withdrawals.slice(0, 5));
         }
 
         if (Array.isArray(investments)) {
           const activeCount = investments.filter(
-            (inv) => inv.status === "active"
+            (inv) => inv.status === "active",
           ).length;
           setActiveInvestments(activeCount);
           setUserInvestments(investments);
@@ -405,18 +405,16 @@ export default function UserOverviewPage() {
     const fetchMarketData = async () => {
       try {
         const cryptoPairs = allPairs.filter((pair) => pair.type === "crypto");
-        const coinIds = cryptoPairs
-          .map((crypto) => crypto.coinId)
-          .join(",");
+        const coinIds = cryptoPairs.map((crypto) => crypto.coinId).join(",");
         const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`,
         );
         const data = await response.json();
 
         const cryptoImageMap = new Map();
         cryptoPairs.forEach((crypto) => {
           const coinGeckoData = data.find(
-            (item: any) => item.id === crypto.coinId
+            (item: any) => item.id === crypto.coinId,
           );
           cryptoImageMap.set(crypto.coinId, coinGeckoData?.image || "");
         });
@@ -456,7 +454,7 @@ export default function UserOverviewPage() {
           price: item.price + (Math.random() - 0.5) * item.price * 0.001,
           change: (Math.random() - 0.5) * item.price * 0.002,
           changePercent: (Math.random() - 0.5) * 2,
-        }))
+        })),
       );
       setLastUpdate(new Date().toISOString());
     }, 2000);
@@ -566,7 +564,6 @@ export default function UserOverviewPage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
-
             {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
@@ -585,11 +582,11 @@ export default function UserOverviewPage() {
                 </div>
               </div>
               <Link
-  href="/user-dashboard/invest"
-  className="hidden md:block bg-primary text-primary-foreground px-4 py-4 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto text-center"
->
-  Start Investing
-</Link>
+                href="/user-dashboard/invest"
+                className="hidden md:block bg-primary text-primary-foreground px-4 py-4 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto text-center"
+              >
+                Start Investing
+              </Link>
             </section>
 
             {/* Quick Stats Summary */}
@@ -601,7 +598,9 @@ export default function UserOverviewPage() {
                   className="bg-card border border-border p-5 rounded-2xl group hover:border-primary transition-all"
                 >
                   <div className="flex justify-between items-start mb-3">
-                    <div className={`p-2 ${stat.iconBg} rounded-lg ${stat.hoverBg} ${stat.hoverColor} transition-colors`}>
+                    <div
+                      className={`p-2 ${stat.iconBg} rounded-lg ${stat.hoverBg} ${stat.hoverColor} transition-colors`}
+                    >
                       <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -623,14 +622,17 @@ export default function UserOverviewPage() {
             <div className="lg:flex lg:items-stretch grid grid-cols-1 gap-8">
               {/* Left Column: Active Plans & History */}
               <div className="lg:flex-1 lg:w-2/3 flex flex-col space-y-10">
-
                 {/* Active Investment Plans (Alert Style) */}
-                <section className="bg-card border border-border rounded-3xl p-6">
-                  <h2 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                <section className="relative group bg-card border border-border rounded-3xl p-6 overflow-hidden">
+                  {/* Glow Effect */}
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 blur-2xl rounded-full group-hover:bg-primary/20 transition-colors" />
+
+                  <h2 className="relative z-10 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-primary" /> Capital
                     Protection
                   </h2>
-                  <div className="space-y-4">
+
+                  <div className="relative z-10 space-y-4">
                     <p className="text-[11px] leading-relaxed text-muted-foreground font-medium">
                       We stand by our strategies. If a trade results in a loss
                       of capital,
@@ -645,6 +647,7 @@ export default function UserOverviewPage() {
                       </span>
                       —withdrawable immediately.
                     </p>
+
                     <div className="pt-2">
                       <Link
                         href="/user-dashboard/invest"
@@ -691,224 +694,246 @@ export default function UserOverviewPage() {
                           </div>
                         ))}
                       </div>
-                    ) : (() => {
-                      // Combine deposits and investment activities
-                      const activities: any[] = [];
+                    ) : (
+                      (() => {
+                        // Combine deposits and investment activities
+                        const activities: any[] = [];
 
-                      // Add deposits
-                      recentDeposits.forEach((deposit) => {
-                        activities.push({
-                          type: "deposit",
-                          data: deposit,
-                          date: new Date(deposit.createdAt),
-                          icon: ArrowDownCircle,
-                          iconBg: "bg-green-500/10",
-                          iconColor: "text-green-500",
-                          title: "Deposit",
-                          subtitle: deposit.paymentMethod,
-                          amount: `+$${deposit.amount.toFixed(2)}`,
-                          amountColor: "text-green-500",
-                          status: deposit.status,
-                        });
-                      });
-
-                      // Add withdrawals
-                      recentWithdrawals.forEach((withdrawal) => {
-                        activities.push({
-                          type: "withdrawal",
-                          data: withdrawal,
-                          date: new Date(withdrawal.date),
-                          icon: TrendingDown,
-                          iconBg: "bg-red-500/10",
-                          iconColor: "text-red-500",
-                          title: "Withdrawal",
-                          subtitle: `${withdrawal.method || 'Unknown'} - ${withdrawal.id}`,
-                          amount: `-$${withdrawal.amount.toFixed(2)}`,
-                          amountColor: "text-red-500",
-                          status: withdrawal.status,
-                        });
-                      });
-
-                      // Add investments
-                      userInvestments.forEach((investment) => {
-                        activities.push({
-                          type: "investment",
-                          data: investment,
-                          date: new Date(investment.startDate),
-                          icon: Gift,
-                          iconBg: "bg-blue-500/10",
-                          iconColor: "text-blue-500",
-                          title: "Investment",
-                          subtitle: investment.planName,
-                          amount: `$${investment.investmentAmount.toFixed(2)}`,
-                          amountColor: "text-blue-500",
-                          status: investment.status,
-                        });
-                      });
-
-                      // Add profit history from investments
-                      userInvestments.forEach((investment) => {
-                        if (
-                          investment.profitHistory &&
-                          investment.profitHistory.length > 0
-                        ) {
-                          investment.profitHistory.forEach((profit: any) => {
-                            activities.push({
-                              type: "profit",
-                              data: { ...profit, planName: investment.planName },
-                              date: new Date(profit.timestamp),
-                              icon: TrendingUp,
-                              iconBg: "bg-purple-500/10",
-                              iconColor: "text-purple-500",
-                              title: "ROI Profit",
-                              subtitle: `${investment.planName} - ${profit.rate}%`,
-                              amount: `+$${profit.amount.toFixed(2)}`,
-                              amountColor: "text-purple-500",
-                              status: "completed",
-                            });
+                        // Add deposits
+                        recentDeposits.forEach((deposit) => {
+                          activities.push({
+                            type: "deposit",
+                            data: deposit,
+                            date: new Date(deposit.createdAt),
+                            icon: ArrowDownCircle,
+                            iconBg: "bg-green-500/10",
+                            iconColor: "text-green-500",
+                            title: "Deposit",
+                            subtitle: deposit.paymentMethod,
+                            amount: `+$${deposit.amount.toFixed(2)}`,
+                            amountColor: "text-green-500",
+                            status: deposit.status,
                           });
-                        }
-                      });
+                        });
 
-                      // Sort by date (most recent first)
-                      activities.sort(
-                        (a, b) => b.date.getTime() - a.date.getTime()
-                      );
+                        // Add withdrawals
+                        recentWithdrawals.forEach((withdrawal) => {
+                          activities.push({
+                            type: "withdrawal",
+                            data: withdrawal,
+                            date: new Date(withdrawal.date),
+                            icon: TrendingDown,
+                            iconBg: "bg-red-500/10",
+                            iconColor: "text-red-500",
+                            title: "Withdrawal",
+                            subtitle: `${withdrawal.method || "Unknown"} - ${withdrawal.id}`,
+                            amount: `-$${withdrawal.amount.toFixed(2)}`,
+                            amountColor: "text-red-500",
+                            status: withdrawal.status,
+                          });
+                        });
 
-                      const totalPages = Math.ceil(activities.length / itemsPerPage);
-                      const startIndex = (activityPage - 1) * itemsPerPage;
-                      const endIndex = startIndex + itemsPerPage;
-                      const paginatedActivities = activities.slice(startIndex, endIndex);
-                      const hasMoreActivities = activities.length > itemsPerPage;
+                        // Add investments
+                        userInvestments.forEach((investment) => {
+                          activities.push({
+                            type: "investment",
+                            data: investment,
+                            date: new Date(investment.startDate),
+                            icon: Gift,
+                            iconBg: "bg-blue-500/10",
+                            iconColor: "text-blue-500",
+                            title: "Investment",
+                            subtitle: investment.planName,
+                            amount: `$${investment.investmentAmount.toFixed(2)}`,
+                            amountColor: "text-blue-500",
+                            status: investment.status,
+                          });
+                        });
 
-                      if (paginatedActivities.length === 0 && activityPage === 1) {
-                        return (
-                          <div className="p-12 text-center">
-                            <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                            <p className="text-sm font-black uppercase tracking-tighter mb-2">
-                              No activity yet
-                            </p>
-                            <p className="text-[10px] text-muted-foreground uppercase mb-6">
-                              Once you deposit or invest, they will appear here
-                            </p>
-                            <Link
-                              href="/user-dashboard/deposit"
-                              className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
-                            >
-                              Get Started
-                            </Link>
-                          </div>
+                        // Add profit history from investments
+                        userInvestments.forEach((investment) => {
+                          if (
+                            investment.profitHistory &&
+                            investment.profitHistory.length > 0
+                          ) {
+                            investment.profitHistory.forEach((profit: any) => {
+                              activities.push({
+                                type: "profit",
+                                data: {
+                                  ...profit,
+                                  planName: investment.planName,
+                                },
+                                date: new Date(profit.timestamp),
+                                icon: TrendingUp,
+                                iconBg: "bg-purple-500/10",
+                                iconColor: "text-purple-500",
+                                title: "ROI Profit",
+                                subtitle: `${investment.planName} - ${profit.rate}%`,
+                                amount: `+$${profit.amount.toFixed(2)}`,
+                                amountColor: "text-purple-500",
+                                status: "completed",
+                              });
+                            });
+                          }
+                        });
+
+                        // Sort by date (most recent first)
+                        activities.sort(
+                          (a, b) => b.date.getTime() - a.date.getTime(),
                         );
-                      }
 
-                      return (
-                        <div>
-                          <div className="divide-y divide-border">
-                            {paginatedActivities.map((activity, index) => (
-                              <div
-                                key={index}
-                                className="p-4 hover:bg-muted/30 transition-colors"
+                        const totalPages = Math.ceil(
+                          activities.length / itemsPerPage,
+                        );
+                        const startIndex = (activityPage - 1) * itemsPerPage;
+                        const endIndex = startIndex + itemsPerPage;
+                        const paginatedActivities = activities.slice(
+                          startIndex,
+                          endIndex,
+                        );
+                        const hasMoreActivities =
+                          activities.length > itemsPerPage;
+
+                        if (
+                          paginatedActivities.length === 0 &&
+                          activityPage === 1
+                        ) {
+                          return (
+                            <div className="p-12 text-center">
+                              <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                              <p className="text-sm font-black uppercase tracking-tighter mb-2">
+                                No activity yet
+                              </p>
+                              <p className="text-[10px] text-muted-foreground uppercase mb-6">
+                                Once you deposit or invest, they will appear
+                                here
+                              </p>
+                              <Link
+                                href="/user-dashboard/deposit"
+                                className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
                               >
-                                <div className="flex justify-between items-start">
-                                  <div className="flex items-start gap-3">
-                                    <div
-                                      className={`p-2 ${activity.iconBg} rounded-lg`}
-                                    >
-                                      <activity.icon
-                                        className={`w-4 h-4 ${activity.iconColor}`}
-                                      />
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-black uppercase tracking-tighter">
-                                        {activity.title}
-                                      </p>
-                                      <p className="text-[10px] text-muted-foreground uppercase">
-                                        {activity.subtitle}
-                                      </p>
-                                      <p className="text-[9px] text-muted-foreground uppercase mt-1">
-                                        {activity.date.toLocaleDateString()} •{" "}
-                                        {activity.date.toLocaleTimeString()}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <p
-                                      className={`text-sm font-black ${activity.amountColor}`}
-                                    >
-                                      {activity.amount}
-                                    </p>
-                                    {activity.type === "deposit" && (
-                                      <span
-                                        className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                                          activity.status === "approved"
-                                            ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                            : activity.status === "rejected"
-                                            ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                            : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-                                        }`}
+                                Get Started
+                              </Link>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div>
+                            <div className="divide-y divide-border">
+                              {paginatedActivities.map((activity, index) => (
+                                <div
+                                  key={index}
+                                  className="p-4 hover:bg-muted/30 transition-colors"
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex items-start gap-3">
+                                      <div
+                                        className={`p-2 ${activity.iconBg} rounded-lg`}
                                       >
-                                        {activity.status}
-                                      </span>
-                                    )}
-                                    {activity.type === "investment" && (
-                                      <span
-                                        className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                                          activity.status === "active"
-                                            ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                                            : activity.status === "completed"
-                                            ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                            : "bg-gray-500/10 text-gray-500 border-gray-500/20"
-                                        }`}
+                                        <activity.icon
+                                          className={`w-4 h-4 ${activity.iconColor}`}
+                                        />
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-black uppercase tracking-tighter">
+                                          {activity.title}
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground uppercase">
+                                          {activity.subtitle}
+                                        </p>
+                                        <p className="text-[9px] text-muted-foreground uppercase mt-1">
+                                          {activity.date.toLocaleDateString()} •{" "}
+                                          {activity.date.toLocaleTimeString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <p
+                                        className={`text-sm font-black ${activity.amountColor}`}
                                       >
-                                        {activity.status}
-                                      </span>
-                                    )}
+                                        {activity.amount}
+                                      </p>
+                                      {activity.type === "deposit" && (
+                                        <span
+                                          className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                            activity.status === "approved"
+                                              ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                              : activity.status === "rejected"
+                                                ? "bg-red-500/10 text-red-500 border-red-500/20"
+                                                : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                                          }`}
+                                        >
+                                          {activity.status}
+                                        </span>
+                                      )}
+                                      {activity.type === "investment" && (
+                                        <span
+                                          className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
+                                            activity.status === "active"
+                                              ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                              : activity.status === "completed"
+                                                ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                                : "bg-gray-500/10 text-gray-500 border-gray-500/20"
+                                          }`}
+                                        >
+                                          {activity.status}
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                          {totalPages > 1 && (
-                            <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
-                              <button
-                                onClick={() => setActivityPage(Math.max(1, activityPage - 1))}
-                                disabled={activityPage === 1}
-                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                                  activityPage === 1
-                                    ? "text-muted-foreground cursor-not-allowed"
-                                    : "text-foreground hover:bg-muted/50"
-                                }`}
-                              >
-                                <ChevronLeft className="w-4 h-4" />
-                              </button>
-                              
-                              <span className="text-xs font-medium text-muted-foreground">
-                                Page {activityPage} of {totalPages}
-                              </span>
-                              
-                              <button
-                                onClick={() => setActivityPage(Math.min(totalPages, activityPage + 1))}
-                                disabled={activityPage === totalPages}
-                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                                  activityPage === totalPages
-                                    ? "text-muted-foreground cursor-not-allowed"
-                                    : "text-foreground hover:bg-muted/50"
-                                }`}
-                              >
-                                <ChevronRight className="w-4 h-4" />
-                              </button>
+                              ))}
                             </div>
-                          )}
-                        </div>
-                      );
-                    })()}
+                            {totalPages > 1 && (
+                              <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
+                                <button
+                                  onClick={() =>
+                                    setActivityPage(
+                                      Math.max(1, activityPage - 1),
+                                    )
+                                  }
+                                  disabled={activityPage === 1}
+                                  className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                    activityPage === 1
+                                      ? "text-muted-foreground cursor-not-allowed"
+                                      : "text-foreground hover:bg-muted/50"
+                                  }`}
+                                >
+                                  <ChevronLeft className="w-4 h-4" />
+                                </button>
+
+                                <span className="text-xs font-medium text-muted-foreground">
+                                  Page {activityPage} of {totalPages}
+                                </span>
+
+                                <button
+                                  onClick={() =>
+                                    setActivityPage(
+                                      Math.min(totalPages, activityPage + 1),
+                                    )
+                                  }
+                                  disabled={activityPage === totalPages}
+                                  className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                    activityPage === totalPages
+                                      ? "text-muted-foreground cursor-not-allowed"
+                                      : "text-foreground hover:bg-muted/50"
+                                  }`}
+                                >
+                                  <ChevronRight className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()
+                    )}
                   </div>
                 </section>
               </div>
 
               {/* Right Column: Wallet & Notifications */}
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
-
                 {/* Account Summary Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
                   <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -964,178 +989,220 @@ export default function UserOverviewPage() {
                           </div>
                         ))}
                       </div>
-                    ) : (() => {
-                      // Combine all alerts
-                      const allAlerts: any[] = [];
+                    ) : (
+                      (() => {
+                        // Combine all alerts
+                        const allAlerts: any[] = [];
 
-                      // Welcome bonus alert (always first)
-                      allAlerts.push({
-                        id: 'welcome-bonus',
-                        type: 'welcome',
-                        isNew: true,
-                        title: 'Welcome to Secure Rise',
-                        message: 'Your $20 registration bonus has been added to your balance.',
-                        time: 'Just Now'
-                      });
+                        // Welcome bonus alert (always first)
+                        allAlerts.push({
+                          id: "welcome-bonus",
+                          type: "welcome",
+                          isNew: true,
+                          title: "Welcome to Secure Rise",
+                          message:
+                            "Your $20 registration bonus has been added to your balance.",
+                          time: "Just Now",
+                        });
 
-                      // Add profit alerts
-                      userInvestments.forEach((investment) => {
+                        // Add profit alerts
+                        userInvestments.forEach((investment) => {
+                          if (
+                            investment.profitHistory &&
+                            investment.profitHistory.length > 0
+                          ) {
+                            investment.profitHistory.forEach(
+                              (profit: any, index: number) => {
+                                allAlerts.push({
+                                  id: `${investment._id}-profit-${index}`,
+                                  type: "profit",
+                                  isNew: false,
+                                  title: "Daily Profit Added",
+                                  message: `$${profit.amount.toFixed(2)} added from ${investment.planName} plan (${profit.rate}% ROI)`,
+                                  time: new Date(
+                                    profit.timestamp,
+                                  ).toLocaleDateString(),
+                                  timestamp: new Date(profit.timestamp),
+                                });
+                              },
+                            );
+                          }
+                        });
+
+                        // Show investment active message if no profits yet
                         if (
-                          investment.profitHistory &&
-                          investment.profitHistory.length > 0
+                          userInvestments.length > 0 &&
+                          userInvestments.every(
+                            (inv) =>
+                              !inv.profitHistory ||
+                              inv.profitHistory.length === 0,
+                          )
                         ) {
-                          investment.profitHistory.forEach((profit: any, index: number) => {
-                            allAlerts.push({
-                              id: `${investment._id}-profit-${index}`,
-                              type: 'profit',
-                              isNew: false,
-                              title: 'Daily Profit Added',
-                              message: `$${profit.amount.toFixed(2)} added from ${investment.planName} plan (${profit.rate}% ROI)`,
-                              time: new Date(profit.timestamp).toLocaleDateString(),
-                              timestamp: new Date(profit.timestamp)
-                            });
+                          allAlerts.push({
+                            id: "investment-active",
+                            type: "investment",
+                            isNew: false,
+                            title: "Investment Active",
+                            message:
+                              "Your investments are active. Daily profits will be added here.",
+                            time: "Pending",
                           });
                         }
-                      });
 
-                      // Show investment active message if no profits yet
-                      if (userInvestments.length > 0 &&
-                        userInvestments.every((inv) => !inv.profitHistory || inv.profitHistory.length === 0)) {
-                        allAlerts.push({
-                          id: 'investment-active',
-                          type: 'investment',
-                          isNew: false,
-                          title: 'Investment Active',
-                          message: 'Your investments are active. Daily profits will be added here.',
-                          time: 'Pending'
+                        // Add withdrawal alerts
+                        recentWithdrawals.forEach((withdrawal, index) => {
+                          allAlerts.push({
+                            id: `withdrawal-${index}`,
+                            type: "withdrawal",
+                            isNew: false,
+                            title: `Withdrawal ${withdrawal.status === "approved" ? "Approved" : withdrawal.status === "rejected" ? "Rejected" : "Pending"}`,
+                            message:
+                              withdrawal.status === "approved"
+                                ? `$${withdrawal.amount.toFixed(2)} has been sent to your ${withdrawal.method || "crypto"} wallet`
+                                : withdrawal.status === "rejected"
+                                  ? `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected`
+                                  : `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`,
+                            time: withdrawal.id,
+                          });
                         });
-                      }
 
-                      // Add withdrawal alerts
-                      recentWithdrawals.forEach((withdrawal, index) => {
-                        allAlerts.push({
-                          id: `withdrawal-${index}`,
-                          type: 'withdrawal',
-                          isNew: false,
-                          title: `Withdrawal ${withdrawal.status === 'approved' ? 'Approved' : withdrawal.status === 'rejected' ? 'Rejected' : 'Pending'}`,
-                          message: withdrawal.status === 'approved' ? 
-                            `$${withdrawal.amount.toFixed(2)} has been sent to your ${withdrawal.method || 'crypto'} wallet` :
-                           withdrawal.status === 'rejected' ? 
-                            `Your withdrawal request for $${withdrawal.amount.toFixed(2)} was rejected` :
-                            `Your withdrawal request for $${withdrawal.amount.toFixed(2)} is being processed`,
-                          time: withdrawal.id
-                        });
-                      });
+                        // Sort by date (newest first) - keep welcome bonus at top
+                        const sortedAlerts = [
+                          allAlerts[0],
+                          ...allAlerts.slice(1).sort((a, b) => {
+                            if (a.timestamp && b.timestamp) {
+                              return (
+                                b.timestamp.getTime() - a.timestamp.getTime()
+                              );
+                            }
+                            return 0;
+                          }),
+                        ];
 
-                      // Sort by date (newest first) - keep welcome bonus at top
-                      const sortedAlerts = [allAlerts[0], ...allAlerts.slice(1).sort((a, b) => {
-                        if (a.timestamp && b.timestamp) {
-                          return b.timestamp.getTime() - a.timestamp.getTime();
-                        }
-                        return 0;
-                      })];
+                        // Pagination logic
+                        const totalAlertPages = Math.ceil(
+                          sortedAlerts.length / alertsPerPage,
+                        );
+                        const startIndex = (alertsPage - 1) * alertsPerPage;
+                        const endIndex = startIndex + alertsPerPage;
+                        const paginatedAlerts = sortedAlerts.slice(
+                          startIndex,
+                          endIndex,
+                        );
 
-                      // Pagination logic
-                      const totalAlertPages = Math.ceil(sortedAlerts.length / alertsPerPage);
-                      const startIndex = (alertsPage - 1) * alertsPerPage;
-                      const endIndex = startIndex + alertsPerPage;
-                      const paginatedAlerts = sortedAlerts.slice(startIndex, endIndex);
+                        return (
+                          <>
+                            <div className="divide-y divide-border">
+                              {paginatedAlerts.length > 0 ? (
+                                paginatedAlerts.map((alert) => (
+                                  <div
+                                    key={alert.id}
+                                    className="p-4 hover:bg-muted/30 transition-colors flex gap-3"
+                                  >
+                                    <div className="flex-shrink-0 mt-1.5">
+                                      {alert.isNew ? (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                      ) : (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                                      )}
+                                    </div>
 
-                      return (
-                        <>
-                          <div className="divide-y divide-border">
-                            {paginatedAlerts.length > 0 ? (
-                              paginatedAlerts.map((alert) => (
-                                <div key={alert.id} className="p-4 hover:bg-muted/30 transition-colors flex gap-3">
-                                  <div className="flex-shrink-0 mt-1.5">
-                                    {alert.isNew ? (
-                                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                    ) : (
-                                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-semibold text-foreground">
+                                        {alert.title}
+                                      </p>
+                                      <p
+                                        className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed"
+                                        dangerouslySetInnerHTML={{
+                                          __html: alert.message.replace(
+                                            /(\$\d+\.\d{2})/g,
+                                            '<span class="text-green-500 font-semibold">$1</span>',
+                                          ),
+                                        }}
+                                      />
+                                      <p className="text-[10px] text-muted-foreground mt-2">
+                                        {alert.time}
+                                      </p>
+                                    </div>
                                   </div>
-
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-foreground">
-                                      {alert.title}
-                                    </p>
-                                    <p 
-                                      className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed"
-                                      dangerouslySetInnerHTML={{
-                                        __html: alert.message.replace(/(\$\d+\.\d{2})/g, '<span class="text-green-500 font-semibold">$1</span>')
-                                      }}
-                                    />
-                                    <p className="text-[10px] text-muted-foreground mt-2">
-                                      {alert.time}
-                                    </p>
-                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-8 text-center">
+                                  <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                                  <p className="text-sm font-medium">
+                                    No alerts yet
+                                  </p>
                                 </div>
-                              ))
-                            ) : (
-                              <div className="p-8 text-center">
-                                <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                                <p className="text-sm font-medium">No alerts yet</p>
+                              )}
+                            </div>
+
+                            {/* Pagination Controls for Alerts */}
+                            {totalAlertPages > 1 && (
+                              <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
+                                <button
+                                  onClick={() =>
+                                    setAlertsPage(Math.max(1, alertsPage - 1))
+                                  }
+                                  disabled={alertsPage === 1}
+                                  className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                    alertsPage === 1
+                                      ? "text-muted-foreground cursor-not-allowed"
+                                      : "text-foreground hover:bg-muted/50"
+                                  }`}
+                                >
+                                  <ChevronLeft className="w-4 h-4" />
+                                </button>
+
+                                <span className="text-xs font-medium text-muted-foreground">
+                                  Page {alertsPage} of {totalAlertPages}
+                                </span>
+
+                                <button
+                                  onClick={() =>
+                                    setAlertsPage(
+                                      Math.min(totalAlertPages, alertsPage + 1),
+                                    )
+                                  }
+                                  disabled={alertsPage === totalAlertPages}
+                                  className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                    alertsPage === totalAlertPages
+                                      ? "text-muted-foreground cursor-not-allowed"
+                                      : "text-foreground hover:bg-muted/50"
+                                  }`}
+                                >
+                                  <ChevronRight className="w-4 h-4" />
+                                </button>
                               </div>
                             )}
-                          </div>
-
-                          {/* Pagination Controls for Alerts */}
-                          {totalAlertPages > 1 && (
-                            <div className="flex items-center justify-between p-3 border-t border-border bg-muted/30">
-                              <button
-                                onClick={() => setAlertsPage(Math.max(1, alertsPage - 1))}
-                                disabled={alertsPage === 1}
-                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                                  alertsPage === 1
-                                    ? "text-muted-foreground cursor-not-allowed"
-                                    : "text-foreground hover:bg-muted/50"
-                                }`}
-                              >
-                                <ChevronLeft className="w-4 h-4" />
-                              </button>
-
-                              <span className="text-xs font-medium text-muted-foreground">
-                                Page {alertsPage} of {totalAlertPages}
-                              </span>
-
-                              <button
-                                onClick={() => setAlertsPage(Math.min(totalAlertPages, alertsPage + 1))}
-                                disabled={alertsPage === totalAlertPages}
-                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                                  alertsPage === totalAlertPages
-                                    ? "text-muted-foreground cursor-not-allowed"
-                                    : "text-foreground hover:bg-muted/50"
-                                }`}
-                              >
-                                <ChevronRight className="w-4 h-4" />
-                              </button>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
+                          </>
+                        );
+                      })()
+                    )}
                   </div>
                 </section>
 
-                {/* Help & Support Shortcut */}
-                <section className="bg-primary/5 border border-primary/20 rounded-3xl p-6 flex-1">
-                  <HelpCircle className="w-8 h-8 text-primary mb-4" />
+                {/* Gift Awareness Section */}
+                <section className="bg-primary/5 border border-primary/20 rounded-3xl p-6 flex-1 relative overflow-hidden group">
+                  {/* Subtle background glow effect */}
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 blur-2xl rounded-full group-hover:bg-primary/20 transition-colors" />
+                  <Gift className="w-8 h-8 text-primary mb-4" />
                   <h3 className="text-sm font-black uppercase italic tracking-tighter">
-                    Need Assistance?
+                    Empower a Fellow Trader
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
-                    Our support team is available 24/7 for disputes or
-                    questions.
+                    Fuel someone's portfolio. You can now gift capital directly
+                    to other members to help them scale their trading and
+                    investment goals.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-6">
                     <Link
-                      href="#"
+                      href="/user-dashboard/gift-member"
                       className="bg-foreground text-background text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
                     >
-                      Open Dispute
+                      Send Gift
                     </Link>
                     <button className="border border-border text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background">
-                      Help Center
+                      Learn More
                     </button>
                   </div>
                 </section>
@@ -1276,7 +1343,10 @@ export default function UserOverviewPage() {
                               {/* 3. Change */}
                               <div className="flex-1 text-right">
                                 <div className="inline-block">
-                                  {formatChange(item.change, item.changePercent)}
+                                  {formatChange(
+                                    item.change,
+                                    item.changePercent,
+                                  )}
                                 </div>
                               </div>
 
@@ -1308,7 +1378,6 @@ export default function UserOverviewPage() {
                 </div>
               </div>
             </section>
-
           </div>
         </main>
       </div>

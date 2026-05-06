@@ -315,9 +315,9 @@ export default function GiftUserPage() {
                 </h1>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground">Available Balance</p>
-                  <p className={`text-lg font-black ${balance > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
-                    ${balance.toFixed(2)}
-                  </p>
+                  <p className={`text-lg font-black ${balance > 0 ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+  ${balance.toFixed(2)}
+</p>
                 </div>
               </div>
               <p className="text-muted-foreground text-sm mt-1">
@@ -551,7 +551,7 @@ export default function GiftUserPage() {
                           Processing…
                         </span>
                       ) : (
-                        "Confirm Gift Transfer 🎁"
+                        "Confirm Transfer 🎁"
                       )}
                     </button>
                   </div>
