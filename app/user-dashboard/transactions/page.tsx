@@ -357,7 +357,7 @@ export default function TransactionsPage() {
             {/* ── Page Title ── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="space-y-1">
-                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
                   TRS History
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
@@ -372,7 +372,7 @@ export default function TransactionsPage() {
             </div>
 
             {/* ── Filter Bar ── */}
-            <div className="bg-card border border-border rounded-2xl p-4 flex flex-wrap items-center gap-3">
+            <div className="bg-card border border-border rounded-xl p-4 lg:p-4 flex flex-wrap items-center gap-3">
               {/* Search */}
               <div className="flex-1 min-w-[180px] relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -381,7 +381,7 @@ export default function TransactionsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search ID or method…"
-                  className="w-full bg-muted/30 border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs font-bold focus:outline-none focus:border-foreground transition-all"
+                  className="w-full bg-muted/30 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-bold focus:outline-none focus:border-foreground transition-all"
                 />
               </div>
 
@@ -392,7 +392,7 @@ export default function TransactionsPage() {
                     <button
                       key={type}
                       onClick={() => setFilterType(type)}
-                      className={`px-4 py-2.5 rounded-xl cursor-pointer text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+                      className={`px-4 py-2.5 rounded-lg cursor-pointer text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
                         filterType === type
                           ? "bg-foreground text-background border-foreground shadow-lg"
                           : "bg-background text-muted-foreground border-border hover:border-muted-foreground/50"
@@ -440,7 +440,7 @@ export default function TransactionsPage() {
                   </thead>
                   <tbody>
                     {loading ? (
-                      [...Array(6)].map((_, i) => <SkeletonRow key={i} />)
+                      [...Array(10)].map((_, i) => <SkeletonRow key={i} />)
                     ) : paginatedTransactions.length === 0 ? (
                       <tr>
                         <td colSpan={7}>

@@ -67,6 +67,8 @@ export default function UserOverviewPage() {
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
   const alertsPerPage = 3;
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [alertsLoading, setAlertsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -137,6 +139,8 @@ export default function UserOverviewPage() {
         console.error("Error fetching user data:", error);
       } finally {
         setLoading(false);
+        setActivityLoading(false);
+        setAlertsLoading(false);
       }
     };
 
@@ -175,7 +179,7 @@ export default function UserOverviewPage() {
       link: "#",
     },
     {
-      label: "Total Withdrawal",
+      label: "My Withdrawals",
       value: `$${formatNumber(financialData.totalWithdrawal)}`,
       icon: ArrowUpRight,
       iconBg: "bg-purple-500/10",
@@ -605,7 +609,7 @@ export default function UserOverviewPage() {
                   {loading ? (
                     <div className="h-8 w-16 bg-muted rounded animate-pulse mb-1"></div>
                   ) : (
-                    <p className="text-xl sm:text-2xl md:text-3xl font-black italic tracking-tighter mb-1">
+                    <p className="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter mb-1">
                       {stat.value}
                     </p>
                   )}
@@ -667,7 +671,27 @@ export default function UserOverviewPage() {
                   </div>
 
                   <div className="bg-card border border-border rounded-3xl overflow-hidden flex-1">
-                    {(() => {
+                    {activityLoading ? (
+                      // Loading skeleton for Recent Activity
+                      <div className="p-4 space-y-4">
+                        {[...Array(6)].map((_, index) => (
+                          <div key={index} className="animate-pulse">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 bg-muted rounded-lg" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-muted rounded w-24" />
+                                <div className="h-3 bg-muted rounded w-32" />
+                                <div className="h-3 bg-muted rounded w-40" />
+                              </div>
+                              <div className="space-y-2">
+                                <div className="h-4 bg-muted rounded w-16" />
+                                <div className="h-6 bg-muted rounded w-20" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (() => {
                       // Combine deposits and investment activities
                       const activities: any[] = [];
 
@@ -924,7 +948,23 @@ export default function UserOverviewPage() {
                   </div>
 
                   <div className="bg-card border border-border rounded-3xl overflow-hidden">
-                    {(() => {
+                    {alertsLoading ? (
+                      // Loading skeleton for Alerts
+                      <div className="p-4 space-y-4">
+                        {[...Array(3)].map((_, index) => (
+                          <div key={index} className="animate-pulse">
+                            <div className="flex gap-3">
+                              <div className="w-1.5 h-1.5 rounded-full bg-muted mt-2" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-muted rounded w-32" />
+                                <div className="h-3 bg-muted rounded w-full" />
+                                <div className="h-3 bg-muted rounded w-20" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (() => {
                       // Combine all alerts
                       const allAlerts: any[] = [];
 

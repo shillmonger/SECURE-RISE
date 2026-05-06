@@ -391,7 +391,7 @@ export default function UserSettingsPage() {
         <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-8 pb-32">
           <div className="max-w-5xl mx-auto">
             <div className="mb-10">
-              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic text-foreground">
+              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic text-foreground">
                 Profile & Settings
               </h1>
               <div className="flex items-center gap-4 mt-2">

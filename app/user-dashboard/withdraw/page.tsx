@@ -267,7 +267,7 @@ export default function WithdrawPage() {
           <div className="max-w-7xl mx-auto space-y-10">
             {/* Header */}
             <section className="space-y-2">
-              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
+              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
                 Withdraw Funds
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">

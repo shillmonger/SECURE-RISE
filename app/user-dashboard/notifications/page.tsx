@@ -268,7 +268,7 @@ const NotificationsPage = () => {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="space-y-2">
-                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
                   Alert Center
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
