@@ -1389,3 +1389,355 @@ export const sendWithdrawalStatusEmail = async (userEmail: string, withdrawalDat
     throw error;
   }
 };
+
+export const sendGiftDebitEmail = async (userEmail: string, giftData: {
+  senderName: string;
+  receiverName: string;
+  amount: number;
+  transactionId: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Gift Sent - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .gift-box {
+          background: #ef4444;
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .gift-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Gift Sent Successfully</h1>
+          <p class="subtitle">Your gift has been sent and processed</p>
+        </div>
+
+        <p>Hi <strong>${giftData.senderName}</strong>,</p>
+        
+        <p>You have successfully sent a gift to <strong>${giftData.receiverName}</strong>. The amount has been debited from your account balance.</p>
+
+        <div class="gift-box">
+          <div class="info-label">Gift Amount Sent</div>
+          <div class="gift-amount">-$${giftData.amount.toLocaleString()}</div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Debited from your account</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Recipient</div>
+            <div class="info-value">${giftData.receiverName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Transaction ID</div>
+            <div class="info-value">${giftData.transactionId}</div>
+          </div>
+        </div>
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/gift-member" class="cta-button">
+          Send Another Gift
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Gift Sent - ${giftData.transactionId}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Gift debit email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending gift debit email:', error);
+    throw error;
+  }
+};
+
+export const sendGiftCreditEmail = async (userEmail: string, giftData: {
+  senderName: string;
+  receiverName: string;
+  amount: number;
+  transactionId: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Gift Received - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .gift-box {
+          background: #22c55e;
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .gift-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">🎁 Gift Received!</h1>
+          <p class="subtitle">Someone sent you a wonderful gift</p>
+        </div>
+
+        <p>Hi <strong>${giftData.receiverName}</strong>,</p>
+        
+        <p>You have received a gift from <strong>${giftData.senderName}</strong>. The amount has been credited to your account balance and is available for use.</p>
+
+        <div class="gift-box">
+          <div class="info-label">Gift Amount Received</div>
+          <div class="gift-amount">+$${giftData.amount.toLocaleString()}</div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Credited to your account</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">From</div>
+            <div class="info-value">${giftData.senderName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Transaction ID</div>
+            <div class="info-value">${giftData.transactionId}</div>
+          </div>
+        </div>
+
+        <p style="text-align: center; margin: 24px 0;">
+          You can now use this amount for investments or withdraw it to your preferred wallet.
+        </p>
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/dashboard" class="cta-button">
+          View Your Dashboard
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `🎁 Gift Received - ${giftData.transactionId}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Gift credit email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending gift credit email:', error);
+    throw error;
+  }
+};

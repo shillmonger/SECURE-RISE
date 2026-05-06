@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
@@ -8,37 +9,17 @@ import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700", "800", "900"] });
 
-// ─── MOCK DATA ───────────────────────────────────────────────────────────────
-const MOCK_USERS = [
-  { id: "1", name: "James Okafor",   username: "jamesokafor",  email: "james@example.com",   avatar: "https://i.pravatar.cc/80?img=11" },
-  { id: "2", name: "Amaka Eze",      username: "amaka_eze",    email: "amaka@example.com",    avatar: "https://i.pravatar.cc/80?img=47" },
-  { id: "3", name: "Tunde Adeyemi",  username: "tunde_dev",    email: "tunde@example.com",    avatar: "https://i.pravatar.cc/80?img=15" },
-  { id: "4", name: "Chisom Nwosu",   username: "chisom_n",     email: "chisom@example.com",   avatar: "https://i.pravatar.cc/80?img=32" },
-  { id: "5", name: "Fatima Bello",   username: "fatimabello",  email: "fatima@example.com",   avatar: "https://i.pravatar.cc/80?img=44" },
-  { id: "6", name: "Emeka Obi",      username: "emeka_obi",    email: "emeka@example.com",    avatar: "https://i.pravatar.cc/80?img=53" },
-];
+// ─── TYPES ───────────────────────────────────────────────────────────────
+type SearchResult = {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  avatar: string;
+};
 
-type MockUser = (typeof MOCK_USERS)[number];
 type Step = "search" | "amount" | "confirm" | "success";
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
-function Toast({ msg, type, onClose }: { msg: string; type: "success" | "error"; onClose: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onClose, 4000);
-    return () => clearTimeout(t);
-  }, [onClose]);
-  return (
-    <div
-      className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border text-sm font-semibold transition-all
-        ${type === "success" ? "bg-primary/10 border-primary/30 text-primary" : "bg-red-500/10 border-red-500/30 text-red-400"}`}
-      style={{ animation: "fadeSlideUp 0.3s ease" }}
-    >
-      <span className={`h-2 w-2 rounded-full shrink-0 ${type === "success" ? "bg-primary" : "bg-red-400"}`} />
-      {msg}
-      <button onClick={onClose} className="ml-2 opacity-60 hover:opacity-100 text-xs">✕</button>
-    </div>
-  );
-}
 
 // ─── SKELETON ────────────────────────────────────────────────────────────────
 function SkeletonCard() {
@@ -59,14 +40,14 @@ function UserCard({
   selected,
   onClick,
 }: {
-  user: MockUser;
+  user: SearchResult;
   selected: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-200
+      className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer
         ${selected
           ? "border-primary bg-primary/8 shadow-[0_0_0_2px_hsl(var(--primary)/0.25)]"
           : "border-border bg-card hover:border-primary/40 hover:bg-primary/5"
@@ -91,7 +72,7 @@ function UserCard({
 }
 
 // ─── SUCCESS MODAL ───────────────────────────────────────────────────────────
-function SuccessModal({ recipient, amount, onClose }: { recipient: MockUser; amount: string; onClose: () => void }) {
+function SuccessModal({ recipient, amount, onClose }: { recipient: SearchResult; amount: string; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
       <div
@@ -99,11 +80,21 @@ function SuccessModal({ recipient, amount, onClose }: { recipient: MockUser; amo
         style={{ animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" }}
       >
         {/* Animated checkmark */}
-        <div className="mx-auto mb-5 h-20 w-20 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center">
-          <svg className="h-9 w-9 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
+        <div className="mx-auto mb-5 h-20 w-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
+  <svg
+    className="h-9 w-9 text-green-500"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2.5}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M5 13l4 4L19 7"
+    />
+  </svg>
+</div>
         <h3 className={`${montserrat.className} text-2xl font-black text-foreground mb-1`}>Gift Sent! 🎉</h3>
         <p className="text-muted-foreground text-sm mb-6">
           You successfully sent <span className="text-primary font-bold">${amount}</span> to{" "}
@@ -125,7 +116,7 @@ function SuccessModal({ recipient, amount, onClose }: { recipient: MockUser; amo
         </div>
         <button
           onClick={onClose}
-          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-opacity"
+          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-opacity cursor-pointer"
         >
           Done
         </button>
@@ -172,34 +163,58 @@ function StepIndicator({ current }: { current: number }) {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function GiftUserPage() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<MockUser[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
-  const [selected, setSelected] = useState<MockUser | null>(null);
+  const [selected, setSelected] = useState<SearchResult | null>(null);
   const [amount, setAmount] = useState("");
   const [step, setStep] = useState<Step>("search");
   const [sending, setSending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [balance, setBalance] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Fetch user balance on mount
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/gift/balance');
+        const data = await response.json();
+        if (data.success) {
+          setBalance(data.balance);
+        }
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      }
+    };
+    fetchBalance();
+  }, []);
 
   // Debounced search
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query.trim()) { setResults([]); setSearching(false); return; }
     setSearching(true);
-    debounceRef.current = setTimeout(() => {
-      const q = query.toLowerCase();
-      const found = MOCK_USERS.filter(
-        (u) => u.email.includes(q) || u.username.includes(q) || u.name.toLowerCase().includes(q)
-      );
-      setResults(found);
-      setSearching(false);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/user-dashboard/gift/search?q=${encodeURIComponent(query.trim())}`);
+        const data = await response.json();
+        if (data.success) {
+          setResults(data.users);
+        } else {
+          setResults([]);
+        }
+      } catch (error) {
+        console.error('Error searching users:', error);
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
     }, 500);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query]);
 
-  const handleSelectUser = (user: MockUser) => {
+  const handleSelectUser = (user: SearchResult) => {
     setSelected(user);
   };
 
@@ -214,18 +229,49 @@ export default function GiftUserPage() {
 
   const handleProceedToConfirm = () => {
     if (!amount || parseFloat(amount) <= 0) {
-      setToast({ msg: "Please enter a valid amount.", type: "error" });
+      toast.error("Please enter a valid amount.");
+      return;
+    }
+    if (parseFloat(amount) > balance) {
+      toast.error("Insufficient balance. Your current balance is $" + balance.toFixed(2));
       return;
     }
     setStep("confirm");
   };
 
   const handleSend = useCallback(async () => {
+    if (!selected) return;
+    
     setSending(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setSending(false);
-    setShowSuccess(true);
-  }, []);
+    try {
+      const response = await fetch('/api/user-dashboard/gift/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          receiverId: selected.id,
+          amount: parseFloat(amount)
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success("Gift sent successfully!");
+        setShowSuccess(true);
+        // Update balance
+        setBalance(prev => prev - parseFloat(amount));
+      } else {
+        toast.error(data.error || "Failed to send gift");
+      }
+    } catch (error) {
+      console.error('Error sending gift:', error);
+      toast.error("Failed to send gift. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  }, [selected, amount]);
 
   const handleReset = () => {
     setQuery("");
@@ -263,9 +309,17 @@ export default function GiftUserPage() {
                 </span>
                 Gift Transfer
               </div>
-              <h1 className={`${montserrat.className} text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tight`}>
-                Send a Gift
-              </h1>
+              <div className="flex items-center justify-between mb-2">
+                <h1 className={`${montserrat.className} text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tight`}>
+                  Send a Gift
+                </h1>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Available Balance</p>
+                  <p className={`text-lg font-black ${balance > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
+                    ${balance.toFixed(2)}
+                  </p>
+                </div>
+              </div>
               <p className="text-muted-foreground text-sm mt-1">
                 Find a user and send them money instantly.
               </p>
@@ -337,7 +391,7 @@ export default function GiftUserPage() {
                   <button
                     onClick={handleProceedToAmount}
                     disabled={!selected}
-                    className={`mt-6 w-full py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200
+                    className={`mt-6 w-full py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer
                       ${selected
                         ? "bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.01]"
                         : "bg-muted text-muted-foreground cursor-not-allowed"
@@ -358,7 +412,10 @@ export default function GiftUserPage() {
                       <p className="text-sm font-bold text-foreground truncate">{selected.name}</p>
                       <p className="text-xs text-muted-foreground truncate">@{selected.username}</p>
                     </div>
-                    <button onClick={() => { setStep("search"); setAmount(""); }} className="ml-auto text-xs text-primary font-semibold hover:underline shrink-0">
+                    <button
+                      onClick={() => { setStep("search"); setAmount(""); }}
+                      className="ml-auto text-xs text-primary font-semibold hover:underline shrink-0 cursor-pointer"
+                    >
                       Change
                     </button>
                   </div>
@@ -391,7 +448,7 @@ export default function GiftUserPage() {
                       <button
                         key={v}
                         onClick={() => handleAddAmount(v)}
-                        className="flex-1 py-2 rounded-lg border border-border bg-background text-xs font-bold text-foreground hover:border-primary hover:bg-primary/8 hover:text-primary transition-all"
+                        className="flex-1 py-2 rounded-lg border border-border bg-background text-xs font-bold text-foreground hover:border-primary hover:bg-primary/8 hover:text-primary transition-all cursor-pointer"
                       >
                         +${v}
                       </button>
@@ -411,7 +468,7 @@ export default function GiftUserPage() {
                   <button
                     onClick={handleProceedToConfirm}
                     disabled={!amount || parseFloat(amount) <= 0}
-                    className={`w-full py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200
+                    className={`w-full py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer
                       ${amount && parseFloat(amount) > 0
                         ? "bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.01]"
                         : "bg-muted text-muted-foreground cursor-not-allowed"
@@ -479,14 +536,14 @@ export default function GiftUserPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => setStep("amount")}
-                      className="flex-1 py-3.5 rounded-xl border border-border bg-background font-bold text-sm text-foreground hover:bg-muted transition-all"
+                      className="flex-1 py-3.5 rounded-xl border border-border bg-background font-bold text-sm text-foreground hover:bg-muted transition-all cursor-pointer"
                     >
                       ← Back
                     </button>
                     <button
                       onClick={handleSend}
                       disabled={sending}
-                      className="flex-[2] py-3.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-all relative overflow-hidden"
+                      className="flex-[2] py-3.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-all relative overflow-hidden cursor-pointer"
                     >
                       {sending ? (
                         <span className="flex items-center justify-center gap-2">
@@ -505,7 +562,7 @@ export default function GiftUserPage() {
             {/* Help text */}
             <p className="text-center text-xs text-muted-foreground mt-6" style={{ animation: "fadeSlideUp 0.5s ease 0.2s both" }}>
               Need help?{" "}
-              <a href="#" className="text-primary hover:underline font-semibold">Contact support</a>
+              <a href="#" className="text-primary hover:underline font-semibold cursor-pointer">Contact support</a>
             </p>
           </main>
         </div>
@@ -516,12 +573,12 @@ export default function GiftUserPage() {
         <SuccessModal
           recipient={selected}
           amount={parseFloat(amount).toFixed(2)}
-          onClose={() => { handleReset(); setToast({ msg: "Gift sent successfully! 🎉", type: "success" }); }}
+          onClose={() => { handleReset(); toast.success("Gift sent successfully! 🎉"); }}
         />
       )}
 
       {/* Toast */}
-      {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      {/* Sonner toasts are rendered globally */}
     </>
   );
 }
