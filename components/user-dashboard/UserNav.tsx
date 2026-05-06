@@ -7,6 +7,7 @@ import {
   BarChart3,
   CreditCard,
   Wallet,
+  Gift,
   Settings,
 } from "lucide-react";
 export default function UserNav() {
@@ -14,10 +15,11 @@ export default function UserNav() {
   const basePath = "/user-dashboard";
 
   const navItems = [
+    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
+    { name: "Payout", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Deposit", icon: CreditCard, href: `${basePath}/deposit` },
-    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
-    { name: "Withdraw", icon: Wallet, href: `${basePath}/withdraw` },
+   { name: "Gift", icon: Gift, href: `${basePath}/gift-member` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];
 
@@ -51,7 +53,7 @@ export default function UserNav() {
             <div
               className={`
                 flex items-center justify-center 
-                w-12 h-12 rounded-2xl mb-1.5 
+                w-12 h-12 rounded-lg mb-1.5 
                 transition-all duration-300
                 ${
                   active

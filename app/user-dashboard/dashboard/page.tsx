@@ -991,7 +991,7 @@ export default function UserOverviewPage() {
                       Alerts
                     </h2>
                     <Link
-                      href="/user-dashboard/alerts"
+                      href="/user-dashboard/notifications"
                       className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
                     >
                       View All
@@ -1230,8 +1230,7 @@ export default function UserOverviewPage() {
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
                     Fuel someone's portfolio. You can now gift capital directly
-                    to other members to help them scale their trading and
-                    investment goals.
+                    to other members to help them scale their trading.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-6">
                     <Link

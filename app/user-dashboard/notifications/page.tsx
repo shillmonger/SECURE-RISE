@@ -23,7 +23,7 @@ import Link from "next/link";
 
 // ─── Data & Types ──────────────────────────────────────────────────────────────
 
-type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system';
+type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift';
 
 interface Notification {
   id: string;
@@ -101,6 +101,10 @@ const NotificationsPage = () => {
         const investmentsResponse = await fetch("/api/investments");
         const investmentsResult = await investmentsResponse.json();
 
+        // Fetch gift history
+        const giftsResponse = await fetch("/api/user-dashboard/gift/history");
+        const giftsResult = await giftsResponse.json();
+
         const allNotifications: Notification[] = [];
 
         // Process deposits as notifications
@@ -165,6 +169,21 @@ const NotificationsPage = () => {
                 });
               });
             }
+          });
+        }
+
+        // Process gifts as notifications
+        if (giftsResult.success && giftsResult.gifts) {
+          giftsResult.gifts.forEach((gift: any) => {
+            allNotifications.push({
+              id: `gift-${gift._id}`,
+              type: 'gift',
+              title: gift.title,
+              message: gift.message,
+              time: formatTimeAgo(new Date(gift.createdAt)),
+              isRead: false, // Gift notifications are always unread initially
+              rawData: gift
+            });
           });
         }
 
@@ -251,6 +270,7 @@ const NotificationsPage = () => {
       case 'withdrawal': return <ArrowUpRight className="w-4 h-4 text-red-500" />;
       case 'roi': return <TrendingUp className="w-4 h-4 text-purple-500" />;
       case 'investment': return <Gift className="w-4 h-4 text-blue-500" />;
+      case 'gift': return <Gift className="w-4 h-4 text-pink-500" />;
       case 'system': return <Megaphone className="w-4 h-4 text-muted-foreground" />;
     }
   };

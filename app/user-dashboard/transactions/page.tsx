@@ -23,7 +23,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift";
 type TransactionStatus =
   | "completed"
   | "pending"
@@ -71,6 +71,9 @@ export default function TransactionsPage() {
 
         const investmentsResponse = await fetch("/api/investments");
         const investmentsResult = await investmentsResponse.json();
+
+        const giftsResponse = await fetch("/api/user-dashboard/gift/history");
+        const giftsResult = await giftsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
@@ -153,6 +156,21 @@ export default function TransactionsPage() {
           });
         }
 
+        if (giftsResult.success && giftsResult.gifts) {
+          giftsResult.gifts.forEach((gift: any) => {
+            allTransactions.push({
+              id: gift.transactionId || gift._id,
+              type: "gift",
+              amount: gift.amount,
+              method: gift.isSender ? `To: ${gift.receiverName}` : `From: ${gift.senderName}`,
+              status: gift.status,
+              date: new Date(gift.createdAt).toLocaleDateString(),
+              timestamp: new Date(gift.createdAt).toLocaleTimeString(),
+              rawData: gift,
+            });
+          });
+        }
+
         allTransactions.sort((a, b) => {
           const dateA = new Date(
             a.rawData?.createdAt || a.rawData?.timestamp || Date.now()
@@ -232,6 +250,12 @@ export default function TransactionsPage() {
             <TrendingUp className="w-4 h-4 text-purple-500" />
           </div>
         );
+      case "gift":
+        return (
+          <div className="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
+            <Gift className="w-4 h-4 text-pink-500" />
+          </div>
+        );
     }
   };
 
@@ -306,6 +330,10 @@ export default function TransactionsPage() {
         label: "ROI",
         cls: "text-purple-400 bg-purple-500/10 border border-purple-500/20",
       },
+      gift: {
+        label: "Gift",
+        cls: "text-pink-400 bg-pink-500/10 border border-pink-500/20",
+      },
     };
 
     const a = map[type];
@@ -318,14 +346,25 @@ export default function TransactionsPage() {
     );
   };
 
-  const getAmountColor = (type: TransactionType) => {
+  const getAmountColor = (type: TransactionType, rawData?: any) => {
     if (type === "deposit" || type === "roi") return "text-green-400";
     if (type === "withdrawal" || type === "investment") return "text-red-400";
+    if (type === "gift") {
+      // For gifts, check if user is sender or receiver
+      return rawData?.isSender ? "text-red-400" : "text-green-400";
+    }
     return "text-foreground";
   };
 
-  const getAmountPrefix = (type: TransactionType) =>
-    type === "deposit" || type === "roi" ? "+" : "-";
+  const getAmountPrefix = (type: TransactionType, rawData?: any) => {
+    if (type === "deposit" || type === "roi") return "+";
+    if (type === "withdrawal" || type === "investment") return "-";
+    if (type === "gift") {
+      // For gifts, check if user is sender or receiver
+      return rawData?.isSender ? "-" : "+";
+    }
+    return "";
+  };
 
   // ─── Skeleton rows ───────────────────────────────────────────────────────────
   const SkeletonRow = () => (
@@ -387,7 +426,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift"].map(
                   (type) => (
                     <button
                       key={type}
@@ -496,9 +535,9 @@ export default function TransactionsPage() {
                           {/* Amount */}
                           <td className="px-5 py-4 text-right whitespace-nowrap">
                             <span
-                              className={`text-base font-black italic ${getAmountColor(txn.type)}`}
+                              className={`text-base font-black italic ${getAmountColor(txn.type, txn.rawData)}`}
                             >
-                              {getAmountPrefix(txn.type)}$
+                              {getAmountPrefix(txn.type, txn.rawData)}$
                               {txn.amount.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                               })}
