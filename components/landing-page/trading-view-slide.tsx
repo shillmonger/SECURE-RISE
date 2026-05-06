@@ -80,10 +80,13 @@ function TickerItem({ item }: { item: any }) {
         {item.change >= 0 ? "+" : ""}{item.change.toFixed(2)} ({item.pct}%)
       </span>
 
-      <svg className="w-4 h-4 fill-primary opacity-40 group-hover:opacity-100 transition-opacity" viewBox="0 0 36 28">
-        <path d="M14 0H36V8H22V28H14V0Z" />
-        <path d="M0 8H14V28H0V8Z" />
-      </svg>
+      <div className="relative w-8 h-8 mr-3 overflow-hidden rounded-full">
+          <img 
+            src="https://i.postimg.cc/0rg4wPYg/trading-view.jpg" 
+            alt="TradingView" 
+            className="object-cover w-full h-full filter grayscale group-hover:grayscale-0 transition-all"
+          />
+        </div>
     </a>
   );
 }
@@ -92,14 +95,14 @@ function TickerItem({ item }: { item: any }) {
 export default function TickerBar() {
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
-  const speed = 0.8;
+  const speed = 2.5;
 
   useEffect(() => {
     const step = () => {
       posRef.current -= speed;
       if (trackRef.current) {
-        const halfWidth = trackRef.current.scrollWidth / 2;
-        if (Math.abs(posRef.current) >= halfWidth) {
+        const itemWidth = trackRef.current.scrollWidth / 4; // Since we have 4 sets of tickers
+        if (Math.abs(posRef.current) >= itemWidth) {
           posRef.current = 0;
         }
         trackRef.current.style.transform = `translateX(${posRef.current}px)`;
@@ -118,7 +121,7 @@ export default function TickerBar() {
         href="https://www.tradingview.com" 
         target="_blank" 
         rel="noopener noreferrer"
-        className="absolute left-0 top-0 h-full z-30 flex items-center px-6 bg-background/95 backdrop-blur-sm border-r border-border shadow-[10px_0_15px_rgba(0,0,0,0.1)] hover:bg-muted/50 transition-all group"
+        className="absolute left-0 top-0 h-full z-30 flex items-center px-2 lg:px-5 bg-background/95 backdrop-blur-sm border-r border-border shadow-[10px_0_15px_rgba(0,0,0,0.1)] hover:bg-muted/50 transition-all group"
       >
         <div className="relative w-10 h-10 mr-3 overflow-hidden rounded-sm">
           <img 
