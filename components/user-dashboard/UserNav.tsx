@@ -7,6 +7,8 @@ import {
   BarChart3,
   CreditCard,
   Wallet,
+  CandlestickChart,
+  TrendingUp,
   Gift,
   Settings,
 } from "lucide-react";
@@ -19,7 +21,7 @@ export default function UserNav() {
     { name: "Payout", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Deposit", icon: CreditCard, href: `${basePath}/deposit` },
-   { name: "Gift", icon: Gift, href: `${basePath}/gift-member` },
+   { name: "Trades", icon: CandlestickChart, href: `${basePath}/my-investments` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];
 

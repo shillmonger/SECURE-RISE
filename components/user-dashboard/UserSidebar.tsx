@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import {
   LayoutDashboard,
   BarChart3,
-  BriefcaseBusiness,
+  CandlestickChart,
   Trophy,
+  TrendingUp,
   Wallet,
   CreditCard,
   Gift,
@@ -79,7 +80,7 @@ export default function UserSidebar({
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
     {
       name: "Live Investments",
-      icon: Activity,
+      icon: TrendingUp,
       href: `${basePath}/my-investments`,
     },
     { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
