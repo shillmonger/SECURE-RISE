@@ -239,7 +239,7 @@ const DepositPage = () => {
                     </div>
 
                     <Link href="/user-dashboard/transactions">
-                      <button className="text-[9px] font-black uppercase tracking-widest text-primary border-b border-primary/30">
+                      <button className="text-[9px] crsor-pointer font-black uppercase tracking-widest text-primary border-b border-primary/30">
                         View All
                       </button>
                     </Link>
