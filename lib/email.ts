@@ -1564,6 +1564,459 @@ export const sendGiftDebitEmail = async (userEmail: string, giftData: {
   }
 };
 
+export const sendInvestmentConfirmationEmail = async (userEmail: string, investmentData: {
+  username: string;
+  planName: string;
+  amount: number;
+  roiPerDay: number;
+  duration: number;
+  dailyEarnings: number;
+  totalProfit: number;
+  totalReturn: number;
+  investmentId: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Investment Confirmed - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .investment-box {
+          background: #22c55e;
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .investment-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .returns-summary {
+          background: #f4f4f5;
+          padding: 24px;
+          border-radius: 16px;
+          margin: 24px 0;
+        }
+        .return-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 12px;
+        }
+        .return-item:last-child {
+          margin-bottom: 0;
+          padding-top: 12px;
+          border-top: 1px solid #e4e4e7;
+        }
+        .return-label {
+          font-size: 14px;
+          color: #71717a;
+        }
+        .return-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .return-value.highlight {
+          color: #22c55e;
+          font-weight: 700;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Investment Confirmed! 🎉</h1>
+          <p class="subtitle">Your investment has been successfully activated</p>
+        </div>
+
+        <p>Hi <strong>${investmentData.username}</strong>,</p>
+        
+        <p>Your investment in <strong>${investmentData.planName}</strong> has been confirmed and is now active. Your daily ROI will be automatically credited to your account balance.</p>
+
+        <div class="investment-box">
+          <div class="info-label">Investment Amount</div>
+          <div class="investment-amount">$${investmentData.amount.toLocaleString()}</div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">${investmentData.planName}</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Daily ROI Rate</div>
+            <div class="info-value">${investmentData.roiPerDay}%</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Duration</div>
+            <div class="info-value">${investmentData.duration} days</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Investment ID</div>
+            <div class="info-value">${investmentData.investmentId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Daily Earnings</div>
+            <div class="info-value">$${investmentData.dailyEarnings.toFixed(2)}</div>
+          </div>
+        </div>
+
+        <div class="returns-summary">
+          <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600;">Projected Returns</h4>
+          <div class="return-item">
+            <span class="return-label">Daily Earnings</span>
+            <span class="return-value highlight">+$${investmentData.dailyEarnings.toFixed(2)}</span>
+          </div>
+          <div class="return-item">
+            <span class="return-label">Duration</span>
+            <span class="return-value">${investmentData.duration} days</span>
+          </div>
+          <div class="return-item">
+            <span class="return-label">Total Profit</span>
+            <span class="return-value highlight">+$${investmentData.totalProfit.toFixed(2)}</span>
+          </div>
+          <div class="return-item">
+            <span class="return-label">Total Return</span>
+            <span class="return-value" style="font-weight: 700;">$${investmentData.totalReturn.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <p style="text-align: center; margin: 24px 0;">
+          Daily ROI will be automatically credited to your account balance every 24 hours.
+        </p>
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments" class="cta-button">
+          View Your Investments
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Investment Confirmed - ${investmentData.planName} - $${investmentData.amount.toLocaleString()}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Investment confirmation email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending investment confirmation email:', error);
+    throw error;
+  }
+};
+
+export const sendDailyROIEmail = async (userEmail: string, roiData: {
+  username: string;
+  investmentId: string;
+  planName: string;
+  dailyProfit: number;
+  totalProfit: number;
+  daysPassed: number;
+  totalDays: number;
+  accountBalance: number;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Daily ROI Added - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .roi-box {
+          background: #22c55e;
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .roi-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .progress-bar {
+          background: #f4f4f5;
+          height: 8px;
+          border-radius: 4px;
+          margin: 16px 0;
+          overflow: hidden;
+        }
+        .progress-fill {
+          background: #22c55e;
+          height: 100%;
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Daily ROI Added! 💰</h1>
+          <p class="subtitle">Your daily earnings have been credited</p>
+        </div>
+
+        <p>Hi <strong>${roiData.username}</strong>,</p>
+        
+        <p>Great news! Your daily ROI has been automatically credited to your account balance for your <strong>${roiData.planName}</strong> investment.</p>
+
+        <div class="roi-box">
+          <div class="info-label">Today's Earnings</div>
+          <div class="roi-amount">+$${roiData.dailyProfit.toFixed(2)}</div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Credited to your account</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Investment Plan</div>
+            <div class="info-value">${roiData.planName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Investment ID</div>
+            <div class="info-value">${roiData.investmentId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Days Progress</div>
+            <div class="info-value">${roiData.daysPassed} / ${roiData.totalDays}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Account Balance</div>
+            <div class="info-value">$${roiData.accountBalance.toFixed(2)}</div>
+          </div>
+        </div>
+
+        <div class="info-item" style="margin: 24px 0;">
+          <div class="info-label">Investment Progress</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${(roiData.daysPassed / roiData.totalDays) * 100}%"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+            <span style="font-size: 12px; color: #71717a;">${Math.round((roiData.daysPassed / roiData.totalDays) * 100)}% Complete</span>
+            <span style="font-size: 12px; color: #71717a;">Total Profit: $${roiData.totalProfit.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <p style="text-align: center; margin: 24px 0;">
+          Your daily ROI will continue to be automatically credited for ${roiData.totalDays - roiData.daysPassed} more days.
+        </p>
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments" class="cta-button">
+          View All Investments
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Daily ROI Added - $${roiData.dailyProfit.toFixed(2)} - ${roiData.planName}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Daily ROI email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending daily ROI email:', error);
+    throw error;
+  }
+};
+
 export const sendGiftCreditEmail = async (userEmail: string, giftData: {
   senderName: string;
   receiverName: string;

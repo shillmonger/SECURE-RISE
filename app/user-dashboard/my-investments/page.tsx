@@ -69,7 +69,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
     <div className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group">
       {/* Header */}
       <div 
-        className="p-4 lg:px-5 lg:py-8 text-background flex justify-between items-center relative overflow-hidden"
+        className="p-4 lg:px-5 lg:py-5 text-background flex justify-between items-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',

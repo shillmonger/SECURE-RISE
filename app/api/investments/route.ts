@@ -4,6 +4,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { Investment, createInvestment } from '@/lib/models/Investment';
 import { User } from '@/lib/models/User';
+import { sendInvestmentConfirmationEmail } from '@/lib/email';
 
 // Investment plans data
 const investmentPlans = [
@@ -145,6 +146,28 @@ export async function POST(request: NextRequest) {
 
     // Process first ROI immediately
     await processDailyROI(result.insertedId.toString());
+
+    // Send investment confirmation email
+    try {
+      const dailyEarnings = amount * (plan.roiPerDay / 100);
+      const totalProfit = dailyEarnings * plan.duration;
+      const totalReturn = amount + totalProfit;
+      
+      await sendInvestmentConfirmationEmail(user.email, {
+        username: user.username,
+        planName: plan.name,
+        amount: amount,
+        roiPerDay: plan.roiPerDay,
+        duration: plan.duration,
+        dailyEarnings: dailyEarnings,
+        totalProfit: totalProfit,
+        totalReturn: totalReturn,
+        investmentId: result.insertedId.toString()
+      });
+    } catch (emailError) {
+      console.error('Failed to send investment confirmation email:', emailError);
+      // Don't fail the investment creation if email fails
+    }
 
     return NextResponse.json({ 
       success: true,

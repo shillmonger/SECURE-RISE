@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Investment } from '@/lib/models/Investment';
 import { User } from '@/lib/models/User';
 import { ObjectId } from 'mongodb';
+import { sendDailyROIEmail } from '@/lib/email';
 
 // This endpoint should be called by Vercel Cron Jobs every 24 hours
 export async function GET(request: NextRequest) {
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
         );
 
         // Update user's total profits and account balance
-        await db.collection<User>('users').updateOne(
+        const userUpdateResult = await db.collection<User>('users').updateOne(
           { _id: investment.userId },
           { 
             $inc: { 
@@ -76,6 +77,28 @@ export async function GET(request: NextRequest) {
             $set: { updatedAt: now }
           }
         );
+
+        // Get updated user data for email
+        const updatedUser = await db.collection<User>('users').findOne({ _id: investment.userId });
+        
+        // Send daily ROI email
+        if (updatedUser && updatedUser.email) {
+          try {
+            await sendDailyROIEmail(updatedUser.email, {
+              username: updatedUser.username,
+              investmentId: investment._id.toString(),
+              planName: investment.planName,
+              dailyProfit: dailyProfit,
+              totalProfit: investment.profitEarned + dailyProfit,
+              daysPassed: investment.daysPassed + 1,
+              totalDays: investment.durationDays,
+              accountBalance: updatedUser.accountBalance
+            });
+          } catch (emailError) {
+            console.error(`Failed to send daily ROI email to ${updatedUser.email}:`, emailError);
+            // Don't fail the ROI distribution if email fails
+          }
+        }
 
         totalDistributed += dailyProfit;
         investmentsProcessed++;
