@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   TrendingUp,
   ArrowUpRight,
@@ -23,6 +23,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const fmt = (n: number) =>
@@ -100,11 +101,74 @@ function AnimBar({
     return () => clearTimeout(t);
   }, [pct, delay]);
   return (
-    <div className="w-full h-[5px] rounded-full bg-muted overflow-hidden">
+    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
       <div
-        className="h-full rounded-full transition-all duration-[1100ms] ease-out"
-        style={{ width: `${width}%`, background: color }}
+        className="h-full rounded-full transition-all duration-1000 ease-out"
+        style={{ width: `${width}%`, backgroundColor: color }}
       />
+    </div>
+  );
+}
+
+// ─── loading skeletons ───────────────────────────────────────────────────────
+function StatSkeleton() {
+  return (
+    <div className="space-y-2">
+      <div className="h-3 w-20 bg-muted rounded animate-pulse"></div>
+      <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+      <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
+    </div>
+  );
+}
+
+function BarChartSkeleton() {
+  return (
+    <div className="flex items-end gap-2 px-1 h-70">
+      {[...Array(7)].map((_, i) => (
+        <div key={i} className="flex-1">
+          <div className="h-full bg-muted rounded animate-pulse" style={{ height: `${Math.random() * 60 + 20}%` }}></div>
+          <div className="h-3 w-8 bg-muted rounded animate-pulse mt-2 mx-auto"></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ActivitySkeleton() {
+  return (
+    <div className="space-y-2">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border">
+          <div className="w-8 h-8 rounded-xl bg-muted animate-pulse"></div>
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
+            <div className="h-3 w-24 bg-muted rounded animate-pulse"></div>
+          </div>
+          <div className="text-right space-y-1">
+            <div className="h-3 w-16 bg-muted rounded animate-pulse ml-auto"></div>
+            <div className="h-3 w-12 bg-muted rounded animate-pulse ml-auto"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PortfolioBreakdownSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-muted animate-pulse"></div>
+              <div className="h-3 w-20 bg-muted rounded animate-pulse"></div>
+            </div>
+            <div className="h-3 w-16 bg-muted rounded animate-pulse"></div>
+          </div>
+          <div className="h-1.5 bg-muted rounded-full animate-pulse"></div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -189,102 +253,103 @@ export default function UserAnalyticsPage() {
     }
   };
 
-  useEffect(() => {
-    const fetchAnalyticsData = async () => {
-      setLoading(true);
-      
-      try {
-        console.log(`Fetching analytics data for timeRange: ${timeRange}`);
-        const response = await fetch(`/api/user-dashboard/analytics?timeRange=${timeRange}`, {
-          credentials: 'include',
+  // Extract fetchAnalyticsData function so it can be called by refresh button
+  const fetchAnalyticsData = useCallback(async () => {
+    setLoading(true);
+    
+    try {
+      console.log(`Fetching analytics data for timeRange: ${timeRange}`);
+      const response = await fetch(`/api/user-dashboard/analytics?timeRange=${timeRange}`, {
+        credentials: 'include',
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response error text:', errorText);
+        throw new Error(`Failed to fetch analytics data: ${response.status} ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Analytics data result:', result);
+
+      if (result.success) {
+        const data = result.data;
+        console.log('Setting overview stats:', data.overview);
+        
+        setOverviewStats({
+          totalInvestments: data.overview.totalInvestments || 0,
+          totalProfits: data.overview.totalProfits || 0,
+          totalDeposits: data.overview.totalDeposits || 0,
+          totalWithdrawals: data.overview.totalWithdrawals || 0,
+          activePlans: data.overview.activePlans || 0,
+          roiPercentage: data.overview.roiPercentage || 0,
         });
 
-        console.log('Response status:', response.status);
+        setInvestmentBreakdown(
+          (data.investmentBreakdown || []).map((item: any, index: number) => ({
+            name: item.name || 'Unknown',
+            value: item.value || 0,
+            percentage: item.percentage || 0,
+            color: ["#3b82f6", "#a855f7", "#10b981", "#f59e0b"][index % 4],
+            count: item.count || 0,
+            profit: item.profit || 0
+          }))
+        );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Response error text:', errorText);
-          throw new Error(`Failed to fetch analytics data: ${response.status} ${errorText}`);
-        }
+        setProfitHistory(data.profitHistory || []);
 
-        const result = await response.json();
-        console.log('Analytics data result:', result);
+        setRecentActivity(
+          (data.recentActivity || []).map((activity: any) => ({
+            ...activity,
+            icon: getActivityIcon(activity.icon),
+            color: activity.color?.replace('text-', 'text-') || 'text-white',
+            bgColor: activity.bgColor?.replace('bg-', 'bg-') || 'bg-white/10'
+          }))
+        );
 
-        if (result.success) {
-          const data = result.data;
-          console.log('Setting overview stats:', data.overview);
-          
-          setOverviewStats({
-            totalInvestments: data.overview.totalInvestments || 0,
-            totalProfits: data.overview.totalProfits || 0,
-            totalDeposits: data.overview.totalDeposits || 0,
-            totalWithdrawals: data.overview.totalWithdrawals || 0,
-            activePlans: data.overview.activePlans || 0,
-            roiPercentage: data.overview.roiPercentage || 0,
-          });
-
-          setInvestmentBreakdown(
-            (data.investmentBreakdown || []).map((item: any, index: number) => ({
-              name: item.name || 'Unknown',
-              value: item.value || 0,
-              percentage: item.percentage || 0,
-              color: ["#3b82f6", "#a855f7", "#10b981", "#f59e0b"][index % 4],
-              count: item.count || 0,
-              profit: item.profit || 0
-            }))
-          );
-
-          setProfitHistory(data.profitHistory || []);
-
-          setRecentActivity(
-            (data.recentActivity || []).map((activity: any) => ({
-              ...activity,
-              icon: getActivityIcon(activity.icon),
-              color: activity.color?.replace('text-', 'text-') || 'text-white',
-              bgColor: activity.bgColor?.replace('bg-', 'bg-') || 'bg-white/10'
-            }))
-          );
-
-          setPerformanceMetrics([
-            { 
-              metric: "Daily ROI", 
-              value: data.performanceMetrics?.dailyROI || "0%", 
-              change: "+0.3%", 
-              positive: true 
-            },
-            { 
-              metric: "Weekly Growth", 
-              value: data.performanceMetrics?.weeklyGrowth || "0%", 
-              change: "+2.1%", 
-              positive: true 
-            },
-            { 
-              metric: "Success Rate", 
-              value: data.performanceMetrics?.successRate || "0%", 
-              change: "-1.2%", 
-              positive: false 
-            },
-            { 
-              metric: "Risk Score", 
-              value: data.performanceMetrics?.riskScore || "Low", 
-              change: "Stable", 
-              positive: true 
-            },
-          ]);
-        } else {
-          console.error('Analytics API error:', result.message);
-        }
-      } catch (error) {
-        console.error('Error fetching analytics data:', error);
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('Full error details:', errorMessage);
-      } finally {
-        setLoading(false);
+        setPerformanceMetrics([
+          { 
+            metric: "Daily ROI", 
+            value: data.performanceMetrics?.dailyROI || "0%", 
+            change: "+0.3%", 
+            positive: true 
+          },
+          { 
+            metric: "Weekly Growth", 
+            value: data.performanceMetrics?.weeklyGrowth || "0%", 
+            change: "+2.1%", 
+            positive: true 
+          },
+          { 
+            metric: "Success Rate", 
+            value: data.performanceMetrics?.successRate || "0%", 
+            change: "-1.2%", 
+            positive: false 
+          },
+          { 
+            metric: "Risk Score", 
+            value: data.performanceMetrics?.riskScore || "Low", 
+            change: "Stable", 
+            positive: true 
+          },
+        ]);
+      } else {
+        console.error('Analytics API error:', result.message);
       }
-    };
-
-    fetchAnalyticsData();
+    } catch (error) {
+      console.error('Error fetching analytics data:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Full error details:', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   }, [timeRange]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
   const profits = useCountUp(overviewStats.totalProfits, 1400, mounted);
   const portfolio = useCountUp(overviewStats.totalInvestments, 1600, mounted);
@@ -336,29 +401,8 @@ export default function UserAnalyticsPage() {
     };
   });
 
-  if (!mounted) return null;
-
   // Generate sparkline data from profit history
   const sparkData = profitHistory.slice(0, 7).map((profit: any) => profit.amount || 0);
-
-  // Show loading state if API is fetching
-  if (loading) {
-    return (
-      <div className="flex h-screen overflow-hidden bg-background text-foreground">
-        <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div className="flex-1 flex flex-col overflow-hidden relative">
-          <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-          <main className="flex-1 overflow-y-auto p-4 md:p-8 relative z-10 pb-24">
-            <div className="max-w-7xl mx-auto space-y-6">
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
@@ -408,11 +452,27 @@ export default function UserAnalyticsPage() {
                   ))}
                 </div>
 
-                <Button variant="outline" size="sm" onClick={() => { setRefreshing(true); setTimeout(() => setRefreshing(false), 1800); }}
-                  className="bg-card px-3 py-4 cursor-pointer text-[10px] font-black uppercase tracking-widest rounded-lg">
-                  <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
-                  Refresh
-                </Button>
+                <Button
+  variant="outline"
+  size="sm"
+  onClick={() => {
+    setRefreshing(true);
+    fetchAnalyticsData().finally(() => {
+      setTimeout(() => setRefreshing(false), 500);
+    });
+  }}
+  className="bg-card px-3 py-4 cursor-pointer rounded-lg"
+>
+  <RefreshCw
+    className={`w-3.5 h-3.5 md:mr-1.5 ${
+      refreshing || loading ? "animate-spin" : ""
+    }`}
+  />
+
+  <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest">
+    Refresh
+  </span>
+</Button>
               </div>
             </header>
 
@@ -490,23 +550,39 @@ export default function UserAnalyticsPage() {
                 <div className="flex items-start justify-between mb-6">
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Daily Profit — {timeRange}</p>
-                    <p className="text-2xl font-black tracking-[-1px] text-foreground">${profits.toLocaleString()}</p>
+                    {loading ? (
+                      <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+                    ) : (
+                      <p className="text-2xl font-black tracking-[-1px] text-foreground">${profits.toLocaleString()}</p>
+                    )}
                   </div>
                   <BarChart2 size={16} className="text-muted-foreground" />
                 </div>
 
-                <div className="flex items-end gap-2 px-1 h-70">
-  {barData.map((b, i) => (
-    <BarCol
-      key={b.label}
-      label={b.label}
-      value={b.value}
-      pct={b.pct}
-      delay={i * 60}
-      color={`hsl(${210 + i * 6}, 80%, ${theme === 'dark' ? '48%' : '60%'})`}
-    />
-  ))}
-</div>
+                {loading ? (
+                  <BarChartSkeleton />
+                ) : barData.length > 0 ? (
+                  <div className="flex items-end gap-2 px-1 h-70">
+                    {barData.map((b, i) => (
+                      <BarCol
+                        key={b.label}
+                        label={b.label}
+                        value={b.value}
+                        pct={b.pct}
+                        delay={i * 60}
+                        color={`hsl(${210 + i * 6}, 80%, ${theme === 'dark' ? '48%' : '60%'})`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-70 text-muted-foreground">
+                    <div className="text-center">
+                      <BarChart2 size={48} className="mx-auto mb-3 opacity-50" />
+                      <p className="text-sm font-medium">No profit data available</p>
+                      <p className="text-xs mt-1">Profit history will appear here</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-border">
                   {metrics.map((m) => (
@@ -525,25 +601,39 @@ export default function UserAnalyticsPage() {
               <Card className="rounded-2xl p-5 flex flex-col border-border">
                 <p className="text-[9px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-4">Live Feed</p>
                 <div className="flex-1 space-y-2">
-                  {activity.map((a, i) => (
-                    <div key={i} className="group flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-all cursor-pointer">
-                      <div className={`w-8 h-8 rounded-xl ${a.bg} flex items-center justify-center flex-shrink-0`}>
-                        <a.icon size={14} className={a.ico} />
+                  {loading ? (
+                    <ActivitySkeleton />
+                  ) : activity.length > 0 ? (
+                    activity.map((a, i) => (
+                      <div key={i} className="group flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-all cursor-pointer">
+                        <div className={`w-8 h-8 rounded-xl ${a.bg} flex items-center justify-center flex-shrink-0`}>
+                          <a.icon size={14} className={a.ico} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-black text-foreground leading-none">{a.title}</p>
+                          <p className="text-[9px] text-muted-foreground font-bold mt-0.5 truncate">{a.desc}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className={`text-[11px] font-black ${a.amtColor}`}>{a.amount}</p>
+                          <p className="text-[8px] text-muted-foreground font-bold mt-0.5">{a.time}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-black text-foreground leading-none">{a.title}</p>
-                        <p className="text-[9px] text-muted-foreground font-bold mt-0.5 truncate">{a.desc}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className={`text-[11px] font-black ${a.amtColor}`}>{a.amount}</p>
-                        <p className="text-[8px] text-muted-foreground font-bold mt-0.5">{a.time}</p>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center h-48 text-muted-foreground">
+                      <div className="text-center">
+                        <Clock size={48} className="mx-auto mb-3 opacity-50" />
+                        <p className="text-sm font-medium">No recent activity</p>
+                        <p className="text-xs mt-1">Your recent transactions will appear here</p>
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
-                <Button variant="ghost" className="mt-4 cursor-pointer w-full text-muted-foreground hover:text-foreground text-[9px] font-black uppercase tracking-widest rounded-lg">
-                  View Full Audit Log <ChevronRight size={12} className="ml-1" />
-                </Button>
+                <Link href="/user-dashboard/transactions">
+                  <Button variant="ghost" className="mt-4 cursor-pointer w-full text-muted-foreground hover:text-foreground text-[9px] font-black uppercase tracking-widest rounded-lg">
+                    View Full Audit Log <ChevronRight size={12} className="ml-1" />
+                  </Button>
+                </Link>
               </Card>
             </div>
 
@@ -553,24 +643,40 @@ export default function UserAnalyticsPage() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Portfolio Breakdown</p>
-                    <p className="text-lg font-black tracking-tight text-foreground">{fmt(overviewStats.totalInvestments)} total</p>
+                    {loading ? (
+                      <div className="h-6 w-24 bg-muted rounded animate-pulse"></div>
+                    ) : (
+                      <p className="text-lg font-black tracking-tight text-foreground">{fmt(overviewStats.totalInvestments)} total</p>
+                    )}
                   </div>
                   <Target size={16} className="text-muted-foreground" />
                 </div>
-                <div className="space-y-4">
-                  {breakdown.map((b, i) => (
-                    <div key={b.name} className="space-y-1.5">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: b.color }} />
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{b.name}</span>
+                {loading ? (
+                  <PortfolioBreakdownSkeleton />
+                ) : breakdown.length > 0 ? (
+                  <div className="space-y-4">
+                    {breakdown.map((b, i) => (
+                      <div key={b.name} className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: b.color }} />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{b.name}</span>
+                          </div>
+                          <span className="text-[11px] font-black" style={{ color: b.color }}>{b.value}</span>
                         </div>
-                        <span className="text-[11px] font-black" style={{ color: b.color }}>{b.value}</span>
+                        <AnimBar pct={b.pct} color={b.color} delay={i * 100} />
                       </div>
-                      <AnimBar pct={b.pct} color={b.color} delay={i * 100} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-25 text-muted-foreground">
+                    <div className="text-center">
+                      <Target size={48} className="mx-auto mb-3 opacity-50" />
+                      <p className="text-sm font-medium">No portfolio data</p>
+                      <p className="text-xs mt-1">Your investment breakdown will appear here</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </Card>
 
               <div className="space-y-4">
