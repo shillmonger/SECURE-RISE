@@ -84,8 +84,8 @@ export default function UserSidebar({
     },
     { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
-    { name: "Withdrawal", icon: Wallet, href: `${basePath}/withdraw` },
-    { name: "Trade Analytics", icon: PieChart, href: `#` },
+    { name: "Withdrawals", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
     {
       name: "Community",
       icon: Users,
@@ -159,8 +159,7 @@ export default function UserSidebar({
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col 
-  rounded-tr-xl rounded-br-xl lg:rounded-none
+        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col lg:rounded-none
   transform bg-background border-r border-border 
   transition-transform duration-300 ease-in-out 
   lg:translate-x-0 lg:static lg:inset-0 

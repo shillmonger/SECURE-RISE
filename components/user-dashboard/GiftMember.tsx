@@ -7,7 +7,7 @@ import { ArrowUpRight, Gift, Users, ShieldCheck } from "lucide-react";
 
 const IMAGES = [
   "https://i.postimg.cc/ZnDX5Ff3/5.jpg",
-//   "https://i.postimg.cc/9MLnLYjW/2.jpg",
+  "https://i.postimg.cc/VvF1MffN/Bull-and-Bear.jpg",
   "https://i.postimg.cc/9Q9sc9yF/6.jpg",
 ];
 
@@ -25,12 +25,13 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-500 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-500 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -8 }}
         className="relative w-full max-w-[400px] bg-card rounded-[1.5rem] overflow-hidden shadow-2xl border border-border/50 transition-shadow"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Top Image Slider Section */}
         <div className="relative h-[200px] overflow-hidden group">

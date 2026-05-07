@@ -91,28 +91,12 @@ export default function SubscriptionPage() {
         "Lifetime secure insurance",
       ],
     },
-    {
-      amount: 0,
-      type: "Corporate",
-      fee: "LOCKED",
-      duration: "Custom",
-      locked: true,
-      tradingVolume: "Enterprise",
-      benefits: [
-        "Custom API Integration",
-        "Bulk capital management",
-        "White-label solutions",
-        "Dedicated server priority",
-      ],
-    },
   ];
 
   const handleSelectPlan = (
     plan: string,
     amount: number,
-    isLocked: boolean,
   ) => {
-    if (isLocked) return;
     // Logic to proceed to investment/payment
     window.open("/auth-page/login", "_self");
   };
@@ -124,7 +108,7 @@ export default function SubscriptionPage() {
       {/* Hero Header */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 py-24 text-center mt-12">
         <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-full inline-block mb-6 animate-pulse">
-          🎁 Claim $20 Bonus Upon Registration!
+          🎁 Claim $20 Bonus Upon Signup!
         </div>
         <span className="text-primary font-semibold tracking-widest uppercase text-sm mb-4 block">
           SECURE RISE INVESTMENT
@@ -147,10 +131,10 @@ export default function SubscriptionPage() {
               key={i}
               className={`flex flex-col justify-between bg-card/50 backdrop-blur-sm rounded-3xl transition-all duration-500 overflow-hidden relative
                                 ${plan.popular ? "ring-4 ring-primary ring-offset-4 ring-offset-background shadow-2xl scale-105 z-10" : "border border-border"}
-                                ${plan.locked ? "opacity-60 grayscale-[0.5]" : "hover:border-primary/50 hover:shadow-xl group cursor-pointer"}
+                                hover:border-primary/50 hover:shadow-xl group cursor-pointer
                             `}
               onClick={() =>
-                handleSelectPlan(plan.type, plan.amount, !!plan.locked)
+                handleSelectPlan(plan.type, plan.amount)
               }
             >
               {plan.popular && (
@@ -172,11 +156,7 @@ export default function SubscriptionPage() {
                   </span>
                 </div>
                 <CardTitle className="text-5xl font-black tracking-tight italic uppercase">
-                  {plan.locked ? (
-                    <Lock className="w-12 h-12 text-muted-foreground/30" />
-                  ) : (
-                    `$${plan.amount}`
-                  )}
+                  ${plan.amount}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-2 uppercase tracking-tight">
                   Investment Amount
@@ -190,9 +170,9 @@ export default function SubscriptionPage() {
                       Trade Volume
                     </span>
                     <span
-                      className={`text-lg font-black ${plan.locked ? "" : "text-primary"}`}
+                      className="text-lg font-black text-primary"
                     >
-                      {plan.locked ? "---" : plan.tradingVolume}
+                      {plan.tradingVolume}
                     </span>
                   </div>
                 </div>
@@ -205,10 +185,10 @@ export default function SubscriptionPage() {
                     {plan.benefits.map((benefit, idx) => (
                       <li key={idx} className="flex items-center gap-3">
                         <div
-                          className={`p-1 rounded-full ${plan.locked ? "bg-muted/50" : "bg-primary/10"}`}
+                          className="p-1 rounded-full bg-primary/10"
                         >
                           <Check
-                            className={`w-3 h-3 ${plan.locked ? "text-muted-foreground" : "text-primary"}`}
+                            className="w-3 h-3 text-primary"
                           />
                         </div>
                         <span className="text-muted-foreground">{benefit}</span>
@@ -220,23 +200,14 @@ export default function SubscriptionPage() {
 
               <div className="p-8 pt-0">
                 <button
-                  disabled={plan.locked}
-                  className={`w-full font-black uppercase py-5 rounded-2xl transition-all duration-500 flex items-center justify-center gap-3 group/btn shadow-lg
-                                        ${
-                                          plan.locked
-                                            ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                            : "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30"
-                                        }
-                                    `}
+                  className="w-full font-black uppercase py-5 rounded-2xl transition-all duration-500 flex items-center justify-center gap-3 group/btn shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleSelectPlan(plan.type, plan.amount, !!plan.locked);
+                    handleSelectPlan(plan.type, plan.amount);
                   }}
                 >
-                  {plan.locked ? "Locked" : "Invest Now"}
-                  {!plan.locked && (
-                    <TrendingUp className="w-5 h-5 group-hover/btn:scale-125 transition-transform duration-300" />
-                  )}
+                  Invest Now
+                  <TrendingUp className="w-5 h-5 group-hover/btn:scale-125 transition-transform duration-300" />
                 </button>
               </div>
             </Card>
