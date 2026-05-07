@@ -4,6 +4,7 @@ import { uploadImage } from '@/lib/cloudinary';
 import { sendDepositNotificationToAdmins } from '@/lib/email';
 import { createDeposit } from '@/lib/models/Deposit';
 import { ObjectId } from 'mongodb';
+import { sendPushNotification, getAdminFCMTokens } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +68,39 @@ export async function POST(request: NextRequest) {
       proofImage: cloudinaryResult.secure_url,
       transactionId: depositData.transactionId!,
     });
+
+    // Send FCM push notification to all admins
+    try {
+      const adminTokens = await getAdminFCMTokens();
+      
+      if (adminTokens.length > 0) {
+        await sendPushNotification(
+          adminTokens,
+          {
+            title: 'New Deposit Submitted',
+            body: `${username} submitted a new deposit of $${amount.toLocaleString()} via ${paymentMethod}`,
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: 'new-deposit'
+          },
+          {
+            depositId: result.insertedId.toString(),
+            username,
+            amount: amount.toString(),
+            paymentMethod,
+            transactionId: depositData.transactionId!,
+            type: 'new-deposit'
+          }
+        );
+        
+        console.log(`Push notification sent to ${adminTokens.length} admin(s)`);
+      } else {
+        console.log('No admin FCM tokens found - push notification not sent');
+      }
+    } catch (fcmError) {
+      console.error('Failed to send FCM notification:', fcmError);
+      // Don't fail the deposit submission if FCM fails
+    }
 
     return NextResponse.json({
       success: true,

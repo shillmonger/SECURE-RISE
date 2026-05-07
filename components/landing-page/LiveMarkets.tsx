@@ -465,14 +465,14 @@ export default function LiveMarkets() {
       
       <div className="container mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-12">
           <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">
             Live Markets
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">
             Real-time cryptocurrency and forex prices with live updates
           </p>
-          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+          <div className="flex items-center  gap-2 mt-4 text-sm text-muted-foreground">
             <RefreshCw className="w-4 h-4 animate-spin text-primary" />
             <span>Last Update: {formattedTime}</span>
           </div>

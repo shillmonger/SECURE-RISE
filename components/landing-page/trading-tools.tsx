@@ -89,7 +89,7 @@ export default function FeaturesSection() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-background py-5 md:py-20"
+      className="relative w-full overflow-hidden bg-background py-5 md:py-17"
     >
       {/* Subtle grid texture */}
       <div
@@ -102,7 +102,7 @@ export default function FeaturesSection() {
       />
 
       {/* Glow behind phone */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[600px] rounded-full bg-primary/10 blur-[120px] z-0" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] z-0" />
 
       {/* ── SECTION HEADER ── */}
       <div
@@ -197,7 +197,7 @@ export default function FeaturesSection() {
             transition: "opacity 0.8s ease 0.1s",
           }}
         >
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-16 bg-primary/30 blur-3xl rounded-full z-0" />
+          {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-10 bg-primary/30 blur-3xl rounded-full z-500" /> */}
           <Image
             src="https://i.postimg.cc/7YqZDFhS/phone-full.png"
             alt="Scale Rise App"
