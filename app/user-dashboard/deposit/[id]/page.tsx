@@ -29,6 +29,8 @@ const MakePaymentPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [amount, setAmount] = useState("100");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [depositData, setDepositData] = useState<any>(null);
   
   const params = useParams();
   const searchParams = useSearchParams();
@@ -131,14 +133,23 @@ const MakePaymentPage = () => {
       const result = await response.json();
 
       console.log('Deposit submission response:', result);
+      console.log('Response ok:', response.ok);
+      console.log('Result success:', result.success);
+      console.log('Transaction ID:', result.transactionId);
 
       if (response.ok && result.success) {
-        toast.success(`Deposit submitted successfully! Transaction ID: ${result.transactionId}`);
-        // Redirect to deposit history page after a short delay
-        setTimeout(() => {
-          window.location.href = '/user-dashboard/deposit';
-        }, 2000);
+        const depositData = {
+          amount: amount,
+          paymentMethod: paymentMethod.name,
+          transactionId: result.transactionId,
+          username: user.username
+        };
+        console.log('Setting deposit data:', depositData);
+        setDepositData(depositData);
+        console.log('Setting showSuccess to true');
+        setShowSuccess(true);
       } else {
+        console.log('Submission failed:', result.error);
         toast.error(result.error || 'Failed to submit deposit');
       }
     } catch (error) {
@@ -148,6 +159,78 @@ const MakePaymentPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Success Modal - Check BEFORE main return
+  console.log('Rendering component, showSuccess:', showSuccess);
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 z-100 flex items-center justify-center backdrop-blur-sm px-4" onClick={() => {
+        setShowSuccess(false);
+        window.location.href = '/user-dashboard/deposit';
+      }}>
+        <div
+          className="bg-card border border-border rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
+          style={{ animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Animated checkmark */}
+          <div className="mx-auto mb-5 h-20 w-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
+            <svg
+              className="h-9 w-9 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-black text-foreground mb-1">Deposit Submitted! 🎉</h3>
+          <p className="text-muted-foreground text-sm mb-6">
+            Your deposit of <span className="text-primary font-bold">${parseFloat(depositData.amount).toLocaleString()}</span> via <span className="text-foreground font-semibold">{depositData.paymentMethod}</span> has been submitted for review.
+          </p>
+          <div className="bg-muted/50 rounded-2xl p-4 mb-6 text-left space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Payment Method</span>
+              <span className="text-foreground font-semibold">{depositData.paymentMethod}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Amount</span>
+              <span className="text-primary font-black text-base">${parseFloat(depositData.amount).toLocaleString()}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm gap-4">
+  <span className="text-muted-foreground shrink-0">Transaction ID</span>
+  <span className="text-foreground font-semibold text-xs truncate max-w-[150px]" title={depositData.transactionId}>
+    {depositData.transactionId}
+  </span>
+</div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Status</span>
+              <span className="text-yellow-500 font-semibold">Pending Review</span>
+            </div>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-6">
+            <p className="text-[10px] text-yellow-800 font-black text-center">
+              ⏱️ Review typically takes 5-30 minutes. You'll receive an email once approved.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setShowSuccess(false);
+              window.location.href = '/user-dashboard/deposit';
+            }}
+            className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-opacity cursor-pointer"
+          >
+            View Deposit History
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
@@ -203,14 +286,14 @@ const MakePaymentPage = () => {
 </div>
 </div>
 
-              <div className="p-6 md:p-12 space-y-12">
+              <div className="p-5 md:p-8 space-y-10">
                 
                 <div className="grid md:grid-cols-2 gap-12 items-start">
                   
                   {/* Left Side: Visual/QR */}
                   <div className="space-y-6">
                     <div className="relative group">
-                      <div className="relative flex flex-col items-center justify-center p-10 bg-background border-2 border-dashed border-border rounded-[1rem]">
+                      <div className="relative flex flex-col items-center justify-center p-5 bg-background border-2 border-dashed border-border rounded-[1rem]">
                         <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
                           {qrCodeUrl ? (
                             <img src={qrCodeUrl} alt="QR Code" className="w-40 h-40 invert" />
@@ -233,7 +316,7 @@ const MakePaymentPage = () => {
                         Official {paymentMethod.name} Address
                       </label>
                       <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-5 pr-14 text-sm font-black italic leading-relaxed">
+                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black italic leading-relaxed">
   {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
 </div>
                         <button 
@@ -262,12 +345,12 @@ const MakePaymentPage = () => {
                           onChange={handleFileSelect}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                         />
-                        <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all ${
+                        <div className={`border-2 border-dashed rounded-xl p-6 lg:p-3 flex flex-col items-center justify-center gap-3 transition-all ${
                           selectedFile ? 'border-primary bg-primary/5' : 'border-border bg-muted/10 group-hover:border-foreground/40'
                         }`}>
                           <Upload className={`w-6 h-6 ${selectedFile ? 'text-primary' : 'text-muted-foreground'}`} />
                           <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                            {selectedFile ? selectedFile.name : 'Choose Screenshot'}
+                            {selectedFile?.name || 'Choose Screenshot'}
                           </span>
                         </div>
                       </div>
@@ -280,7 +363,7 @@ const MakePaymentPage = () => {
                    <button 
                     type="submit"
                     disabled={isSubmitting || !selectedFile}
-                    className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
+                    className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (
                       <>Submitting <Loader2 className="w-4 h-4 animate-spin" /></>
