@@ -19,7 +19,16 @@ import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+import TradingView from "@/components/landing-page/trading-view-slide";
+
 import Link from "next/link";
+
+// ─── Image Constants ───────────────────────────────────────────────────────
+const IMAGES = [
+  "https://i.postimg.cc/ZnDX5Ff3/5.jpg",
+  "https://i.postimg.cc/VvF1MffN/Bull-and-Bear.jpg",
+  "https://i.postimg.cc/9Q9sc9yF/6.jpg",
+];
 
 // ─── Types ───────────────────────────────────────────────────────────
 type InvestmentStatus = "active" | "completed" | "expired";
@@ -44,7 +53,7 @@ interface Investment {
 }
 
 // ─── Refined Investment Card ──────────────────────────────────────────
-function InvestmentCard({ inv }: { inv: Investment }) {
+function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
   const [showDetails, setShowDetails] = useState(false);
 
   const statusColors = {
@@ -53,26 +62,39 @@ function InvestmentCard({ inv }: { inv: Investment }) {
     expired: "bg-red-500",
   };
 
+  // Cycle through images based on index
+  const backgroundImage = IMAGES[index % IMAGES.length];
+
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group">
       {/* Header */}
-      <div className="bg-foreground p-4 lg:p-6 text-background flex justify-between items-center relative overflow-hidden">
+      <div 
+        className="p-4 lg:px-5 lg:py-8 text-background flex justify-between items-center relative overflow-hidden"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Dark overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/40" />
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 -rotate-45 translate-x-16 -translate-y-16" />
-        <div>
+        <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`w-2 h-2 rounded-full animate-pulse ${statusColors[inv.status]}`}
             />
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">
+            <p className="text-[10px] font-black text-white uppercase tracking-[0.2em] opacity-70">
               {inv.status}
             </p>
           </div>
-          <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-none">
+          <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-none">
             {inv.planName}
           </h3>
         </div>
-        <div className="text-right">
-          <p className="text-[10px] font-black uppercase opacity-60 mb-1">
+        <div className="text-right relative z-10">
+          <p className="text-[10px] font-black text-white uppercase opacity-60 mb-1">
             Yield Rate
           </p>
           <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-xs font-black italic">
@@ -357,6 +379,9 @@ export default function MyInvestmentsPage() {
               ))}
             </div>
 
+                    <TradingView />
+            
+
             {/* Main Display */}
             {isLoading ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -396,8 +421,8 @@ export default function MyInvestmentsPage() {
               </div>
             ) : filteredInvestments.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filteredInvestments.map((inv) => (
-                  <InvestmentCard key={inv.id} inv={inv} />
+                {filteredInvestments.map((inv, index) => (
+                  <InvestmentCard key={inv.id} inv={inv} index={index} />
                 ))}
               </div>
             ) : (
@@ -409,9 +434,13 @@ export default function MyInvestmentsPage() {
               </div>
             )}
           </div>
+                <TradingView />
         </main>
+
+        
       </div>
       <UserNav />
     </div>
   );
+  
 }
