@@ -573,7 +573,7 @@ const AchievementsPage = () => {
                     {/* Section Header */}
                     <div className="flex items-center justify-between mb-5">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-xl ${CATEGORY_CONFIG[cat.id as keyof typeof CATEGORY_CONFIG].iconBg} ${CATEGORY_CONFIG[cat.id as keyof typeof CATEGORY_CONFIG].border} border-2 flex items-center justify-center`}>
+                        <div className={`w-10 h-10 rounded-xl ${CATEGORY_CONFIG[cat.id as keyof typeof CATEGORY_CONFIG].iconBg} ${CATEGORY_CONFIG[cat.id as keyof typeof CATEGORY_CONFIG].border} border-2 flex items-center justify-center`}>
                           {cat.icon}
                         </div>
                         <div>
