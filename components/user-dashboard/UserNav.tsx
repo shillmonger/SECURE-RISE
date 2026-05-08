@@ -18,10 +18,10 @@ export default function UserNav() {
 
   const navItems = [
     { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
-    { name: "Payout", icon: Wallet, href: `${basePath}/withdraw` },
-    { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Deposit", icon: CreditCard, href: `${basePath}/deposit` },
-   { name: "Trades", icon: CandlestickChart, href: `${basePath}/my-investments` },
+    { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
+    { name: "Trades", icon: CandlestickChart, href: `${basePath}/my-investments` },
+    { name: "Payout", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];
 

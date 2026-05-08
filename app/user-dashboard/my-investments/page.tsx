@@ -176,7 +176,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
                   {inv.profitHistory.length > 0 ? (
                     inv.profitHistory.map((log, idx) => (
                       <tr
-                        key={idx}
+                        key={`${inv.id}-log-${idx}`}
                         className="hover:bg-background/50 transition-colors"
                       >
                         <td className="p-3 text-[10px] font-medium text-foreground">

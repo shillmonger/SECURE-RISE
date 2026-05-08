@@ -26,6 +26,94 @@ import {
   Globe,
 } from "lucide-react";
 
+// ─── Loading Skeleton Components ───────────────────────────────────────────
+function IdentitySkeleton() {
+  return (
+    <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-4 h-4 bg-muted rounded animate-pulse" />
+        <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="relative mb-6">
+          <div className="w-32 h-32 rounded-2xl bg-muted animate-pulse" />
+          <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-muted rounded-xl animate-pulse" />
+        </div>
+        <div className="h-5 w-24 bg-muted rounded animate-pulse mb-2" />
+        <div className="h-3 w-32 bg-muted rounded animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+function AccountStatusSkeleton() {
+  return (
+    <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+      <div className="h-4 w-24 bg-muted rounded animate-pulse mb-4" />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex justify-between items-center">
+            <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+            <div className="h-5 w-20 bg-muted rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PersonalInfoSkeleton() {
+  return (
+    <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-4 h-4 bg-muted rounded animate-pulse" />
+        <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="space-y-1">
+            <div className="h-3 w-20 bg-muted rounded animate-pulse" />
+            <div className="h-10 w-full bg-muted rounded animate-pulse" />
+          </div>
+        ))}
+        <div className="md:col-span-2 pt-2">
+          <div className="h-11 w-full bg-muted rounded animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CryptoPayoutSkeleton() {
+  return (
+    <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-muted rounded animate-pulse" />
+          <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="space-y-3">
+        {[1, 2].map((i) => (
+          <div key={i} className="flex items-center justify-between bg-muted/30 border border-border rounded-xl p-4">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-muted animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                <div className="h-3 w-40 bg-muted rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="w-8 h-8 bg-muted rounded animate-pulse" />
+              <div className="w-8 h-8 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
@@ -70,6 +158,7 @@ export default function UserSettingsPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isSavingPayout, setIsSavingPayout] = useState(false);
+  const [isLoadingCryptoAddresses, setIsLoadingCryptoAddresses] = useState(true);
 
   // Password states
   const [currentPassword, setCurrentPassword] = useState("");
@@ -141,6 +230,7 @@ export default function UserSettingsPage() {
   // Load crypto addresses from database
   useEffect(() => {
     const fetchCryptoAddresses = async () => {
+      setIsLoadingCryptoAddresses(true);
       try {
         const response = await fetch('/api/user-dashboard/crypto-addresses');
         const data = await response.json();
@@ -150,6 +240,8 @@ export default function UserSettingsPage() {
         }
       } catch (error) {
         console.error('Error fetching crypto addresses:', error);
+      } finally {
+        setIsLoadingCryptoAddresses(false);
       }
     };
 
@@ -406,62 +498,70 @@ export default function UserSettingsPage() {
               {/* Left Column */}
               <div className="space-y-6">
                 {/* Identity */}
-                <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" /> Identity
-                  </h3>
-                  <div className="flex flex-col items-center">
-                    <div className="relative mb-6">
-                      <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary bg-muted shadow-2xl">
-                        <img 
-                          src={profileImage || "https://github.com/shadcn.png"} 
-                          alt="Profile" 
-                          className="w-full h-full object-cover" 
-                        />
+                {isLoading ? (
+                  <IdentitySkeleton />
+                ) : (
+                  <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+                    <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                      <User className="w-4 h-4 text-primary" /> Identity
+                    </h3>
+                    <div className="flex flex-col items-center">
+                      <div className="relative mb-6">
+                        <div className="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary bg-muted shadow-2xl">
+                          <img 
+                            src={profileImage || "https://github.com/shadcn.png"} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                        <label className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2.5 rounded-xl cursor-pointer hover:bg-primary/90 transition-colors shadow-lg">
+                          {isUploadingImage ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Camera className="w-5 h-5" />
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            disabled={isUploadingImage}
+                            onChange={handleImageUpload}
+                          />
+                        </label>
                       </div>
-                      <label className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2.5 rounded-xl cursor-pointer hover:bg-primary/90 transition-colors shadow-lg">
-                        {isUploadingImage ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <Camera className="w-5 h-5" />
-                        )}
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          disabled={isUploadingImage}
-                          onChange={handleImageUpload}
-                        />
-                      </label>
+                      <p className="text-sm font-black uppercase">{personalInfo.username}</p>
+                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">Investor Account</p>
                     </div>
-                    <p className="text-sm font-black uppercase">{personalInfo.username}</p>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">Investor Account</p>
                   </div>
-                </div>
+                )}
 
                 {/* Account Status */}
-                <div className="bg-card rounded-2xl shadow-lg border border-border p-6 overflow-hidden relative">
-                  <div className="absolute -right-4 -top-4 opacity-5">
-                    <Shield className="w-24 h-24" />
+                {isLoading ? (
+                  <AccountStatusSkeleton />
+                ) : (
+                  <div className="bg-card rounded-2xl shadow-lg border border-border p-6 overflow-hidden relative">
+                    <div className="absolute -right-4 -top-4 opacity-5">
+                      <Shield className="w-24 h-24" />
+                    </div>
+                    <h3 className="text-sm font-black uppercase tracking-widest mb-4">Account Status</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-muted-foreground uppercase">Role</span>
+                        <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-black uppercase border border-primary/20">
+                          {userRole.join(", ").toUpperCase() || "USER"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-muted-foreground uppercase">Verification</span>
+                        <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-black uppercase border border-green-500/20">Verified</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-muted-foreground uppercase">Member Since</span>
+                        <span className="text-xs font-black">{memberSince || "N/A"}</span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-sm font-black uppercase tracking-widest mb-4">Account Status</h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-muted-foreground uppercase">Role</span>
-                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-black uppercase border border-primary/20">
-                        {userRole.join(", ").toUpperCase() || "USER"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-muted-foreground uppercase">Verification</span>
-                      <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-black uppercase border border-green-500/20">Verified</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-muted-foreground uppercase">Member Since</span>
-                      <span className="text-xs font-black">{memberSince || "N/A"}</span>
-                    </div>
-                  </div>
-                </div>
+                )}
 
                 {/* Appearance */}
                 <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
@@ -485,114 +585,121 @@ export default function UserSettingsPage() {
               {/* Right Column */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Personal Information */}
-                <form onSubmit={handleProfileUpdate} className="bg-card rounded-2xl shadow-lg border border-border p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" /> Personal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Username</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          name="username"
-                          type="text"
-                          value={personalInfo.username}
-                          onChange={handleInputChange}
-                          className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
-                        />
+                {isLoading ? (
+                  <PersonalInfoSkeleton />
+                ) : (
+                  <form onSubmit={handleProfileUpdate} className="bg-card rounded-2xl shadow-lg border border-border p-6">
+                    <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                      <User className="w-4 h-4 text-primary" /> Personal Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Username</label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <input
+                            name="username"
+                            type="text"
+                            value={personalInfo.username}
+                            onChange={handleInputChange}
+                            className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <input
+                            name="name"
+                            type="text"
+                            value={personalInfo.name}
+                            onChange={handleInputChange}
+                            className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <input
+                            name="email"
+                            type="email"
+                            value={personalInfo.email}
+                            readOnly
+                            className="w-full bg-muted/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm cursor-not-allowed opacity-70"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Country</label>
+                        <div className="relative">
+                          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <input
+                            name="country"
+                            type="text"
+                            value={personalInfo.country}
+                            onChange={handleInputChange}
+                            className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 md:col-span-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Phone Number</label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <input
+                            name="phone"
+                            type="tel"
+                            value={personalInfo.phone}
+                            onChange={handleInputChange}
+                            className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2 pt-2">
+                        <button
+                          type="submit"
+                          disabled={isUpdating}
+                          className="w-full md:w-full cursor-pointer bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {isUpdating ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" /> Updating...
+                            </>
+                          ) : (
+                            "Update Profile"
+                          )}
+                        </button>
                       </div>
                     </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          name="name"
-                          type="text"
-                          value={personalInfo.name}
-                          onChange={handleInputChange}
-                          className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          name="email"
-                          type="email"
-                          value={personalInfo.email}
-                          readOnly
-                          className="w-full bg-muted/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm cursor-not-allowed opacity-70"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Country</label>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          name="country"
-                          type="text"
-                          value={personalInfo.country}
-                          onChange={handleInputChange}
-                          className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1 md:col-span-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Phone Number</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          name="phone"
-                          type="tel"
-                          value={personalInfo.phone}
-                          onChange={handleInputChange}
-                          className="w-full bg-muted/30 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 ring-primary/20 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="md:col-span-2 pt-2">
-                      <button
-                        type="submit"
-                        disabled={isUpdating}
-                        className="w-full md:w-full cursor-pointer bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2"
-                      >
-                        {isUpdating ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" /> Updating...
-                          </>
-                        ) : (
-                          "Update Profile"
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </form>
+                  </form>
+                )}
 
                 {/* Crypto Payout Settings */}
-                <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                      <Wallet className="w-4 h-4 text-primary" /> Crypto Payout Settings
-                    </h3>
-                    {payoutAddresses.length > 0 && (
-                      <button
-                        onClick={handleAddNew}
-                        className="flex items-center cursor-pointer gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
-                      >
-                        <Plus className="w-4 h-4" /> Add New
-                      </button>
-                    )}
-                  </div>
+                {isLoadingCryptoAddresses ? (
+                  <CryptoPayoutSkeleton />
+                ) : (
+                  <div className="bg-card rounded-2xl shadow-lg border border-border p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                        <Wallet className="w-4 h-4 text-primary" /> Crypto Payout Settings
+                      </h3>
+                      {payoutAddresses.length > 0 && (
+                        <button
+                          onClick={handleAddNew}
+                          className="flex items-center cursor-pointer gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
+                        >
+                          <Plus className="w-4 h-4" /> Add New
+                        </button>
+                      )}
+                    </div>
 
                   {/* Saved Addresses - Always Visible Icons */}
                   {payoutAddresses.length > 0 && (
@@ -726,6 +833,7 @@ export default function UserSettingsPage() {
                     </button>
                   )}
                 </div>
+                )}
 
                 {/* Security */}
                 <div className="bg-card rounded-2xl shadow-lg border border-border p-6">

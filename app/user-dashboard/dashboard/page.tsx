@@ -426,9 +426,27 @@ export default function UserOverviewPage() {
       try {
         const cryptoPairs = allPairs.filter((pair) => pair.type === "crypto");
         const coinIds = cryptoPairs.map((crypto) => crypto.coinId).join(",");
+        
+        // Add timeout and better error handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
         const response = await fetch(
           `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`,
+          {
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json',
+            }
+          }
         );
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         const cryptoImageMap = new Map();
@@ -453,6 +471,7 @@ export default function UserOverviewPage() {
         setMarketLoading(false);
       } catch (error) {
         console.error("Error fetching market data:", error);
+        // Fallback to default data without images
         setMarketData(allPairs);
         setMarketLoading(false);
       }

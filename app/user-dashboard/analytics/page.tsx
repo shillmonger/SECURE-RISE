@@ -565,7 +565,7 @@ export default function UserAnalyticsPage() {
                   <div className="flex items-end gap-2 px-1 h-70">
                     {barData.map((b, i) => (
                       <BarCol
-                        key={b.label}
+                        key={`${b.label}-${i}`}
                         label={b.label}
                         value={b.value}
                         pct={b.pct}
