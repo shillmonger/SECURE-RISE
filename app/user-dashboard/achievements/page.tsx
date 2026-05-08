@@ -549,7 +549,7 @@ const AchievementsPage = () => {
     initializeAchievements();
   }, []);
 
-  // Group achievements by category
+  // Group achievements by category - merge API data with category structure
   const achievementsByCategory = CATEGORIES.map(category => ({
     ...category,
     achievements: achievements.filter(a => a.category === category.id)
