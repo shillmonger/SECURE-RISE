@@ -470,7 +470,12 @@ export default function UserOverviewPage() {
         setMarketData(updatedData);
         setMarketLoading(false);
       } catch (error) {
-        console.error("Error fetching market data:", error);
+        // Handle AbortError specifically (timeout)
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.warn("Market data fetch timed out after 5 seconds");
+        } else {
+          console.error("Error fetching market data:", error);
+        }
         // Fallback to default data without images
         setMarketData(allPairs);
         setMarketLoading(false);

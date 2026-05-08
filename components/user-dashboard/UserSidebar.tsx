@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import {
   LayoutDashboard,
   BarChart3,
-  CandlestickChart,
+  BadgeCheck,
   Trophy,
   TrendingUp,
   Wallet,
@@ -16,9 +16,9 @@ import {
   Gift,
   History,
   Crown,
-  Swords,
+  Medal,
   PieChart,
-  Activity,
+  Gem,
   Users,
   Lock,
   HeadphonesIcon,
@@ -106,11 +106,11 @@ export default function UserSidebar({
       name: "Community",
       icon: Users,
       children: [
+        { name: "Referrals", icon: Users, href: `#` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `#` },
-        { name: "Challenges", icon: Swords, href: `#` },
-        { name: "Referrals", icon: Users, href: `#` },
-        { name: "Give Feedback", icon: MessageSquare, href: `#` },
+        { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
+        { name: "Give Feedback", icon: BadgeCheck, href: `#` },
       ],
     },
     {
@@ -311,11 +311,11 @@ export default function UserSidebar({
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
           onClick={() => setShowLogoutConfirm(false)}
         >
-          <div 
+          <div
             className="bg-background/95 border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center"
             onClick={(e) => e.stopPropagation()}
           >
@@ -326,9 +326,10 @@ export default function UserSidebar({
               Logout?
             </h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Are you sure you want to sign out? You'll need to log in again to access your account.
+              Are you sure you want to sign out? You'll need to log in again to
+              access your account.
             </p>
-            
+
             {/* Countdown Progress Bar */}
             <div className="mb-6">
               <div className="flex justify-between text-xs text-muted-foreground mb-2">
@@ -336,13 +337,13 @@ export default function UserSidebar({
                 <span>{countdown}s</span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
-                <div 
+                <div
                   className="bg-foreground h-2 rounded-full transition-all duration-1000 ease-linear"
                   style={{ width: `${(countdown / 10) * 100}%` }}
                 />
               </div>
             </div>
-            
+
             <div className="flex sm:flex-row gap-3 mt-6">
               <button
                 onClick={() => {
