@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { toast } from "sonner";
 
@@ -34,6 +34,7 @@ const MakePaymentPage = () => {
   
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Updated Payment methods to match your 10-item list
   const paymentMethods: Record<string, { name: string; address: string; network: string }> = {
@@ -369,10 +370,12 @@ const MakePaymentPage = () => {
                 ⏱️ Review typically takes 5-30 minutes. You'll receive an email once approved.
               </p>
             </div>
+            
             <button
-              onClick={() => {
-                setShowSuccess(false);
-                window.location.href = '/user-dashboard/deposit';
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                router.push('/user-dashboard/deposit');
               }}
               className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-opacity cursor-pointer"
             >

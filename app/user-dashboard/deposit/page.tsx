@@ -239,7 +239,7 @@ const DepositPage = () => {
                     </div>
 
                     <Link href="/user-dashboard/transactions">
-                      <button className="text-[9px] crsor-pointer font-black uppercase tracking-widest text-primary border-b border-primary/30">
+                      <button className="text-[9px] cursor-pointer font-black uppercase tracking-widest text-primary border-b border-primary/30">
                         View All
                       </button>
                     </Link>
@@ -266,7 +266,7 @@ const DepositPage = () => {
                         return (
                           <div
                             key={deposit._id}
-                            className="bg-muted/30 border border-border/50 p-4 rounded-lg flex items-center justify-between group hover:border-foreground/20 transition-all"
+                            className="bg-muted/30 border cursor-pointer border-border/50 p-4 rounded-lg flex items-center justify-between group hover:border-foreground/20 transition-all"
                           >
                             <div>
                               <p className="text-xs font-black uppercase italic tracking-tight">

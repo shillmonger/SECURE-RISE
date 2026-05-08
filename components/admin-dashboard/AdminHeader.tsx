@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useTheme } from "@/components/custom-theme-provider";
 import { useMounted } from "@/hooks/useMounted";
-import NotificationSettings from "./NotificationSettings";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -124,8 +123,6 @@ export default function AdminHeader({ sidebarOpen, setSidebarOpen }: HeaderProps
         </div>
       </header>
       
-      {/* Notification Settings Component */}
-      <NotificationSettings />
     </>
   );
 }

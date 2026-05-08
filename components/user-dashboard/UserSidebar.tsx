@@ -11,6 +11,7 @@ import {
   Trophy,
   TrendingUp,
   Wallet,
+  IdCard,
   CreditCard,
   Gift,
   History,
@@ -112,7 +113,7 @@ export default function UserSidebar({
           icon: Settings,
           href: `${basePath}/user-settings`,
         },
-        { name: "KYC Verification", icon: Shield, href: `#` },
+        { name: "KYC Verification", icon: IdCard, href: `#` },
         {
           name: "Active Support 24/7",
           icon: HeadphonesIcon,
@@ -121,7 +122,7 @@ export default function UserSidebar({
         ...(userRole.includes("admin")
           ? [
               {
-                name: "Switch 2 Admin",
+                name: "Switch to Admin",
                 icon: Lock,
                 href: `/admin-dashboard/dashboard`,
               },
