@@ -57,6 +57,9 @@ export async function POST(request: NextRequest) {
         // Generate transaction ID
         const transactionId = `GIFT-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
+        // Calculate 5% commission for sender
+        const commissionAmount = parseFloat(amount) * 0.05;
+
         // Create gift record
         const giftData = createGift({
           senderId: sender._id,
@@ -79,17 +82,20 @@ export async function POST(request: NextRequest) {
         // Insert gift record
         await db.collection('gifts').insertOne(gift, { session });
 
-        // Update sender's balance (debit)
+        // Update sender's balance (debit gift amount, credit commission)
         await db.collection('users').updateOne(
           { _id: sender._id },
           { 
-            $inc: { accountBalance: -parseFloat(amount) },
+            $inc: { 
+              accountBalance: -parseFloat(amount) + commissionAmount,
+              giftPercents: commissionAmount
+            },
             $set: { updatedAt: new Date() }
           },
           { session }
         );
 
-        // Update receiver's balance (credit)
+        // Update receiver's balance (credit full amount)
         await db.collection('users').updateOne(
           { _id: receiver._id },
           { 

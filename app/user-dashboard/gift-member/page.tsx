@@ -73,8 +73,9 @@ function UserCard({
 
 // ─── SUCCESS MODAL ───────────────────────────────────────────────────────────
 function SuccessModal({ recipient, amount, onClose }: { recipient: SearchResult; amount: string; onClose: () => void }) {
+  const commission = parseFloat(amount) * 0.05;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-background/10 backdrop-blur-sm px-4">
       <div
         className="bg-card border border-border rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
         style={{ animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" }}
@@ -112,6 +113,10 @@ function SuccessModal({ recipient, amount, onClose }: { recipient: SearchResult;
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Amount</span>
             <span className="text-primary font-black text-base">${amount}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-2">
+            <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Your 5% Commission</span>
+            <span className="text-emerald-600 font-black text-base">+${commission.toFixed(2)}</span>
           </div>
         </div>
         <button
@@ -171,6 +176,7 @@ export default function GiftUserPage() {
   const [sending, setSending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [balance, setBalance] = useState(0);
+  const [giftPercents, setGiftPercents] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -182,6 +188,7 @@ export default function GiftUserPage() {
         const data = await response.json();
         if (data.success) {
           setBalance(data.balance);
+          setGiftPercents(data.giftPercents);
         }
       } catch (error) {
         console.error('Error fetching balance:', error);
@@ -260,8 +267,10 @@ export default function GiftUserPage() {
       if (data.success) {
         toast.success("Gift sent successfully!");
         setShowSuccess(true);
-        // Update balance
-        setBalance(prev => prev - parseFloat(amount));
+        // Update balance and giftPercents
+        const commission = parseFloat(amount) * 0.05;
+        setBalance(prev => prev - parseFloat(amount) + commission);
+        setGiftPercents(prev => prev + commission);
       } else {
         toast.error(data.error || "Failed to send gift");
       }
@@ -318,6 +327,9 @@ export default function GiftUserPage() {
                   <p className={`text-lg font-black ${balance > 0 ? 'text-emerald-500' : 'text-muted-foreground'}`}>
   ${balance.toFixed(2)}
 </p>
+                  <p className="text-xs text-primary font-semibold mt-1">
+    Gift Earnings: ${giftPercents.toFixed(2)}
+                  </p>
                 </div>
               </div>
               <p className="text-muted-foreground text-sm mt-1">
@@ -455,6 +467,16 @@ export default function GiftUserPage() {
                     ))}
                   </div>
 
+                  {/* Commission note */}
+                  <div className="flex gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 mb-4">
+                    <svg className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-300 leading-relaxed">
+                      <span className="font-bold">You'll earn 5% commission!</span> For every gift you send, you receive 5% of the amount back as a reward.
+                    </p>
+                  </div>
+
                   {/* Disclaimer */}
                   <div className="flex gap-2 p-3 rounded-xl bg-muted/50 border border-border mb-6">
                     <svg className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -503,6 +525,19 @@ export default function GiftUserPage() {
                       <p className="text-sm text-muted-foreground">Gift Amount</p>
                       <p className={`${montserrat.className} text-3xl font-black text-primary`}>
                         ${parseFloat(amount).toFixed(2)}
+                      </p>
+                    </div>
+
+                    {/* Commission row */}
+                    <div className="px-4 pb-4 flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/20">
+                      <div className="flex items-center gap-2">
+                        <svg className="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                        <p className="text-sm text-emerald-700 dark:text-emerald-300 font-semibold">Your 5% Commission</p>
+                      </div>
+                      <p className="text-lg font-black text-emerald-600">
+                        +${(parseFloat(amount) * 0.05).toFixed(2)}
                       </p>
                     </div>
 

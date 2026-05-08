@@ -30,6 +30,7 @@ export interface User {
   totalProfits: number;
   totalWithdrawal: number;
   totalDeposit: number;
+  giftPercents: number;
   role: string[];
   isActive: boolean;
   createdAt: Date;
@@ -58,6 +59,7 @@ export const createDefaultUser = (userData: {
     totalProfits: 0,
     totalWithdrawal: 0,
     totalDeposit: 0,
+    giftPercents: 0,
     role: ['user'],
     isActive: true,
   };

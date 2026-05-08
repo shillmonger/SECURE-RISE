@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Fetch user's account balance
     const user = await db.collection('users').findOne(
       { email: authUser.email },
-      { projection: { accountBalance: 1, username: 1, fullName: 1, email: 1 } }
+      { projection: { accountBalance: 1, giftPercents: 1, username: 1, fullName: 1, email: 1 } }
     );
 
     if (!user) {
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       balance: user.accountBalance || 0,
+      giftPercents: user.giftPercents || 0,
       user: {
         username: user.username,
         fullName: user.fullName,
