@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Trophy,
   Star,
@@ -438,19 +438,45 @@ const AchievementCard = ({ achievement, category }: { achievement: Achievement; 
 const AchievementsPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [totalXP, setTotalXP] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const allAchievements = CATEGORIES.flatMap((c) => c.achievements);
-  const unlockedCount = allAchievements.filter((a) => a.unlocked).length;
-  const totalCount = allAchievements.length;
-  const totalXP = allAchievements
-    .filter((a) => a.unlocked)
-    .reduce((acc, a) => acc + a.xp, 0);
-  const progressPct = Math.round((unlockedCount / totalCount) * 100);
+  // Fetch achievements from API
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/achievements');
+        if (response.ok) {
+          const data = await response.json();
+          setAchievements(data.achievements);
+          setTotalXP(data.totalXP);
+        }
+      } catch (error) {
+        console.error('Failed to fetch achievements:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAchievements();
+  }, []);
+
+  // Group achievements by category
+  const achievementsByCategory = CATEGORIES.map(category => ({
+    ...category,
+    achievements: achievements.filter(a => a.category === category.id)
+  }));
+
+  const allAchievements = achievements;
+  const unlockedCount = achievements.filter((a) => a.unlocked).length;
+  const totalCount = achievements.length;
+  const progressPct = totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
 
   const displayedAchievements =
     activeCategory === "all"
       ? allAchievements
-      : CATEGORIES.find((c) => c.id === activeCategory)?.achievements ?? [];
+      : achievementsByCategory.find((c) => c.id === activeCategory)?.achievements ?? [];
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
@@ -566,9 +592,13 @@ const AchievementsPage = () => {
 
 
             {/* Category Sections */}
-            {activeCategory === "all" ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-muted-foreground">Loading achievements...</div>
+              </div>
+            ) : activeCategory === "all" ? (
               <div className="space-y-10">
-                {CATEGORIES.map((cat) => (
+                {achievementsByCategory.map((cat) => (
                   <section key={cat.id}>
                     {/* Section Header */}
                     <div className="flex items-center justify-between mb-5">
@@ -606,7 +636,7 @@ const AchievementsPage = () => {
               <section>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {displayedAchievements.map((ach) => {
-                    const category = CATEGORIES.find(c => c.achievements.some(a => a.id === ach.id))?.id || '';
+                    const category = achievements.find(a => a.id === ach.id)?.category || '';
                     return (
                       <AchievementCard key={ach.id} achievement={ach} category={category} />
                     );

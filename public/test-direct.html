@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct API Test</title>
+</head>
+<body>
+    <h1>Direct API Test</h1>
+    <button onclick="testDirectAPI()">Test Achievements API Directly</button>
+    <div id="results"></div>
+
+    <script>
+        async function testDirectAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Testing API...';
+            
+            try {
+                // Test the achievements API directly
+                const response = await fetch('http://localhost:3000/api/user-dashboard/achievements');
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    resultsDiv.innerHTML = `
+                        <h2>API Error (${response.status}):</h2>
+                        <pre>${errorText}</pre>
+                    `;
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <h2>✅ API Response:</h2>
+                    <h3>Total XP: ${data.totalXP}</h3>
+                    <h3>Achievements Count: ${data.achievements?.length || 0}</h3>
+                    <h4>First few achievements:</h4>
+                    <pre>${JSON.stringify(data.achievements?.slice(0, 3), null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Test error:', error);
+                resultsDiv.innerHTML = `
+                    <h2>❌ Error:</h2>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
