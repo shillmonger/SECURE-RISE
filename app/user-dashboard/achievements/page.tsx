@@ -63,6 +63,11 @@ const CATEGORY_CONFIG = {
     iconColor: "text-pink-400",
     border: "border-pink-500/30",
   },
+  roi: {
+    iconBg: "bg-gradient-to-br from-violet-600/20 to-violet-400/10",
+    iconColor: "text-violet-400",
+    border: "border-violet-500/30",
+  },
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -79,6 +84,61 @@ const CATEGORIES: AchievementCategory[] = [
         unlocked: true,
         rarity: "common",
         xp: 50,
+      },
+    ],
+  },
+  {
+    id: "roi",
+    label: "ROI",
+    icon: <TrendingUp className={`w-4 h-4 ${CATEGORY_CONFIG.roi.iconColor}`} />,
+    achievements: [
+      {
+        id: "first-roi",
+        title: "First ROI",
+        description: "Earned your first profit from investment",
+        unlocked: false,
+        rarity: "common",
+        xp: 100,
+      },
+      {
+        id: "roi-50",
+        title: "Profit Starter",
+        description: "Made $50 from ROI",
+        unlocked: false,
+        rarity: "common",
+        xp: 150,
+      },
+      {
+        id: "roi-200",
+        title: "Profit Builder",
+        description: "Made $200 from ROI",
+        unlocked: false,
+        rarity: "rare",
+        xp: 250,
+      },
+      {
+        id: "roi-700",
+        title: "Profit Master",
+        description: "Made $700 from ROI",
+        unlocked: false,
+        rarity: "rare",
+        xp: 400,
+      },
+      {
+        id: "roi-1000",
+        title: "Profit Expert",
+        description: "Made $1,000 from ROI",
+        unlocked: false,
+        rarity: "epic",
+        xp: 600,
+      },
+      {
+        id: "roi-5000",
+        title: "Profit Legend",
+        description: "Made $5,000 from ROI",
+        unlocked: false,
+        rarity: "legendary",
+        xp: 1200,
       },
     ],
   },
@@ -334,6 +394,7 @@ const CATEGORIES: AchievementCategory[] = [
       },
     ],
   },
+  
 ];
 
 // ─── Rarity Config ─────────────────────────────────────────────────────────────

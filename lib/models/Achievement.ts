@@ -40,6 +40,7 @@ export interface UserStats {
   totalInvestments: number;
   totalGiftsSent: number;
   totalGiftsReceived: number;
+  totalROI: number;
   depositCount: number;
   withdrawalCount: number;
   investmentCount: number;

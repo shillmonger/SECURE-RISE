@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import clientPromise from '@/lib/mongodb';
 import { User, createDefaultUser } from '@/lib/models/User';
 import { sendWelcomeEmail } from '@/lib/email';
@@ -88,17 +89,41 @@ export async function POST(request: NextRequest) {
       // Continue with registration even if email fails
     }
 
+    // Create JWT token for automatic login
+    const token = jwt.sign(
+      { 
+        userId: result.insertedId.toString(),
+        email: userData.email,
+        role: userData.role
+      },
+      process.env.NEXTAUTH_SECRET!,
+      { expiresIn: '7d' }
+    );
+
     // Return success response (without password)
     const { password: _, ...userResponse } = userData;
     
-    return NextResponse.json({
+    // Create response with token
+    const response = NextResponse.json({
       success: true,
       message: 'Account created successfully! Welcome email sent.',
       user: {
         ...userResponse,
         _id: result.insertedId,
-      }
+      },
+      token
     });
+
+    // Set HTTP-only cookie for better security
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Registration error:', error);

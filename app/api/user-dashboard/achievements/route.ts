@@ -276,6 +276,62 @@ const ACHIEVEMENTS: Achievement[] = [
     xp: 1500,
     checkFunction: (userData: any, userStats: UserStats) => userStats.totalGiftsSent >= 5000
   },
+  
+  // ROI achievements
+  {
+    id: 'first-roi',
+    title: 'First ROI',
+    description: 'Earned your first profit from investment',
+    category: 'roi',
+    rarity: 'common',
+    xp: 100,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI > 0
+  },
+  {
+    id: 'roi-50',
+    title: 'Profit Starter',
+    description: 'Made $50 from ROI',
+    category: 'roi',
+    rarity: 'common',
+    xp: 150,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI >= 50
+  },
+  {
+    id: 'roi-200',
+    title: 'Profit Builder',
+    description: 'Made $200 from ROI',
+    category: 'roi',
+    rarity: 'rare',
+    xp: 250,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI >= 200
+  },
+  {
+    id: 'roi-700',
+    title: 'Profit Master',
+    description: 'Made $700 from ROI',
+    category: 'roi',
+    rarity: 'rare',
+    xp: 400,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI >= 700
+  },
+  {
+    id: 'roi-1000',
+    title: 'Profit Expert',
+    description: 'Made $1,000 from ROI',
+    category: 'roi',
+    rarity: 'epic',
+    xp: 600,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI >= 1000
+  },
+  {
+    id: 'roi-5000',
+    title: 'Profit Legend',
+    description: 'Made $5,000 from ROI',
+    category: 'roi',
+    rarity: 'legendary',
+    xp: 1200,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.totalROI >= 5000
+  },
 ];
 
 async function getUserStats(userId: ObjectId): Promise<UserStats> {
@@ -311,6 +367,7 @@ async function getUserStats(userId: ObjectId): Promise<UserStats> {
   const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
   const totalWithdrawals = withdrawals.reduce((sum, w) => sum + w.amount, 0);
   const totalInvestments = investments.reduce((sum, i) => sum + i.amount, 0);
+  const totalROI = investments.reduce((sum, i) => sum + (i.profitEarned || 0), 0);
   const totalGiftsSent = giftsSent.reduce((sum, g) => sum + g.amount, 0);
   const totalGiftsReceived = giftsReceived.reduce((sum, g) => sum + g.amount, 0);
   
@@ -320,6 +377,7 @@ async function getUserStats(userId: ObjectId): Promise<UserStats> {
     totalInvestments,
     totalGiftsSent,
     totalGiftsReceived,
+    totalROI,
     depositCount: deposits.length,
     withdrawalCount: withdrawals.length,
     investmentCount: investments.length,
