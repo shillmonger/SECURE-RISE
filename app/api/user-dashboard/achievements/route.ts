@@ -491,14 +491,26 @@ export async function GET(request: NextRequest) {
     
     const userId = user._id;
     
-    // Check and unlock any new achievements
-    const userAchievements = await checkAndUnlockAchievements(userId);
-    
     // Get user XP from userachievements collection
     const userXP = await db.collection('userachievements').findOne({ userId });
     
     const totalXP = userXP?.totalXP || 0;
     const achievementsUnlocked = userXP?.achievementsUnlocked || [];
+    
+    // Return formatted achievements for frontend using only database data
+    const userAchievements = ACHIEVEMENTS.map(achievement => ({
+      userId,
+      achievementId: achievement.id,
+      title: achievement.title,
+      description: achievement.description,
+      category: achievement.category,
+      rarity: achievement.rarity,
+      xp: achievement.xp,
+      unlocked: achievementsUnlocked.includes(achievement.id),
+      unlockedAt: undefined,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
     
     return NextResponse.json({
       achievements: userAchievements,

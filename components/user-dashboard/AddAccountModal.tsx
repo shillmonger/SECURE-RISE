@@ -40,14 +40,14 @@ export default function AddAccountModal({ isOpen, onClose, onAccountAdded }: Add
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Account added successfully!");
+        toast.success("Account added and logged in successfully!");
         setFormData({ email: "", password: "" });
         onAccountAdded();
         onClose();
         
-        // Auto-switch to the newly added account
+        // Redirect to dashboard after successful login
         setTimeout(() => {
-          window.location.reload();
+          window.location.href = '/user-dashboard/dashboard';
         }, 1000); // Small delay to show success message
       } else {
         toast.error(data.error || "Failed to add account");

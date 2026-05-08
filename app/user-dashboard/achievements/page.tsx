@@ -532,6 +532,10 @@ const AchievementsPage = () => {
         if (response.ok) {
           const data = await response.json();
           console.log('API Response Data:', data);
+          console.log('Achievements count:', data.achievements?.length);
+          console.log('Unlocked achievements count:', data.achievements?.filter((a: any) => a.unlocked).length);
+          console.log('Total XP from API:', data.totalXP);
+          console.log('AchievementsUnlocked array length:', data.achievementsUnlocked?.length);
           setAchievements(data.achievements);
           setTotalXP(data.totalXP);
         } else {
@@ -560,6 +564,15 @@ const AchievementsPage = () => {
   const totalCount = achievements.length;
   const progressPct = totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
 
+  // Debug logging
+  console.log('Frontend calculation:', {
+    achievementsLength: achievements.length,
+    unlockedCount,
+    totalCount,
+    progressPct,
+    totalXP
+  });
+
   const displayedAchievements =
     activeCategory === "all"
       ? allAchievements
@@ -573,7 +586,7 @@ const AchievementsPage = () => {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto space-y-10">
+          <div className="max-w-7xl mx-auto space-y-10 lg:space-y-10">
 
             {/* Page Title */}
             <section className="space-y-2">

@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get auth token (same as existing system)
-    const token = request.cookies.get('auth-token')?.value;
+    const currentToken = request.cookies.get('auth-token')?.value;
 
-    if (!token) {
+    if (!currentToken) {
       return NextResponse.json(
         { success: false, error: 'No auth token found' },
         { status: 401 }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     // Verify JWT token and get current user
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+      decoded = jwt.verify(currentToken, process.env.NEXTAUTH_SECRET!) as any;
     } catch (error) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -124,11 +124,44 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    return NextResponse.json({
+    // Create JWT token for the newly added account (login the user)
+    const token = jwt.sign(
+      { 
+        userId: userToAdd._id?.toString() || '',
+        email: userToAdd.email,
+        role: userToAdd.role
+      },
+      process.env.NEXTAUTH_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    // Create response with token
+    const response = NextResponse.json({
       success: true,
       message: 'Account added successfully',
       account: newAccount,
+      token,
+      user: {
+        _id: userToAdd._id,
+        email: userToAdd.email,
+        username: userToAdd.username,
+        fullName: userToAdd.fullName,
+        role: userToAdd.role,
+        profileImage: userToAdd.profileImage,
+        isActive: userToAdd.isActive
+      }
     });
+
+    // Set HTTP-only cookie for the newly logged in account
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Error adding account:', error);
