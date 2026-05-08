@@ -25,10 +25,17 @@ export async function POST(request: NextRequest) {
     const db = await connectToDatabase();
     const usersCollection = db.collection('users');
     const withdrawalsCollection = db.collection('withdrawals');
+    const depositsCollection = db.collection('deposits');
 
     const user = await usersCollection.findOne({ email: authUser.email });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check if user has at least one deposit
+    const userDeposits = await depositsCollection.findOne({ userId: user._id });
+    if (!userDeposits) {
+      return NextResponse.json({ error: 'You must have at least one deposit on the platform to make a withdrawal' }, { status: 400 });
     }
 
     // Check if user has sufficient balance

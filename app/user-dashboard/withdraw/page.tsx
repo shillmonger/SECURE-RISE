@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
 import {
   ChevronDown,
   Wallet,
@@ -370,12 +372,12 @@ export default function WithdrawPage() {
                       </label>
                       <p className="text-[10px] font-black uppercase text-muted-foreground">
                         Available:{" "}
-                        <span className="text-foreground">
-                          $
-                          {loading
-                            ? "Loading..."
-                            : userData?.accountBalance?.toLocaleString() || "0"}
-                        </span>
+                        <span className="text-green-500">
+  $
+  {loading
+    ? "Loading..."
+    : userData?.accountBalance?.toLocaleString() || "0"}
+</span>
                       </p>
                     </div>
                     <div className="relative">
@@ -462,6 +464,12 @@ export default function WithdrawPage() {
                       </span>
                       <span className="text-sm font-black italic">0%</span>
                     </div>
+                    <div className="flex justify-between items-center border-b border-background/10 pb-2">
+                      <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
+                        Deposit Requirement
+                      </span>
+                      <span className="text-sm font-black italic">Required</span>
+                    </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
                         Timeframe
@@ -473,7 +481,7 @@ export default function WithdrawPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="bg-card border border-border rounded-[1rem] p-4 md:p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <History className="w-4 h-4 text-muted-foreground" />
@@ -481,9 +489,17 @@ export default function WithdrawPage() {
                         Withdrawal Logs
                       </p>
                     </div>
+                    {withdrawalHistory.length > 4 && (
+                      <Link
+                        href="/user-dashboard/transactions"
+                        className="text-[9px] font-black uppercase text-primary hover:opacity-80 transition-opacity"
+                      >
+                        View All
+                      </Link>
+                    )}
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {loading ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
@@ -495,10 +511,10 @@ export default function WithdrawPage() {
                         <p className="text-xs">No withdrawals yet</p>
                       </div>
                     ) : (
-                      withdrawalHistory.map((log) => (
+                      withdrawalHistory.slice(0, 10).map((log, index) => (
                         <div
                           key={log.id}
-                          className="bg-muted/30 border border-border/50 p-4 rounded-xl flex items-center justify-between group hover:border-foreground/20 transition-all"
+                          className={`${index >= 4 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-background rounded-lg">
