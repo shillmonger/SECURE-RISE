@@ -409,6 +409,10 @@ export default function UserHeader({
         const investmentsResponse = await fetch("/api/investments");
         const investmentsResult = await investmentsResponse.json();
 
+        // Fetch gifts
+        const giftsResponse = await fetch("/api/user-dashboard/gift/history");
+        const giftsResult = await giftsResponse.json();
+
         let unreadCount = 0;
 
         // Count unread deposits (pending ones)
@@ -439,6 +443,11 @@ export default function UserHeader({
               unreadCount += 1;
             }
           });
+        }
+
+        // Count unread gifts (all gifts are unread initially)
+        if (giftsResult.success && giftsResult.gifts) {
+          unreadCount += giftsResult.gifts.length;
         }
 
         setNotificationCount(unreadCount);
@@ -531,168 +540,174 @@ export default function UserHeader({
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 overflow-hidden rounded-2xl border border-border bg-background p-2 shadow-xl z-50">
-                {/* User Profiles Section */}
-                <div className="p-2">
-                  <div className="mb-2 py-1">
-                    <h3 className="text-[12px] font-black uppercase tracking-tighter leading-none text-muted-foreground">
-                      User Profiles
-                    </h3>
+              <div className="absolute right-0 top-full mt-2 w-[260px] sm:w-80 overflow-hidden rounded-xl lg:rounded-2xl border border-border bg-background p-2 shadow-xl z-50">
+  {/* User Profiles Section */}
+  <div className="p-2">
+    <div className="mb-2 py-1">
+      <h3 className="text-[12px] font-black uppercase tracking-tighter leading-none text-muted-foreground">
+        User Profiles
+      </h3>
 
-                    <p className="mt-1 text-[9px] font-medium uppercase tracking-tighter text-muted-foreground leading-none">
-                      Switch between your connected accounts
-                    </p>
-                  </div>
+      <p className="mt-1 text-[9px] font-medium uppercase tracking-tighter text-muted-foreground leading-none">
+        Switch between your connected accounts
+      </p>
+    </div>
 
-                  {/* Profile Items */}
-                  <div className="space-y-1">
-                    {accountsLoading ? (
-                      <>
-                        {/* Loading Skeleton */}
-                        <div className="flex items-center gap-3 p-3">
-                          <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
+    {/* Profile Items */}
+    <div className="space-y-1">
+      {accountsLoading ? (
+        <>
+          {/* Loading Skeleton */}
+          <div className="flex items-center gap-3 p-3">
+            <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
 
-                          <div className="flex-1 space-y-1">
-                            <div className="h-3 w-3/4 rounded bg-secondary animate-pulse"></div>
-                            <div className="h-2 w-1/2 rounded bg-secondary animate-pulse"></div>
-                          </div>
-                        </div>
+            <div className="flex-1 space-y-1">
+              <div className="h-3 w-3/4 rounded bg-secondary animate-pulse"></div>
+              <div className="h-2 w-1/2 rounded bg-secondary animate-pulse"></div>
+            </div>
+          </div>
 
-                        <div className="flex items-center gap-3 p-3">
-                          <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
+          <div className="flex items-center gap-3 p-3">
+            <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
 
-                          <div className="flex-1 space-y-1">
-                            <div className="h-3 w-2/3 rounded bg-secondary animate-pulse"></div>
-                            <div className="h-2 w-1/3 rounded bg-secondary animate-pulse"></div>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      accounts.map((account) => (
-                        <div
-                          key={account.id}
-                          onClick={() =>
-                            !account.isActive && handleSwitchAccount(account.id)
-                          }
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                            account.isActive
-                              ? "border border-primary/20 bg-primary/10"
-                              : "cursor-pointer hover:bg-secondary"
-                          }`}
-                        >
-                          {/* Avatar */}
-                          <Avatar className="h-10 w-10 rounded-lg shrink-0">
-                            <AvatarImage
-                              src={account.profileImage || defaultProfileImage}
-                              className="rounded-lg object-cover"
-                            />
+            <div className="flex-1 space-y-1">
+              <div className="h-3 w-2/3 rounded bg-secondary animate-pulse"></div>
+              <div className="h-2 w-1/3 rounded bg-secondary animate-pulse"></div>
+            </div>
+          </div>
+        </>
+      ) : (
+        accounts.map((account) => (
+          <div
+            key={account.id}
+            onClick={() =>
+              !account.isActive && handleSwitchAccount(account.id)
+            }
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+              account.isActive
+                ? "border border-primary/20 bg-primary/10"
+                : "cursor-pointer hover:bg-secondary"
+            }`}
+          >
+            {/* Avatar */}
+            <Avatar className="h-10 w-10 rounded-lg shrink-0">
+              <AvatarImage
+                src={account.profileImage || defaultProfileImage}
+                className="rounded-lg object-cover"
+              />
 
-                            <AvatarFallback className="rounded-lg text-sm font-bold">
-                              {(account.fullName || account.username || "U")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+              <AvatarFallback className="rounded-lg text-sm font-bold">
+                {(account.fullName || account.username || "U")
+                  .charAt(0)
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
 
-                          {/* User Info */}
-                          <div className="flex flex-1 items-center justify-between min-w-0">
-                            {/* Name + Username */}
-                            <div className="flex flex-col justify-center leading-[1] gap-[5px] min-w-0">
-                              <span className="truncate text-[10px] font-black uppercase tracking-tight text-foreground">
-                                {account.fullName ||
-                                  account.username ||
-                                  "Unknown User"}
-                              </span>
+            {/* User Info */}
+            <div className="flex flex-1 items-center justify-between min-w-0">
+              {/* Name + Username */}
+              <div className="flex flex-col justify-center leading-[1] gap-[5px] min-w-0">
+                <span className="truncate text-[10px] font-black uppercase tracking-tight text-foreground">
+                  {account.fullName ||
+                    account.username ||
+                    "Unknown User"}
+                </span>
 
-                              <span className="truncate text-[9px] font-bold uppercase tracking-tighter text-muted-foreground">
-                                @
-                                {account.email ||
-                                  (account.username
-                                    ? account.username.split("@")[0]
-                                    : "user")}
-                              </span>
-                            </div>
-
-                            {/* Status Icon + Remove Button */}
-                            <div className="flex items-center gap-2 shrink-0">
-                              {account.isActive ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <>
-                                  {accountNotifications[account.id] > 0 && (
-                                    <Circle className="h-2.5 w-2.5 fill-blue-500 text-blue-500" />
-                                  )}
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveAccount(account.id, account.fullName || account.username || 'Unknown User');
-                                    }}
-                                    className="p-1 hover:bg-red-50 cursor-pointer rounded transition-colors group"
-                                    title="Remove account"
-                                  >
-                                    <Trash2 className="h-3 w-3 text-red-500 opacity-60 group-hover:opacity-100 transition-opacity" />
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-border" />
-
-                {/* Account Management Section */}
-                <div className="p-2">
-                  <div className="space-y-1">
-                    {/* Add Account */}
-                    <button
-                      onClick={() => {
-                        setIsModalOpen(true);
-                        setIsDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
-                    >
-                      <Plus className="h-4 w-4 shrink-0" />
-
-                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-foreground">
-                        Add an existing account
-                      </span>
-                    </button>
-
-                    {/* Clear Existing Accounts */}
-                    <button
-                      onClick={() => {
-                        handleClearAccounts();
-                      }}
-                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-red-50 cursor-pointer group"
-                    >
-                      <Trash className="h-4 w-4 shrink-0 text-red-500 group-hover:text-red-600" />
-
-                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500 group-hover:text-red-600">
-                        Clear existing accounts
-                      </span>
-                    </button>
-
-                    {/* Logout */}
-                    <button
-                      onClick={() => {
-                        window.location.href = "/auth-page/login";
-                      }}
-                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
-                    >
-                      <LogOut className="h-4 w-4 shrink-0 text-red-500" />
-
-                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500">
-                        Log out @{isLoading ? "" : user.email.split("@")[0]}
-                      </span>
-                    </button>
-                  </div>
-                </div>
+                <span className="truncate text-[9px] font-bold uppercase tracking-tighter text-muted-foreground">
+                  @
+                  {account.email ||
+                    (account.username
+                      ? account.username.split("@")[0]
+                      : "user")}
+                </span>
               </div>
+
+              {/* Status Icon + Remove Button */}
+              <div className="flex items-center gap-2 shrink-0">
+                {account.isActive ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <>
+                    {accountNotifications[account.id] > 0 && (
+                      <Circle className="h-2.5 w-2.5 fill-blue-500 text-blue-500" />
+                    )}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveAccount(
+                          account.id,
+                          account.fullName ||
+                            account.username ||
+                            "Unknown User"
+                        );
+                      }}
+                      className="p-1 hover:bg-red-50 cursor-pointer rounded transition-colors group"
+                      title="Remove account"
+                    >
+                      <Trash2 className="h-3 w-3 text-red-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+
+  {/* Divider */}
+  <div className="border-t border-border" />
+
+  {/* Account Management Section */}
+  <div className="p-2">
+    <div className="space-y-1">
+      {/* Add Account */}
+      <button
+        onClick={() => {
+          setIsModalOpen(true);
+          setIsDropdownOpen(false);
+        }}
+        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
+      >
+        <Plus className="h-4 w-4 shrink-0" />
+
+        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-foreground">
+          Add an existing account
+        </span>
+      </button>
+
+      {/* Clear Existing Accounts */}
+      <button
+        onClick={() => {
+          handleClearAccounts();
+        }}
+        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-red-50 cursor-pointer group"
+      >
+        <Trash className="h-4 w-4 shrink-0 text-red-500 group-hover:text-red-600" />
+
+        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500 group-hover:text-red-600">
+          Clear existing accounts
+        </span>
+      </button>
+
+      {/* Logout */}
+      <button
+        onClick={() => {
+          window.location.href = "/auth-page/login";
+        }}
+        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
+      >
+        <LogOut className="h-4 w-4 shrink-0 text-red-500" />
+
+        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500">
+          Log out @{isLoading ? "" : user.email.split("@")[0]}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
             )}
           </div>
         </div>
