@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 import { Achievement, UserAchievement, UserXP, UserStats } from '@/lib/models/Achievement';
 
 // Achievement definitions with checking logic
-const ACHIEVEMENTS: Achievement[] = [
+export const ACHIEVEMENTS: Achievement[] = [
   // Welcome achievements
   {
     id: 'welcome-bonus',
@@ -334,7 +334,7 @@ const ACHIEVEMENTS: Achievement[] = [
   },
 ];
 
-async function getUserStats(userId: ObjectId): Promise<UserStats> {
+export async function getUserStats(userId: ObjectId): Promise<UserStats> {
   const db = await connectToDatabase();
   
   // Get user data
@@ -352,7 +352,7 @@ async function getUserStats(userId: ObjectId): Promise<UserStats> {
   
   // Get investment stats
   const investments = await db.collection('investments')
-    .find({ userId, status: 'approved' })
+    .find({ userId, status: { $in: ['approved', 'completed', 'active'] } })
     .toArray();
   
   // Get gift stats
@@ -367,7 +367,16 @@ async function getUserStats(userId: ObjectId): Promise<UserStats> {
   const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
   const totalWithdrawals = withdrawals.reduce((sum, w) => sum + w.amount, 0);
   const totalInvestments = investments.reduce((sum, i) => sum + i.amount, 0);
-  const totalROI = investments.reduce((sum, i) => sum + (i.profitEarned || 0), 0);
+  
+  // Calculate total ROI by summing all profitHistory amounts from all investments
+  const totalROI = investments.reduce((sum, investment) => {
+    if (investment.profitHistory && Array.isArray(investment.profitHistory)) {
+      const investmentROI = investment.profitHistory.reduce((roiSum, profit) => roiSum + (profit.amount || 0), 0);
+      return sum + investmentROI;
+    }
+    return sum + (investment.profitEarned || 0); // Fallback to profitEarned if no profitHistory
+  }, 0);
+  
   const totalGiftsSent = giftsSent.reduce((sum, g) => sum + g.amount, 0);
   const totalGiftsReceived = giftsReceived.reduce((sum, g) => sum + g.amount, 0);
   
@@ -390,70 +399,84 @@ async function getUserStats(userId: ObjectId): Promise<UserStats> {
 async function checkAndUnlockAchievements(userId: ObjectId): Promise<UserAchievement[]> {
   const db = await connectToDatabase();
   
-  // Get current user achievements
-  const existingAchievements = await db.collection('userachievements')
-    .find({ userId })
-    .toArray();
+  // Get current user achievements from userachievements collection
+  const existingUserAchievements = await db.collection('userachievements')
+    .findOne({ userId });
   
   const unlockedAchievementIds = new Set(
-    existingAchievements.map(a => a.achievementId)
+    existingUserAchievements?.achievementsUnlocked || []
   );
   
   // Get user stats
   const user = await db.collection('users').findOne({ _id: userId });
   const userStats = await getUserStats(userId);
   
+  console.log('User Stats for Achievement Check:', {
+    userId: userId.toString(),
+    totalROI: userStats.totalROI,
+    investmentCount: userStats.investmentCount,
+    totalInvestments: userStats.totalInvestments,
+    unlockedAchievementIds: Array.from(unlockedAchievementIds)
+  });
+  
   // Check for new achievements
-  const newAchievements: UserAchievement[] = [];
+  const newAchievements: string[] = [];
   
   for (const achievement of ACHIEVEMENTS) {
     if (!unlockedAchievementIds.has(achievement.id)) {
       const isUnlocked = achievement.checkFunction(user, userStats);
       
+      console.log(`Checking achievement ${achievement.id}:`, {
+        title: achievement.title,
+        category: achievement.category,
+        isUnlocked,
+        alreadyUnlocked: unlockedAchievementIds.has(achievement.id)
+      });
+      
       if (isUnlocked) {
-        const newAchievement: UserAchievement = {
-          userId,
-          achievementId: achievement.id,
-          title: achievement.title,
-          description: achievement.description,
-          category: achievement.category,
-          rarity: achievement.rarity,
-          xp: achievement.xp,
-          unlocked: true,
-          unlockedAt: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        
-        newAchievements.push(newAchievement);
+        newAchievements.push(achievement.id);
+        unlockedAchievementIds.add(achievement.id);
+        console.log(`🎉 NEW ACHIEVEMENT UNLOCKED: ${achievement.title}`);
       }
     }
   }
   
   // Save new achievements
   if (newAchievements.length > 0) {
-    await db.collection('userachievements').insertMany(newAchievements);
+    // Calculate total XP for new achievements
+    const totalNewXP = newAchievements.reduce((sum, achievementId) => {
+      const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+      return sum + (achievement?.xp || 0);
+    }, 0);
     
-    // Update user XP
-    const totalNewXP = newAchievements.reduce((sum, a) => sum + a.xp, 0);
-    
-    await db.collection('userxp').updateOne(
+    // Update userachievements collection
+    await db.collection('userachievements').updateOne(
       { userId },
       {
+        $push: { achievementsUnlocked: { $each: newAchievements } } as any,
         $inc: { totalXP: totalNewXP },
-        $push: { achievementsUnlocked: { $each: newAchievements.map(a => a.achievementId) } as any },
         $set: { updatedAt: new Date() }
       },
       { upsert: true }
     );
   }
   
-  // Return all achievements (existing + new)
-  const allAchievements = await db.collection('userachievements')
-    .find({ userId })
-    .toArray();
+  // Return formatted achievements for frontend
+  const formattedAchievements = ACHIEVEMENTS.map(achievement => ({
+    userId,
+    achievementId: achievement.id,
+    title: achievement.title,
+    description: achievement.description,
+    category: achievement.category,
+    rarity: achievement.rarity,
+    xp: achievement.xp,
+    unlocked: unlockedAchievementIds.has(achievement.id),
+    unlockedAt: undefined, // Could add timestamp tracking if needed
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }));
   
-  return allAchievements as UserAchievement[];
+  return formattedAchievements;
 }
 
 export async function GET(request: NextRequest) {
@@ -477,30 +500,21 @@ export async function GET(request: NextRequest) {
     // Check and unlock any new achievements
     const userAchievements = await checkAndUnlockAchievements(userId);
     
-    // Get user XP
-    const userXP = await db.collection('userxp').findOne({ userId });
+    // Get user XP from userachievements collection
+    const userXP = await db.collection('userachievements').findOne({ userId });
     
     const totalXP = userXP?.totalXP || 0;
     const achievementsUnlocked = userXP?.achievementsUnlocked || [];
     
-    // Format achievements for frontend
-    const formattedAchievements = ACHIEVEMENTS.map(achievement => {
-      const userAchievement = userAchievements.find(ua => ua.achievementId === achievement.id);
-      
-      return {
-        id: achievement.id,
-        title: achievement.title,
-        description: achievement.description,
-        category: achievement.category,
-        rarity: achievement.rarity,
-        xp: achievement.xp,
-        unlocked: userAchievement?.unlocked || false,
-        unlockedAt: userAchievement?.unlockedAt
-      };
+    console.log('Final API Response:', {
+      achievementsCount: userAchievements.length,
+      totalXP,
+      achievementsUnlocked,
+      sampleAchievements: userAchievements.slice(0, 3)
     });
     
     return NextResponse.json({
-      achievements: formattedAchievements,
+      achievements: userAchievements,
       totalXP,
       achievementsUnlocked
     });

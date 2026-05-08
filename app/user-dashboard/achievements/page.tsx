@@ -503,24 +503,50 @@ const AchievementsPage = () => {
   const [totalXP, setTotalXP] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch achievements from API
+  // Check for new achievements and fetch current achievements from API
   useEffect(() => {
-    const fetchAchievements = async () => {
+    const initializeAchievements = async () => {
       try {
+        // First, check for any new achievements to unlock
+        const checkResponse = await fetch('/api/user-dashboard/achievements/check', {
+          method: 'POST'
+        });
+        
+        if (checkResponse.ok) {
+          const checkData = await checkResponse.json();
+          console.log('New achievements check:', checkData);
+          
+          if (checkData.newAchievements.length > 0) {
+            // Show notification for new achievements
+            console.log(`🎉 Unlocked ${checkData.newAchievements.length} new achievement(s)!`);
+            checkData.newAchievements.forEach((achievement: any) => {
+              console.log(`- ${achievement.title}: ${achievement.description}`);
+            });
+          }
+        }
+        
+        // Then fetch the current achievements state
         const response = await fetch('/api/user-dashboard/achievements');
+        console.log('API Response Status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('API Response Data:', data);
           setAchievements(data.achievements);
           setTotalXP(data.totalXP);
+        } else {
+          const errorText = await response.text();
+          console.error('API Error Response:', errorText);
+          console.error('Status:', response.status, response.statusText);
         }
       } catch (error) {
-        console.error('Failed to fetch achievements:', error);
+        console.error('Failed to initialize achievements:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAchievements();
+    initializeAchievements();
   }, []);
 
   // Group achievements by category
@@ -654,8 +680,56 @@ const AchievementsPage = () => {
 
             {/* Category Sections */}
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="text-muted-foreground">Loading achievements...</div>
+              <div className="space-y-10">
+                {/* Stats Cards Skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-card border border-border rounded-2xl p-6 animate-pulse">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="w-8 h-8 bg-muted rounded-lg"></div>
+                        <div className="w-12 h-6 bg-muted rounded-full"></div>
+                      </div>
+                      <div className="w-16 h-8 bg-muted rounded-lg mb-2"></div>
+                      <div className="w-20 h-4 bg-muted rounded"></div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Category Filter Skeleton */}
+                <div className="flex flex-wrap gap-3">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="w-24 h-14 bg-muted rounded-xl animate-pulse"></div>
+                  ))}
+                </div>
+
+                {/* Achievement Cards Skeleton */}
+                {CATEGORIES.map((category, catIndex) => (
+                  <section key={catIndex}>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                        <div>
+                          <div className="w-20 h-4 bg-muted rounded mb-1"></div>
+                          <div className="w-16 h-3 bg-muted rounded"></div>
+                        </div>
+                      </div>
+                      <div className="w-16 h-4 bg-muted rounded animate-pulse"></div>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="bg-card border border-border rounded-2xl p-4 md:p-5 animate-pulse">
+                          <div className="w-10 h-10 bg-muted rounded-xl mb-4"></div>
+                          <div className="w-full h-3 bg-muted rounded mb-1"></div>
+                          <div className="w-3/4 h-2 bg-muted rounded mb-4"></div>
+                          <div className="flex items-center justify-between">
+                            <div className="w-12 h-3 bg-muted rounded-full"></div>
+                            <div className="w-10 h-3 bg-muted rounded"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ))}
               </div>
             ) : activeCategory === "all" ? (
               <div className="space-y-10">
@@ -687,7 +761,7 @@ const AchievementsPage = () => {
                     {/* Cards Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                       {cat.achievements.map((ach) => (
-                        <AchievementCard key={ach.id} achievement={ach} category={cat.id} />
+                        <AchievementCard key={ach.achievementId || ach.id} achievement={ach} category={cat.id} />
                       ))}
                     </div>
                   </section>
@@ -697,9 +771,9 @@ const AchievementsPage = () => {
               <section>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {displayedAchievements.map((ach) => {
-                    const category = achievements.find(a => a.id === ach.id)?.category || '';
+                    const category = achievements.find(a => a.achievementId === ach.achievementId)?.category || ach.category || '';
                     return (
-                      <AchievementCard key={ach.id} achievement={ach} category={category} />
+                      <AchievementCard key={ach.achievementId || ach.id} achievement={ach} category={category} />
                     );
                   })}
                 </div>
