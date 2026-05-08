@@ -10,6 +10,7 @@ import {
   History,
   ShieldCheck,
   Info,
+  AlertTriangle,
   Lock,
   Loader2,
   CheckCircle2,
@@ -316,12 +317,12 @@ export default function WithdrawPage() {
                           <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[300px] bg-card border-border rounded-xl">
+                      <DropdownMenuContent className="w-[250px] bg-card border-border rounded-xl">
                         {SUPPORTED_CRYPTOS.map((coin) => (
                           <DropdownMenuItem
                             key={coin.symbol}
                             onClick={() => setSelectedCrypto(coin)}
-                            className="flex items-center gap-3 p-3 cursor-pointer focus:bg-muted/50 transition-colors"
+                            className="flex items-center gap-3 px-3 py-2 cursor-pointer focus:bg-muted/50 transition-colors"
                           >
                             <img
                               src={coin.icon}
@@ -445,41 +446,72 @@ export default function WithdrawPage() {
 
               {/* Right: Stats & History */}
               <div className="w-full lg:w-[400px] space-y-6">
-                {/* Withdrawal Rules */}
-                <div className="bg-foreground text-background p-4 md:p-5 rounded-[1rem] space-y-6 relative overflow-hidden">
-                  <Info className="absolute -right-4 -top-4 w-24 h-24 opacity-10" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
-                    Withdrawal Rules
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-background/10 pb-2">
-                      <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
-                        Minimum Amount
-                      </span>
-                      <span className="text-sm font-black italic">$100.00</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-background/10 pb-2">
-                      <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
-                        Processing Fee
-                      </span>
-                      <span className="text-sm font-black italic">0%</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-background/10 pb-2">
-                      <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
-                        Deposit Requirement
-                      </span>
-                      <span className="text-sm font-black italic">Required</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[11px] font-black uppercase italic tracking-tighter opacity-80">
-                        Timeframe
-                      </span>
-                      <span className="text-sm font-black italic">
-                        0-24 Hours
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/15 via-orange-500/10 to-red-500/15 p-4 md:p-5  backdrop-blur-sm">
+  {/* Background Effects */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+
+  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-yellow-400 opacity-10" />
+
+  {/* Header */}
+  <div className="relative z-10 mb-5 flex items-center gap-3">
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20 border border-yellow-500/30">
+      <AlertTriangle className="h-5 w-5 text-yellow-400" />
+    </div>
+
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-300">
+        Withdrawal Rules
+      </p>
+
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-yellow-100/70">
+        Please review carefully before proceeding
+      </p>
+    </div>
+  </div>
+
+  {/* Rules */}
+  <div className="relative z-10 space-y-3">
+    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+        Minimum Amount
+      </span>
+
+      <span className="text-sm font-black text-yellow-300">
+        $100.00
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+        Processing Fee
+      </span>
+
+      <span className="text-sm font-black text-green-400">
+        0%
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        Deposit Requirement
+      </span>
+
+      <span className="text-sm font-black text-red-400">
+        Required
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+        Timeframe
+      </span>
+
+      <span className="text-sm font-black text-yellow-300">
+        0-24 Hours
+      </span>
+    </div>
+  </div>
+</div>
 
                 <div className="bg-card border border-border rounded-[1rem] p-4 md:p-5 space-y-4">
                   <div className="flex items-center justify-between">
@@ -511,10 +543,10 @@ export default function WithdrawPage() {
                         <p className="text-xs">No withdrawals yet</p>
                       </div>
                     ) : (
-                      withdrawalHistory.slice(0, 10).map((log, index) => (
+                      withdrawalHistory.slice(0, 20).map((log, index) => (
                         <div
                           key={log.id}
-                          className={`${index >= 4 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
+                          className={`${index >= 3 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-background rounded-lg">
