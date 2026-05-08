@@ -588,92 +588,115 @@ const AchievementsPage = () => {
 
 
 
+
+
             {/* Stats Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Unlocked */}
-              <div className="bg-foreground text-background p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:opacity-90 transition-all">
-                <Trophy className="absolute -right-3 -top-3 w-20 h-20 opacity-10" />
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">
-                  Achievements Unlocked
-                </p>
-                <h3 className="text-3xl font-black tracking-tighter">
-                  {unlockedCount}
-                  <span className="text-lg opacity-50">/{totalCount}</span>
-                </h3>
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-card border border-border rounded-2xl p-6 animate-pulse">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-8 h-8 bg-muted rounded-lg"></div>
+                      <div className="w-12 h-6 bg-muted rounded-full"></div>
+                    </div>
+                    <div className="w-16 h-8 bg-muted rounded-lg mb-2"></div>
+                    <div className="w-20 h-4 bg-muted rounded"></div>
+                  </div>
+                ))}
               </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Unlocked */}
+                <div className="bg-foreground text-background p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:opacity-90 transition-all">
+                  <Trophy className="absolute -right-3 -top-3 w-20 h-20 opacity-10" />
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">
+                    Achievements Unlocked
+                  </p>
+                  <h3 className="text-3xl font-black tracking-tighter">
+                    {unlockedCount}
+                    <span className="text-lg opacity-50">/{totalCount}</span>
+                  </h3>
+                </div>
 
-              {/* XP */}
-              <div className="bg-card border border-border p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-foreground/20 transition-all">
-                <Star className="absolute -right-3 -top-3 w-20 h-20 opacity-5 text-amber-400" />
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
-                  Total XP Earned
-                </p>
-                <h3 className="text-3xl font-black tracking-tighter text-amber-400">
-                  {totalXP.toLocaleString()}
-                  <span className="text-sm text-muted-foreground font-black ml-1 not-italic">XP</span>
-                </h3>
-              </div>
+                {/* XP */}
+                <div className="bg-card border border-border p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-foreground/20 transition-all">
+                  <Star className="absolute -right-3 -top-3 w-20 h-20 opacity-5 text-amber-400" />
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    Total XP Earned
+                  </p>
+                  <h3 className="text-3xl font-black tracking-tighter text-amber-400">
+                    {totalXP.toLocaleString()}
+                    <span className="text-sm text-muted-foreground font-black ml-1 not-italic">XP</span>
+                  </h3>
+                </div>
 
-              {/* Progress */}
-              <div className="bg-card border border-border p-5 rounded-2xl cursor-pointer hover:border-foreground/20 transition-all">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
-                  Completion
-                </p>
-                <h3 className="text-3xl font-black tracking-tighter mb-3">
-                  {progressPct}%
-                </h3>
-                <div className="w-full bg-muted/50 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className="h-full bg-foreground rounded-full transition-all duration-700"
-                    style={{ width: `${progressPct}%` }}
-                  />
+                {/* Progress */}
+                <div className="bg-card border border-border p-5 rounded-2xl cursor-pointer hover:border-foreground/20 transition-all">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    Completion
+                  </p>
+                  <h3 className="text-3xl font-black tracking-tighter mb-3">
+                    {progressPct}%
+                  </h3>
+                  <div className="w-full bg-muted/50 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full bg-foreground rounded-full transition-all duration-700"
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Categories Completed */}
+                <div className="bg-card border border-border p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-foreground/20 transition-all">
+                  <ShieldCheck className="absolute -right-3 -top-3 w-20 h-20 opacity-5 text-primary" />
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    Categories Completed
+                  </p>
+                  <h3 className="text-3xl font-black tracking-tighter text-primary">
+                    {CATEGORIES.filter(cat => cat.achievements.every(ach => ach.unlocked)).length}
+                    <span className="text-lg text-muted-foreground font-black ml-1 not-italic">/{CATEGORIES.length}</span>
+                  </h3>
                 </div>
               </div>
-
-              {/* Categories Completed */}
-              <div className="bg-card border border-border p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-foreground/20 transition-all">
-                <ShieldCheck className="absolute -right-3 -top-3 w-20 h-20 opacity-5 text-primary" />
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
-                  Categories Completed
-                </p>
-                <h3 className="text-3xl font-black tracking-tighter text-primary">
-                  {CATEGORIES.filter(cat => cat.achievements.every(ach => ach.unlocked)).length}
-                  <span className="text-lg text-muted-foreground font-black ml-1 not-italic">/{CATEGORIES.length}</span>
-                </h3>
-              </div>
-            </div>
-
+            )}
 
 
 
             {/* Category Filter */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setActiveCategory("all")}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border-2 transition-all cursor-pointer ${
-                  activeCategory === "all"
-                    ? "bg-foreground text-background border-transparent"
-                    : "bg-card border-border text-muted-foreground hover:border-foreground/30"
-                }`}
-              >
-                <Trophy className="w-4 h-4" /> All
-              </button>
-              {CATEGORIES.map((cat) => (
+            {loading ? (
+              <div className="flex flex-wrap gap-3">
+                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                  <div key={i} className="w-24 h-14 bg-muted rounded-xl animate-pulse"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-3">
                 <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={() => setActiveCategory("all")}
                   className={`flex items-center gap-2 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border-2 transition-all cursor-pointer ${
-                    activeCategory === cat.id
+                    activeCategory === "all"
                       ? "bg-foreground text-background border-transparent"
                       : "bg-card border-border text-muted-foreground hover:border-foreground/30"
                   }`}
                 >
-                  {cat.icon}
-                  {cat.label}
+                  <Trophy className="w-4 h-4" /> All
                 </button>
-              ))}
-            </div>
-
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex items-center gap-2 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border-2 transition-all cursor-pointer ${
+                      activeCategory === cat.id
+                        ? "bg-foreground text-background border-transparent"
+                        : "bg-card border-border text-muted-foreground hover:border-foreground/30"
+                    }`}
+                  >
+                    {cat.icon}
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
 
 
@@ -681,27 +704,6 @@ const AchievementsPage = () => {
             {/* Category Sections */}
             {loading ? (
               <div className="space-y-10">
-                {/* Stats Cards Skeleton */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-card border border-border rounded-2xl p-6 animate-pulse">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="w-8 h-8 bg-muted rounded-lg"></div>
-                        <div className="w-12 h-6 bg-muted rounded-full"></div>
-                      </div>
-                      <div className="w-16 h-8 bg-muted rounded-lg mb-2"></div>
-                      <div className="w-20 h-4 bg-muted rounded"></div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Category Filter Skeleton */}
-                <div className="flex flex-wrap gap-3">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="w-24 h-14 bg-muted rounded-xl animate-pulse"></div>
-                  ))}
-                </div>
-
                 {/* Achievement Cards Skeleton */}
                 {CATEGORIES.map((category, catIndex) => (
                   <section key={catIndex}>
