@@ -52,6 +52,7 @@ export default function UserSidebar({
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [userRole, setUserRole] = useState<string[]>([]);
+  const [countdown, setCountdown] = useState(10);
 
   // FIX 1: Set Account to true by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -74,6 +75,19 @@ export default function UserSidebar({
     };
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showLogoutConfirm && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setShowLogoutConfirm(false);
+      setCountdown(10);
+    }
+    return () => clearTimeout(timer);
+  }, [showLogoutConfirm, countdown]);
 
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
@@ -282,7 +296,7 @@ export default function UserSidebar({
         </nav>
 
         {/* Logout Section remains fixed at the bottom */}
-        <div className="flex-shrink-0 flex items-center justify-center px-4 py-3 border-t border-border">
+        <div className="flex-shrink-0 flex items-center justify-center px-4 py-3 lg:py-2 border-t border-border">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
@@ -297,17 +311,44 @@ export default function UserSidebar({
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10  backdrop-blur-sm p-4">
-          <div className="bg-background border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center">
-            <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <LogOut className="w-8 h-8 text-foreground" />
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div 
+            className="bg-background/95 border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-15 h-15 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <LogOut className="w-7 h-7 text-foreground" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">
               Logout?
             </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Are you sure you want to sign out? You'll need to log in again to access your account.
+            </p>
+            
+            {/* Countdown Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                <span>Auto-closing in...</span>
+                <span>{countdown}s</span>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div 
+                  className="bg-foreground h-2 rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(countdown / 10) * 100}%` }}
+                />
+              </div>
+            </div>
+            
             <div className="flex sm:flex-row gap-3 mt-6">
               <button
-                onClick={() => setShowLogoutConfirm(false)}
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  setCountdown(10);
+                }}
                 className="flex-1 px-6 py-3 rounded-lg bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest"
               >
                 Stay
@@ -317,6 +358,7 @@ export default function UserSidebar({
                   router.push("/auth-page/login");
                   toast.success("Successfully signed out");
                   setShowLogoutConfirm(false);
+                  setCountdown(10);
                 }}
                 className="flex-1 px-6 py-3 rounded-lg bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
               >

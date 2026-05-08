@@ -34,54 +34,60 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Image Slider Section */}
-        <div className="relative h-[200px] overflow-hidden group">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={currentIndex}
-              src={IMAGES[currentIndex]}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute inset-0 w-full h-full object-cover"
-              alt="Trading Empowerment"
-            />
-          </AnimatePresence>
+<div className="relative h-[200px] overflow-hidden group">
+  <AnimatePresence initial={false}>
+    <motion.img
+      key={currentIndex}
+      src={IMAGES[currentIndex]}
+      // Change: initial opacity to 0, but since they animate 
+      // at the same time, the crossfade will be seamless.
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ 
+        duration: 1, // Slightly longer duration makes the crossfade smoother
+        ease: "easeInOut" 
+      }}
+      className="absolute inset-0 w-full h-full object-cover"
+      alt="Trading Empowerment"
+    />
+  </AnimatePresence>
 
-          {/* Overlays & Badges */}
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-black/20" />
-          
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute cursor-pointer top-5 right-5 w-8 h-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          
-          <div className="absolute top-5 left-5 flex gap-2">
-            <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">
-              Community
-            </span>
-            <span className="px-3 py-1 bg-primary/80 backdrop-blur-md rounded-full text-[10px] font-bold text-primary-foreground uppercase tracking-widest flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3" /> Secure
-            </span>
-          </div>
+  {/* Overlays & Badges - Ensure these stay ABOVE the images */}
+  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-black/20 z-[1]" />
+  
+  {/* Close Button */}
+  <button
+    onClick={onClose}
+    className="absolute cursor-pointer top-5 right-5 w-8 h-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20"
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+  
+  <div className="absolute top-5 left-5 flex gap-2 z-20">
+    <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">
+      Community
+    </span>
+    <span className="px-3 py-1 bg-primary/80 backdrop-blur-md rounded-full text-[10px] font-bold text-primary-foreground uppercase tracking-widest flex items-center gap-1">
+      <ShieldCheck className="w-3 h-3" /> Secure
+    </span>
+  </div>
 
-          {/* Pagination Dots */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {IMAGES.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
-                  i === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+  {/* Pagination Dots */}
+  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+    {IMAGES.map((_, i) => (
+      <div
+        key={i}
+        onClick={() => setCurrentIndex(i)} // Added clickability for convenience
+        className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
+          i === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/40"
+        }`}
+      />
+    ))}
+  </div>
+</div>
 
         {/* Content Section */}
         <div className="p-5 lg:8 space-y-6">

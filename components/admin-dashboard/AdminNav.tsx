@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Wallet,
   Settings,
+  UserCog,
   User,
   Briefcase,
 } from "lucide-react";
@@ -15,11 +16,12 @@ export default function AdminNav() {
   const basePath = "/admin-dashboard";
 
   const navItems = [
-    { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
+    { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit", icon: Wallet, href: `${basePath}/manage-deposite` },
     { name: "Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
     { name: "Users", icon: User, href: `${basePath}/user-management` },
-    { name: "Settings", icon: Settings, href: `${basePath}/role-settings` },
+    { name: "Account", icon: UserCog, href: `${basePath}/manage-account` },
+    { name: "Roles", icon: Settings, href: `${basePath}/role-settings` },
   ];
 
   const isActive = (href: string) =>
@@ -31,7 +33,7 @@ export default function AdminNav() {
         fixed bottom-0 left-0 right-0 z-50 
         flex justify-around items-center 
         bg-background/95 backdrop-blur-xl
-        py-3 pb-3 rounded-t-[2rem] 
+        py-3 pb-3
         border-t border-border
         shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] 
         lg:hidden
@@ -52,7 +54,7 @@ export default function AdminNav() {
             <div
               className={`
                 flex items-center justify-center 
-                w-12 h-12 rounded-2xl mb-1.5 
+                w-12 h-12 rounded-lg mb-1.5 
                 transition-all duration-300
                 ${
                   active

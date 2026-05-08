@@ -10,6 +10,16 @@ export interface CryptoAddress {
   address: string;
 }
 
+export interface LinkedAccount {
+  id: string;
+  email: string;
+  fullName?: string;
+  username?: string;
+  profileImage?: string;
+  isActive: boolean;
+  addedAt: string;
+}
+
 export interface User {
   _id?: ObjectId;
   username: string;
@@ -31,6 +41,7 @@ export interface User {
   phone?: string;
   country?: string;
   cryptoAddresses?: CryptoAddress[];
+  linkedAccounts?: LinkedAccount[];
 }
 
 export const createDefaultUser = (userData: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
   const pathname = usePathname();
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [countdown, setCountdown] = useState(10);
   const basePath = "/admin-dashboard";
 
   const sidebarItems = [
@@ -38,6 +39,19 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
     { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc-verification` },
     { name: "Switch to User", icon: User, href: "/user-dashboard/dashboard" },
   ];
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showLogoutConfirm && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setShowLogoutConfirm(false);
+      setCountdown(10);
+    }
+    return () => clearTimeout(timer);
+  }, [showLogoutConfirm, countdown]);
 
   return (
     <>
@@ -53,7 +67,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-50 w-80 md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
@@ -98,28 +112,60 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
           </nav>
 
           {/* Logout Section */}
-          <div className="flex item-center justify-center px-4 border-t border-border">
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
-            >
-              <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-xs font-black uppercase tracking-widest">Logout</span>
-            </button>
-          </div>
+         <div className="flex-shrink-0 flex items-center justify-center px-4 py-3 lg:py-2 border-t border-border">
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
+          >
+            <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-xs font-black uppercase tracking-widest">
+              Logout
+            </span>
+          </button>
+        </div>
         </div>
       </aside>
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/0 backdrop-blur-md p-4">
-          <div className="bg-background border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center">
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div 
+            className="bg-background/95 border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
               <LogOut className="w-8 h-8 text-foreground" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Logout?</h2>
-            <div className="flex flex-col sm:flex-row gap-3 mt-6">
-              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 px-6 py-3 rounded-lg bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest">
+            <p className="text-sm text-muted-foreground mb-4">
+              Are you sure you want to sign out? You'll need to log in again to access your admin panel.
+            </p>
+            
+            {/* Countdown Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                <span>Auto-closing in...</span>
+                <span>{countdown}s</span>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div 
+                  className="bg-foreground h-2 rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(countdown / 10) * 100}%` }}
+                />
+              </div>
+            </div>
+            
+            <div className="flex flex-row sm:flex-row gap-3 mt-6">
+              <button 
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  setCountdown(10);
+                }} 
+                className="flex-1 px-6 py-3 rounded-lg bg-secondary cursor-pointer text-foreground font-bold text-xs uppercase tracking-widest"
+              >
                 Stay
               </button>
               <button 
@@ -132,6 +178,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
                     toast.error("Failed to sign out.");
                   } finally {
                     setShowLogoutConfirm(false);
+                    setCountdown(10);
                   }
                 }} 
                 className="flex-1 px-6 py-3 rounded-lg bg-foreground cursor-pointer text-background font-bold text-xs uppercase tracking-widest hover:bg-foreground/90 transition-colors"
