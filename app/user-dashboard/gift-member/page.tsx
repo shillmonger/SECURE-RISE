@@ -6,6 +6,10 @@ import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import { Montserrat } from "next/font/google";
+import {
+  Wallet,
+  Gift,
+} from "lucide-react";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700", "800", "900"] });
 
@@ -177,6 +181,13 @@ export default function GiftUserPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [balance, setBalance] = useState(0);
   const [giftPercents, setGiftPercents] = useState(0);
+  const formatNumber = (num: number) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toFixed(2);
+  };
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -341,35 +352,34 @@ export default function GiftUserPage() {
 
       {/* Balance Card */}
       <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-emerald-500/40 transition-all duration-300 group">
-        <div className="h-10 w-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg cursor-pointer group-hover:scale-110 transition-transform">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 00-9-9M3 12a9 9 0 009 9m9-9H3m9 9V3" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8v1m0 9v1" />
-          </svg>
+        <div
+          className={`p-2 bg-emerald-500 rounded-lg hover:bg-emerald-600 hover:text-white transition-colors`}
+        >
+          <Wallet className={`w-5 h-5 text-white`} />
         </div>
         <div className="min-w-0">
-          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black text-muted-foreground/70">
-            Available
+          <p className={`text-lg md:text-xl font-black leading-none ${balance > 0 ? "text-emerald-500" : "text-muted-foreground"}`}>
+            ${formatNumber(balance)}
           </p>
-          <p className={`text-sm md:text-lg mt-1 font-black leading-none ${balance > 0 ? "text-emerald-500" : "text-muted-foreground"}`}>
-            ${balance.toFixed(2)}
+          <p className="text-[9px] md:text-[10px]  mt-2 uppercase tracking-wider font-black text-muted-foreground/70">
+            Available Balance
           </p>
         </div>
       </div>
 
       {/* Gift Earnings Card */}
       <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-primary/40 transition-all duration-300 group">
-        <div className="h-10 w-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-lg cursor-pointer group-hover:scale-110 transition-transform">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-          </svg>
+        <div
+          className={`p-2 bg-primary rounded-lg hover:bg-primary/80 transition-colors`}
+        >
+          <Gift className={`w-5 h-5 text-primary-foreground`} />
         </div>
         <div className="min-w-0">
-          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black text-muted-foreground/70">
-            Earnings
+          <p className="text-lg md:text-xl font-black leading-none text-primary">
+            ${formatNumber(giftPercents)}
           </p>
-          <p className="text-sm md:text-lg font-black leading-none text-primary mt-1">
-            ${giftPercents.toFixed(2)}
+          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black  mt-2 text-muted-foreground/70">
+            Total Earnings
           </p>
         </div>
       </div>
