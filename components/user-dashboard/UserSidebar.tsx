@@ -29,7 +29,7 @@ import {
   Settings,
   LogOut,
   ChevronDown,
-  Shield,
+  PartyPopper,
   MessageSquare,
   X,
 } from "lucide-react";
@@ -111,7 +111,7 @@ export default function UserSidebar({
       children: [
         // { name: "Referrals", icon: Users, href: `#` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
-        { name: "daily streak", icon: CalendarDays, href: `${basePath}/daily-streak` },
+        { name: "daily streak", icon: PartyPopper, href: `${basePath}/daily-streak` },
         { name: "Testimonials", icon: Crown, href: `#` },
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
         { name: "Give Feedback", icon: BadgeCheck, href: `#` },

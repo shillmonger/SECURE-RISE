@@ -519,8 +519,8 @@ export async function GET(request: NextRequest) {
     
     const userId = user._id;
     
-    // Get user XP from userachievements collection
-    const userXP = await db.collection('userachievements').findOne({ userId });
+    // Get user XP from userxp collection (same as daily streak page)
+    const userXP = await db.collection('userxp').findOne({ userId });
     
     const totalXP = userXP?.totalXP || 0;
     const achievementsUnlocked = userXP?.achievementsUnlocked || [];

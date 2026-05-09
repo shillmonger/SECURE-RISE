@@ -614,7 +614,7 @@ const AchievementsPage = () => {
 
             {/* Page Title */}
             <section className="space-y-2">
-              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">
                 Achievements
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">

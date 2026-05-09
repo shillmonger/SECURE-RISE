@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Flame,
@@ -9,8 +9,6 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  ChevronDown,
-  ChevronUp,
   Trophy,
   Target,
   TrendingUp,
@@ -27,6 +25,13 @@ import UserNav from "@/components/user-dashboard/UserNav";
 // ─── Types ─────────────────────────────────────────────────────────────────
 type DayStatus = "completed" | "missed" | "today" | "upcoming";
 
+interface UserXPData {
+  totalXP: number;
+  dailyClaims: { date: string; claimed: boolean; xp: number }[];
+  currentStreak: number;
+  longestStreak: number;
+}
+
 interface DayEntry {
   day: string;
   date: number;
@@ -41,6 +46,7 @@ interface Week {
 
 interface MonthData {
   month: string;
+  year: number;
   weeks: Week[];
 }
 
@@ -53,13 +59,14 @@ const MONTH_NAMES = [
 ];
 
 // ─── Build Month ─────────────────────────────────────────────────────────────
-function buildMonthData(year: number, monthIndex: number, today: Date): MonthData {
+function buildMonthData(year: number, monthIndex: number, today: Date, userClaims: { date: string; claimed: boolean }[] = []): MonthData {
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const allDays: DayEntry[] = [];
 
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, monthIndex, d);
     const dayOfWeek = date.getDay();
+    const dateString = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const isToday =
       d === today.getDate() &&
@@ -67,9 +74,17 @@ function buildMonthData(year: number, monthIndex: number, today: Date): MonthDat
       year === today.getFullYear();
 
     let status: DayStatus;
-    if (isToday) status = "today";
-    else if (isPast) status = Math.random() > 0.25 ? "completed" : "missed";
-    else status = "upcoming";
+    const claim = userClaims.find(c => c.date === dateString);
+    
+    if (claim && claim.claimed) {
+      status = "completed";
+    } else if (isToday) {
+      status = "today";
+    } else if (isPast) {
+      status = "missed";
+    } else {
+      status = "upcoming";
+    }
 
     allDays.push({ day: DAY_NAMES[dayOfWeek], date: d, status, xp: 100 });
   }
@@ -83,7 +98,7 @@ function buildMonthData(year: number, monthIndex: number, today: Date): MonthDat
     i += 7;
   }
 
-  return { month: MONTH_NAMES[monthIndex], weeks };
+  return { month: MONTH_NAMES[monthIndex], year, weeks };
 }
 
 // ─── Status Styles ───────────────────────────────────────────────────────────
@@ -121,13 +136,15 @@ const statusConfig: Record<DayStatus, {
 };
 
 // ─── Day Click Handler ────────────────────────────────────────────────────────
-function handleDayClick(day: DayEntry) {
+function handleDayClick(day: DayEntry, claimFunction: (date: string) => Promise<void>, claiming: boolean) {
+  const date = new Date();
+  const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day.date).padStart(2, '0')}`;
+  
   switch (day.status) {
     case "today":
-      toast.success("Successfully Claimed!", {
-        description: `You've claimed +100 XP for today (${day.day} ${day.date}). Keep the streak alive!`,
-        duration: 4000,
-      });
+      if (!claiming) {
+        claimFunction(dateString);
+      }
       break;
     case "completed":
       toast.success("Already Claimed", {
@@ -159,17 +176,17 @@ function DayIcon({ status }: { status: DayStatus }) {
 }
 
 // ─── Day Card ────────────────────────────────────────────────────────────────
-function DayCard({ day }: { day: DayEntry }) {
+function DayCard({ day, onClaim, claiming }: { day: DayEntry; onClaim: (date: string) => Promise<void>; claiming: boolean }) {
   const cfg = statusConfig[day.status];
   const badgeLabel =
     day.status === "upcoming" ? "—"
-    : day.status === "today" ? "Claim"
+    : day.status === "today" ? (claiming ? "Claiming..." : "Claim")
     : day.status === "missed" ? "Missed"
     : "+100 XP";
 
   return (
     <div
-      onClick={() => handleDayClick(day)}
+      onClick={() => handleDayClick(day, onClaim, claiming)}
       className={`
         cursor-pointer select-none
         flex flex-col items-center justify-between
@@ -178,6 +195,7 @@ function DayCard({ day }: { day: DayEntry }) {
         hover:scale-[1.06] hover:shadow-lg
         ${cfg.border} ${cfg.bg} ${cfg.glow}
         ${day.status === "today" ? "ring-1 ring-yellow-400/30" : ""}
+        ${claiming && day.status === "today" ? "opacity-50 cursor-not-allowed" : ""}
       `}
     >
       <span className={`text-[9px] font-black uppercase tracking-widest ${cfg.text}`}>
@@ -197,34 +215,96 @@ function DayCard({ day }: { day: DayEntry }) {
 // ─── Main Component ──────────────────────────────────────────────────────────
 const DailyStreakPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userXP, setUserXP] = useState<UserXPData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [claiming, setClaiming] = useState(false);
+  const [currentMonthOffset, setCurrentMonthOffset] = useState(0);
   const today = new Date();
 
-  const months: MonthData[] = [0, 1, 2].map((offset) => {
-    const d = new Date(today.getFullYear(), today.getMonth() + offset, 1);
-    return buildMonthData(d.getFullYear(), d.getMonth(), today);
-  });
+  // Fetch user XP data
+  useEffect(() => {
+    fetchUserXP();
+  }, []);
 
-  const [expandedMonths, setExpandedMonths] = useState<Record<number, boolean>>({
-    0: true, 1: false, 2: false,
-  });
-  // Find which week in month 0 contains today, open that one by default
-  const activeWeekIndex = months[0].weeks.findIndex((w) =>
-    w.days.some((d) => d.status === "today")
-  );
-  const [expandedWeeks, setExpandedWeeks] = useState<Record<string, boolean>>({
-    [`0-${activeWeekIndex >= 0 ? activeWeekIndex : 0}`]: true,
-  });
+  const fetchUserXP = async () => {
+    try {
+      const response = await fetch('/api/user/xp');
+      const data = await response.json();
+      
+      if (data.success) {
+        setUserXP({
+          totalXP: data.userXP.totalXP,
+          dailyClaims: data.userXP.dailyClaims,
+          currentStreak: data.userXP.currentStreak,
+          longestStreak: data.userXP.longestStreak
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user XP:', error);
+      toast.error('Failed to load XP data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const toggleMonth = (mi: number) =>
-    setExpandedMonths((prev) => ({ ...prev, [mi]: !prev[mi] }));
-  const toggleWeek = (mi: number, wi: number) =>
-    setExpandedWeeks((prev) => ({ ...prev, [`${mi}-${wi}`]: !prev[`${mi}-${wi}`] }));
+  const claimDailyXP = async (date: string) => {
+    if (claiming) return;
+    
+    setClaiming(true);
+    try {
+      const response = await fetch('/api/user/xp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(data.message);
+        await fetchUserXP(); // Refresh data
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error claiming XP:', error);
+      toast.error('Failed to claim XP');
+    } finally {
+      setClaiming(false);
+    }
+  };
 
-  const allDays = months.flatMap((m) => m.weeks.flatMap((w) => w.days));
+  // Build month data with offset for navigation
+  const getMonthData = (offset: number = 0) => {
+    const targetDate = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+    return buildMonthData(
+      targetDate.getFullYear(), 
+      targetDate.getMonth(), 
+      today, 
+      userXP?.dailyClaims || []
+    );
+  };
+
+  const currentMonthData = getMonthData(currentMonthOffset);
+  const isCurrentMonth = currentMonthOffset === 0;
+  const isPastMonth = currentMonthOffset < 0;
+  const isFutureMonth = currentMonthOffset > 0;
+
+  const allDays = currentMonthData.weeks.flatMap((w) => w.days);
   const completedCount = allDays.filter((d) => d.status === "completed").length;
   const missedCount = allDays.filter((d) => d.status === "missed").length;
-  const totalXP = completedCount * 100;
+  const totalXP = userXP?.totalXP || 0;
   const upcomingCount = allDays.filter((d) => d.status === "upcoming" || d.status === "today").length;
+
+  // Check if current month is fully completed to auto-navigate
+  useEffect(() => {
+    if (isCurrentMonth && completedCount === allDays.length && allDays.length > 0) {
+      // Current month is completed, show next month
+      setCurrentMonthOffset(1);
+    }
+  }, [completedCount, allDays.length, isCurrentMonth]);
 
   const stats = [
     {
@@ -233,6 +313,13 @@ const DailyStreakPage = () => {
       unit: "XP",
       icon: <Coins className="w-5 h-5 text-yellow-400" />,
       dark: true,
+    },
+    {
+      label: "Current Streak",
+      value: `${userXP?.currentStreak || 0}`,
+      unit: "Days",
+      icon: <Flame className="w-5 h-5 text-orange-400" />,
+      dark: false,
     },
     {
       label: "Total Completed",
@@ -265,11 +352,13 @@ const DailyStreakPage = () => {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-          <div className="max-w-5xl mx-auto space-y-8">
+          <div className="max-w-7xl mx-auto space-y-10 lg:space-y-10">
+
+
 
             {/* ── Title ── */}
             <section className="space-y-1.5">
-              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-3">
                 <Flame className="w-8 h-8 text-yellow-400" />
                 Daily Streak
               </h1>
@@ -278,6 +367,9 @@ const DailyStreakPage = () => {
                 Log in every day to earn 100 XP &mdash; don&apos;t break the chain
               </p>
             </section>
+
+
+
 
             {/* ── Stats ── */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -293,19 +385,20 @@ const DailyStreakPage = () => {
                   `}
                 >
                   <div className="mb-3">{s.icon}</div>
-                  <p className={`text-[9px] font-black uppercase tracking-[0.18em] mb-1 ${s.dark ? "opacity-55" : "text-muted-foreground"}`}>
-                    {s.label}
-                  </p>
-                  <h3 className="text-2xl font-black italic tracking-tighter leading-none">
+                  <h3 className="text-2xl font-black tracking-tighter leading-none">
                     {s.value}
-                    <span className={`text-xs ml-1 font-black ${s.dark ? "opacity-50" : "text-muted-foreground"}`}>
+                    <span className={`text-xs ml-2 font-black ${s.dark ? "opacity-50" : "text-muted-foreground"}`}>
                       {s.unit}
                     </span>
                   </h3>
-                  <TrendingUp className="absolute -right-3 -bottom-3 w-16 h-16 opacity-[0.04]" />
+                  <p className={`text-[9px] font-black uppercase tracking-[0.18em] mt-1 ${s.dark ? "opacity-55" : "text-muted-foreground"}`}>
+                    {s.label}
+                  </p>
                 </div>
               ))}
             </div>
+
+
 
             {/* ── Today Banner ── */}
             <div className="relative bg-foreground text-background rounded-[1rem] p-5 md:p-6 overflow-hidden">
@@ -320,136 +413,122 @@ const DailyStreakPage = () => {
                     {FULL_DAY_NAMES[today.getDay()]},{" "}
                     {today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                   </h3>
+                  {userXP && (
+                    <p className="text-sm font-black mt-1 opacity-75">
+                      Current Streak: {userXP.currentStreak} days | Longest: {userXP.longestStreak} days
+                    </p>
+                  )}
                 </div>
                 <button
-                  onClick={() =>
-                    toast.success("🎉 Successfully Claimed!", {
-                      description: "You've claimed +100 XP for today. Keep the streak alive!",
-                      duration: 4000,
-                    })
-                  }
-                  className="cursor-pointer flex items-center gap-2.5 bg-background/15 hover:bg-background/25 transition-all rounded-xl px-5 py-3 border border-background/20 self-start sm:self-center"
+                  onClick={() => {
+                    const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    claimDailyXP(dateString);
+                  }}
+                  disabled={claiming}
+                  className="w-full lg:w-auto flex justify-center cursor-pointer flex items-center gap-2.5 bg-background/25 transition-all rounded-xl px-5 py-3 border border-background/20 self-start sm:self-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Coins className="w-4 h-4 text-yellow-300" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Claim Today +100 XP</span>
-                  <PartyPopper className="w-4 h-4 opacity-70" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    {claiming ? "Claiming..." : "Claim Today +100 XP"}
+                  </span>
                 </button>
               </div>
             </div>
 
-            {/* ── Months ── */}
-            <div className="space-y-4">
-              {months.map((month, mi) => {
-                const monthOpen = expandedMonths[mi];
-                const monthDays = month.weeks.flatMap((w) => w.days);
-                const monthCompleted = monthDays.filter((d) => d.status === "completed").length;
-                const monthTotal = monthDays.length;
-                const pct = Math.round((monthCompleted / monthTotal) * 100);
 
-                return (
-                  <div key={mi} className="bg-card border border-border rounded-[1rem] overflow-hidden">
-                    {/* Month Header */}
-                    <button
-                      onClick={() => toggleMonth(mi)}
-                      className="cursor-pointer w-full flex items-center justify-between p-5 hover:bg-muted/20 transition-all"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-muted/30 border border-border flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
+
+            {/* ── Month Navigation ── */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={() => setCurrentMonthOffset(Math.max(-1, currentMonthOffset - 1))}
+                disabled={currentMonthOffset <= -1}
+                className="p-2 rounded-lg border cursor-pointer border-border bg-card hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-muted/30 border border-border flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-black uppercase italic tracking-tight">
+                    {currentMonthData.month} {currentMonthData.year}
+                  </p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">
+                    {completedCount}/{allDays.length} days completed
+                    {isCurrentMonth && " • Current"}
+                    {isPastMonth && " • Past"}
+                    {isFutureMonth && " • Future"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setCurrentMonthOffset(currentMonthOffset + 1)}
+                className="p-2 rounded-lg cursor-pointer border border-border bg-card hover:bg-muted transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+
+
+            {/* ── Month Content ── */}
+            <div className="space-y-6">
+              {/* Weeks - All displayed inline with dividers */}
+              <div className="space-y-6">
+                {currentMonthData.weeks.map((week, wi) => {
+                  const weekCompleted = week.days.filter((d) => d.status === "completed").length;
+                  const hasToday = week.days.some((d) => d.status === "today");
+
+                  return (
+                    <div key={wi}>
+                      {/* Week Header */}
+                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
+                        <div className="flex items-center gap-2.5">
+                          <Trophy className={`w-4 h-4 ${hasToday ? "text-yellow-400" : "text-muted-foreground"}`} />
+                          <span className="text-[10px] font-black uppercase tracking-widest">{week.label}</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                            ({week.days[0].date}–{week.days[week.days.length - 1].date})
+                          </span>
+                          {hasToday && (
+                            <span className="text-[8px] font-black uppercase tracking-widest bg-yellow-400/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-400/30">
+                              Current
+                            </span>
+                          )}
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-black uppercase italic tracking-tight">{month.month}</p>
-                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">
-                            {monthCompleted}/{monthTotal} days &bull; {(monthCompleted * 100).toLocaleString()} XP
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="hidden md:flex items-center gap-2">
-                          <div className="w-28 h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-foreground rounded-full transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                          <span className="text-[9px] font-black text-muted-foreground uppercase w-8">
-                            {pct}%
+                        <div className="flex items-center gap-1">
+                          <Coins className="w-5 h-5 text-yellow-400" />
+                          <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                            {weekCompleted * 100} XP
                           </span>
                         </div>
-                        <div className="w-7 h-7 rounded-lg bg-muted/30 flex items-center justify-center">
-                          {monthOpen
-                            ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
-                            : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                          }
-                        </div>
                       </div>
-                    </button>
 
-                    {/* Weeks */}
-                    {monthOpen && (
-                      <div className="px-4 pb-4 space-y-2.5">
-                        {month.weeks.map((week, wi) => {
-                          const weekKey = `${mi}-${wi}`;
-                          const weekOpen = expandedWeeks[weekKey];
-                          const weekCompleted = week.days.filter((d) => d.status === "completed").length;
-                          const hasToday = week.days.some((d) => d.status === "today");
-
-                          return (
-                            <div
-                              key={wi}
-                              className={`
-                                border rounded-2xl overflow-hidden transition-all
-                                ${hasToday ? "border-yellow-400/30" : "border-border/50"}
-                              `}
-                            >
-                              {/* Week Header */}
-                              <button
-                                onClick={() => toggleWeek(mi, wi)}
-                                className="cursor-pointer w-full flex items-center justify-between px-4 py-3 bg-muted/10 hover:bg-muted/30 transition-all"
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <Trophy className={`w-3.5 h-3.5 ${hasToday ? "text-yellow-400" : "text-muted-foreground"}`} />
-                                  <span className="text-[10px] font-black uppercase tracking-widest">{week.label}</span>
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                                    ({week.days[0].date}–{week.days[week.days.length - 1].date})
-                                  </span>
-                                  {hasToday && (
-                                    <span className="text-[8px] font-black uppercase tracking-widest bg-yellow-400/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-400/30">
-                                      Current
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2.5">
-                                  <div className="flex items-center gap-1">
-                                    <Coins className="w-3 h-3 text-yellow-400" />
-                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                                      {weekCompleted * 100} XP
-                                    </span>
-                                  </div>
-                                  {weekOpen
-                                    ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
-                                    : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                                  }
-                                </div>
-                              </button>
-
-                              {/* Days Grid */}
-                              {weekOpen && (
-                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 p-3">
-                                  {week.days.map((day, di) => (
-                                    <DayCard key={di} day={day} />
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                      {/* Days Grid */}
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 mb-6">
+                        {week.days.map((day, di) => (
+                          <DayCard 
+                            key={di} 
+                            day={day} 
+                            onClaim={claimDailyXP}
+                            claiming={claiming}
+                          />
+                        ))}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+
+
+
 
             {/* ── Legend ── */}
             <div className="bg-card border border-border rounded-[1rem] p-4 md:p-5">
@@ -470,7 +549,6 @@ const DailyStreakPage = () => {
                 ))}
               </div>
             </div>
-
           </div>
         </main>
       </div>
