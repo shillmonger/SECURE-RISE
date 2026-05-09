@@ -47,4 +47,5 @@ export interface UserStats {
   giftSentCount: number;
   giftReceivedCount: number;
   welcomeBonusClaimed: boolean;
+  cryptoAddressCount: number;
 }

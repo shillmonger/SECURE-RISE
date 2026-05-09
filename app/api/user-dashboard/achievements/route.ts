@@ -16,6 +16,33 @@ export const ACHIEVEMENTS: Achievement[] = [
     xp: 50,
     checkFunction: (userData: any, userStats: UserStats) => userData.welcomeBonus > 0
   },
+  {
+    id: 'first-crypto-address',
+    title: 'Crypto Starter',
+    description: 'Connected my first crypto address',
+    category: 'welcome',
+    rarity: 'common',
+    xp: 75,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.cryptoAddressCount >= 1
+  },
+  {
+    id: '3-crypto-addresses',
+    title: 'Crypto Enthusiast',
+    description: 'Connected up to 3 crypto addresses',
+    category: 'welcome',
+    rarity: 'rare',
+    xp: 150,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.cryptoAddressCount >= 3
+  },
+  {
+    id: '5-crypto-addresses',
+    title: 'Crypto Master',
+    description: 'Connected all the 5 crypto addresses',
+    category: 'welcome',
+    rarity: 'epic',
+    xp: 300,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.cryptoAddressCount >= 5
+  },
   
   // Deposit achievements
   {
@@ -402,7 +429,8 @@ export async function getUserStats(userId: ObjectId): Promise<UserStats> {
     investmentCount: investments.length,
     giftSentCount: giftsSent.length,
     giftReceivedCount: giftsReceived.length,
-    welcomeBonusClaimed: user?.welcomeBonus > 0
+    welcomeBonusClaimed: user?.welcomeBonus > 0,
+    cryptoAddressCount: user?.cryptoAddresses?.length || 0
   };
 }
 
