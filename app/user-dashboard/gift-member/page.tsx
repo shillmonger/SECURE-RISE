@@ -310,32 +310,73 @@ export default function GiftUserPage() {
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
             {/* Page Title */}
-            <div className="mb-8" style={{ animation: "fadeSlideUp 0.5s ease" }}>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-3">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-                </span>
-                Gift Transfer
-              </div>
-              <div className="flex items-center justify-between mb-2">
-                <h1 className={`${montserrat.className} text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tight`}>
-                  Send a Gift
-                </h1>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Available Balance</p>
-                  <p className={`text-lg font-black ${balance > 0 ? 'text-emerald-500' : 'text-muted-foreground'}`}>
-  ${balance.toFixed(2)}
-</p>
-                  <p className="text-xs text-primary font-semibold mt-1">
-    Gift Earnings: ${giftPercents.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <p className="text-muted-foreground text-sm mt-1">
-                Find a user and send them money instantly.
-              </p>
-            </div>
+            {/* Page Title Section */}
+<div className="mb-8 space-y-6" style={{ animation: "fadeSlideUp 0.5s ease" }}>
+  
+  {/* Header + Stats Container: Flex column on mobile, Row on desktop */}
+  <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+    
+    {/* Left Side: Title & Subtitle */}
+    <div className="space-y-1">
+      {/* Animated Badge */}
+      <div className="inline-flex items-center mb-3 gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest">
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+        </span>
+        Gift Transfer
+      </div>
+      
+      <h1 className={`${montserrat.className} text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tight leading-tight`}>
+        Send a Gift
+      </h1>
+      <p className="text-muted-foreground text-sm">
+        Find a user and send them money instantly.
+      </p>
+    </div>
+
+    {/* Right Side: Stat cards */}
+    {/* grid-cols-2 for mobile, max-w-md to prevent stretching on big screens */}
+    <div className="grid grid-cols-2 gap-3 w-full lg:max-w-md">
+
+      {/* Balance Card */}
+      <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-emerald-500/40 transition-all duration-300 group">
+        <div className="h-10 w-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg cursor-pointer group-hover:scale-110 transition-transform">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 00-9-9M3 12a9 9 0 009 9m9-9H3m9 9V3" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8v1m0 9v1" />
+          </svg>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black text-muted-foreground/70">
+            Available
+          </p>
+          <p className={`text-sm md:text-lg mt-1 font-black leading-none ${balance > 0 ? "text-emerald-500" : "text-muted-foreground"}`}>
+            ${balance.toFixed(2)}
+          </p>
+        </div>
+      </div>
+
+      {/* Gift Earnings Card */}
+      <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-primary/40 transition-all duration-300 group">
+        <div className="h-10 w-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-lg cursor-pointer group-hover:scale-110 transition-transform">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+          </svg>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black text-muted-foreground/70">
+            Earnings
+          </p>
+          <p className="text-sm md:text-lg font-black leading-none text-primary mt-1">
+            ${giftPercents.toFixed(2)}
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
             {/* Card */}
             <div
