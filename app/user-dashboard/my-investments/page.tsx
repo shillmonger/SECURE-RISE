@@ -105,7 +105,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
           <p className="text-[10px] font-black text-white uppercase opacity-60 mb-1">
             Yield Rate
           </p>
-          <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-xs font-black italic">
+          <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-xs font-black ">
             {inv.roiRate}% ROI
           </div>
         </div>
@@ -146,7 +146,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Maturity Progress
             </span>
-            <span className="text-xs font-black italic">
+            <span className="text-xs font-black ">
               {Math.round(inv.completionPercentage)}%
             </span>
           </div>
@@ -202,7 +202,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
                     <tr>
                       <td
                         colSpan={3}
-                        className="p-8 text-center text-[10px] font-black uppercase text-muted-foreground italic"
+                        className="p-8 text-center text-[10px] font-black uppercase text-muted-foreground "
                       >
                         No transactions recorded yet
                       </td>
@@ -336,8 +336,8 @@ export default function MyInvestmentsPage() {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic">
-                  Portfolio
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter ">
+                  Live Investments
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-2">
                   Manage your high-yield assets

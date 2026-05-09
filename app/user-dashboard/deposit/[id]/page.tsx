@@ -174,7 +174,7 @@ const MakePaymentPage = () => {
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter">Checkout</h1>
+                <h1 className="text-2xl md:text-3xl font-black  uppercase tracking-tighter">Checkout</h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <ShieldCheck className="w-3 h-3 text-primary" /> Secure Payment Gateway
                 </p>
@@ -197,7 +197,7 @@ const MakePaymentPage = () => {
       <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
         Pay with
       </p>
-      <p className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+      <p className="text-xl font-black  uppercase tracking-tighter flex items-center gap-2">
         {paymentMethod.name}
         <ChevronRight className="w-4 h-4 opacity-40" />
       </p>
@@ -209,7 +209,7 @@ const MakePaymentPage = () => {
   <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
     Required Amount
   </p>
-  <p className="text-2xl font-black italic tracking-tighter text-green-500">
+  <p className="text-2xl font-black  tracking-tighter text-green-500">
   ${parseFloat(amount).toLocaleString()}
 </p>
 </div>
@@ -245,7 +245,7 @@ const MakePaymentPage = () => {
                         Official {paymentMethod.name} Address
                       </label>
                       <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black italic leading-relaxed">
+                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black  leading-relaxed">
   {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
 </div>
                         <button 

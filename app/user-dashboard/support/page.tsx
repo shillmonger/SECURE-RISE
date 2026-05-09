@@ -100,7 +100,7 @@ export default function SupportPage() {
         <main className="flex-1 overflow-y-auto">
           {/* Hero Section */}
           <section className="relative h-[40vh] min-h-[300px] w-full flex items-center justify-center overflow-hidden bg-foreground">
-            <div className="absolute inset-0 opacity-90 grayscale">
+            <div className="absolute inset-0 opacity-100 grayscale">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070"
                 className="w-full h-full object-cover"
@@ -111,11 +111,11 @@ export default function SupportPage() {
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-background"
+                className="text-3xl md:text-5xl font-black uppercase  tracking-tighter text-white"
               >
                 Priority Support
               </motion.h1>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-background/60 mt-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white mt-4">
                 Real people. Instant answers. 24/7.
               </p>
             </div>
@@ -135,7 +135,7 @@ export default function SupportPage() {
                   className="bg-card border border-border rounded-xl p-6 shadow-xl flex flex-col items-center text-center"
                 >
                   <stat.icon className="w-5 h-5 text-primary mb-2" />
-                  <p className="text-xl font-black italic tracking-tighter">
+                  <p className="text-xl font-black  tracking-tighter">
                     {stat.value}
                   </p>
                   <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
@@ -159,7 +159,7 @@ export default function SupportPage() {
                         Direct Channel
                       </h3>
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase italic tracking-tight">
+                    <h2 className="text-3xl md:text-4xl font-black uppercase  tracking-tight">
                       Need an instant response?
                     </h2>
                     <p className="text-sm opacity-60 max-w-md font-medium">
@@ -195,7 +195,7 @@ export default function SupportPage() {
                         className="p-6 px-8 flex items-center justify-between hover:bg-muted/30 transition-colors cursor-pointer"
                       >
                         <div className="space-y-1">
-                          <p className="text-xs font-black uppercase italic tracking-tight">
+                          <p className="text-xs font-black uppercase  tracking-tight">
                             {ticket.subject}
                           </p>
                           <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">
@@ -300,7 +300,7 @@ export default function SupportPage() {
                       <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
                         Telegram
                       </p>
-                      <p className="text-sm font-black italic">@secure_rise</p>
+                      <p className="text-sm font-black ">@secure_rise</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
@@ -311,7 +311,7 @@ export default function SupportPage() {
                       <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
                         Email Support
                       </p>
-                      <p className="text-sm font-black italic">
+                      <p className="text-sm font-black ">
                         support@cetadel.com
                       </p>
                     </div>

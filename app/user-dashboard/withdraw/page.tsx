@@ -270,7 +270,7 @@ export default function WithdrawPage() {
           <div className="max-w-7xl mx-auto space-y-10">
             {/* Header */}
             <section className="space-y-2">
-              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none flex items-center gap-4">
                 Withdraw Funds
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
@@ -306,7 +306,7 @@ export default function WithdrawPage() {
                               />
                             </div>
                             <div className="text-left">
-                              <p className="text-sm font-black italic uppercase leading-none">
+                              <p className="text-sm font-black  uppercase leading-none">
                                 {selectedCrypto.name}
                               </p>
                               <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
@@ -329,7 +329,7 @@ export default function WithdrawPage() {
                               alt={coin.name}
                               className="w-6 h-6"
                             />
-                            <span className="font-black text-xs uppercase italic">
+                            <span className="font-black text-xs uppercase ">
                               {coin.name}
                             </span>
                             <span className="ml-auto text-[10px] font-black text-muted-foreground">
@@ -357,7 +357,7 @@ export default function WithdrawPage() {
                             ? "Loading..."
                             : `No ${selectedCrypto.name} address found`
                         }
-                        className="w-full bg-muted/20 border-2 border-border rounded-lg p-3 text-xs font-black italic tracking-tighter text-muted-foreground cursor-not-allowed"
+                        className="w-full bg-muted/20 border-2 border-border rounded-lg p-3 text-xs font-black  tracking-tighter text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                     <p className="text-[9px] font-black uppercase text-primary tracking-widest px-1">
@@ -382,14 +382,14 @@ export default function WithdrawPage() {
                       </p>
                     </div>
                     <div className="relative">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-black italic text-muted-foreground">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-black  text-muted-foreground">
                         $
                       </span>
                       <input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-muted/30 border-2 border-border rounded-lg p-2 pl-12 text-xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
+                        className="w-full bg-muted/30 border-2 border-border rounded-lg p-2 pl-12 text-xl font-black  tracking-tighter focus:border-foreground focus:outline-none transition-all"
                         placeholder="0.00"
                       />
                     </div>
@@ -553,7 +553,7 @@ export default function WithdrawPage() {
                               <Wallet className="w-4 h-4 text-muted-foreground" />
                             </div>
                             <div>
-                              <p className="text-xs font-black uppercase italic tracking-tight">
+                              <p className="text-xs font-black uppercase  tracking-tight">
                                 {log.method} Payout
                               </p>
                               <p className="text-[9px] font-black uppercase text-muted-foreground">
@@ -562,7 +562,7 @@ export default function WithdrawPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-black italic tracking-tighter">
+                            <p className="text-sm font-black  tracking-tighter">
                               -${log.amount.toLocaleString()}
                             </p>
                             <div className="flex items-center justify-end gap-1">

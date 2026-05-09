@@ -358,8 +358,8 @@ const DailyStreakPage = () => {
 
             {/* ── Title ── */}
             <section className="space-y-1.5">
-              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-3">
-                <Flame className="w-8 h-8 text-yellow-400" />
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none flex items-center gap-3">
+                {/* <Flame className="w-8 h-8 text-yellow-400" /> */}
                 Daily Streak
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
@@ -409,7 +409,7 @@ const DailyStreakPage = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-55 mb-1">Today</p>
-                  <h3 className="text-xl font-black italic tracking-tighter">
+                  <h3 className="text-xl font-black  tracking-tighter">
                     {FULL_DAY_NAMES[today.getDay()]},{" "}
                     {today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                   </h3>
@@ -454,7 +454,7 @@ const DailyStreakPage = () => {
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-black uppercase italic tracking-tight">
+                  <p className="text-sm font-black uppercase  tracking-tight">
                     {currentMonthData.month} {currentMonthData.year}
                   </p>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">

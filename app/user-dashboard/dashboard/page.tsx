@@ -600,7 +600,7 @@ export default function UserOverviewPage() {
             {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
-                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
                   {loading ? (
                     <div className="h-10 w-64 bg-muted rounded animate-pulse"></div>
                   ) : (
@@ -1249,7 +1249,7 @@ export default function UserOverviewPage() {
                   {/* Subtle background glow effect */}
                   <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 blur-2xl rounded-full group-hover:bg-primary/20 transition-colors" />
                   <Gift className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-sm font-black uppercase italic tracking-tighter">
+                  <h3 className="text-sm font-black uppercase  tracking-tighter">
                     Empower a Fellow Trader
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
@@ -1263,9 +1263,12 @@ export default function UserOverviewPage() {
                     >
                       Send Gift
                     </Link>
-                    <button className="border border-border text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background">
+                    <button className="border border-border cursor-pointer text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background">
+                    <Link href="/user-dashboard/support">
                       Learn More
+                    </Link>
                     </button>
+
                   </div>
                 </section>
               </div>
@@ -1276,7 +1279,7 @@ export default function UserOverviewPage() {
               {/* Header Section */}
               <div className="flex justify-between mb-8 gap-4">
                 <div>
-                  <h2 className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
+                  <h2 className="text-2xl font-black uppercase  tracking-tighter flex items-center gap-2">
                     <Activity className="w-6 h-6 text-primary" />
                     Live Markets
                   </h2>

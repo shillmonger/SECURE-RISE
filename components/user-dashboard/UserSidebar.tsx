@@ -11,7 +11,7 @@ import {
   Trophy,
   TrendingUp,
   CalendarDays,
-  Timer,
+  ChartNoAxesCombined,
   Award,
   Wallet,
   IdCard,
@@ -96,12 +96,8 @@ export default function UserSidebar({
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    {
-      name: "Live Investments",
-      icon: TrendingUp,
-      href: `${basePath}/my-investments`,
-    },
     { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
+    { name: "Investments Hub", icon: ChartNoAxesCombined, href: `${basePath}/my-investments`,},
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawals", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
@@ -110,11 +106,11 @@ export default function UserSidebar({
       icon: Users,
       children: [
         // { name: "Referrals", icon: Users, href: `#` },
-        { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "daily streak", icon: PartyPopper, href: `${basePath}/daily-streak` },
-        { name: "Testimonials", icon: Crown, href: `#` },
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
-        { name: "Give Feedback", icon: BadgeCheck, href: `#` },
+        { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
+        { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
+        // { name: "Give Feedback", icon: BadgeCheck, href: `#` },
       ],
     },
     {
@@ -187,8 +183,8 @@ export default function UserSidebar({
       >
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
-            <h1 className="text-xl font-black uppercase tracking-tighter italic text-foreground">
-              SECURE<span className="text-muted-foreground italic"> RISE</span>
+            <h1 className="text-xl font-black uppercase tracking-tighter  text-foreground">
+              SECURE<span className="text-muted-foreground "> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
               You Invest, We Trade

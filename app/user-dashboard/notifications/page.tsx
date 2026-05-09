@@ -288,7 +288,7 @@ const NotificationsPage = () => {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="space-y-2">
-                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
                   Alert Center
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
@@ -365,7 +365,7 @@ const NotificationsPage = () => {
                     {/* Content */}
                     <div className="flex-1 space-y-2 text-left sm:text-left">
                       <div className="flex sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-                        <h4 className="text-sm font-black italic uppercase tracking-tight flex items-center justify-start sm:justify-start gap-2">
+                        <h4 className="text-sm font-black  uppercase tracking-tight flex items-center justify-start sm:justify-start gap-2">
                           {notification.title}
                           {!notification.isRead && (
                             <Circle className="w-2 h-2 fill-primary text-primary" />

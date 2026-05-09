@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Users, Wallet, DollarSign, BriefcaseBusiness } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { ChevronLeft, Trophy, ChevronRight, Users, Wallet, DollarSign, BriefcaseBusiness } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import LeaderboardSkeleton from "@/components/LoadingSkeleton/LeaderboardSkeleton";
 
 // ─── Rank Badge Images ────────────────────────────────────────────────────────
 
@@ -17,28 +18,34 @@ const RANK_IMAGES: Record<number, string> = {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const TOP_THREE = [
-  { rank: 1, username: "marion_stiedemann", avatar: "https://github.com/shadcn.png", metric: 1671.57, metricName: "Total Portfolio" },
-  { rank: 2, username: "shannon_kautzer",   avatar: "https://github.com/shadcn.png", metric: 1450.12, metricName: "Total Portfolio" },
-  { rank: 3, username: "billy_mraz",        avatar: "https://github.com/shadcn.png", metric: 1210.05, metricName: "Total Portfolio" },
+interface LeaderboardUser {
+  rank: number;
+  username: string;
+  email: string;
+  balance: number;
+  totalDeposit: number;
+  totalWithdrawal: number;
+  profileImage: string;
+  fullName: string;
+}
+
+interface TopThreeUser {
+  rank: number;
+  username: string;
+  avatar: string;
+  metric: number;
+  metricName: string;
+}
+
+const TOP_THREE_DEFAULT: TopThreeUser[] = [
+  { rank: 1, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
+  { rank: 2, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
+  { rank: 3, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
 ];
 
-const PODIUM_ORDER = [TOP_THREE[1], TOP_THREE[0], TOP_THREE[2]];
+const LEADERBOARD_TABLE_DATA_DEFAULT: LeaderboardUser[] = [];
 
-const LEADERBOARD_TABLE_DATA = [
-  { rank: 1,  username: "marion_stiedemann", email: "marion.s@mail.net",        balance: 5671.57, withdrawals: 1200.0, investments: 4471.57 },
-  { rank: 2,  username: "shannon_kautzer",   email: "shannon.k@securemail.com", balance: 4850.12, withdrawals:  950.0, investments: 3900.12 },
-  { rank: 3,  username: "billy_mraz",        email: "billy.m@inbox.io",         balance: 3910.05, withdrawals:  800.0, investments: 3110.05 },
-  { rank: 4,  username: "arthur_grimes",     email: "arthur.g@grimes.net",      balance: 2150.00, withdrawals:  500.0, investments: 1650.00 },
-  { rank: 5,  username: "bernadette_mcl",    email: "berna.mcl@mail.co",        balance: 1850.50, withdrawals:  250.0, investments: 1600.50 },
-  { rank: 6,  username: "alberta_spencer",   email: "alberta.s@mailbox.us",     balance: 1550.00, withdrawals:    0.0, investments: 1550.00 },
-  { rank: 7,  username: "leo_ruecker",       email: "leo.r@fastmail.com",       balance: 1200.75, withdrawals:  100.0, investments: 1100.75 },
-  { rank: 8,  username: "eloise_hartman",    email: "eloise.h@netmail.io",      balance:  980.00, withdrawals:   50.0, investments:  930.00 },
-  { rank: 9,  username: "clark_voss",        email: "clark.v@vossmail.com",     balance:  810.00, withdrawals:    0.0, investments:  810.00 },
-  { rank: 10, username: "diana_pruitt",      email: "diana.p@pmail.net",        balance:  650.25, withdrawals:    0.0, investments:  650.25 },
-];
-
-const TABLE_HEADERS = ["Rank", "Player", "Email", "Account Balance", "Total Withdrawals", "Total Investments"];
+const TABLE_HEADERS = ["Rank", "Player", "Email", "Account Balance", "Total Withdrawals", "Total Deposits"];
 
 function fmt(n: number) {
   return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2 });
@@ -46,7 +53,7 @@ function fmt(n: number) {
 
 // ─── Podium Card (Desktop) ────────────────────────────────────────────────────
 
-function PodiumCard({ player }: { player: (typeof TOP_THREE)[number] }) {
+function PodiumCard({ player }: { player: TopThreeUser }) {
   const isFirst = player.rank === 1;
   return (
     <div
@@ -107,6 +114,30 @@ export default function LeaderboardPage() {
   const [animKey, setAnimKey] = useState(0);
   const [slideDir, setSlideDir] = useState<"left" | "right">("left");
   const [search, setSearch] = useState("");
+  const [topThree, setTopThree] = useState<TopThreeUser[]>(TOP_THREE_DEFAULT);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>(LEADERBOARD_TABLE_DATA_DEFAULT);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch leaderboard data from API
+  useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      try {
+        const response = await fetch('/api/user-dashboard/leaderboard');
+        const result = await response.json();
+        
+        if (result.success) {
+          setTopThree(result.data.topThree);
+          setLeaderboardData(result.data.leaderboard);
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboardData();
+  }, []);
 
   const goTo = (next: number, dir: "left" | "right") => {
     setSlideDir(dir);
@@ -114,8 +145,8 @@ export default function LeaderboardPage() {
     setAnimKey((k) => k + 1);
   };
 
-  const nextSlide = () => goTo((slideIdx + 1) % TOP_THREE.length, "left");
-  const prevSlide = () => goTo((slideIdx - 1 + TOP_THREE.length) % TOP_THREE.length, "right");
+  const nextSlide = () => goTo((slideIdx + 1) % topThree.length, "left");
+  const prevSlide = () => goTo((slideIdx - 1 + topThree.length) % topThree.length, "right");
   const jumpTo = (i: number) => {
     if (i === slideIdx) return;
     goTo(i, i > slideIdx ? "left" : "right");
@@ -123,15 +154,16 @@ export default function LeaderboardPage() {
 
   const filtered = useMemo(
     () =>
-      LEADERBOARD_TABLE_DATA.filter(
+      leaderboardData.filter(
         (r) =>
           r.username.toLowerCase().includes(search.toLowerCase()) ||
           r.email.toLowerCase().includes(search.toLowerCase())
       ),
-    [search]
+    [search, leaderboardData]
   );
 
-  const active = TOP_THREE[slideIdx];
+  const PODIUM_ORDER = [topThree[1], topThree[0], topThree[2]];
+  const active = topThree[slideIdx];
 
   return (
     <>
@@ -168,23 +200,28 @@ export default function LeaderboardPage() {
               }}
             />
 
-            <div className="relative z-10 max-w-6xl mx-auto space-y-14">
+            <div className="relative z-10 max-w-6xl mx-auto">
+              {loading ? (
+                <LeaderboardSkeleton />
+              ) : (
+                <div className="space-y-14">
 
               {/* ── Page Header ── */}
               <section className="text-center space-y-3 pt-2">
                 <div className="flex items-center justify-center gap-4">
-                  <h1
-                    className="text-5xl md:text-7xl font-black uppercase leading-none bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 bg-clip-text text-transparent"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.06em" }}
-                  >
-                    Capital Leaderboard
-                  </h1>
+                  <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  leading-none flex items-center gap-4">
+                Leaderboard
+              </h1>
                 </div>
                 <div className="w-20 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                  Compare performance & portfolio metrics against the most successful users
-                </p>
+                <p className="text-[10px] font-black flex justify-center text-muted-foreground uppercase tracking-[0.2em] flex items-center text-center gap-2">
+                                <Trophy className="w-3 h-3 text-primary" />                  
+                                 Compare performance & portfolio metrics against the most successful users
+                              </p>
               </section>
+
+
+
 
               {/* ── Mobile Slider ── */}
               <section className="relative flex lg:hidden items-center justify-center pb-12 px-5 mt-8 rounded-[1.5rem] bg-card border border-border overflow-hidden">
@@ -239,7 +276,7 @@ export default function LeaderboardPage() {
 
                 {/* Dots */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
-                  {TOP_THREE.map((_, i) => (
+                  {topThree.map((_, i: number) => (
                     <button
                       key={i}
                       onClick={() => jumpTo(i)}
@@ -252,12 +289,18 @@ export default function LeaderboardPage() {
                 </div>
               </section>
 
+
+
+
               {/* ── Desktop Podium: 2 – 1 – 3 ── */}
               <section className="hidden lg:flex items-end mx-auto px-25 justify-center gap-5 pt-10">
-                {PODIUM_ORDER.map((player) => (
+                {PODIUM_ORDER.map((player: TopThreeUser) => (
                   <PodiumCard key={player.rank} player={player} />
                 ))}
               </section>
+
+
+
 
               {/* ── Leaderboard Table ── */}
               <section className="bg-card border border-border rounded-[1rem] overflow-hidden">
@@ -267,7 +310,7 @@ export default function LeaderboardPage() {
                       <Users className="w-5 h-5 text-primary" />
                     </div>
                     <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      Player Metrics — Updated Hourly
+                      Traders Metrics — Updated Daily
                     </p>
                   </div>
                 </div>
@@ -290,7 +333,7 @@ export default function LeaderboardPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y cursor-pointer divide-border/20">
-                      {filtered.map((row) => (
+                      {filtered.map((row: LeaderboardUser) => (
                         <tr
                           key={row.rank}
                           className={[
@@ -319,8 +362,8 @@ export default function LeaderboardPage() {
 
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <Avatar className="w-10 h-10 rounded-sm border border-border/40 p-0.5 flex-shrink-0">
-                                <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${row.username}`} className="rounded-lg" />
+                              <Avatar className="w-12 h-12 rounded-xl border border-border/40 p-0.5 flex-shrink-0">
+                                <AvatarImage src={row.profileImage} className="rounded-xl" />
                                 <AvatarFallback className="text-xs rounded-sm">{row.rank}</AvatarFallback>
                               </Avatar>
                               <span
@@ -332,7 +375,9 @@ export default function LeaderboardPage() {
                             </div>
                           </td>
 
-                          <td className="px-6 py-4 text-right text-muted-foreground text-[10px] tracking-wider">{row.email}</td>
+                          <td className="px-6 py-4 text-right text-muted-foreground text-[10px] tracking-wider">
+                            {row.email.substring(0, 5)}{row.email.substring(4, row.email.indexOf('@')).replace(/./g, '.')}@{row.email.substring(row.email.indexOf('@') + 1)}
+                          </td>
 
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex items-center gap-1.5">
@@ -344,14 +389,14 @@ export default function LeaderboardPage() {
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex items-center gap-1.5">
                               <DollarSign className="w-3.5 h-3.5 text-amber-500 opacity-50" />
-                              <span className="text-sm text-amber-500" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>-{fmt(row.withdrawals)}</span>
+                              <span className="text-sm text-amber-500" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>-{fmt(row.totalWithdrawal)}</span>
                             </div>
                           </td>
 
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex items-center gap-1.5">
                               <BriefcaseBusiness className="w-3.5 h-3.5 text-green-500 opacity-50" />
-                              <span className="text-base text-green-400" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{fmt(row.investments)}</span>
+                              <span className="text-base text-green-400" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{fmt(row.totalDeposit)}</span>
                             </div>
                           </td>
                         </tr>
@@ -369,6 +414,8 @@ export default function LeaderboardPage() {
                 </div>
               </section>
 
+                </div>
+              )}
             </div>
           </main>
         </div>

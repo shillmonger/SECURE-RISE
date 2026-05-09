@@ -446,7 +446,7 @@ export default function InvestPage() {
             {/* Page Hero */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
-                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                   Investment Plans
                 </h1>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 flex items-center gap-1">

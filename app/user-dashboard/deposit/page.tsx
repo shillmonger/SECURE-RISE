@@ -124,7 +124,7 @@ const DepositPage = () => {
           <div className="max-w-7xl mx-auto space-y-10">
             {/* Page Title */}
             <section className="space-y-2">
-              <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none flex items-center gap-4">
                 Fund Balance
               </h1>
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
@@ -144,14 +144,14 @@ const DepositPage = () => {
                       Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-black italic text-muted-foreground">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-black  text-muted-foreground">
                         $
                       </span>
                       <input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 pl-12 text-xl font-black italic tracking-tighter focus:border-foreground focus:outline-none transition-all"
+                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-3 pl-12 text-xl font-black  tracking-tighter focus:border-foreground focus:outline-none transition-all"
                         placeholder="0.00"
                       />
                     </div>
@@ -180,7 +180,7 @@ const DepositPage = () => {
                               {method.ticker}
                             </p>
                             <p
-                              className={`text-sm font-black italic uppercase ${selectedMethod === method.name ? "text-background" : "text-foreground"}`}
+                              className={`text-sm font-black  uppercase ${selectedMethod === method.name ? "text-background" : "text-foreground"}`}
                             >
                               {method.name}
                             </p>
@@ -220,7 +220,7 @@ const DepositPage = () => {
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">
                     Total Funded Balance
                   </p>
-                  <h3 className="text-2xl font-black italic tracking-tighter">
+                  <h3 className="text-2xl font-black  tracking-tighter">
                     $
                     {totalApproved.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -269,7 +269,7 @@ const DepositPage = () => {
                             className="bg-muted/30 border cursor-pointer border-border/50 p-4 rounded-lg flex items-center justify-between group hover:border-foreground/20 transition-all"
                           >
                             <div>
-                              <p className="text-xs font-black uppercase italic tracking-tight">
+                              <p className="text-xs font-black uppercase  tracking-tight">
                                 {deposit.paymentMethod}
                               </p>
                               <div className="flex items-center gap-2 mt-1">
@@ -280,7 +280,7 @@ const DepositPage = () => {
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-black italic tracking-tighter">
+                              <p className="text-sm font-black  tracking-tighter">
                                 ${deposit.amount.toLocaleString()}
                               </p>
                               <p

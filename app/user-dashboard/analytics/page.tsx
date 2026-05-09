@@ -427,7 +427,7 @@ export default function UserAnalyticsPage() {
                     Live Market Analytics
                   </span>
                 </div>
-                <h1 className="text-2xl md:text-4xl font-black italic tracking-[-2.5px] leading-none
+                <h1 className="text-2xl md:text-3xl font-black  tracking-[-2.5px] leading-none
                                bg-gradient-to-r from-foreground via-foreground/80 to-foreground/40 bg-clip-text text-transparent">
                   PERFORMANCE
                 </h1>
@@ -531,7 +531,7 @@ export default function UserAnalyticsPage() {
                 </div>
                 <div className="relative z-10">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Total ROI</p>
-                  <p className="text-3xl font-black tracking-[-1.5px] italic">{overviewStats.roiPercentage}%</p>
+                  <p className="text-3xl font-black tracking-[-1.5px] ">{overviewStats.roiPercentage}%</p>
                   <div className="flex items-center gap-1 mt-3">
                     <div className="flex items-center gap-0.5 text-amber-500 text-[10px] font-black">
                       <ArrowUpRight size={11} /> +2.4%
@@ -588,7 +588,7 @@ export default function UserAnalyticsPage() {
                   {metrics.map((m) => (
                     <div key={m.label}>
                       <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">{m.label}</p>
-                      <p className="text-lg font-black tracking-tight italic" style={{ color: m.color }}>{m.value}</p>
+                      <p className="text-lg font-black tracking-tight " style={{ color: m.color }}>{m.value}</p>
                       <div className={`flex items-center gap-0.5 text-[9px] font-bold mt-0.5 ${m.up ? "text-emerald-500" : "text-red-500"}`}>
                         {m.up ? <ArrowUpRight size={9} /> : <ArrowDownRight size={9} />} {m.delta}
                       </div>

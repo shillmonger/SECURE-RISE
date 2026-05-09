@@ -396,7 +396,7 @@ export default function TransactionsPage() {
             {/* ── Page Title ── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
                   TRS History
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
@@ -504,7 +504,7 @@ export default function TransactionsPage() {
 
                           {/* Symbol / Method */}
                           <td className="px-5 py-4 whitespace-nowrap">
-                            <p className="text-sm font-black italic uppercase tracking-tight">
+                            <p className="text-sm font-black  uppercase tracking-tight">
                               {txn.method}
                             </p>
                             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
@@ -535,7 +535,7 @@ export default function TransactionsPage() {
                           {/* Amount */}
                           <td className="px-5 py-4 text-right whitespace-nowrap">
                             <span
-                              className={`text-base font-black italic ${getAmountColor(txn.type, txn.rawData)}`}
+                              className={`text-base font-black  ${getAmountColor(txn.type, txn.rawData)}`}
                             >
                               {getAmountPrefix(txn.type, txn.rawData)}$
                               {txn.amount.toLocaleString(undefined, {
