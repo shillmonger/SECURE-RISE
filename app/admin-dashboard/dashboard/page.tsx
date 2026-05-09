@@ -18,6 +18,14 @@ import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
 
+// ─── Helper Functions ───────────────────────────────────────────────────────
+function formatCompactNumber(num: number): string {
+  if (num < 1000) return num.toString();
+  if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  if (num < 1000000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+}
+
 interface DashboardStats {
   label: string;
   value: string;
@@ -75,11 +83,24 @@ export default function AdminDashboardPage() {
       const data = await response.json();
       
       if (data.success) {
-        // Transform stats to include icon components
-        const transformedStats = data.stats.map((stat: any) => ({
-          ...stat,
-          icon: iconMap[stat.icon] || Users
-        }));
+        // Transform stats to include icon components and format monetary values
+        const transformedStats = data.stats.map((stat: any) => {
+          let formattedValue = stat.value;
+          
+          // Apply compact formatting to monetary values (starting with $)
+          if (typeof stat.value === 'string' && stat.value.startsWith('$')) {
+            const numericValue = parseFloat(stat.value.replace('$', '').replace(/,/g, ''));
+            if (!isNaN(numericValue)) {
+              formattedValue = `$${formatCompactNumber(numericValue)}`;
+            }
+          }
+          
+          return {
+            ...stat,
+            value: formattedValue,
+            icon: iconMap[stat.icon] || Users
+          };
+        });
         
         setStats(transformedStats);
         setRecentTransactions(data.recentTransactions || []);
@@ -138,7 +159,7 @@ export default function AdminDashboardPage() {
               ))
             ) : (
               stats.map((stat, index) => (
-                <div key={index} className="bg-card p-5 rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow">
+                <div key={index} className="bg-card px-5 py-3 rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
                     <div className={`p-2 rounded-xl ${stat.bg}`}>
                       <stat.icon className={`w-5 h-5 ${stat.color}`} />
@@ -146,8 +167,8 @@ export default function AdminDashboardPage() {
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Live</span>
                   </div>
                   <div>
-                    <h4 className="text-muted-foreground text-xs font-medium mb-1">{stat.label}</h4>
-                    <p className="text-xl font-bold text-foreground">{stat.value}</p>
+                    <p className="text-xl font-bold text-foreground mb-1">{stat.value}</p>
+                    <h4 className="text-muted-foreground text-xs font-medium">{stat.label}</h4>
                   </div>
                 </div>
               ))

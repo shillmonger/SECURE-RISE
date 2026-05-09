@@ -30,6 +30,14 @@ const IMAGES = [
   "https://i.postimg.cc/9Q9sc9yF/6.jpg",
 ];
 
+// ─── Helper Functions ───────────────────────────────────────────────────────
+function formatCompactNumber(num: number): string {
+  if (num < 1000) return num.toString();
+  if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  if (num < 1000000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+}
+
 // ─── Types ───────────────────────────────────────────────────────────
 type InvestmentStatus = "active" | "completed" | "expired";
 
@@ -278,7 +286,7 @@ export default function MyInvestmentsPage() {
   const stats = [
     {
       label: "Total Invested",
-      value: `$${investments.reduce((sum, inv) => sum + inv.investmentAmount, 0).toLocaleString()}`,
+      value: `$${formatCompactNumber(investments.reduce((sum, inv) => sum + inv.investmentAmount, 0))}`,
       icon: Briefcase,
       color: "text-blue-500",
       iconBg: "bg-blue-500/10",
@@ -287,7 +295,7 @@ export default function MyInvestmentsPage() {
     },
     {
       label: "Cumulative ROI",
-      value: `$${investments.reduce((sum, inv) => sum + inv.profitEarned, 0).toLocaleString()}`,
+      value: `$${formatCompactNumber(investments.reduce((sum, inv) => sum + inv.profitEarned, 0))}`,
       icon: TrendingUp,
       color: "text-green-500",
       iconBg: "bg-green-500/10",
@@ -359,7 +367,7 @@ export default function MyInvestmentsPage() {
               {stats.map((stat, i) => (
                 <div
                   key={i}
-                  className={`bg-card border border-border p-5 rounded-2xl hover:border-primary/50 transition-colors group ${stat.hoverBg} ${stat.hoverColor}`}
+                  className={`bg-card border border-border px-5 py-3 cursor-pointer rounded-2xl hover:border-primary/50 transition-colors group ${stat.hoverBg} ${stat.hoverColor}`}
                 >
                   {/* Icon container */}
                   <div
@@ -379,7 +387,7 @@ export default function MyInvestmentsPage() {
               ))}
             </div>
 
-                    <TradingView />
+                    {/* <TradingView /> */}
             
 
             {/* Main Display */}
@@ -434,7 +442,7 @@ export default function MyInvestmentsPage() {
               </div>
             )}
           </div>
-                <TradingView />
+                {/* <TradingView /> */}
         </main>
 
         

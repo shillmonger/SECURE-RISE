@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
+import DepositsSkeleton from "@/components/LoadingSkeleton/DepositsSkeleton";
 
 interface Deposit {
   _id: string;
@@ -171,11 +172,8 @@ export default function AdminPaymentsPage() {
         <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <Loader2 className="w-12 h-12 animate-spin text-primary" />
-              <span className="text-muted-foreground font-medium">Loading deposits...</span>
-            </div>
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
+            <DepositsSkeleton />
           </main>
         </div>
       </div>
@@ -231,10 +229,7 @@ export default function AdminPaymentsPage() {
 
             <div className="overflow-x-auto">
               {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <span className="ml-2 text-gray-500">Loading deposits...</span>
-                </div>
+                <DepositsSkeleton />
               ) : (
                 <table className="w-full text-left">
                   <thead className="bg-muted text-muted-foreground text-[10px] uppercase tracking-widest font-bold">

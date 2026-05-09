@@ -188,7 +188,7 @@ export default function AdminPayoutsPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {statsData.map((stat, i) => (
-              <div key={i} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
+              <div key={i} className="bg-card  px-5 py-3 rounded-2xl border border-border shadow-sm">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`p-2 rounded-xl ${stat.bg}`}><stat.icon className={`w-5 h-5 ${stat.color}`} /></div>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Live</span>

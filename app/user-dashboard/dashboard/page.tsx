@@ -628,7 +628,7 @@ export default function UserOverviewPage() {
                 <Link
                   key={i}
                   href={stat.link}
-                  className="bg-card border border-border p-5 rounded-2xl group hover:border-primary transition-all"
+                  className="bg-card border border-border px-5 py-3 rounded-2xl group hover:border-primary transition-all"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div
