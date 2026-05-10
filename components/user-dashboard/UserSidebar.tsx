@@ -188,7 +188,7 @@ export default function UserSidebar({
               SECURE<span className="text-muted-foreground "> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
-              You Invest, We Trade
+              Your Investments, Our Traders
             </p>
           </div>
           <button
