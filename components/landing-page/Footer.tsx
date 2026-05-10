@@ -33,7 +33,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-background border-t border-border text-foreground pb-15 pt-12 px-6 md:px-16 relative">
+    <footer className="bg-background border-t border-border text-foreground pb-15 pt-12 px-4 md:px-16 relative">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12 md:gap-8 lg:gap-24">
         
         {/* Logo + Platform Description */}
