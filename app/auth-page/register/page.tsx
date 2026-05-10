@@ -61,10 +61,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex px-3 py-10 min-h-screen flex-col items-center justify-center bg-background text-foreground p-6 md:p-10 transition-colors duration-300">
-      <ThemeAndScroll />
+   <div className="min-h-screen flex flex-col bg-background text-foreground">
+         <ThemeAndScroll />
+   
+         <main className="flex-grow flex items-center justify-center px-3 py-10 p-6 md:p-10 transition-colors duration-300 mb-15">
+                  <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden">
 
-      <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden mb-20">
         <Card className="overflow-hidden bg-card border border-border rounded-3xl shadow-lg">
           <CardContent className="p-0">
             <form className="p-6 md:p-8" onSubmit={handleSubmit}>
@@ -190,7 +192,8 @@ export default function SignupPage() {
           By clicking continue, you agree to our{" "}
           <Link href="/landing-page/terms">Terms of Service</Link> and <Link href="/landing-page/privacy">Privacy Policy</Link>.
         </div>
-      </div>
+        </div>
+      </main>
 
       <Footer />
     </div>
