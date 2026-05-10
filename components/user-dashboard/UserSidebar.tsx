@@ -57,7 +57,6 @@ export default function UserSidebar({
   const [userRole, setUserRole] = useState<string[]>([]);
   const [countdown, setCountdown] = useState(10);
 
-  // FIX 1: Set Account and Community to true by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     Account: true,
     Community: true,
@@ -98,7 +97,7 @@ export default function UserSidebar({
     { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
-    { name: "Investments Hub", icon: ChartNoAxesCombined, href: `${basePath}/my-investments`,},
+    { name: "Investments Hub", icon: ChartNoAxesCombined, href: `${basePath}/my-investments` },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawals", icon: Wallet, href: `${basePath}/withdraw` },
     { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
@@ -118,30 +117,12 @@ export default function UserSidebar({
       name: "Account",
       icon: Settings,
       children: [
-        {
-          name: "Notifications",
-          icon: Bell,
-          href: `${basePath}/notifications`,
-        },
-        {
-          name: "Settings & Profile",
-          icon: Settings,
-          href: `${basePath}/user-settings`,
-        },
+        { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
+        { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
         { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc` },
-        {
-          name: "Active Support 24/7",
-          icon: HeadphonesIcon,
-          href: `${basePath}/support`,
-        },
+        { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
         ...(userRole.includes("admin")
-          ? [
-              {
-                name: "Switch to Admin",
-                icon: Lock,
-                href: `/admin-dashboard/dashboard`,
-              },
-            ]
+          ? [{ name: "Switch to Admin", icon: Lock, href: `/admin-dashboard/dashboard` }]
           : []),
       ],
     },
@@ -150,9 +131,7 @@ export default function UserSidebar({
   useEffect(() => {
     navItems.forEach((item) => {
       if ("children" in item) {
-        const hasActive = item.children.some(
-          (child) => pathname === child.href,
-        );
+        const hasActive = item.children.some((child) => pathname === child.href);
         if (hasActive) {
           setOpenGroups((prev) => ({ ...prev, [item.name]: true }));
         }
@@ -166,6 +145,7 @@ export default function UserSidebar({
 
   return (
     <>
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
@@ -174,18 +154,22 @@ export default function UserSidebar({
       )}
 
       <aside
-  className={`${
-    sidebarOpen ? "translate-x-0" : "-translate-x-full"
-  } fixed inset-y-0 left-0 z-100 w-full md:w-70 flex flex-col
-  bg-background border-r border-border
-  transition-transform duration-300 ease-in-out
-  lg:translate-x-0 lg:static lg:inset-0
-  shadow-2xl lg:shadow-none h-screen overflow-hidden`}
->
+        className={`
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          fixed inset-y-0 left-0 z-100 w-full md:w-70
+          flex flex-col
+          bg-background border-r border-border
+          transform transition-transform duration-300 ease-in-out
+          lg:translate-x-0 lg:static lg:inset-0
+          shadow-2xl lg:shadow-none
+          h-screen
+        `}
+      >
+        {/* ── Header (fixed height, never shrinks) ── */}
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
-            <h1 className="text-xl font-black uppercase tracking-tighter  text-foreground">
-              SECURE<span className="text-muted-foreground "> RISE</span>
+            <h1 className="text-xl font-black uppercase tracking-tighter text-foreground">
+              SECURE<span className="text-muted-foreground"> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
               Your Investments, Our Traders
@@ -199,9 +183,8 @@ export default function UserSidebar({
           </button>
         </div>
 
-        {/* FIX 2: Added overflow-y-auto and scrollbar styling to make the nav scrollable */}
-        <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
-        {/* <nav className="flex-1 px-4 py-5 pb-20 lg:px-4 lg:py-5 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"> */}
+        {/* ── Nav (fills remaining space, scrollable) ── */}
+        <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-5 space-y-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {navItems.map((item) => {
             if ("href" in item) {
               const active = pathname === item.href;
@@ -229,9 +212,7 @@ export default function UserSidebar({
             }
 
             const isOpen = !!openGroups[item.name];
-            const hasActiveChild = item.children.some(
-              (c) => pathname === c.href,
-            );
+            const hasActiveChild = item.children.some((c) => pathname === c.href);
 
             return (
               <div key={item.name} className="flex flex-col">
@@ -258,11 +239,7 @@ export default function UserSidebar({
                   />
                 </button>
 
-                <div
-                  className={`${
-                    isOpen ? "block" : "hidden"
-                  } transition-all duration-300 ease-in-out`}
-                >
+                <div className={`${isOpen ? "block" : "hidden"} transition-all duration-300 ease-in-out`}>
                   <div className="ml-4 mt-1 mb-1 pl-4 border-l border-border space-y-0.5">
                     {item.children.map((child) => {
                       const childActive = pathname === child.href;
@@ -279,9 +256,7 @@ export default function UserSidebar({
                         >
                           <child.icon
                             className={`w-4 h-4 flex-shrink-0 transition-transform ${
-                              childActive
-                                ? "scale-110"
-                                : "group-hover:scale-110"
+                              childActive ? "scale-110" : "group-hover:scale-110"
                             }`}
                           />
                           <span className="text-[11px] font-black uppercase tracking-widest">
@@ -297,8 +272,8 @@ export default function UserSidebar({
           })}
         </nav>
 
-        {/* Logout Section - fixed at bottom only on small screens */}
-        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border lg:relative fixed bottom-0 left-0 right-0 bg-background z-50 lg:border-t lg:border-border">
+        {/* ── Logout (fixed height, never shrinks, always visible at bottom) ── */}
+        <div className="flex-shrink-0 border-t border-border px-4 py-2">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
