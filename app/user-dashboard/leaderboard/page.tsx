@@ -25,6 +25,7 @@ interface LeaderboardUser {
   balance: number;
   totalDeposit: number;
   totalWithdrawal: number;
+  totalProfits: number;
   profileImage: string;
   fullName: string;
 }
@@ -38,14 +39,14 @@ interface TopThreeUser {
 }
 
 const TOP_THREE_DEFAULT: TopThreeUser[] = [
-  { rank: 1, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
-  { rank: 2, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
-  { rank: 3, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Account Balance" },
+  { rank: 1, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Total Withdrawals" },
+  { rank: 2, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Total Withdrawals" },
+  { rank: 3, username: "Loading...", avatar: "https://github.com/shadcn.png", metric: 0, metricName: "Total Withdrawals" },
 ];
 
 const LEADERBOARD_TABLE_DATA_DEFAULT: LeaderboardUser[] = [];
 
-const TABLE_HEADERS = ["Rank", "Player", "Email", "Account Balance", "Total Withdrawals", "Total Deposits"];
+const TABLE_HEADERS = ["Rank", "Player", "Email", "Account Balance", "Total Withdrawals", "Total Profits", "Total Deposits"];
 
 function fmt(n: number) {
   return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2 });
@@ -395,6 +396,13 @@ export default function LeaderboardPage() {
 
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex items-center gap-1.5">
+                              <Trophy className="w-3.5 h-3.5 text-blue-500 opacity-50" />
+                              <span className="text-sm text-blue-400" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{fmt(row.totalProfits)}</span>
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-4 text-right">
+                            <div className="inline-flex items-center gap-1.5">
                               <BriefcaseBusiness className="w-3.5 h-3.5 text-green-500 opacity-50" />
                               <span className="text-base text-green-400" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{fmt(row.totalDeposit)}</span>
                             </div>
@@ -404,7 +412,7 @@ export default function LeaderboardPage() {
 
                       {filtered.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="text-center py-16 text-muted-foreground text-xs tracking-widest uppercase">
+                          <td colSpan={7} className="text-center py-16 text-muted-foreground text-xs tracking-widest uppercase">
                             No players found
                           </td>
                         </tr>

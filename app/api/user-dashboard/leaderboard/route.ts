@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const db = client.db('secure-rise');
     const usersCollection = db.collection('users');
     
-    // Fetch all active users, sort by accountBalance (descending)
+    // Fetch top 10 active users, sort by totalWithdrawal (descending)
     const users = await usersCollection
       .find({ isActive: true })
       .project({
@@ -50,10 +50,12 @@ export async function GET(request: NextRequest) {
         accountBalance: 1,
         totalDeposit: 1,
         totalWithdrawal: 1,
+        totalProfits: 1,
         profileImage: 1,
         fullName: 1
       })
-      .sort({ accountBalance: -1 })
+      .sort({ totalWithdrawal: -1 })
+      .limit(10)
       .toArray() as User[];
 
     // Transform data for leaderboard
@@ -64,6 +66,7 @@ export async function GET(request: NextRequest) {
       balance: user.accountBalance,
       totalDeposit: user.totalDeposit,
       totalWithdrawal: user.totalWithdrawal,
+      totalProfits: user.totalProfits,
       profileImage: user.profileImage || "https://github.com/shadcn.png",
       fullName: user.fullName || user.username
     }));
@@ -73,8 +76,8 @@ export async function GET(request: NextRequest) {
       rank: user.rank,
       username: user.username,
       avatar: user.profileImage,
-      metric: user.balance,
-      metricName: "Account Balance"
+      metric: user.totalWithdrawal,
+      metricName: "Total Withdrawals"
     }));
 
     return NextResponse.json({
