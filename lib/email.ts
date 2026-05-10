@@ -972,6 +972,170 @@ export const sendWithdrawalOTP = async (userEmail: string, username: string, otp
   }
 };
 
+export const sendKYCStatusEmail = async (userEmail: string, username: string, status: 'approved' | 'rejected', rejectionReason?: string) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  const isApproved = status === 'approved';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>KYC ${isApproved ? 'Approved' : 'Rejected'} - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .status-box {
+          background: ${isApproved ? '#22c55e' : '#ef4444'};
+          color: white;
+          padding: 32px;
+          border-radius: 16px;
+          margin: 32px 0;
+          text-align: center;
+        }
+        .status-label {
+          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.8;
+          margin-bottom: 8px;
+        }
+        .status-text {
+          font-size: 32px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .rejection-reason {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #991b1b;
+          padding: 16px;
+          border-radius: 12px;
+          margin: 24px 0;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">KYC ${isApproved ? 'Approved' : 'Rejected'}</h1>
+          <p class="subtitle">Your identity verification has been reviewed</p>
+        </div>
+
+        <div class="status-box">
+          <div class="status-label">Status</div>
+          <div class="status-text">${isApproved ? 'APPROVED' : 'REJECTED'}</div>
+        </div>
+
+        ${!isApproved && rejectionReason ? `
+          <div class="rejection-reason">
+            <div class="status-label">Rejection Reason</div>
+            <div>${rejectionReason}</div>
+          </div>
+        ` : ''}
+
+        ${isApproved ? `
+          <p style="text-align: center; margin: 24px 0;">
+            Congratulations! Your identity has been verified. You now have full access to all platform features.
+          </p>
+        ` : `
+          <p style="text-align: center; margin: 24px 0;">
+            Please review the feedback above and submit your KYC again with the correct information.
+          </p>
+        `}
+
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/kyc" class="cta-button">
+          View KYC Status
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This email was sent to ${userEmail}.<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `KYC ${isApproved ? 'Approved' : 'Rejected'} - Secure Rise`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`KYC ${isApproved ? 'approval' : 'rejection'} email sent to ${userEmail}`);
+  } catch (error) {
+    console.error(`Error sending KYC ${isApproved ? 'approval' : 'rejection'} email:`, error);
+    throw error;
+  }
+};
+
 export const sendWithdrawalNotificationToAdmins = async (withdrawalData: {
   withdrawalId: string;
   username: string;

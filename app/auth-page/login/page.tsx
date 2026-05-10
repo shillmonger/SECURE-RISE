@@ -40,6 +40,16 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
+        // Store user data in localStorage for KYC and other pages
+        if (data.user) {
+          const userData = {
+            id: data.user._id || data.user.id,
+            username: data.user.username || data.user.fullName,
+            email: data.user.email
+          };
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+        
         toast.success(data.message || 'Login successful!');
         setTimeout(() => {
           router.push('/user-dashboard/dashboard');

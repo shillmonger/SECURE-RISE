@@ -50,7 +50,8 @@ export async function GET(request: NextRequest) {
             rejectionReason: 1,
             'userInfo.username': 1,
             'userInfo.email': 1,
-            'userInfo.fullName': 1
+            'userInfo.fullName': 1,
+            'userInfo.profileImage': 1
           }
         }
       ])

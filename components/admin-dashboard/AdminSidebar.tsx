@@ -33,10 +33,10 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Manage Deposite", icon: Wallet, href: `${basePath}/manage-deposite` },
     { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
-    { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
     { name: "User Management", icon: Users, href: `${basePath}/user-management` },
-    { name: "Investment Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
+    { name: "Investor Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
     { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc-verification` },
+    { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
     { name: "Switch to User", icon: User, href: "/user-dashboard/dashboard" },
   ];
 

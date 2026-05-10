@@ -133,11 +133,11 @@ export default function AdminDashboardPage() {
         <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-1 h-4 bg-primary rounded-full"></div>
-              <h3 className="text-primary font-bold text-xs uppercase tracking-widest">Platform Overview</h3>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">Dashboard Overview</h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mt-1">
+              <Layers className="w-3 h-3 text-primary" />
+              Platform Analytics
+            </p>
           </div>
 
           {/* Stats Grid */}

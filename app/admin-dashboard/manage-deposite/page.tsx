@@ -20,6 +20,7 @@ interface Deposit {
     username: string;
     fullName: string;
     email: string;
+    profileImage?: string;
   };
   walletAddress: string;
   network: string;
@@ -51,6 +52,9 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function AdminPaymentsPage() {
+  // Default profile image constant
+  const defaultProfileImage = "https://github.com/shadcn.png";
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,6 +179,7 @@ export default function AdminPaymentsPage() {
           <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
             <DepositsSkeleton />
           </main>
+          <AdminNav />
         </div>
       </div>
     );
@@ -190,11 +195,11 @@ export default function AdminPaymentsPage() {
         <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1 h-4 bg-primary rounded-full"></div>
-                <h3 className="text-primary font-bold text-xs uppercase tracking-widest">Finance Management</h3>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Payments Review</h1>
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">Payments Review</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mt-1">
+                <DollarSign className="w-3 h-3 text-primary" />
+                Finance Management
+              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -205,13 +210,13 @@ export default function AdminPaymentsPage() {
                   placeholder="Search users..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-card border border-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full md:w-64 shadow-sm"
+                  className="bg-card border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full md:w-64 shadow-sm"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-card border border-border rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm"
+                className="bg-card border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm"
               >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
@@ -264,9 +269,25 @@ export default function AdminPaymentsPage() {
                       filteredDeposits.map((deposit) => (
                         <tr key={deposit._id} className="hover:bg-muted/50 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="text-sm font-bold text-foreground">{deposit.userId?.fullName || 'Unknown User'}</span>
-                              <span className="text-xs text-muted-foreground">{deposit.userId?.email || 'No email'}</span>
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={deposit.userId?.profileImage || defaultProfileImage}
+                                alt={deposit.userId?.fullName || 'Unknown User'}
+                                className="w-10 h-10 rounded-lg object-cover cursor-pointer"
+                                onError={(e) => {
+                                  // Fallback to initials if image fails to load
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  target.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs hidden`}>
+                                {deposit.userId?.fullName?.charAt(0) || 'U'}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-sm font-bold text-foreground">{deposit.userId?.fullName || 'Unknown User'}</span>
+                                <span className="text-xs text-muted-foreground">{deposit.userId?.email || 'No email'}</span>
+                              </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">

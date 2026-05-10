@@ -77,6 +77,7 @@ export async function GET(request: NextRequest) {
             username: user.username,
             fullName: user.fullName || user.username,
             email: user.email,
+            profileImage: user.profileImage,
           } : null,
           proofImageUrl: deposit.proofImage, // Map to match frontend expectation
         };

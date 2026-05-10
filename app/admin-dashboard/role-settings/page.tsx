@@ -33,9 +33,13 @@ interface User {
   totalDeposit: number;
   createdAt: string;
   updatedAt: string;
+  profileImage?: string;
 }
 
 export default function AdminRolesPage() {
+  // Default profile image constant
+  const defaultProfileImage = "https://github.com/shadcn.png";
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,26 +49,15 @@ export default function AdminRolesPage() {
   // Fetch users from API
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('auth-token') || 
-                   document.cookie.split('; ').find(row => row.startsWith('auth-token='))?.split('=')[1];
-      
-      if (!token) {
-        toast.error('Authentication required');
-        return;
-      }
-
-      const response = await fetch('/api/admin/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-
+      setLoading(true);
+      const response = await fetch('/api/admin/users');
       const data = await response.json();
-      setUsers(data.users || []);
+      
+      if (data.success) {
+        setUsers(data.users || []);
+      } else {
+        toast.error(data.error || 'Failed to fetch users');
+      }
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Failed to fetch users');
@@ -82,19 +75,10 @@ export default function AdminRolesPage() {
     setUpdatingUserId(userId);
     
     try {
-      const token = localStorage.getItem('auth-token') || 
-                   document.cookie.split('; ').find(row => row.startsWith('auth-token='))?.split('=')[1];
-      
-      if (!token) {
-        toast.error('Authentication required');
-        return;
-      }
-
       const response = await fetch(`/api/admin/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ roles: newRoles })
       });
@@ -152,11 +136,11 @@ export default function AdminRolesPage() {
           {/* Header */}
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1 h-4 bg-primary rounded-full"></div>
-                <h3 className="text-primary font-bold text-xs uppercase tracking-widest">Permissions</h3>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Role Management</h1>
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">Role Management</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mt-1">
+                <UserCheck className="w-3 h-3 text-primary" />
+                Permissions Control
+              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -219,12 +203,23 @@ export default function AdminRolesPage() {
                       <tr key={user.id} className="group hover:bg-muted/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                            <img
+                              src={user.profileImage || defaultProfileImage}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-lg object-cover cursor-pointer"
+                              onError={(e) => {
+                                // Fallback to initials if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs hidden`}>
                               {user.name.charAt(0)}
                             </div>
                             <div>
-                              <span className="font-bold text-foreground block">{user.name}</span>
                               <span className="text-xs text-muted-foreground">@{user.username}</span>
+                              <span className="font-bold text-foreground block">{user.name}</span>
                             </div>
                           </div>
                         </td>
@@ -247,7 +242,7 @@ export default function AdminRolesPage() {
                         <td className="px-6 py-4">
                           {/* Shadcn Role Dropdown */}
                           <DropdownMenu>
-                            <DropdownMenuTrigger disabled={updatingUserId === user.id} className="flex items-center gap-2 bg-card border border-border cursor-pointer rounded-lg px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            <DropdownMenuTrigger disabled={updatingUserId === user.id} className="flex items-center gap-2 bg-card border border-border cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                               {updatingUserId === user.id ? (
                                 <>
                                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -260,7 +255,7 @@ export default function AdminRolesPage() {
                                 </>
                               )}
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="bg-card border-border rounded-xl shadow-xl">
+                            <DropdownMenuContent align="start" className="bg-card border-border rounded-lg shadow-xl">
                               <DropdownMenuItem 
                                 className="text-xs font-medium py-2 px-4 cursor-pointer focus:bg-teal-500/10 focus:text-teal-600"
                                 onClick={() => changeRole(user.id, ['user'])}
@@ -275,14 +270,14 @@ export default function AdminRolesPage() {
                               >
                                 Admin
                               </DropdownMenuItem>
-                              {user.roles.includes('admin') && (
+                              {/* {user.roles.includes('admin') && (
                                 <DropdownMenuItem 
                                   className="text-xs font-medium py-2 px-4 cursor-pointer focus:bg-red-500/10 focus:text-red-600"
                                   onClick={() => changeRole(user.id, ['user'])}
                                 >
                                   Remove Admin Role
                                 </DropdownMenuItem>
-                              )}
+                              )} */}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </td>

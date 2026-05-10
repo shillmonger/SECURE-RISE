@@ -110,7 +110,7 @@ export default function UserSidebar({
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-        // { name: "Give Feedback", icon: BadgeCheck, href: `#` },
+        // { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
       ],
     },
     {
@@ -127,7 +127,7 @@ export default function UserSidebar({
           icon: Settings,
           href: `${basePath}/user-settings`,
         },
-        { name: "KYC Verification", icon: IdCard, href: `#` },
+        { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc` },
         {
           name: "Active Support 24/7",
           icon: HeadphonesIcon,

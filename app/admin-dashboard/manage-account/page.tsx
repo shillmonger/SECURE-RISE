@@ -25,9 +25,13 @@ interface User {
   withdrawalAddresses: any;
   createdAt: Date;
   updatedAt: Date;
+  profileImage?: string;
 }
 
 export default function AdminManageUsersPage() {
+  // Default profile image constant
+  const defaultProfileImage = "https://github.com/shadcn.png";
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,16 +129,13 @@ export default function AdminManageUsersPage() {
           {/* Page Header */}
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1 h-4 bg-primary rounded-full"></div>
-                <h3 className="text-primary font-bold text-xs uppercase tracking-widest">
-                  Account Control
-                </h3>
-              </div>
-
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">
                 Manage Users
               </h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mt-1">
+                <Users className="w-3 h-3 text-primary" />
+                Account Control
+              </p>
             </div>
 
             {/* Search and Refresh */}
@@ -142,7 +143,7 @@ export default function AdminManageUsersPage() {
               <button
                 onClick={fetchUsers}
                 disabled={loading}
-                className="p-2 bg-card border border-border rounded-xl text-primary shadow-sm hover:bg-muted disabled:opacity-50"
+                className="p-3 bg-card border border-border rounded-xl text-primary shadow-sm hover:bg-muted disabled:opacity-50"
                 title="Refresh users"
               >
                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -155,11 +156,11 @@ export default function AdminManageUsersPage() {
                   placeholder="Search user..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-card border border-border rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 w-full md:w-64 shadow-sm"
+                  className="bg-card border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 w-full md:w-64 shadow-sm"
                 />
               </div>
 
-              <button className="p-2 bg-card border border-border rounded-xl text-primary shadow-sm">
+              <button className="p-3 bg-card border border-border rounded-xl text-primary shadow-sm">
                 <Filter className="w-5 h-5" />
               </button>
             </div>
@@ -211,7 +212,18 @@ export default function AdminManageUsersPage() {
                         {/* User */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                            <img
+                              src={user.profileImage || defaultProfileImage}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-lg object-cover cursor-pointer"
+                              onError={(e) => {
+                                // Fallback to initials if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className={`w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs hidden`}>
                               {user.name.charAt(0)}
                             </div>
 
@@ -249,7 +261,7 @@ export default function AdminManageUsersPage() {
                             onChange={(e) =>
                               handleChange(user.id, "balance", e.target.value)
                             }
-                            className="w-32 bg-muted border border-border rounded-lg px-3 py-1 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
+                            className="w-32 bg-muted border border-border rounded-lg px-3 py-2 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
                             min="0"
                             step="0.01"
                           />
@@ -263,7 +275,7 @@ export default function AdminManageUsersPage() {
                             onChange={(e) =>
                               handleChange(user.id, "profit", e.target.value)
                             }
-                            className="w-32 bg-muted border border-border rounded-lg px-3 py-1 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
+                            className="w-32 bg-muted border border-border rounded-lg px-3 py-2 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
                             min="0"
                             step="0.01"
                           />
