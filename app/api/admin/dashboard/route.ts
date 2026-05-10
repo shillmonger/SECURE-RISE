@@ -146,13 +146,37 @@ export async function GET(request: NextRequest) {
     const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
     const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
 
+    // Calculate pending withdrawals amount
+    const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
+    const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+
     // Get investment plans count
     const investmentsCollection = db.collection('investments');
     const investmentPlansCount = await investmentsCollection.countDocuments();
 
-    // Calculate pending withdrawals amount
-    const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
-    const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+    // Get KYC submissions count
+    const kycCollection = db.collection('kyc');
+    const totalKycSubmissions = await kycCollection.countDocuments();
+
+    // Get total gifts count
+    const giftsCollection = db.collection('gifts');
+    const totalGifts = await giftsCollection.countDocuments();
+
+    // Get user achievements count
+    const userAchievementsCollection = db.collection('userachievements');
+    const totalUserAchievements = await userAchievementsCollection.countDocuments();
+
+    // Get total user XP
+    const userXpCollection = db.collection('userxp');
+    const userXpStats = await userXpCollection.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalXP: { $sum: '$totalXP' }
+        }
+      }
+    ]).toArray();
+    const totalUserXP = userXpStats[0]?.totalXP || 0;
 
     // Format stats for frontend
     const formattedStats = [
@@ -164,6 +188,10 @@ export async function GET(request: NextRequest) {
       { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
       { label: "Total Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
       { label: "Pending Withdrawal", value: `$${pendingWithdrawalsTotal.toFixed(2)}`, icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Total KYC Submitted", value: totalKycSubmissions.toString(), icon: "Shield", color: "text-indigo-500", bg: "bg-indigo-500/10" },
+      { label: "Total Gifts", value: totalGifts.toString(), icon: "Gift", color: "text-pink-500", bg: "bg-pink-500/10" },
+      { label: "User Achievements", value: totalUserAchievements.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "Total User XP", value: totalUserXP.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
     ];
 
     return NextResponse.json({
