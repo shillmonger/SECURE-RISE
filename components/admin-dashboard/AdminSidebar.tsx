@@ -67,7 +67,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-100 w-full md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
@@ -81,10 +81,10 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
           </div>
           
           <button   
-            className="lg:hidden p-2 rounded-xl bg-secondary text-foreground" 
+            className="lg:hidden text-foreground" 
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 

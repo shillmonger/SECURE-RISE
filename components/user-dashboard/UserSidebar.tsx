@@ -57,9 +57,10 @@ export default function UserSidebar({
   const [userRole, setUserRole] = useState<string[]>([]);
   const [countdown, setCountdown] = useState(10);
 
-  // FIX 1: Set Account to true by default
+  // FIX 1: Set Account and Community to true by default
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     Account: true,
+    Community: true,
   });
 
   const basePath = "/user-dashboard";
@@ -105,12 +106,12 @@ export default function UserSidebar({
       name: "Community",
       icon: Users,
       children: [
-        // { name: "Referrals", icon: Users, href: `#` },
         { name: "daily streak", icon: PartyPopper, href: `${basePath}/daily-streak` },
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-        // { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
+        { name: "Referrals", icon: Users, href: `#` },
+        { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
       ],
     },
     {
@@ -175,7 +176,7 @@ export default function UserSidebar({
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-75 md:w-70 flex flex-col lg:rounded-none
+        } fixed inset-y-0 left-0 z-100 w-full md:w-70 flex flex-col lg:rounded-none
   transform bg-background border-r border-border 
   transition-transform duration-300 ease-in-out 
   lg:translate-x-0 lg:static lg:inset-0 
@@ -191,10 +192,10 @@ export default function UserSidebar({
             </p>
           </div>
           <button
-            className="lg:hidden p-2 rounded-lg bg-secondary text-foreground"
+            className="lg:hidden rounded-lg text-foreground"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
@@ -296,7 +297,7 @@ export default function UserSidebar({
         </nav>
 
         {/* Logout Section remains fixed at the bottom */}
-        <div className="flex-shrink-0 flex items-center justify-center px-4 py-3 lg:py-2 border-t border-border">
+        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
