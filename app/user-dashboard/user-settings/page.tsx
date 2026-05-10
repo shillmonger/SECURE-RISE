@@ -800,7 +800,7 @@ export default function UserSettingsPage() {
                               <Loader2 className="w-4 h-4 cursor-pointer animate-spin" /> Saving...
                             </>
                           ) : editingId ? (
-                            "Update Wallet Address"
+                            "Update Address"
                           ) : (
                             "Add Wallet Address"
                           )}
