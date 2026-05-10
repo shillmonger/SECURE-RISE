@@ -82,9 +82,9 @@ export default function ManageAccountSkeleton() {
                       </td>
 
                       {/* Total Withdrawals Input Skeleton */}
-                      <td className="px-6 py-4">
+                      {/* <td className="px-6 py-4">
                         <div className="w-32 h-8 bg-muted border border-border rounded-lg animate-pulse"></div>
-                      </td>
+                      </td> */}
 
                       {/* Total Deposits Input Skeleton */}
                       <td className="px-6 py-4">
