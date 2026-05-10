@@ -64,7 +64,7 @@ export default function AdminManageUsersPage() {
 
   const handleChange = (
     id: string,
-    field: "balance" | "profit",
+    field: "balance" | "profit" | "totalWithdrawal",
     value: string
   ) => {
     setUsers((prev) =>
@@ -87,6 +87,7 @@ export default function AdminManageUsersPage() {
           userId: user.id,
           accountBalance: parseFloat(user.balance) || 0,
           totalProfit: parseFloat(user.profit) || 0,
+          totalWithdrawal: parseFloat(user.totalWithdrawal?.toString() || '0') || 0,
         }),
       });
       
@@ -176,6 +177,7 @@ export default function AdminManageUsersPage() {
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Account Balance</th>
                     <th className="px-6 py-4">Total Profit</th>
+                    <th className="px-6 py-4">Total Withdrawals</th>
                     <th className="px-6 py-4 text-right">Action</th>
                   </tr>
                 </thead>
@@ -183,7 +185,7 @@ export default function AdminManageUsersPage() {
                 <tbody className="divide-y divide-border text-sm">
                   {loading ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                      <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                           <RefreshCw className="w-4 h-4 animate-spin" />
                           Loading users...
@@ -192,7 +194,7 @@ export default function AdminManageUsersPage() {
                     </tr>
                   ) : filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-8">
+                      <td colSpan={6} className="px-6 py-8">
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
                             <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -274,6 +276,20 @@ export default function AdminManageUsersPage() {
                             value={user.profit}
                             onChange={(e) =>
                               handleChange(user.id, "profit", e.target.value)
+                            }
+                            className="w-32 bg-muted border border-border rounded-lg px-3 py-2 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
+                            min="0"
+                            step="0.01"
+                          />
+                        </td>
+
+                        {/* Total Withdrawals */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="number"
+                            value={user.totalWithdrawal || 0}
+                            onChange={(e) =>
+                              handleChange(user.id, "totalWithdrawal", e.target.value)
                             }
                             className="w-32 bg-muted border border-border rounded-lg px-3 py-2 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
                             min="0"

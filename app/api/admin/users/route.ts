@@ -105,28 +105,28 @@ export async function PUT(request: NextRequest) {
 
     // Get request body
     const body = await request.json();
-    const { userId, accountBalance, totalProfit } = body;
+    const { userId, accountBalance, totalProfit, totalWithdrawal } = body;
 
     // Validate required fields
-    if (!userId || accountBalance === undefined || totalProfit === undefined) {
+    if (!userId || accountBalance === undefined || totalProfit === undefined || totalWithdrawal === undefined) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, accountBalance, totalProfit' },
+        { error: 'Missing required fields: userId, accountBalance, totalProfit, totalWithdrawal' },
         { status: 400 }
       );
     }
 
     // Validate numeric values
-    if (typeof accountBalance !== 'number' || typeof totalProfit !== 'number') {
+    if (typeof accountBalance !== 'number' || typeof totalProfit !== 'number' || typeof totalWithdrawal !== 'number') {
       return NextResponse.json(
-        { error: 'accountBalance and totalProfit must be numbers' },
+        { error: 'accountBalance, totalProfit, and totalWithdrawal must be numbers' },
         { status: 400 }
       );
     }
 
     // Validate non-negative values
-    if (accountBalance < 0 || totalProfit < 0) {
+    if (accountBalance < 0 || totalProfit < 0 || totalWithdrawal < 0) {
       return NextResponse.json(
-        { error: 'accountBalance and totalProfit must be non-negative' },
+        { error: 'accountBalance, totalProfit, and totalWithdrawal must be non-negative' },
         { status: 400 }
       );
     }
@@ -138,6 +138,7 @@ export async function PUT(request: NextRequest) {
         $set: {
           accountBalance: accountBalance,
           totalProfits: totalProfit,
+          totalWithdrawal: totalWithdrawal,
           updatedAt: new Date()
         }
       }
