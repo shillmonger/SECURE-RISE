@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     const deposits = await depositsCollection
       .find({})
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(50)
       .toArray();
 
     // Get user information for deposits
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     const withdrawals = await withdrawalsCollection
       .find({})
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(50)
       .toArray();
 
     // Get user information for withdrawals
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
     // Combine and sort all transactions by date
     const allTransactions = [...depositTransactions, ...withdrawalTransactions]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 10); // Keep only the 10 most recent
+      .slice(0, 50); // Keep only 50 most recent
 
     // Calculate pending deposits amount
     const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();

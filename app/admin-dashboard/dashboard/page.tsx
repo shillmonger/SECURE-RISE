@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {[1, 2, 3, 4].map((item) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
                       <tr key={item} className="hover:bg-muted/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="h-4 bg-muted rounded w-24 animate-pulse"></div>
