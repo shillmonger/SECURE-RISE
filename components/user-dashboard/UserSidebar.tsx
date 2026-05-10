@@ -296,8 +296,8 @@ export default function UserSidebar({
           })}
         </nav>
 
-        {/* Logout Section remains fixed at the bottom */}
-        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border">
+        {/* Logout Section - fixed at bottom only on small screens */}
+        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border lg:relative fixed bottom-0 left-0 right-0 bg-background z-50 lg:border-t lg:border-border border-t-0">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
