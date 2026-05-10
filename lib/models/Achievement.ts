@@ -48,4 +48,5 @@ export interface UserStats {
   giftReceivedCount: number;
   welcomeBonusClaimed: boolean;
   cryptoAddressCount: number;
+  kycApproved: boolean;
 }

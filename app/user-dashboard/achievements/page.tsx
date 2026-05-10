@@ -109,6 +109,14 @@ const CATEGORIES: AchievementCategory[] = [
         rarity: "epic",
         xp: 300,
       },
+      {
+        id: "verify-kyc",
+        title: "Verify KYC",
+        description: "Completed KYC verification with approved status",
+        unlocked: false,
+        rarity: "rare",
+        xp: 200,
+      },
     ],
   },
   {

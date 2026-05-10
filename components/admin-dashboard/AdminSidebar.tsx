@@ -35,8 +35,8 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
     { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
     { name: "User Management", icon: Users, href: `${basePath}/user-management` },
     { name: "Investor Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
-    { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc-verification` },
     { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
+    { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc-verification` },
     { name: "Switch to User", icon: User, href: "/user-dashboard/dashboard" },
   ];
 

@@ -43,6 +43,15 @@ export const ACHIEVEMENTS: Achievement[] = [
     xp: 300,
     checkFunction: (userData: any, userStats: UserStats) => userStats.cryptoAddressCount >= 5
   },
+  {
+    id: 'verify-kyc',
+    title: 'Verify KYC',
+    description: 'Completed KYC verification with approved status',
+    category: 'welcome',
+    rarity: 'rare',
+    xp: 200,
+    checkFunction: (userData: any, userStats: UserStats) => userStats.kycApproved
+  },
   
   // Deposit achievements
   {
@@ -394,6 +403,10 @@ export async function getUserStats(userId: ObjectId): Promise<UserStats> {
     .find({ receiverId: userId, status: 'completed' })
     .toArray();
   
+  // Get KYC status
+  const kycSubmission = await db.collection('kyc')
+    .findOne({ userId, status: 'approved' });
+  
   const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
   const totalWithdrawals = withdrawals.reduce((sum, w) => sum + w.amount, 0);
   const totalInvestments = investments.reduce((sum, i) => sum + (i.amount || i.investmentAmount || 0), 0);
@@ -430,7 +443,8 @@ export async function getUserStats(userId: ObjectId): Promise<UserStats> {
     giftSentCount: giftsSent.length,
     giftReceivedCount: giftsReceived.length,
     welcomeBonusClaimed: user?.welcomeBonus > 0,
-    cryptoAddressCount: user?.cryptoAddresses?.length || 0
+    cryptoAddressCount: user?.cryptoAddresses?.length || 0,
+    kycApproved: !!kycSubmission
   };
 }
 
@@ -519,11 +533,11 @@ export async function GET(request: NextRequest) {
     
     const userId = user._id;
     
-    // Get user XP from userxp collection (same as daily streak page)
-    const userXP = await db.collection('userxp').findOne({ userId });
+    // Get user achievements from userachievements collection
+    const userAchievementsData = await db.collection('userachievements').findOne({ userId });
     
-    const totalXP = userXP?.totalXP || 0;
-    const achievementsUnlocked = userXP?.achievementsUnlocked || [];
+    const totalXP = userAchievementsData?.totalXP || 0;
+    const achievementsUnlocked = userAchievementsData?.achievementsUnlocked || [];
     
     // Return formatted achievements for frontend using only database data
     const userAchievements = ACHIEVEMENTS.map(achievement => ({
