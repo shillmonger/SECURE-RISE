@@ -311,7 +311,7 @@ export default function LeaderboardPage() {
                       <Users className="w-5 h-5 text-primary" />
                     </div>
                     <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      Traders Metrics — Updated Daily
+                      Top 10 Traders — 24/7 Update
                     </p>
                   </div>
                 </div>
