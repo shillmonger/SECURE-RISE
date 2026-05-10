@@ -21,6 +21,7 @@ import { toast, Toaster } from "sonner";
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
+import KYCVerificationSkeleton from "@/components/LoadingSkeleton/KYCVerificationSkeleton";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface KYCSubmission {
@@ -167,6 +168,21 @@ export default function AdminKYCVerificationPage() {
     { label: "Rejected", value: kycSubmissions.filter((k) => k.status === "rejected").length, icon: XCircle, color: "text-rose-500", bg: "bg-rose-500/10" },
   ];
 
+  if (loading && kycSubmissions.length === 0) {
+    return (
+      <div className="flex h-screen overflow-hidden bg-background font-sans">
+        <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="flex-1 flex flex-col overflow-hidden text-foreground">
+          <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-32">
+            <KYCVerificationSkeleton />
+          </main>
+          <AdminNav />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
       <Toaster position="top-center" richColors />
@@ -230,17 +246,7 @@ export default function AdminKYCVerificationPage() {
 
             {/* Content Table */}
             <div className="bg-card border border-border rounded-[1rem] shadow-sm overflow-hidden">
-              {loading ? (
-                <div className="p-20 text-center">
-                  <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
-                  </div>
-                  <h3 className="text-sm font-black uppercase italic text-muted-foreground">
-                    Loading KYC submissions...
-                  </h3>
-                </div>
-              ) : (
-                <>
+              <>
                   {/* Filter Tabs */}
                   <div className="flex gap-1 p-2 bg-muted/30 border-b border-border">
                     {["all", "pending", "approved", "rejected"].map((status) => (
@@ -375,7 +381,6 @@ export default function AdminKYCVerificationPage() {
                     </div>
                   )}
                 </>
-              )}
             </div>
           </div>
         </main>
@@ -576,5 +581,6 @@ export default function AdminKYCVerificationPage() {
         </div>
       )}
     </div>
+    // </div>
   );
 }

@@ -41,6 +41,7 @@ import {
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
+import UserManagementSkeleton from "@/components/LoadingSkeleton/UserManagementSkeleton";
 
 // Types
 interface User {
@@ -381,6 +382,24 @@ export default function AdminUsersPage() {
     });
   };
 
+  if (loading && users.length === 0) {
+    return (
+      <div className="flex h-screen overflow-hidden bg-background">
+        <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AdminHeader
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
+            <UserManagementSkeleton />
+          </main>
+          <AdminNav />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
@@ -458,12 +477,7 @@ export default function AdminUsersPage() {
 
           {/* User Table */}
           <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <span className="ml-2 text-gray-500">Loading users...</span>
-              </div>
-            ) : filteredUsers.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <tbody>

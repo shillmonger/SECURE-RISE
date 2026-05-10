@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
+import ManageAccountSkeleton from "@/components/LoadingSkeleton/ManageAccountSkeleton";
 interface User {
   id: string;
   name: string;
@@ -120,6 +121,21 @@ export default function AdminManageUsersPage() {
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (loading && users.length === 0) {
+    return (
+      <div className="flex h-screen overflow-hidden bg-background">
+        <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
+            <ManageAccountSkeleton />
+          </main>
+          <AdminNav />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
@@ -185,16 +201,7 @@ export default function AdminManageUsersPage() {
                 </thead>
 
                 <tbody className="divide-y divide-border text-sm">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
-                        <div className="flex items-center justify-center gap-2">
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          Loading users...
-                        </div>
-                      </td>
-                    </tr>
-                  ) : filteredUsers.length === 0 ? (
+                  {filteredUsers.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-6 py-8">
                         <div className="flex items-center justify-center py-12">
