@@ -287,13 +287,14 @@ export default function AdminManageUsersPage() {
                         <td className="px-6 py-4">
                           <input
                             type="number"
-                            value={user.totalWithdrawal || 0}
+                            value={user.totalWithdrawal === 0 ? '' : user.totalWithdrawal || ''}
                             onChange={(e) =>
                               handleChange(user.id, "totalWithdrawal", e.target.value)
                             }
                             className="w-32 bg-muted border border-border rounded-lg px-3 py-2 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/50"
                             min="0"
                             step="0.01"
+                            placeholder="0"
                           />
                         </td>
 
