@@ -200,7 +200,7 @@ export default function UserSidebar({
         </div>
 
         {/* FIX 2: Added overflow-y-auto and scrollbar styling to make the nav scrollable */}
-        <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+        <nav className="flex-1 px-4 py-5 pb-20 lg:px-4 lg:py-5 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {navItems.map((item) => {
             if ("href" in item) {
               const active = pathname === item.href;
@@ -297,14 +297,14 @@ export default function UserSidebar({
         </nav>
 
         {/* Logout Section - fixed at bottom only on small screens */}
-        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border lg:relative fixed bottom-0 left-0 right-0 bg-background z-50 lg:border-t lg:border-border border-t-0">
+        <div className="flex-shrink-0 flex items-center justify-center px-4 py-2 lg:py-2 border-t border-border lg:relative fixed bottom-0 left-0 right-0 bg-background z-50 lg:border-t lg:border-border">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
           >
             <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
             <span className="text-xs font-black uppercase tracking-widest">
-              Logout
+              Logout My Account
             </span>
           </button>
         </div>
