@@ -105,28 +105,28 @@ export async function PUT(request: NextRequest) {
 
     // Get request body
     const body = await request.json();
-    const { userId, accountBalance, totalProfit, totalWithdrawal } = body;
+    const { userId, accountBalance, totalProfit, totalWithdrawal, totalDeposit } = body;
 
     // Validate required fields
-    if (!userId || accountBalance === undefined || totalProfit === undefined || totalWithdrawal === undefined) {
+    if (!userId || accountBalance === undefined || totalProfit === undefined || totalWithdrawal === undefined || totalDeposit === undefined) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, accountBalance, totalProfit, totalWithdrawal' },
+        { error: 'Missing required fields: userId, accountBalance, totalProfit, totalWithdrawal, totalDeposit' },
         { status: 400 }
       );
     }
 
     // Validate numeric values
-    if (typeof accountBalance !== 'number' || typeof totalProfit !== 'number' || typeof totalWithdrawal !== 'number') {
+    if (typeof accountBalance !== 'number' || typeof totalProfit !== 'number' || typeof totalWithdrawal !== 'number' || typeof totalDeposit !== 'number') {
       return NextResponse.json(
-        { error: 'accountBalance, totalProfit, and totalWithdrawal must be numbers' },
+        { error: 'accountBalance, totalProfit, totalWithdrawal, and totalDeposit must be numbers' },
         { status: 400 }
       );
     }
 
     // Validate non-negative values
-    if (accountBalance < 0 || totalProfit < 0 || totalWithdrawal < 0) {
+    if (accountBalance < 0 || totalProfit < 0 || totalWithdrawal < 0 || totalDeposit < 0) {
       return NextResponse.json(
-        { error: 'accountBalance, totalProfit, and totalWithdrawal must be non-negative' },
+        { error: 'accountBalance, totalProfit, totalWithdrawal, and totalDeposit must be non-negative' },
         { status: 400 }
       );
     }
@@ -139,6 +139,7 @@ export async function PUT(request: NextRequest) {
           accountBalance: accountBalance,
           totalProfits: totalProfit,
           totalWithdrawal: totalWithdrawal,
+          totalDeposit: totalDeposit,
           updatedAt: new Date()
         }
       }
