@@ -36,9 +36,9 @@ export default function ManageAccountSkeleton() {
                     <th className="px-6 py-4">
                       <div className="h-3 w-24 bg-muted rounded animate-pulse"></div>
                     </th>
-                    <th className="px-6 py-4">
+                    {/* <th className="px-6 py-4">
                       <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
-                    </th>
+                    </th> */}
                     <th className="px-6 py-4">
                       <div className="h-3 w-28 bg-muted rounded animate-pulse"></div>
                     </th>
