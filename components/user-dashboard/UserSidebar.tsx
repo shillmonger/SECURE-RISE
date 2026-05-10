@@ -174,14 +174,14 @@ export default function UserSidebar({
       )}
 
       <aside
-        className={`${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-full md:w-70 flex flex-col lg:rounded-none
-  transform bg-background border-r border-border 
-  transition-transform duration-300 ease-in-out 
-  lg:translate-x-0 lg:static lg:inset-0 
-  shadow-2xl lg:shadow-none h-screen`}
-      >
+  className={`${
+    sidebarOpen ? "translate-x-0" : "-translate-x-full"
+  } fixed inset-y-0 left-0 z-100 w-full md:w-70 flex flex-col
+  bg-background border-r border-border
+  transition-transform duration-300 ease-in-out
+  lg:translate-x-0 lg:static lg:inset-0
+  shadow-2xl lg:shadow-none h-screen overflow-hidden`}
+>
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase tracking-tighter  text-foreground">
@@ -200,7 +200,8 @@ export default function UserSidebar({
         </div>
 
         {/* FIX 2: Added overflow-y-auto and scrollbar styling to make the nav scrollable */}
-        <nav className="flex-1 px-4 py-5 pb-20 lg:px-4 lg:py-5 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+        <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
+        {/* <nav className="flex-1 px-4 py-5 pb-20 lg:px-4 lg:py-5 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"> */}
           {navItems.map((item) => {
             if ("href" in item) {
               const active = pathname === item.href;
