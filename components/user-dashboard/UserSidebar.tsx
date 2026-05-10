@@ -109,8 +109,8 @@ export default function UserSidebar({
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-        { name: "Referrals", icon: Users, href: `#` },
-        { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
+        // { name: "Referrals", icon: Users, href: `#` },
+        // { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
       ],
     },
     {
