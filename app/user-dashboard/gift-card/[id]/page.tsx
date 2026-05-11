@@ -21,6 +21,7 @@ import {
   FileText,
   Camera,
   Clock,
+  X,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -33,6 +34,7 @@ const GiftCardSubmitPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [giftCardData, setGiftCardData] = useState<any>(null);
+  const [hasPreUploaded, setHasPreUploaded] = useState(false);
 
   const params = useParams();
   const searchParams = useSearchParams();
@@ -46,13 +48,17 @@ const GiftCardSubmitPage = () => {
   const amount = searchParams.get("amount") || "";
   const currency = searchParams.get("currency") || "USD";
   const code = searchParams.get("code") || "";
+  const hasImage = searchParams.get("hasImage") === "true";
+  const imageName = searchParams.get("imageName") || "";
 
   useEffect(() => {
     // If no required data, redirect back to gift card page
     if (!cardType || !country || !amount || !code) {
       router.push("/user-dashboard/gift-card");
     }
-  }, [cardType, country, amount, code, router]);
+    // Set pre-uploaded image status
+    setHasPreUploaded(hasImage);
+  }, [cardType, country, amount, code, router, hasImage]);
 
   const getCardIcon = (type: string) => {
     switch (type) {
@@ -80,6 +86,11 @@ const GiftCardSubmitPage = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setSelectedFile(file);
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setHasPreUploaded(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -284,28 +295,73 @@ const GiftCardSubmitPage = () => {
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Upload Gift Card Image
                       </label>
-                      <div className="relative group">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileSelect}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        <div
-                          className={`border-2 border-dashed rounded-xl p-6 lg:p-10 flex flex-col items-center justify-center gap-3 transition-all ${
-                            selectedFile
-                              ? "border-primary bg-primary/5"
-                              : "border-border bg-muted/10 group-hover:border-foreground/40"
-                          }`}
-                        >
-                          <Camera
-                            className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
-                          />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                            {selectedFile?.name || "Choose Card Image"}
-                          </span>
+                      
+                      {/* Display pre-uploaded image or upload area */}
+                      {(hasPreUploaded || selectedFile) ? (
+                        <div className="relative group">
+                          <div className="border-2 border-primary bg-primary/5 rounded-xl p-4 flex flex-col items-center gap-3">
+                            <div className="w-full max-w-xs">
+                              <div className="bg-muted/50 rounded-lg p-3 flex items-center justify-center">
+                                <CheckCircle2 className="w-8 h-8 text-primary" />
+                              </div>
+                              <div className="text-center mt-3">
+                                <p className="text-xs font-black text-foreground">
+                                  {selectedFile?.name || (imageName ? decodeURIComponent(imageName) : "Uploaded Image")}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground mt-1">
+                                  Image ready for submission
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {/* Delete/Replace buttons */}
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={handleRemoveImage}
+                                className="flex-1 bg-red-500/10 text-red-500 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-1"
+                              >
+                                <X className="w-3 h-3" />
+                                Remove
+                              </button>
+                              <label className="flex-1 bg-foreground/10 text-foreground px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-foreground/20 transition-all cursor-pointer flex items-center justify-center gap-1">
+                                <Camera className="w-3 h-3" />
+                                Replace
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleFileSelect}
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="relative group">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                          <div
+                            className={`border-2 border-dashed rounded-xl p-6 lg:p-10 flex flex-col items-center justify-center gap-3 transition-all ${
+                              selectedFile
+                                ? "border-primary bg-primary/5"
+                                : "border-border bg-muted/10 group-hover:border-foreground/40"
+                            }`}
+                          >
+                            <Camera
+                              className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-center">
+                              {selectedFile?.name || "Choose Card Image"}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
                       <p className="text-xs text-muted-foreground">
                         Front image with full card and code visible
                       </p>

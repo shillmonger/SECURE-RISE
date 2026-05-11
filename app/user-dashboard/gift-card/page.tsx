@@ -325,7 +325,7 @@ const GiftCardPage = () => {
                         </div>
                       </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {["Full card visible", "Code clearly readable", "No blur or crop", "Good lighting"].map((req) => (
+                        {["Full card visible", "readable code", "No blur or crop", "Good lighting"].map((req) => (
                           <div key={req} className="flex items-center gap-1.5 bg-muted/30 border border-border/50 rounded-lg px-3 py-2">
                             <CheckCircle2 className="w-3 h-3 text-muted-foreground shrink-0" />
                             <span className="text-[10px] font-black uppercase tracking-tight text-muted-foreground">{req}</span>
@@ -375,7 +375,7 @@ const GiftCardPage = () => {
                     {currentStep > 1 && (
                       <button
                         onClick={prevStep}
-                        className="flex-1 bg-muted text-foreground py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-muted/70 transition-all cursor-pointer"
+                        className="flex-1 bg-muted text-foreground py-3 rounded-lg font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-muted/70 transition-all cursor-pointer"
                       >
                         Back
                       </button>
@@ -384,7 +384,7 @@ const GiftCardPage = () => {
                       <button
                         onClick={nextStep}
                         disabled={!canProceed()}
-                        className={`flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
+                        className={`flex-1 py-3 rounded-lg font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
                           canProceed()
                             ? "bg-foreground text-background cursor-pointer hover:opacity-90 shadow-xl"
                             : "bg-muted text-muted-foreground cursor-not-allowed"
@@ -394,7 +394,7 @@ const GiftCardPage = () => {
                       </button>
                     ) : (
                       <Link
-                        href={`/user-dashboard/gift-card/submit?cardType=${selectedCardType}&country=${selectedCountry}&amount=${amount}&currency=${getSelectedCountryData()?.currency}&code=${cardCode}`}
+                        href={`/user-dashboard/gift-card/submit?cardType=${selectedCardType}&country=${selectedCountry}&amount=${amount}&currency=${getSelectedCountryData()?.currency}&code=${cardCode}${frontImage ? `&hasImage=true&imageName=${encodeURIComponent(frontImage.name)}` : ''}`}
                         className="flex-1"
                       >
                         <button
@@ -405,7 +405,7 @@ const GiftCardPage = () => {
                               : "bg-muted text-muted-foreground cursor-not-allowed"
                           }`}
                         >
-                          Submit for Review <ChevronRight className="w-3.5 h-3.5" />
+                          Submit <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </Link>
                     )}

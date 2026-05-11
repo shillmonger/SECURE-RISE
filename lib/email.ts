@@ -2358,3 +2358,216 @@ export const sendGiftCreditEmail = async (userEmail: string, giftData: {
     throw error;
   }
 };
+
+export const sendGiftCardNotificationToAdmins = async (giftCardData: {
+  giftCardId: string;
+  username: string;
+  userEmail: string;
+  cardType: string;
+  country: string;
+  amount: number;
+  currency: string;
+  code: string;
+  cardImage: string;
+  transactionId: string;
+}) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Gift Card Alert - Secure Rise</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .alert-box {
+          background: #f59e0b;
+          color: #09090b;
+          padding: 24px;
+          border-radius: 16px;
+          margin: 24px 0;
+          text-align: center;
+        }
+        .card-amount {
+          font-size: 36px;
+          font-weight: 800;
+          margin: 8px 0;
+        }
+        .info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin: 24px 0;
+        }
+        .info-item {
+          background: #f4f4f5;
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .info-label {
+          text-transform: uppercase;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .card-image {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+          border-radius: 12px;
+          margin: 16px auto;
+          display: block;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          margin: 32px 0;
+        }
+        .btn {
+          flex: 1;
+          padding: 16px 24px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+          display: block;
+        }
+        .btn-review {
+          background: #f59e0b;
+          color: white;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">New Gift Card Alert</h1>
+          <p class="subtitle">A user has submitted a new gift card for review</p>
+        </div>
+
+        <div class="alert-box">
+          <div class="info-label">Gift Card Value</div>
+          <div class="card-amount">${giftCardData.currency} ${giftCardData.amount.toLocaleString()}</div>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">${giftCardData.cardType} (${giftCardData.country})</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">User</div>
+            <div class="info-value">${giftCardData.username}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">${giftCardData.userEmail}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Transaction ID</div>
+            <div class="info-value">${giftCardData.transactionId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Card Code</div>
+            <div class="info-value">${giftCardData.code}</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 24px 0;">
+          <div class="info-label">Gift Card Image</div>
+          <img src="${giftCardData.cardImage}" alt="Gift Card Image" class="card-image">
+        </div>
+
+        <div class="action-buttons">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-gift-cards" class="btn btn-review">
+            Review Gift Card
+          </a>
+        </div>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            This is an automated notification. Please review the gift card promptly.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Get all admin users
+  const db = await connectToDatabase();
+  const usersCollection = db.collection('users');
+  const adminUsers = await usersCollection.find({ role: 'admin' }).toArray();
+
+  // Send email to all admins
+  const emailPromises = adminUsers.map(async (admin: any) => {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: admin.email,
+      subject: `New Gift Card Alert - ${giftCardData.username} - ${giftCardData.currency} ${giftCardData.amount.toLocaleString()}`,
+      html: htmlContent,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Gift card notification sent to admin: ${admin.email}`);
+    } catch (error) {
+      console.error(`Error sending gift card notification to ${admin.email}:`, error);
+    }
+  });
+
+  await Promise.all(emailPromises);
+};
