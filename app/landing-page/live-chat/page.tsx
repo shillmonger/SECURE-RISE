@@ -278,22 +278,12 @@ export default function LetsTalkPage() {
                       </p>
                       <p className="font-bold">support@securerise.com</p>
                       <p className="text-xs text-muted-foreground">
-                        Reply within 2 hours
+                        tickets@secure-rise.p.tawk.email
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* <div className="bg-primary p-8 rounded-[1.5rem] text-primary-foreground shadow-lg">
-                <ShieldCheck className="h-8 w-8 mb-4 opacity-80" />
-                <h4 className="font-black uppercase italic tracking-tighter text-lg mb-2">
-                  Your Privacy Matters
-                </h4>
-                <p className="text-sm opacity-80 leading-relaxed">
-                  All chat conversations are encrypted end-to-end. We never share your data with third parties.
-                </p>
-              </div> */}
 
               <div className="bg-card border border-border rounded-[1.5rem] p-8 shadow-sm">
                 <Clock className="h-6 w-6 text-primary mb-3" />

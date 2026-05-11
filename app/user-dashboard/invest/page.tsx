@@ -45,7 +45,7 @@ const plans: Plan[] = [
     name: "Starter Rise",
     min: 100,
     max: 199,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <Zap className="w-5 h-5" />,
     color: "from-yellow-500/20 to-yellow-500/5",
@@ -59,7 +59,7 @@ const plans: Plan[] = [
     name: "Basic Growth",
     min: 200,
     max: 499,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <TrendingUp className="w-5 h-5" />,
     color: "from-green-500/20 to-green-500/5",
@@ -73,7 +73,7 @@ const plans: Plan[] = [
     name: "Pro Trader",
     min: 500,
     max: 999,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <ShieldCheck className="w-5 h-5" />,
     color: "from-blue-500/20 to-blue-500/5",
@@ -87,7 +87,7 @@ const plans: Plan[] = [
     name: "Advanced Wealth",
     min: 1000,
     max: 4999,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <Bot className="w-5 h-5" />,
     color: "from-purple-500/20 to-purple-500/5",
@@ -101,7 +101,7 @@ const plans: Plan[] = [
     name: "Elite Investor",
     min: 5000,
     max: 9999,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <Users className="w-5 h-5" />,
     color: "from-orange-500/20 to-orange-500/5",
@@ -115,7 +115,7 @@ const plans: Plan[] = [
     name: "Secure Partner",
     min: 10000,
     max: null,
-    roiPerDay: 20,
+    roiPerDay: 50,
     duration: 7,
     icon: <Building className="w-5 h-5" />,
     color: "from-cyan-500/20 to-cyan-500/5",
@@ -128,14 +128,14 @@ const plans: Plan[] = [
 
 // ─── Calculator ────────────────────────────────────────────────────────────────
 // MATH:
-//   Daily earnings  = amount × 20%          → $100 × 0.20 = $20/day
-//   Total profit    = dailyEarnings × days  → $20  × 2    = $40
-//   Total returned  = amount + totalProfit  → $100 + $40  = $140
+//   Daily earnings  = amount × 50%          → $100 × 0.50 = $50/day
+//   Total profit    = dailyEarnings × days  → $50  × 2    = $100
+//   Total returned  = amount + totalProfit  → $100 + $100 = $200
 function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelectedPlan: (plan: Plan) => void; setIsModalOpen: (isOpen: boolean) => void }) {
   const [amount, setAmount] = useState(500);
   const [days, setDays] = useState(7);
 
-  const ROI_PER_DAY = 0.20; // 20% per day
+  const ROI_PER_DAY = 0.50; // 50% per day
   const dailyEarnings = amount * ROI_PER_DAY;
   const totalProfit = dailyEarnings * days;
   const totalReturn = amount + totalProfit;
@@ -149,7 +149,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
         <div>
           <h2 className="text-sm font-black uppercase tracking-widest">Investment Calculator</h2>
           <p className="text-[10px] text-muted-foreground uppercase font-bold">
-            20% daily ROI · drag both sliders to estimate your returns
+            50% daily ROI · drag both sliders to estimate your returns
           </p>
         </div>
       </div>
@@ -210,7 +210,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
           <div className="bg-muted/40 rounded-2xl p-4 space-y-2">
             <div className="flex justify-between text-[10px]">
               <span className="text-muted-foreground font-bold uppercase">Daily ROI Rate</span>
-              <span className="font-black text-primary">20% per day</span>
+              <span className="font-black text-primary">50% per day</span>
             </div>
             <div className="flex justify-between text-[10px]">
               <span className="text-muted-foreground font-bold uppercase">Earnings per day</span>
@@ -236,7 +236,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
                 <span className="text-sm font-bold opacity-50">/day</span>
               </p>
               <p className="text-[9px] opacity-40 font-bold uppercase mt-0.5">
-                ${amount.toLocaleString()} × 20%
+                ${amount.toLocaleString()} × 50%
               </p>
             </div>
 
@@ -276,7 +276,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
 
 // ─── Plan Card ────────────────────────────────────────────────────────────────
 function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: Plan) => void }) {
-  const dailyEarnings = plan.min * 0.20;
+  const dailyEarnings = plan.min * 0.50;
   const totalProfit = dailyEarnings * plan.duration;
   const totalReturn = plan.min + totalProfit;
 
@@ -451,7 +451,7 @@ export default function InvestPage() {
                 </h1>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-primary" />
-                  20% Daily ROI · 7-Day Plans · Daily Payouts
+                  50% Daily ROI · 7-Day Plans · Daily Payouts
                 </p>
               </div>
               <button

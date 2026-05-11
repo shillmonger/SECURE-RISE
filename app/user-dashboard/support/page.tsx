@@ -312,7 +312,7 @@ export default function SupportPage() {
                         Email Support
                       </p>
                       <p className="text-sm font-black ">
-                        support@cetadel.com
+                        tickets@secure-rise.p.tawk.email
                       </p>
                     </div>
                   </div>
