@@ -162,7 +162,7 @@ const GiftCardSubmitPage = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">
-                  Gift Card Checkout
+                 Checkout
                 </h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <ShieldCheck className="w-3 h-3 text-primary" /> Secure Gift
@@ -197,7 +197,7 @@ const GiftCardSubmitPage = () => {
                   <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
                     Card Value
                   </p>
-                  <p className="text-lg sm:text-2xl font-black tracking-tight text-green-500">
+                  <p className="text-lg sm:text-xl font-black tracking-tight text-green-500">
                     {currency} {parseFloat(amount).toLocaleString()}
                   </p>
                 </div>
@@ -341,90 +341,93 @@ const GiftCardSubmitPage = () => {
             </div>
 
             {/* ⚠️ GIFT CARD WARNING BANNER */}
-            <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 p-4 md:p-5 backdrop-blur-sm">
-              {/* Background Effects */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
-              <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
+<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
 
-              {/* Header */}
-              <div className="relative z-10 mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
-                  <AlertTriangle className="h-5 w-5 text-orange-400" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-300">
-                    Gift Card Guidelines
-                  </p>
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-orange-100/70">
-                    Read carefully before submission
-                  </p>
-                </div>
-              </div>
+  {/* Background Effects */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
 
-              {/* Warning Items */}
-              <div className="relative z-10 space-y-3">
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/10 bg-black/20 px-4 py-3">
-                  <FileText className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-orange-100">
-                      Valid Gift Cards Only
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-orange-100/60 leading-relaxed">
-                      Only submit unused, valid gift cards. Used or expired
-                      cards will be rejected.
-                    </p>
-                  </div>
-                </div>
+  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
 
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-3">
-                  <Camera className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-orange-100">
-                      Clear Image Required
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-orange-100/60 leading-relaxed">
-                      Image must show full card with code clearly visible.
-                      Blurry or cropped images will be rejected.
-                    </p>
-                  </div>
-                </div>
+  {/* Header */}
+  <div className="relative z-10 mb-5 flex items-center gap-3">
 
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/10 bg-black/20 px-4 py-3">
-                  <Copy className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-orange-100">
-                      Correct Code Entry
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-orange-100/60 leading-relaxed">
-                      Double-check your code entry. Incorrect codes will delay
-                      verification and may result in rejection.
-                    </p>
-                  </div>
-                </div>
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
+      <AlertTriangle className="h-5 w-5 text-orange-500" />
+    </div>
 
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/10 bg-black/20 px-4 py-3">
-                  <Clock className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-orange-100">
-                      Processing Time
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-orange-100/60 leading-relaxed">
-                      Gift card verification takes 24-48 hours. You'll be
-                      notified once approved or rejected.
-                    </p>
-                  </div>
-                </div>
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
+        Gift Card Guidelines
+      </p>
 
-                <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-3">
-                  <span className="text-[11px] font-black uppercase tracking-tight text-orange-100">
-                    No Instant Credits
-                  </span>
-                  <span className="text-[11px] font-black text-orange-400">
-                    Manual Review Required
-                  </span>
-                </div>
-              </div>
-            </div>
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-orange-100/70">
+        Read carefully before submission
+      </p>
+    </div>
+  </div>
+
+  {/* Warning Items */}
+  <div className="relative z-10 space-y-3">
+
+    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+      <FileText className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+          Valid Gift Cards Only
+        </span>
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+          Only submit unused, valid gift cards. Used or expired cards will be rejected.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-500/10 px-4 py-3">
+      <Camera className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+          Clear Image Required
+        </span>
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+          Image must show full card with code clearly visible. Blurry or cropped images will be rejected.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+      <Copy className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+          Correct Code Entry
+        </span>
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+          Double-check your code entry. Incorrect codes will delay verification and may result in rejection.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+      <Clock className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+          Processing Time
+        </span>
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+          Gift card verification takes 24-48 hours. You'll be notified once approved or rejected.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 dark:bg-orange-500/10 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+        No Instant Credits
+      </span>
+      <span className="text-[11px] font-black text-orange-600 dark:text-orange-400">
+        Manual Review Required
+      </span>
+    </div>
+
+  </div>
+</div>
           </div>
         </main>
       </div>

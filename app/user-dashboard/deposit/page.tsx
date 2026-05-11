@@ -37,8 +37,8 @@ const PAYMENT_METHODS = [
   { name: "Solana", ticker: "SOL" },
   { name: "Dogecoin", ticker: "DOGE" },
   { name: "Cardano", ticker: "ADA" },
-  { name: "XRP", ticker: "XRP" },
-  { name: "USDC ERC20", ticker: "USDC" },
+  // { name: "XRP", ticker: "XRP" },
+  // { name: "USDC ERC20", ticker: "USDC" },
   { name: "Litecoin", ticker: "LTC" },
   { name: "BNB BEP20", ticker: "BNB" },
 ];

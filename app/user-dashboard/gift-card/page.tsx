@@ -139,11 +139,11 @@ const GiftCardPage = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-none flex items-center gap-2">
-                  <Gift className="w-5 h-5 text-primary" />
+                  {/* <Gift className="w-5 h-5 text-primary" /> */}
                   Gift Card Deposit
                 </h1>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-1.5">
-                  <ShieldCheck className="w-3 h-3 text-primary" />
+                  <Gift className="w-3 h-3 text-primary" />
                   Secure gift card verification system
                 </p>
               </div>
@@ -273,7 +273,7 @@ const GiftCardPage = () => {
                   {/* ── Step 3: Amount ── */}
                   {currentStep === 3 && (
                     <div className="space-y-3">
-                      <p className="text-xs font-black uppercase tracking-tight">Enter the card value</p>
+                      <p className="text-xs font-black uppercase tracking-tight">Enter the card Amount</p>
                       <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-muted-foreground pointer-events-none z-10">
                           {getSelectedCountryData()?.currency || "USD"}

@@ -99,7 +99,7 @@ export default function UserSidebar({
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     {
-      name: "Deposit",
+      name: "Fund Account",
       icon: Wallet,
       children: [
         {

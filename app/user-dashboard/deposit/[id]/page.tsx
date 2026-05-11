@@ -288,21 +288,26 @@ const MakePaymentPage = () => {
 
 
             {/* ⚠️ DEPOSIT WARNING BANNER */}
-<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-red-500/30 bg-gradient-to-br from-red-500/15 via-orange-500/10 to-red-500/5 p-4 md:p-5 backdrop-blur-sm">
+<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-red-500/30 bg-gradient-to-br from-red-500/15 via-orange-500/10 to-red-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
+
   {/* Background Effects */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+
   <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-red-400 opacity-10" />
 
   {/* Header */}
   <div className="relative z-10 mb-5 flex items-center gap-3">
+
     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30">
-      <AlertTriangle className="h-5 w-5 text-red-400" />
+      <AlertTriangle className="h-5 w-5 text-red-500" />
     </div>
+
     <div>
-      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-300">
+      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-600 dark:text-red-300">
         Deposit Warning
       </p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-red-100/70">
+
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-red-100/70">
         Read carefully before sending funds
       </p>
     </div>
@@ -310,62 +315,67 @@ const MakePaymentPage = () => {
 
   {/* Warning Items */}
   <div className="relative z-10 space-y-3">
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
-      <Copy className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+      <Copy className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
       <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
           Always Use The Copy Button
         </span>
-        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
           Never type the address manually. One wrong character means permanent, unrecoverable loss of funds.
         </p>
       </div>
     </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
-      <Zap className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-red-500/10 px-4 py-3">
+      <Zap className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
       <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
           Send On The Correct Network Only
         </span>
-        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
-          Sending on the wrong network (e.g. ERC20 vs TRC20) will result in total loss. Network shown: <span className="text-red-300 font-black">{paymentMethod.network}</span>
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+          Sending on the wrong network will result in loss. Network shown:{" "}
+          <span className="text-red-600 dark:text-red-300 font-black">
+            {paymentMethod.network}
+          </span>
         </p>
       </div>
     </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
-      <CheckCircle2 className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+      <CheckCircle2 className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
       <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
           Send The Exact Amount
         </span>
-        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
           Under- or over-payment may delay or void your deposit pending manual review.
         </p>
       </div>
     </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
-      <Upload className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+      <Upload className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
       <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
           Upload Clear Proof Of Transfer
         </span>
-        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
-          Screenshot must show the transaction hash, amount & destination address. Blurry or cropped images will be rejected.
+        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+          Screenshot must show transaction hash, amount & destination address. Blurry images will be rejected.
         </p>
       </div>
     </div>
 
-    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 dark:bg-red-500/10 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
         Transactions Are Irreversible
       </span>
-      <span className="text-[11px] font-black text-red-400">
+      <span className="text-[11px] font-black text-red-600 dark:text-red-400">
         No Exceptions
       </span>
     </div>
+
   </div>
 </div>
           </div>
