@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate card type
-    const validCardTypes = ['Apple', 'Amazon', 'Steam', 'Google Play', 'Razer Gold'];
+    const validCardTypes = ['Apple', 'Amazon', 'Steam', 'Google Play', 'Razer Gold', 'Xbox'];
     if (!validCardTypes.includes(cardType)) {
       return NextResponse.json(
         { error: 'Invalid gift card type' },

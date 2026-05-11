@@ -23,7 +23,7 @@ import Link from "next/link";
 
 // ─── Data & Types ──────────────────────────────────────────────────────────────
 
-type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift';
+type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift' | 'gift_card';
 
 interface Notification {
   id: string;
@@ -105,6 +105,10 @@ const NotificationsPage = () => {
         const giftsResponse = await fetch("/api/user-dashboard/gift/history");
         const giftsResult = await giftsResponse.json();
 
+        // Fetch gift cards
+        const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`);
+        const giftCardsResult = await giftCardsResponse.json();
+
         const allNotifications: Notification[] = [];
 
         // Process deposits as notifications
@@ -169,6 +173,26 @@ const NotificationsPage = () => {
                 });
               });
             }
+          });
+        }
+
+        // Process gift cards as notifications
+        if (giftCardsResult.success && giftCardsResult.giftCards) {
+          giftCardsResult.giftCards.forEach((giftCard: any) => {
+            const statusText = giftCard.status === 'pending_review' ? 'Pending Review' : 
+                              giftCard.status === 'approved' ? 'Approved' : 
+                              giftCard.status === 'rejected' ? 'Rejected' : 
+                              giftCard.status === 'processing' ? 'Processing' : giftCard.status;
+            
+            allNotifications.push({
+              id: `gift-card-${giftCard._id}`,
+              type: 'gift_card',
+              title: `Gift Card ${statusText}`,
+              message: `Your ${giftCard.cardType} gift card worth ${giftCard.currency} ${giftCard.amount.toFixed(2)} from ${giftCard.country} has been ${statusText.toLowerCase()}.${giftCard.rejectionReason ? ` Reason: ${giftCard.rejectionReason}` : ''}`,
+              time: formatTimeAgo(new Date(giftCard.createdAt)),
+              isRead: giftCard.status === 'approved' || giftCard.status === 'rejected',
+              rawData: giftCard
+            });
           });
         }
 
@@ -270,6 +294,7 @@ const NotificationsPage = () => {
       case 'withdrawal': return <ArrowUpRight className="w-4 h-4 text-red-500" />;
       case 'roi': return <TrendingUp className="w-4 h-4 text-purple-500" />;
       case 'investment': return <Gift className="w-4 h-4 text-blue-500" />;
+      case 'gift_card': return <Gift className="w-4 h-4 text-orange-500" />;
       case 'gift': return <Gift className="w-4 h-4 text-pink-500" />;
       case 'system': return <Megaphone className="w-4 h-4 text-muted-foreground" />;
     }

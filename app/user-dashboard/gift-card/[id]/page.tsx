@@ -565,7 +565,7 @@ const GiftCardSubmitPage = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                router.push("/user-dashboard/gift-card");
+                router.push("/user-dashboard/transactions");
               }}
               className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:opacity-90 transition-opacity cursor-pointer"
             >
