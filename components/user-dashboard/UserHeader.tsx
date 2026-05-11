@@ -666,9 +666,9 @@ export default function UserHeader({
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 ) : (
                   <>
-                    {accountNotifications[account.id] > 0 && (
+                    {/* {accountNotifications[account.id] > 0 && (
                       <Circle className="h-2.5 w-2.5 fill-blue-500 text-blue-500" />
-                    )}
+                    )} */}
 
                     <button
                       onClick={(e) => {
