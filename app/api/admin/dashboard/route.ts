@@ -83,6 +83,10 @@ export async function GET(request: NextRequest) {
       .limit(50)
       .toArray();
 
+    // Calculate pending deposits amount
+    const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
+    const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
+
     // Get user information for deposits
     const userIds = deposits.map(d => d.userId);
     const users = await usersCollection.find({ _id: { $in: userIds } }).toArray();
@@ -98,6 +102,14 @@ export async function GET(request: NextRequest) {
       .sort({ createdAt: -1 })
       .limit(50)
       .toArray();
+
+    // Calculate pending withdrawals amount
+    const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
+    const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+
+    // Calculate total approved withdrawals (payouts)
+    const approvedWithdrawalsData = await withdrawalsCollection.find({ status: 'approved' }).toArray();
+    const totalPayout = approvedWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
 
     // Get user information for withdrawals
     const withdrawalUserIds = withdrawals.map(w => w.userId);
@@ -137,19 +149,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Combine and sort all transactions by date
-    const allTransactions = [...depositTransactions, ...withdrawalTransactions]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 50); // Keep only 50 most recent
-
-    // Calculate pending deposits amount
-    const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
-    const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
-
-    // Calculate pending withdrawals amount
-    const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
-    const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
-
     // Get investment plans count
     const investmentsCollection = db.collection('investments');
     const investmentPlansCount = await investmentsCollection.countDocuments();
@@ -161,6 +160,42 @@ export async function GET(request: NextRequest) {
     // Get total gifts count
     const giftsCollection = db.collection('gifts');
     const totalGifts = await giftsCollection.countDocuments();
+
+    // Get gift cards statistics
+    const giftCardsCollection = db.collection('giftcards');
+    const pendingGiftCards = await giftCardsCollection.countDocuments({ status: 'pending_review' });
+    const approvedGiftCards = await giftCardsCollection.countDocuments({ status: 'approved' });
+    const rejectedGiftCards = await giftCardsCollection.countDocuments({ status: 'rejected' });
+
+    // Get recent gift cards transactions
+    const recentGiftCards = await giftCardsCollection
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+
+    // Get user information for gift cards
+    const giftCardUserIds = recentGiftCards.map(g => g.userId);
+    const giftCardUsers = await usersCollection.find({ _id: { $in: giftCardUserIds } }).toArray();
+    const giftCardUserMap: { [key: string]: any } = {};
+    giftCardUsers.forEach(user => {
+      giftCardUserMap[user._id.toString()] = user;
+    });
+
+    // Format gift card transactions
+    const giftCardTransactions = recentGiftCards.map(giftCard => {
+      const user = giftCardUserMap[giftCard.userId.toString()];
+      return {
+        id: giftCard.transactionId,
+        type: 'Gift Card',
+        amount: giftCard.amount,
+        status: giftCard.status.charAt(0).toUpperCase() + giftCard.status.slice(1),
+        user: user?.fullName || user?.username || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        paymentMethod: `${giftCard.cardType} (${giftCard.country})`,
+        createdAt: giftCard.createdAt
+      };
+    });
 
     // Get user achievements count
     const userAchievementsCollection = db.collection('userachievements');
@@ -186,13 +221,21 @@ export async function GET(request: NextRequest) {
       { label: "Investment Plans", value: investmentPlansCount.toString(), icon: "Layers", color: "text-purple-500", bg: "bg-purple-500/10" },
       { label: "Total Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
-      { label: "Total Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
       { label: "Pending Withdrawal", value: `$${pendingWithdrawalsTotal.toFixed(2)}`, icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Total Payout", value: `$${totalPayout.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-green-500", bg: "bg-green-500/10" },
       { label: "Total KYC Submitted", value: totalKycSubmissions.toString(), icon: "Shield", color: "text-indigo-500", bg: "bg-indigo-500/10" },
+      { label: "Pending Gift Cards", value: pendingGiftCards.toString(), icon: "Gift", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Approved Gift Cards", value: approvedGiftCards.toString(), icon: "Gift", color: "text-green-500", bg: "bg-green-500/10" },
+      { label: "Rejected Gift Cards", value: rejectedGiftCards.toString(), icon: "Gift", color: "text-red-500", bg: "bg-red-500/10" },
       { label: "Total Gifts", value: totalGifts.toString(), icon: "Gift", color: "text-pink-500", bg: "bg-pink-500/10" },
       { label: "User Achievements", value: totalUserAchievements.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
       { label: "Total User XP", value: totalUserXP.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
     ];
+
+    // Combine and sort all transactions by date
+    const allTransactions = [...depositTransactions, ...withdrawalTransactions, ...giftCardTransactions]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 50); // Keep only 50 most recent
 
     return NextResponse.json({
       success: true,

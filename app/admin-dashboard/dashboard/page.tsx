@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
         { label: "Total KYC Submitted", value: "0", icon: Shield, color: "text-indigo-500", bg: "bg-indigo-500/10" },
         { label: "Total Gifts", value: "0", icon: Gift, color: "text-pink-500", bg: "bg-pink-500/10" },
         { label: "User Achievements", value: "0", icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-500/10" },
-        { label: "Total User XP", value: "0", icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { label: "Total Users XP", value: "0", icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
       ]);
     } finally {
       setLoading(false);
@@ -153,9 +153,9 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,].map((item) => (
                 <div key={item} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-2 rounded-xl bg-muted animate-pulse">
@@ -187,6 +187,9 @@ export default function AdminDashboardPage() {
             )}
           </div>
 
+
+
+
           {/* Recent Transactions Section */}
           <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="p-6 border-b border-border flex items-center justify-between">
@@ -208,6 +211,7 @@ export default function AdminDashboardPage() {
                       <th className="px-6 py-4">Type</th>
                       <th className="px-6 py-4">Amount</th>
                       <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -225,6 +229,9 @@ export default function AdminDashboardPage() {
                         <td className="px-6 py-4">
                           <div className="h-4 bg-muted rounded w-16 animate-pulse"></div>
                         </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-muted rounded w-20 animate-pulse"></div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -239,6 +246,7 @@ export default function AdminDashboardPage() {
                       <th className="px-6 py-4">Type</th>
                       <th className="px-6 py-4">Amount</th>
                       <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -271,6 +279,15 @@ export default function AdminDashboardPage() {
                               : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20'
                           }`}>
                             {transaction.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {new Date(transaction.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
                           </span>
                         </td>
                       </tr>
