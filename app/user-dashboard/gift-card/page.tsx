@@ -54,12 +54,12 @@ const COUNTRIES = [
 
   { name: "Germany", currency: "EUR", flag: "🇩🇪" },
   { name: "France", currency: "EUR", flag: "🇫🇷" },
-  { name: "Netherlands", currency: "EUR", flag: "🇳🇱" },
+  // { name: "Netherlands", currency: "EUR", flag: "🇳🇱" },
   { name: "Italy", currency: "EUR", flag: "🇮🇹" },
   { name: "Spain", currency: "EUR", flag: "🇪🇸" },
 
   { name: "Ireland", currency: "EUR", flag: "🇮🇪" },
-  { name: "Switzerland", currency: "CHF", flag: "🇨🇭" },
+  // { name: "Switzerland", currency: "CHF", flag: "🇨🇭" },
   { name: "Sweden", currency: "SEK", flag: "🇸🇪" },
 
   { name: "UAE", currency: "AED", flag: "🇦🇪" },
