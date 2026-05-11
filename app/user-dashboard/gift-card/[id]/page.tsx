@@ -356,7 +356,7 @@ const GiftCardSubmitPage = () => {
                               className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
                             />
                             <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                              {selectedFile?.name || "Choose Card Image"}
+                              Choose Card Image
                             </span>
                           </div>
                         </div>
