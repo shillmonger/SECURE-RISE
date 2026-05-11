@@ -726,7 +726,7 @@ export default function UserOverviewPage() {
                       <span className="text-muted-foreground font-medium uppercase text-[10px]">
                         Active Trades
                       </span>
-                     <span className="font-black text-[10px] text-green-500">
+                     <span className="font-black text-[11px] text-green-500">
   {activeInvestments}
 </span>
                     </div>
