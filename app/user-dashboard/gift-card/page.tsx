@@ -441,7 +441,7 @@ const GiftCardPage = () => {
                         Card History
                       </p>
                     </div>
-                    {giftCards.length > 4 && (
+                    {giftCards.length > 5 && (
                       <Link
                         href="/user-dashboard/gift-card/history"
                         className="text-[9px] font-black uppercase text-primary hover:opacity-80 transition-opacity"
@@ -465,7 +465,9 @@ const GiftCardPage = () => {
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-50">No submissions yet</p>
                       </div>
                     ) : (
-                      giftCards.slice(0, 5).map((card) => {
+                      giftCards.map((card, index) => {
+                        // Hide items beyond 5th on desktop (lg:hidden), show all on mobile
+                        const isHiddenOnDesktop = index >= 5;
                         const style = getStatusStyles(card.status);
                         const formattedDate = new Date(card.createdAt).toLocaleDateString("en-US", {
                           month: "short",
@@ -475,7 +477,7 @@ const GiftCardPage = () => {
                         return (
                           <div
                             key={card._id}
-                            className="flex bg-muted/30 border border-border/50 px-3 py-2.5 rounded-xl items-center justify-between hover:border-foreground/20 transition-all"
+                            className={`flex bg-muted/30 border border-border/50 px-3 py-2.5 rounded-xl items-center justify-between hover:border-foreground/20 transition-all ${isHiddenOnDesktop ? 'lg:hidden' : ''}`}
                           >
                             <div className="flex items-center gap-2.5">
                               <div className="p-1.5 bg-background rounded-lg shrink-0">

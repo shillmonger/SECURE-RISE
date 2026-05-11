@@ -28,8 +28,7 @@ export const uploadImage = async (
         resource_type: 'image',
         folder,
         transformation: [
-          { width: 300, height: 300, crop: 'fill' },
-          { quality: 'auto' }
+          { width: 800, quality: 'auto' }
         ]
       },
       (error, result) => {

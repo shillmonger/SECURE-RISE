@@ -126,16 +126,14 @@ const GiftCardSubmitPage = () => {
       formData.append("currency", currency);
       formData.append("code", code);
       
-      // For pre-uploaded images, user must re-upload the image on this page
-      // This is a security requirement - we can't access the original file
-      if (!selectedFile && hasPreUploaded) {
-        toast.error("Please re-upload your gift card image for security");
+      // For security, we need the actual file data on this page
+      // The hasPreUploaded flag only indicates they uploaded something earlier
+      if (!selectedFile) {
+        toast.error("Please upload your gift card image for verification");
         return;
       }
       
-      if (selectedFile) {
-        formData.append("cardImage", selectedFile);
-      }
+      formData.append("cardImage", selectedFile);
       
       formData.append("userId", user.id);
       formData.append("username", user.username);
@@ -307,71 +305,29 @@ const GiftCardSubmitPage = () => {
                         Upload Gift Card Image
                       </label>
                       
-                      {/* Display pre-uploaded image or upload area */}
-                      {(hasPreUploaded || selectedFile) ? (
-                        <div className="relative group">
-                          <div className="border-2 border-primary bg-primary/5 rounded-xl p-4 flex flex-col items-center gap-3">
-                            <div className="w-full max-w-xs">
-                              <div className="bg-muted/50 rounded-lg p-3 flex items-center justify-center">
-                                <CheckCircle2 className="w-8 h-8 text-primary" />
-                              </div>
-                              <div className="text-center mt-3">
-                                <p className="text-xs font-black text-foreground">
-                                  {selectedFile?.name || (imageName ? decodeURIComponent(imageName) : "Uploaded Image")}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground mt-1">
-                                  Image ready for submission
-                                </p>
-                              </div>
-                            </div>
-                            
-                            {/* Delete/Replace buttons */}
-                            <div className="flex gap-2">
-                              <button
-                                type="button"
-                                onClick={handleRemoveImage}
-                                className="flex-1 bg-red-500/10 text-red-500 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-1"
-                              >
-                                <X className="w-3 h-3" />
-                                Remove
-                              </button>
-                              <label className="flex-1 bg-foreground/10 text-foreground px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-foreground/20 transition-all cursor-pointer flex items-center justify-center gap-1">
-                                <Camera className="w-3 h-3" />
-                                Replace
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleFileSelect}
-                                  className="hidden"
-                                />
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="relative group">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileSelect}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      {/* Upload area */}
+                      <div className="relative group">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileSelect}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <div
+                          className={`border-2 border-dashed rounded-xl p-6 lg:p-10 flex flex-col items-center justify-center gap-3 transition-all ${
+                            selectedFile
+                              ? "border-primary bg-primary/5"
+                              : "border-border bg-muted/10 group-hover:border-foreground/40"
+                          }`}
+                        >
+                          <Camera
+                            className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
                           />
-                          <div
-                            className={`border-2 border-dashed rounded-xl p-6 lg:p-10 flex flex-col items-center justify-center gap-3 transition-all ${
-                              selectedFile
-                                ? "border-primary bg-primary/5"
-                                : "border-border bg-muted/10 group-hover:border-foreground/40"
-                            }`}
-                          >
-                            <Camera
-                              className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
-                            />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                              Choose Card Image
-                            </span>
-                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-center">
+                            {selectedFile ? "Image Selected: " + selectedFile.name : "Upload Gift Card Image"}
+                          </span>
                         </div>
-                      )}
+                      </div>
                       
                       <p className="text-xs text-muted-foreground">
                         Front image with full card and code visible
@@ -387,7 +343,7 @@ const GiftCardSubmitPage = () => {
                 >
                   <button
                     type="submit"
-                    disabled={isSubmitting || (!selectedFile && !hasPreUploaded)}
+                    disabled={isSubmitting || !selectedFile}
                     className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (
