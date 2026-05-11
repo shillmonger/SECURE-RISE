@@ -23,7 +23,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card";
 type TransactionStatus =
   | "completed"
   | "pending"
@@ -74,6 +74,11 @@ export default function TransactionsPage() {
 
         const giftsResponse = await fetch("/api/user-dashboard/gift/history");
         const giftsResult = await giftsResponse.json();
+
+        const giftCardsResponse = await fetch(
+          `/api/user-dashboard/gift-card?userId=${userResult.user.id}`
+        );
+        const giftCardsResult = await giftCardsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
@@ -153,6 +158,21 @@ export default function TransactionsPage() {
                 });
               });
             }
+          });
+        }
+
+        if (giftCardsResult.success && giftCardsResult.giftCards) {
+          giftCardsResult.giftCards.forEach((giftCard: any) => {
+            allTransactions.push({
+              id: giftCard.transactionId || giftCard._id,
+              type: "gift_card",
+              amount: giftCard.amount,
+              method: `${giftCard.cardType} Gift Card (${giftCard.country})`,
+              status: giftCard.status === "pending_review" ? "pending" : giftCard.status,
+              date: new Date(giftCard.createdAt).toLocaleDateString(),
+              timestamp: new Date(giftCard.createdAt).toLocaleTimeString(),
+              rawData: giftCard,
+            });
           });
         }
 
@@ -250,6 +270,12 @@ export default function TransactionsPage() {
             <TrendingUp className="w-4 h-4 text-purple-500" />
           </div>
         );
+      case "gift_card":
+        return (
+          <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+            <Gift className="w-4 h-4 text-orange-500" />
+          </div>
+        );
       case "gift":
         return (
           <div className="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/20 flex items-center justify-center">
@@ -330,6 +356,10 @@ export default function TransactionsPage() {
         label: "ROI",
         cls: "text-purple-400 bg-purple-500/10 border border-purple-500/20",
       },
+      gift_card: {
+        label: "Gift Card",
+        cls: "text-orange-400 bg-orange-500/10 border border-orange-500/20",
+      },
       gift: {
         label: "Gift",
         cls: "text-pink-400 bg-pink-500/10 border border-pink-500/20",
@@ -347,7 +377,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountColor = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi") return "text-green-400";
+    if (type === "deposit" || type === "roi" || type === "gift_card") return "text-green-400";
     if (type === "withdrawal" || type === "investment") return "text-red-400";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -357,7 +387,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountPrefix = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi") return "+";
+    if (type === "deposit" || type === "roi" || type === "gift_card") return "+";
     if (type === "withdrawal" || type === "investment") return "-";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -426,7 +456,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi", "gift"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card"].map(
                   (type) => (
                     <button
                       key={type}
@@ -521,7 +551,7 @@ export default function TransactionsPage() {
 
                           {/* Date */}
                           <td className="px-5 py-4 whitespace-nowrap">
-                            <p className="text-sm font-bold">{txn.date}</p>
+                            <p className="text-xs font-bold">{txn.date}</p>
                             <p className="text-[11px] text-muted-foreground mt-0.5">
                               {txn.timestamp}
                             </p>
@@ -535,7 +565,7 @@ export default function TransactionsPage() {
                           {/* Amount */}
                           <td className="px-5 py-4 text-right whitespace-nowrap">
                             <span
-                              className={`text-base font-black  ${getAmountColor(txn.type, txn.rawData)}`}
+                              className={`text-sm font-black  ${getAmountColor(txn.type, txn.rawData)}`}
                             >
                               {getAmountPrefix(txn.type, txn.rawData)}$
                               {txn.amount.toLocaleString(undefined, {
