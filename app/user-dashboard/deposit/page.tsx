@@ -31,17 +31,33 @@ interface DepositRecord {
 }
 
 const PAYMENT_METHODS = [
-  { name: "USDT TRC20", ticker: "USDT" },
   { name: "Bitcoin", ticker: "BTC" },
   { name: "Ethereum", ticker: "ETH" },
-  { name: "USDT ERC20", ticker: "USDT" },
+  { name: "USDT-ERC20", ticker: "USDT" },
   { name: "Solana", ticker: "SOL" },
-  { name: "Litecoin", ticker: "LTC" },
-  { name: "XRP", ticker: "XRP" },
-  { name: "Binance Coin", ticker: "BNB" },
-  { name: "Doge", ticker: "DOGE" },
+  { name: "Dogecoin", ticker: "DOGE" },
   { name: "Cardano", ticker: "ADA" },
+  { name: "XRP", ticker: "XRP" },
+  { name: "USDC ERC20", ticker: "USDC" },
+  { name: "Litecoin", ticker: "LTC" },
+  { name: "BNB BEP20", ticker: "BNB" },
 ];
+
+const getPaymentMethodUrl = (methodName: string) => {
+  const urlMap: Record<string, string> = {
+    "Bitcoin": "bitcoin",
+    "Ethereum": "ethereum", 
+    "USDT-ERC20": "usdt-erc20",
+    "Solana": "solana",
+    "Dogecoin": "doge",
+    "Cardano": "cardano",
+    "XRP": "xrp",
+    "USDC ERC20": "usdc-erc20",
+    "Litecoin": "litecoin",
+    "BNB BEP20": "bnb-bep20"
+  };
+  return urlMap[methodName] || "bitcoin";
+};
 
 const DepositPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -203,7 +219,7 @@ const DepositPage = () => {
 
                   {/* Action */}
                   <Link
-                    href={`/user-dashboard/deposit/${selectedMethod.toLowerCase().replace(/\s+/g, "-")}?amount=${amount}`}
+                    href={`/user-dashboard/deposit/${getPaymentMethodUrl(selectedMethod)}?amount=${amount}`}
                   >
                     <button className="w-full bg-foreground cursor-pointer text-background py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl">
                       Proceed to Checkout <ArrowRight className="w-4 h-4" />
@@ -229,32 +245,37 @@ const DepositPage = () => {
                 </div>
 
                 {/* History Section */}
-                <div className="bg-card border border-border rounded-[1rem] p-5 md:p-6 space-y-6">
+                <div className="bg-card border border-border rounded-[1rem] p-4 md:p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <History className="w-4 h-4 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest">
-                        Recent Activity
+                        Deposit Logs
                       </p>
                     </div>
-
-                    <Link href="/user-dashboard/transactions">
-                      <button className="text-[9px] cursor-pointer font-black uppercase tracking-widest text-primary border-b border-primary/30">
+                    {deposits.length > 4 && (
+                      <Link
+                        href="/user-dashboard/transactions"
+                        className="text-[9px] font-black uppercase text-primary hover:opacity-80 transition-opacity"
+                      >
                         View All
-                      </button>
-                    </Link>
+                      </Link>
+                    )}
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {loading ? (
-                      <div className="flex items-center justify-center py-10 opacity-40">
-                        <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">
-                          Loading...
-                        </p>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                        <p className="text-xs">Loading deposit history...</p>
                       </div>
-                    ) : deposits.length > 0 ? (
-                      deposits.slice(0, 5).map((deposit: DepositRecord) => {
+                    ) : deposits.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Wallet className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-xs">No deposits yet</p>
+                      </div>
+                    ) : (
+                      deposits.slice(0, 20).map((deposit, index) => {
                         const style = getStatusStyles(deposit.status);
                         const formattedDate = new Date(
                           deposit.createdAt,
@@ -266,39 +287,49 @@ const DepositPage = () => {
                         return (
                           <div
                             key={deposit._id}
-                            className="bg-muted/30 border cursor-pointer border-border/50 p-4 rounded-lg flex items-center justify-between group hover:border-foreground/20 transition-all"
+                            className={`${index >= 6 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
                           >
-                            <div>
-                              <p className="text-xs font-black uppercase  tracking-tight">
-                                {deposit.paymentMethod}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1">
-                                {style.icon}
-                                <span className="text-[9px] font-black uppercase text-muted-foreground">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-background rounded-lg">
+                                <Wallet className="w-4 h-4 text-muted-foreground" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-black uppercase  tracking-tight">
+                                  {deposit.paymentMethod} Deposit
+                                </p>
+                                <p className="text-[9px] font-black uppercase text-muted-foreground">
                                   {formattedDate}
-                                </span>
+                                </p>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-black  tracking-tighter">
-                                ${deposit.amount.toLocaleString()}
+                                +${deposit.amount.toLocaleString()}
                               </p>
-                              <p
-                                className={`text-[8px] font-black uppercase tracking-widest ${style.text}`}
-                              >
-                                {deposit.status}
-                              </p>
+                              <div className="flex items-center justify-end gap-1">
+                                {deposit.status === "approved" ? (
+                                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                ) : deposit.status === "pending" ? (
+                                  <Clock className="w-3 h-3 text-amber-700" />
+                                ) : (
+                                  <XCircle className="w-3 h-3 text-red-500" />
+                                )}
+                                <p
+                                  className={`text-[8px] font-black uppercase tracking-widest ${
+                                    deposit.status === "approved"
+                                      ? "text-green-500"
+                                      : deposit.status === "pending"
+                                        ? "text-amber-700"
+                                        : "text-red-500"
+                                  }`}
+                                >
+                                  {deposit.status}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         );
                       })
-                    ) : (
-                      <div className="text-center py-10 opacity-40">
-                        <Wallet className="w-10 h-10 mx-auto mb-2" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">
-                          No history found
-                        </p>
-                      </div>
                     )}
                   </div>
                 </div>

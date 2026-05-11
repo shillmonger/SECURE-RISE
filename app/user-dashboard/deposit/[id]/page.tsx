@@ -36,18 +36,19 @@ const MakePaymentPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Updated Payment methods to match your 10-item list
+  // Updated Payment methods with correct addresses
   const paymentMethods: Record<string, { name: string; address: string; network: string }> = {
-    bitcoin: { name: "Bitcoin", address: "bc1qnw5qxtvsayve32042dkruqnrcwx32r8vw4yfmd", network: "BTC" },
-    ethereum: { name: "Ethereum", address: "0xc28938a688215b45328068A6B5204f33e3051440", network: "ERC20" },
-    "usdt-trc20": { name: "USDT TRC20", address: "TBdVHRagTQvoZ1o38Q3Gn5wUHFWFdLWuGX", network: "TRC20" },
-    "usdt-erc20": { name: "USDT ERC20", address: "0xc28938a688215b45328068A6B5204f33e3051440", network: "ERC20" },
-    solana: { name: "Solana", address: "Cgt3agGCp4ce5SfSuixJn3N1ByizfvLcNJeeYDWJha4D", network: "SOL" },
-    litecoin: { name: "Litecoin", address: "ltc1qdl05yxg8k2qwvfxyxgt8vdlwmjg9h0vulau0rm", network: "LTC" },
-    xrp: { name: "XRP", address: "rUABG73PfQR2616j9RjLCzv8WXsp7CkjLu", network: "XRP" },
-    doge: { name: "DOGE", address: "DGPybWe6RMp4AyiNzphenLzgWciRw9wXmP", network: "DOGE" },
-    "binance-coin": { name: "BNB", address: "0xc28938a688215b45328068A6B5204f33e3051440", network: "BEP20" },
-    cardano: { name: "Cardano", address: "addr1qxy...cardano_mock_address", network: "ADA" }
+    bitcoin: { name: "Bitcoin", address: "bc1qj4m4uyfnyynxtkd4dhmx7r47rmsdvy4dqm4gad", network: "BTC" },
+    ethereum: { name: "Ethereum", address: "0x21f0b7513264d07b54246123dd72ab4bdcb7dc64", network: "ERC20" },
+    "usdt-trc20": { name: "USDT TRC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "TRC20" },
+    "usdt-erc20": { name: "USDT ERC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "ERC20" },
+    solana: { name: "Solana", address: "BytFN7JYPcs8qfXGzhgjaA4okvc1usgpemd4iFrr9rwB", network: "SOL" },
+    litecoin: { name: "Litecoin", address: "ltc1qkkmh2rtwje98jx8ffrgxquse7tq6phmcc96nyd", network: "LTC" },
+    xrp: { name: "XRP", address: "re5NTE9hACgBpRE3LQZmY3d5nmBugicks", network: "XRP" },
+    doge: { name: "Dogecoin", address: "DTsjjoDudtwGVJPfQFb15xP6pQzAxquz2r", network: "DOGE" },
+    "usdc-erc20": { name: "USDC ERC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "ERC20" },
+    cardano: { name: "Cardano", address: "addr1q8c26332j4ptdk7hu90eacjnj9dsctcymxaze6demgsld0eyev2jxl4zxjwdcaadejksvn0w08u3436usa4xxqye0fks8jr7n4", network: "ADA" },
+    "bnb-bep20": { name: "BNB BEP20", address: "0x21f0b7513264d07b54246123dd72ab4bdcb7dc64", network: "BEP20" }
   };
 
   const currentId = params.id as string;
@@ -180,7 +181,7 @@ const MakePaymentPage = () => {
                 </p>
               </div>
               <Link href="/user-dashboard/deposit">
-                <button className="flex items-center gap-2 hover:bg-muted p-3 px-3 cursor-pointer rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+                <button className="flex items-center gap-2 hover:bg-muted p-2 px-3 cursor-pointer rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
                   <ArrowLeft className="w-4 h-4" /> Cancel
                 </button>
               </Link>
@@ -188,31 +189,37 @@ const MakePaymentPage = () => {
 
             <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
               {/* Method Indicator Bar */}
-              <div className="bg-foreground p-4 text-background flex justify-between flex-wrap items-center gap-4">
-  <div className="flex items-center gap-4">
-    <div className="bg-background/20 p-3 rounded-xl">
-      <Zap className="w-5 h-5 text-background" />
+ <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    
+    {/* Icon */}
+    <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
+      <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
     </div>
-    <div>
-      <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
+
+    {/* Left Content */}
+    <div className="min-w-0">
+      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
         Pay with
       </p>
-      <p className="text-xl font-black  uppercase tracking-tighter flex items-center gap-2">
+
+      <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
         {paymentMethod.name}
-        <ChevronRight className="w-4 h-4 opacity-40" />
+        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
       </p>
     </div>
   </div>
 
-  {/* Push this to the far right */}
+  {/* Right Content */}
   <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
-  <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
-    Required Amount
-  </p>
-  <p className="text-2xl font-black  tracking-tighter text-green-500">
-  ${parseFloat(amount).toLocaleString()}
-</p>
-</div>
+    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
+      Required Amount
+    </p>
+
+    <p className="text-lg sm:text-2xl font-black tracking-tight text-green-500">
+      ${parseFloat(amount).toLocaleString()}
+    </p>
+  </div>
 </div>
 
               <div className="p-5 md:p-8 space-y-10">
