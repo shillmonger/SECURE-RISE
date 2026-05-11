@@ -64,6 +64,7 @@ export default function UserOverviewPage() {
   const [activeInvestments, setActiveInvestments] = useState(0);
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
+  const [giftCards, setGiftCards] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
@@ -131,6 +132,14 @@ export default function UserOverviewPage() {
 
         if (giftsResult.success) {
           setGiftHistory(giftsResult.gifts);
+        }
+
+        // Fetch gift cards
+        const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`);
+        const giftCardsResult = await giftCardsResponse.json();
+
+        if (giftCardsResult.success) {
+          setGiftCards(giftCardsResult.giftCards);
         }
 
         if (Array.isArray(investments)) {
@@ -827,6 +836,23 @@ export default function UserOverviewPage() {
                           });
                         });
 
+                        // Add gift cards
+                        giftCards.forEach((giftCard) => {
+                          activities.push({
+                            type: "giftcard",
+                            data: giftCard,
+                            date: new Date(giftCard.createdAt),
+                            icon: ShoppingCart,
+                            iconBg: giftCard.status === "approved" ? "bg-green-500/10" : giftCard.status === "rejected" ? "bg-red-500/10" : "bg-yellow-500/10",
+                            iconColor: giftCard.status === "approved" ? "text-green-500" : giftCard.status === "rejected" ? "text-red-500" : "text-yellow-500",
+                            title: "Gift Card Deposit",
+                            subtitle: `${giftCard.cardType} - ${giftCard.country}`,
+                            amount: `$${giftCard.amount.toFixed(2)}`,
+                            amountColor: "text-blue-500",
+                            status: giftCard.status,
+                          });
+                        });
+
                         // Sort by date (most recent first)
                         activities.sort(
                           (a, b) => b.date.getTime() - a.date.getTime(),
@@ -1129,18 +1155,28 @@ export default function UserOverviewPage() {
                           });
                         });
 
-                        // Sort by date (newest first) - keep welcome bonus at top
-                        const sortedAlerts = [
-                          allAlerts[0],
-                          ...allAlerts.slice(1).sort((a, b) => {
-                            if (a.timestamp && b.timestamp) {
-                              return (
-                                b.timestamp.getTime() - a.timestamp.getTime()
-                              );
-                            }
-                            return 0;
-                          }),
-                        ];
+                        // Add gift card alerts
+                        giftCards.forEach((giftCard, index) => {
+                          allAlerts.push({
+                            id: `giftcard-${giftCard._id}`,
+                            type: "giftcard",
+                            isNew: false,
+                            title: `Gift Card ${giftCard.status === "approved" ? "Approved" : giftCard.status === "rejected" ? "Rejected" : "Pending"}`,
+                            message: `${giftCard.cardType} gift card for $${giftCard.amount.toFixed(2)} ${giftCard.currency} has been ${giftCard.status === "approved" ? "approved" : giftCard.status === "rejected" ? "rejected" : "submitted for review"}${giftCard.status === "rejected" && giftCard.rejectionReason ? `: ${giftCard.rejectionReason}` : ""}`,
+                            time: new Date(giftCard.createdAt).toLocaleDateString(),
+                            timestamp: new Date(giftCard.createdAt),
+                          });
+                        });
+
+                        // Sort by date (newest first)
+                        const sortedAlerts = allAlerts.sort((a, b) => {
+                          if (a.timestamp && b.timestamp) {
+                            return (
+                              b.timestamp.getTime() - a.timestamp.getTime()
+                            );
+                          }
+                          return 0;
+                        });
 
                         // Pagination logic
                         const totalAlertPages = Math.ceil(
