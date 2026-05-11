@@ -67,7 +67,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-full md:w-70 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
+        } fixed inset-y-0 left-0 z-100 w-full md:w-65 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
@@ -97,14 +97,14 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
                 <Link
                   key={name}
                   href={href}
-                  className={`group flex items-center px-4 py-2.5 rounded-sm transition-all duration-200 ${
+                  className={`group flex items-center px-3 py-2.5 rounded-sm transition-all duration-200 ${
                     active
                       ? "bg-foreground text-background shadow-lg shadow-black/10"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
-                  <Icon className={`w-5 h-5 mr-5 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
+                  <Icon className={`w-5 h-5 mr-3 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
                   <span className="text-[12px] font-black uppercase tracking-widest">{name}</span>
                 </Link>
               );

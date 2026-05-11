@@ -14,6 +14,8 @@ import TradingTools from "@/components/landing-page/trading-tools";
 import RiskProtection from "@/components/landing-page/risk-protection";
 import TradingView from "@/components/landing-page/trading-view-slide";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
+import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
+
 
 export default function HomePage() {
   return (
@@ -28,6 +30,7 @@ export default function HomePage() {
         <Promo />
         <HowItWorks />
         <TradingTools />
+        <NumbersThatSpeaks />
         <LiveMarkets />
         <ProfitBlueprint />
         <FAQ />

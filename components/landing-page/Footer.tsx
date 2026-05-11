@@ -40,19 +40,10 @@ export default function Footer() {
         <div className="flex flex-col space-y-6 md:col-span-4 lg:col-span-2">
           <div>
             <Link href="/" className="flex items-center gap-3 group">
-  {/* Logo Icon */}
-  {/* <Image
-    src="https://i.postimg.cc/wTzh3Wpt/favicon-ico.png"
-    alt="Secure Rise Logo"
-    width={50}
-    height={50}
-    className="drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
-  /> */}
-
   {/* Text Logo */}
   <span
     className={`${montserrat.className} 
-    text-3xl md:text-5xl font-black italic tracking-tight 
+    text-3xl md:text-4xl font-black italic tracking-tight 
     bg-gradient-to-b from-foreground to-foreground/40 
     bg-clip-text text-transparent uppercase`}
   >

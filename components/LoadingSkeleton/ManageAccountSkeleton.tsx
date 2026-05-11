@@ -8,14 +8,27 @@ export default function ManageAccountSkeleton() {
               <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
             </div>
 
-            {/* Search and Refresh Skeleton */}
+            {/* Search and Dropdown Skeleton */}
             <div className="flex items-center gap-2">
-              <div className="h-10 w-10 bg-muted rounded-xl animate-pulse"></div>
               <div className="relative">
                 <div className="h-10 w-64 bg-muted rounded-xl animate-pulse"></div>
               </div>
-              <div className="h-10 w-10 bg-muted rounded-xl animate-pulse"></div>
+              <div className="h-10 w-32 bg-muted rounded-xl animate-pulse"></div>
             </div>
+          </div>
+
+          {/* Stats Grid Skeleton */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-card px-5 py-3 rounded-2xl border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                  <div className="h-3 w-8 bg-muted rounded animate-pulse"></div>
+                </div>
+                <div className="h-3 w-24 bg-muted rounded animate-pulse mb-2"></div>
+                <div className="h-6 w-12 bg-muted rounded animate-pulse"></div>
+              </div>
+            ))}
           </div>
 
           {/* Table Skeleton */}
@@ -36,9 +49,6 @@ export default function ManageAccountSkeleton() {
                     <th className="px-6 py-4">
                       <div className="h-3 w-24 bg-muted rounded animate-pulse"></div>
                     </th>
-                    {/* <th className="px-6 py-4">
-                      <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
-                    </th> */}
                     <th className="px-6 py-4">
                       <div className="h-3 w-28 bg-muted rounded animate-pulse"></div>
                     </th>
@@ -80,11 +90,6 @@ export default function ManageAccountSkeleton() {
                       <td className="px-6 py-4">
                         <div className="w-32 h-8 bg-muted border border-border rounded-lg animate-pulse"></div>
                       </td>
-
-                      {/* Total Withdrawals Input Skeleton */}
-                      {/* <td className="px-6 py-4">
-                        <div className="w-32 h-8 bg-muted border border-border rounded-lg animate-pulse"></div>
-                      </td> */}
 
                       {/* Total Deposits Input Skeleton */}
                       <td className="px-6 py-4">

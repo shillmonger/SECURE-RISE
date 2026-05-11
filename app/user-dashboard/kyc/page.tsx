@@ -44,7 +44,7 @@ interface IDVerification {
 interface KYCStatus {
   id: string;
   submissionId: string;
-  status: 'pending' | 'approved' | 'rejected' | 'under_review';
+  status: "pending" | "approved" | "rejected" | "under_review";
   createdAt: string;
   updatedAt: string;
   rejectionReason?: string;
@@ -177,71 +177,73 @@ const KYCPage = () => {
   const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
-    
+
     try {
       // Get user data from localStorage (client-side approach)
-      let userStr = localStorage.getItem('user');
-      
+      let userStr = localStorage.getItem("user");
+
       let userData;
-      
+
       if (!userStr) {
         // Fallback: try to get user data from server
         try {
-          const userResponse = await fetch('/api/auth/me');
+          const userResponse = await fetch("/api/auth/me");
           if (userResponse.ok) {
             const userDataFromServer = await userResponse.json();
             userData = {
               id: userDataFromServer.user._id || userDataFromServer.user.id,
-              username: userDataFromServer.user.username || userDataFromServer.user.fullName,
-              email: userDataFromServer.user.email
+              username:
+                userDataFromServer.user.username ||
+                userDataFromServer.user.fullName,
+              email: userDataFromServer.user.email,
             };
             // Store in localStorage for future use
-            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem("user", JSON.stringify(userData));
           } else {
-            throw new Error('User information not found. Please login again.');
+            throw new Error("User information not found. Please login again.");
           }
         } catch (serverError) {
-          throw new Error('User information not found. Please login again.');
+          throw new Error("User information not found. Please login again.");
         }
       } else {
         userData = JSON.parse(userStr);
       }
-      
+
       if (!userData.id || !userData.username || !userData.email) {
-        throw new Error('Invalid user information. Please login again.');
+        throw new Error("Invalid user information. Please login again.");
       }
 
       const formData = new FormData();
-      
+
       // Add user data
-      formData.append('userId', userData.id);
-      formData.append('username', userData.username);
-      formData.append('userEmail', userData.email);
-      
+      formData.append("userId", userData.id);
+      formData.append("username", userData.username);
+      formData.append("userEmail", userData.email);
+
       // Add personal info
-      formData.append('firstName', personalInfo.firstName);
-      formData.append('lastName', personalInfo.lastName);
-      formData.append('dob', personalInfo.dob);
-      formData.append('nationality', personalInfo.nationality);
-      formData.append('address', personalInfo.address);
-      formData.append('city', personalInfo.city);
-      formData.append('country', personalInfo.country);
-      formData.append('postalCode', personalInfo.postalCode);
-      
+      formData.append("firstName", personalInfo.firstName);
+      formData.append("lastName", personalInfo.lastName);
+      formData.append("dob", personalInfo.dob);
+      formData.append("nationality", personalInfo.nationality);
+      formData.append("address", personalInfo.address);
+      formData.append("city", personalInfo.city);
+      formData.append("country", personalInfo.country);
+      formData.append("postalCode", personalInfo.postalCode);
+
       // Add ID verification
-      formData.append('idType', idVerification.idType);
-      formData.append('idNumber', idVerification.idNumber);
-      
+      formData.append("idType", idVerification.idType);
+      formData.append("idNumber", idVerification.idNumber);
+
       // Add images
       if (idVerification.frontImage && idVerification.backImage) {
-        formData.append('frontImage', idVerification.frontImage);
-        formData.append('backImage', idVerification.backImage);
+        formData.append("frontImage", idVerification.frontImage);
+        formData.append("backImage", idVerification.backImage);
       } else {
-        throw new Error('Both front and back images are required');
+        throw new Error("Both front and back images are required");
       }
 
       // Log form data before sending for debugging
-      console.log('KYC Client - Sending form data:', {
+      console.log("KYC Client - Sending form data:", {
         userId: userData.id,
         username: userData.username,
         userEmail: userData.email,
@@ -255,58 +257,58 @@ const KYCPage = () => {
         postalCode: personalInfo.postalCode,
         idType: idVerification.idType,
         idNumber: idVerification.idNumber,
-        frontImage: idVerification.frontImage ? 'File present' : 'No file',
-        backImage: idVerification.backImage ? 'File present' : 'No file',
+        frontImage: idVerification.frontImage ? "File present" : "No file",
+        backImage: idVerification.backImage ? "File present" : "No file",
       });
 
-      const response = await fetch('/api/kyc', {
-        method: 'POST',
+      const response = await fetch("/api/kyc", {
+        method: "POST",
         body: formData,
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit KYC');
+        throw new Error(result.error || "Failed to submit KYC");
       }
 
       // Show success toast
-      toast.success('KYC submitted successfully!', {
-        description: 'Your documents are now under review.',
+      toast.success("KYC submitted successfully!", {
+        description: "Your documents are now under review.",
         duration: 5000,
       });
 
       setSubmitting(false);
       setSubmitted(true);
-      
+
       // Store submission state in localStorage for persistence
-      localStorage.setItem('kycSubmitted', 'true');
-      
+      localStorage.setItem("kycSubmitted", "true");
+
       // Move to status step
       setTimeout(() => {
         setCurrentStep(4);
         fetchKYCStatus();
       }, 2000);
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to submit KYC';
-      
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to submit KYC";
+
       // Customize error message based on actual error
-      let errorTitle = 'Submission failed';
-      if (errorMessage.includes('already have a KYC')) {
-        errorTitle = 'KYC under review';
-      } else if (errorMessage.includes('pending')) {
-        errorTitle = 'KYC pending review';
-      } else if (errorMessage.includes('All fields are required')) {
-        errorTitle = 'Missing required fields';
+      let errorTitle = "Submission failed";
+      if (errorMessage.includes("already have a KYC")) {
+        errorTitle = "KYC under review";
+      } else if (errorMessage.includes("pending")) {
+        errorTitle = "KYC pending review";
+      } else if (errorMessage.includes("All fields are required")) {
+        errorTitle = "Missing required fields";
       }
-      
+
       // Show error toast
       toast.error(errorTitle, {
         description: errorMessage,
         duration: 5000,
       });
-      
+
       setSubmitting(false);
       setError(errorMessage);
     }
@@ -315,17 +317,17 @@ const KYCPage = () => {
   const fetchKYCStatus = async () => {
     setLoadingStatus(true);
     setError(null);
-    
+
     try {
-      const userStr = localStorage.getItem('user');
+      const userStr = localStorage.getItem("user");
       if (!userStr) {
-        throw new Error('User information not found');
+        throw new Error("User information not found");
       }
-      
+
       const userData = JSON.parse(userStr);
-      
+
       if (!userData.id) {
-        throw new Error('Invalid user information');
+        throw new Error("Invalid user information");
       }
 
       const response = await fetch(`/api/kyc?userId=${userData.id}`);
@@ -335,14 +337,15 @@ const KYCPage = () => {
         if (response.status === 404) {
           setKycStatus(null);
         } else {
-          throw new Error(result.error || 'Failed to fetch KYC status');
+          throw new Error(result.error || "Failed to fetch KYC status");
         }
       } else {
         setKycStatus(result.kyc);
       }
-      
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch KYC status');
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch KYC status",
+      );
     } finally {
       setLoadingStatus(false);
     }
@@ -351,11 +354,11 @@ const KYCPage = () => {
   // Check for existing KYC on mount and set initial step
   useEffect(() => {
     // Check localStorage first for immediate response
-    const kycSubmitted = localStorage.getItem('kycSubmitted');
-    if (kycSubmitted === 'true') {
+    const kycSubmitted = localStorage.getItem("kycSubmitted");
+    if (kycSubmitted === "true") {
       setCurrentStep(4);
     }
-    
+
     // Then fetch fresh status from server
     fetchKYCStatus();
   }, []);
@@ -370,8 +373,8 @@ const KYCPage = () => {
   // Show success toast when entering success state
   useEffect(() => {
     if (submitted) {
-      toast.success('KYC Verification Complete!', {
-        description: 'Your documents have been submitted for review.',
+      toast.success("KYC Verification Complete!", {
+        description: "Your documents have been submitted for review.",
         duration: 4000,
       });
     }
@@ -383,9 +386,15 @@ const KYCPage = () => {
       <>
         {/* Main page layout remains in background */}
         <div className="flex h-screen overflow-hidden bg-background font-sans">
-          <UserSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <UserSidebar
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
           <div className="flex-1 flex flex-col overflow-hidden text-foreground">
-            <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <UserHeader
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+            />
             <main className="flex-1 overflow-y-auto">
               <div className="max-w-7xl mx-auto space-y-10 p-4 md:p-8">
                 <section className="space-y-2">
@@ -402,7 +411,7 @@ const KYCPage = () => {
           </div>
           <UserNav />
         </div>
-        
+
         {/* Success Modal Overlay */}
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-background/5 backdrop-blur-sm px-4">
           <div
@@ -425,38 +434,47 @@ const KYCPage = () => {
                 />
               </svg>
             </div>
-            
+
             <h3 className="text-2xl font-black text-foreground mb-1 uppercase tracking-tighter">
               KYC Submitted! 🎉
             </h3>
             <p className="text-muted-foreground text-sm mb-6">
-              Your identity verification documents have been successfully submitted and are now under review.
+              Your identity verification documents have been successfully
+              submitted and are now under review.
             </p>
-            
+
             <div className="bg-muted/50 rounded-2xl p-4 mb-6 text-left space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Submission ID</span>
                 <span className="text-foreground font-mono text-xs">
-                  {kycStatus?.submissionId ? `KYC-${kycStatus.submissionId.split('-')[1]?.substring(0, 10)}` : 'Processing...'}
+                  {kycStatus?.submissionId
+                    ? `KYC-${kycStatus.submissionId.split("-")[1]?.substring(0, 10)}`
+                    : "Processing..."}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Status</span>
-                <span className="text-yellow-600 font-semibold">Pending Review</span>
+                <span className="text-yellow-600 font-semibold">
+                  Pending Review
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Review Time</span>
-                <span className="text-foreground font-semibold">24-48 Hours</span>
+                <span className="text-foreground font-semibold">
+                  24-48 Hours
+                </span>
               </div>
               <div className="flex items-center justify-between  text-sm bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-2">
                 <span className="text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4" />
                   Security Status
                 </span>
-                <span className="text-emerald-600 font-black">Encrypted & Secure</span>
+                <span className="text-emerald-600 font-black">
+                  Encrypted & Secure
+                </span>
               </div>
             </div>
-            
+
             <button
               onClick={() => {
                 setSubmitted(false);
@@ -489,7 +507,11 @@ const KYCPage = () => {
                   { field: "city", label: "City", type: "text" },
                   { field: "country", label: "Country", type: "text" },
                   { field: "postalCode", label: "Postal Code", type: "text" },
-                ] as { field: keyof PersonalInfo; label: string; type: string }[]
+                ] as {
+                  field: keyof PersonalInfo;
+                  label: string;
+                  type: string;
+                }[]
               ).map(({ field, label, type }) => (
                 <div key={field} className="space-y-2">
                   <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
@@ -619,7 +641,9 @@ const KYCPage = () => {
             ) : !kycStatus ? (
               <div className="text-center py-12">
                 <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-sm text-muted-foreground">No KYC submission found</p>
+                <p className="text-sm text-muted-foreground">
+                  No KYC submission found
+                </p>
                 <button
                   onClick={() => setCurrentStep(1)}
                   className="mt-4 text-sm text-foreground hover:text-muted-foreground font-medium"
@@ -631,8 +655,11 @@ const KYCPage = () => {
               <div className="space-y-6">
                 {/* Status Card */}
                 <div className="bg-card border border-border rounded-xl p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold uppercase tracking-tight">KYC Status</h3>
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+                    <h3 className="text-sm font-bold uppercase tracking-tight">
+                      KYC Status
+                    </h3>
+
                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                       ID: {kycStatus.submissionId}
                     </span>
@@ -641,68 +668,93 @@ const KYCPage = () => {
                   {/* Status Display */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        kycStatus.status === 'approved' ? 'bg-green-100' :
-                        kycStatus.status === 'rejected' ? 'bg-red-100' :
-                        kycStatus.status === 'under_review' ? 'bg-blue-100' :
-                        'bg-yellow-100'
-                      }`}>
-                        {kycStatus.status === 'approved' ? (
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                          kycStatus.status === "approved"
+                            ? "bg-green-100"
+                            : kycStatus.status === "rejected"
+                              ? "bg-red-100"
+                              : kycStatus.status === "under_review"
+                                ? "bg-blue-100"
+                                : "bg-yellow-100"
+                        }`}
+                      >
+                        {kycStatus.status === "approved" ? (
                           <CheckCircle2 className="w-6 h-6 text-green-600" />
-                        ) : kycStatus.status === 'rejected' ? (
+                        ) : kycStatus.status === "rejected" ? (
                           <XCircle className="w-6 h-6 text-red-600" />
-                        ) : kycStatus.status === 'under_review' ? (
+                        ) : kycStatus.status === "under_review" ? (
                           <Eye className="w-6 h-6 text-blue-600" />
                         ) : (
                           <Clock className="w-6 h-6 text-yellow-600" />
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className={`text-sm font-bold uppercase tracking-tight ${
-                          kycStatus.status === 'approved' ? 'text-green-600' :
-                          kycStatus.status === 'rejected' ? 'text-red-600' :
-                          kycStatus.status === 'under_review' ? 'text-blue-600' :
-                          'text-yellow-600'
-                        }`}>
-                          {kycStatus.status === 'approved' ? 'Approved' :
-                           kycStatus.status === 'rejected' ? 'Rejected' :
-                           kycStatus.status === 'under_review' ? 'Under Review' :
-                           'Pending'}
+                        <p
+                          className={`text-sm font-bold uppercase tracking-tight ${
+                            kycStatus.status === "approved"
+                              ? "text-green-600"
+                              : kycStatus.status === "rejected"
+                                ? "text-red-600"
+                                : kycStatus.status === "under_review"
+                                  ? "text-blue-600"
+                                  : "text-yellow-600"
+                          }`}
+                        >
+                          {kycStatus.status === "approved"
+                            ? "Approved"
+                            : kycStatus.status === "rejected"
+                              ? "Rejected"
+                              : kycStatus.status === "under_review"
+                                ? "Under Review"
+                                : "Pending"}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Submitted: {new Date(kycStatus.createdAt).toLocaleDateString()}
+                          Submitted:{" "}
+                          {new Date(kycStatus.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
 
                     {/* Rejection Reason */}
-                    {kycStatus.status === 'rejected' && kycStatus.rejectionReason && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <p className="text-sm font-semibold text-red-800 mb-1">Rejection Reason</p>
-                        <p className="text-sm text-red-600">{kycStatus.rejectionReason}</p>
-                      </div>
-                    )}
+                    {kycStatus.status === "rejected" &&
+                      kycStatus.rejectionReason && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                          <p className="text-sm font-semibold text-red-800 mb-1">
+                            Rejection Reason
+                          </p>
+                          <p className="text-sm text-red-600">
+                            {kycStatus.rejectionReason}
+                          </p>
+                        </div>
+                      )}
 
                     {/* Status Messages */}
                     <div className="bg-muted/30 border border-border rounded-lg p-4">
                       <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">
-                        {kycStatus.status === 'approved' ? '✓ Your identity has been verified' :
-                         kycStatus.status === 'rejected' ? '✗ Your KYC was rejected' :
-                         kycStatus.status === 'under_review' ? '👁️ Your documents are being reviewed' :
-                         '⏳ Your submission is being processed'}
+                        {kycStatus.status === "approved"
+                          ? "✓ Your identity has been verified"
+                          : kycStatus.status === "rejected"
+                            ? "✗ Your KYC was rejected"
+                            : kycStatus.status === "under_review"
+                              ? "Your documents are being reviewed"
+                              : "Your submission is being processed"}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {kycStatus.status === 'approved' ? 'You can now access all platform features.' :
-                         kycStatus.status === 'rejected' ? 'Please review the rejection reason and resubmit.' :
-                         kycStatus.status === 'under_review' ? 'This typically takes 24-48 hours.' :
-                         'We will notify you once there is an update.'}
+                        {kycStatus.status === "approved"
+                          ? "You can now access all platform features."
+                          : kycStatus.status === "rejected"
+                            ? "Please review the rejection reason and resubmit."
+                            : kycStatus.status === "under_review"
+                              ? "This typically takes 24-48 hours."
+                              : "We will notify you once there is an update."}
                       </p>
                     </div>
 
                     {/* Refresh Button */}
-                    <button
+                     <button
                       onClick={fetchKYCStatus}
-                      className="w-full bg-muted/30 border border-border rounded-xl p-3 text-xs font-black uppercase tracking-widest text-foreground hover:bg-muted/50 transition-all"
+                      className="w-full bg-muted/30 cursor-pointer border border-border rounded-xl p-3 text-xs font-black uppercase tracking-widest text-foreground hover:bg-muted/50 transition-all"
                     >
                       Refresh Status
                     </button>
@@ -711,7 +763,9 @@ const KYCPage = () => {
 
                 {/* Timeline */}
                 <div className="bg-card border border-border rounded-xl p-6">
-                  <h4 className="text-sm font-bold uppercase tracking-tight mb-4">Timeline</h4>
+                  <h4 className="text-sm font-bold uppercase tracking-tight mb-4">
+                    Timeline
+                  </h4>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5" />
@@ -724,16 +778,22 @@ const KYCPage = () => {
                     </div>
                     {kycStatus.updatedAt !== kycStatus.createdAt && (
                       <div className="flex items-start gap-3">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 ${
-                          kycStatus.status === 'approved' ? 'bg-green-500' :
-                          kycStatus.status === 'rejected' ? 'bg-red-500' :
-                          'bg-blue-500'
-                        }`} />
+                        <div
+                          className={`w-2 h-2 rounded-full mt-1.5 ${
+                            kycStatus.status === "approved"
+                              ? "bg-green-500"
+                              : kycStatus.status === "rejected"
+                                ? "bg-red-500"
+                                : "bg-blue-500"
+                          }`}
+                        />
                         <div className="flex-1">
                           <p className="text-xs font-medium">
-                            {kycStatus.status === 'approved' ? 'Approved' :
-                             kycStatus.status === 'rejected' ? 'Rejected' :
-                             'Status Updated'}
+                            {kycStatus.status === "approved"
+                              ? "Approved"
+                              : kycStatus.status === "rejected"
+                                ? "Rejected"
+                                : "Status Updated"}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(kycStatus.updatedAt).toLocaleString()}
@@ -810,9 +870,7 @@ const KYCPage = () => {
                   <p
                     className={`text-xs font-black  uppercase tracking-tight ${idVerification.frontImage ? "text-green-500" : "text-muted-foreground"}`}
                   >
-                    {idVerification.frontImage
-                      ? "✓ Uploaded"
-                      : "Not uploaded"}
+                    {idVerification.frontImage ? "✓ Uploaded" : "Not uploaded"}
                   </p>
                 </div>
                 <div>
@@ -860,7 +918,6 @@ const KYCPage = () => {
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
-
             {/* Page Title */}
             <section className="space-y-2">
               <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter  leading-none">
@@ -873,7 +930,6 @@ const KYCPage = () => {
             </section>
 
             <div className="flex flex-col lg:flex-row gap-8">
-
               {/* ── Left: Stepper Sidebar ─────────────────────────────── */}
               <div className="w-full lg:w-[260px] shrink-0">
                 <div className="bg-card border border-border rounded-[1rem] p-5 md:p-6 space-y-1">
@@ -935,7 +991,6 @@ const KYCPage = () => {
               {/* ── Right: Step Content ───────────────────────────────── */}
               <div className="flex-1">
                 <div className="bg-card border border-border rounded-[1rem] p-5 md:p-7 shadow-sm space-y-8">
-
                   {/* Step Header */}
                   <div className="space-y-1">
                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">

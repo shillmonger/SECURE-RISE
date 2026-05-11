@@ -53,56 +53,179 @@ function fmt(n: number) {
 }
 
 // ─── Podium Card (Desktop) ────────────────────────────────────────────────────
+// ─── Podium Card (Desktop Only) ───────────────────────────────────────────────
+// Compact luxury desktop design: narrow cards, refined proportions.
+// Mobile styling completely ignored - desktop-first approach.
+
+const RANK_CONFIG = {
+  1: {
+    border: "border-yellow-500/40",
+    gradient: "bg-gradient-to-b from-yellow-500/[0.06] via-card to-card",
+    innerBg: "bg-yellow-500/8 border-yellow-500/20",
+    avatarBorder: "border-yellow-500/50",
+    nameColor: "text-yellow-300 text-xl",
+    scoreColor: "text-yellow-300 text-4xl",
+    podiumOffset: "-translate-y-4",
+    scale: "flex-[1.15] w-44", // Narrow 11rem width
+    badgeSize: "w-12 h-12",
+    avatarSize: "w-20 h-20",
+    nameSize: "text-xl",
+    scoreSize: "text-4xl",
+    shimmer: true,
+    topAccent: "before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-transparent before:via-yellow-400/60 before:to-transparent before:rounded-t-[1.5rem]",
+  },
+  2: {
+    border: "border-slate-400/30",
+    gradient: "bg-gradient-to-b from-slate-400/[0.04] via-card to-card",
+    innerBg: "bg-slate-500/8 border-slate-400/15",
+    avatarBorder: "border-slate-400/40",
+    nameColor: "text-slate-300 text-lg",
+    scoreColor: "text-slate-200 text-3xl",
+    podiumOffset: "translate-y-0",
+    scale: "flex-1 w-40", // Narrow 10rem width
+    badgeSize: "w-10 h-10",
+    avatarSize: "w-18 h-18",
+    nameSize: "text-lg",
+    scoreSize: "text-3xl",
+    shimmer: false,
+    topAccent: "before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-gradient-to-r before:from-transparent before:via-slate-400/40 before:to-transparent before:rounded-t-[1.5rem]",
+  },
+  3: {
+    border: "border-amber-700/30",
+    gradient: "bg-gradient-to-b from-amber-800/[0.05] via-card to-card",
+    innerBg: "bg-amber-800/8 border-amber-700/15",
+    avatarBorder: "border-amber-700/40",
+    nameColor: "text-amber-400 text-lg",
+    scoreColor: "text-amber-300 text-3xl",
+    podiumOffset: "translate-y-0",
+    scale: "flex-1 w-40", // Narrow 10rem width
+    badgeSize: "w-10 h-10",
+    avatarSize: "w-18 h-18",
+    nameSize: "text-lg",
+    scoreSize: "text-3xl",
+    shimmer: false,
+    topAccent: "before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-gradient-to-r before:from-transparent before:via-amber-600/40 before:to-transparent before:rounded-t-[1.5rem]",
+  },
+} as const;
 
 function PodiumCard({ player }: { player: TopThreeUser }) {
+  const cfg = RANK_CONFIG[player.rank as 1 | 2 | 3];
   const isFirst = player.rank === 1;
+
   return (
     <div
       className={[
-        "relative flex flex-col cursor-pointer items-center text-center rounded-[1.5rem] p-5 px-5 border-2 transition-all duration-300",
-        isFirst
-          ? "flex-[1.15] border-yellow-500/40 bg-gradient-to-b from-card to-muted/20"
-          : "flex-1 border-border bg-card hover:border-primary/20 hover:-translate-y-1",
+        // ── Compact desktop layout ──
+        "relative flex flex-col cursor-pointer items-center text-center rounded-[1.5rem] p-3 border-2 transition-all duration-500",
+        
+        // ── Fixed narrow widths + flex scaling ──
+        cfg.scale,
+        cfg.podiumOffset,
+
+        // ── Desktop rank styling ──
+        "border-border bg-card",
+        cfg.border,
+        cfg.gradient,
+
+        // ── Subtle hover ──
+        "hover:-translate-y-1 hover:scale-[1.01]",
+
+        // ── Top accent ──
+        "before:content-[''] before:rounded-t-[1.5rem]",
+        cfg.topAccent,
       ].join(" ")}
     >
-      <img
-        src={RANK_IMAGES[player.rank]}
-        alt={`Rank ${player.rank}`}
+      {/* ── Rank badge ── */}
+      <div
         className={[
-          "absolute left-1/2 -translate-x-1/2 object-contain drop-shadow-2xl",
-          isFirst ? "-top-10 w-25 h-25" : "-top-10 w-20 h-20",
-        ].join(" ")}
-      />
-      <Avatar
-        className={[
-          "rounded-[1rem] border-2 p-1 mt-10",
-          isFirst ? "w-25 h-25 border-yellow-500/40" : "w-20 h-20",
+          "absolute left-1/2 -translate-x-1/2 -top-5 z-10",
+          isFirst ? "animate-bounce [animation-duration:3s]" : "",
         ].join(" ")}
       >
-        <AvatarImage src={player.avatar} alt={player.username} className="rounded-xl object-contain" />
-        <AvatarFallback className="text-2xl font-black rounded-xl">{player.rank}</AvatarFallback>
+        <img
+          src={RANK_IMAGES[player.rank]}
+          alt={`Rank ${player.rank}`}
+          className={[
+            "object-contain",
+            cfg.badgeSize,
+          ].join(" ")}
+        />
+      </div>
+
+      {/* ── Avatar ── */}
+      <Avatar
+        className={[
+          "rounded-[1rem] border-2 p-1 mt-8",
+          cfg.avatarSize,
+          cfg.avatarBorder,
+        ].join(" ")}
+      >
+        <AvatarImage
+          src={player.avatar}
+          alt={player.username}
+          className="rounded-xl object-contain"
+        />
+        <AvatarFallback className="text-2xl font-black rounded-xl">
+          {player.rank}
+        </AvatarFallback>
       </Avatar>
+
+      {/* ── Username ── */}
       <p
-        className={["font-black uppercase tracking-wider mt-4 mb-5", isFirst ? "text-xl text-yellow-300" : "text-base text-foreground"].join(" ")}
+        className={[
+          "font-black uppercase tracking-wider mt-2 mb-3 px-1",
+          "text-foreground",
+          cfg.nameColor,
+        ].join(" ")}
         style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.08em" }}
       >
         {player.username}
       </p>
+
+      {/* ── Score panel ── */}
       <div
         className={[
-          "w-full rounded-xl flex flex-col items-center py-4 px-6 border mt-auto",
-          isFirst
-            ? "bg-yellow-500/10 border-yellow-500/20"
-            : "bg-muted/30 border-border",
+          "w-full rounded-xl flex flex-col items-center py-2.5 px-4 border mt-auto relative overflow-hidden",
+          cfg.innerBg,
         ].join(" ")}
       >
-        <p className={["font-black tracking-tight text-green-400", isFirst ? "text-4xl" : "text-3xl"].join(" ")} style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+        {/* Subtle shimmer on 1st */}
+        {isFirst && cfg.shimmer && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(105deg, transparent 40%, rgba(234,179,8,0.06) 50%, transparent 60%)",
+              animation: "shimmer 4s ease-in-out infinite",
+            }}
+          />
+        )}
+
+        <p
+          className={[
+            "font-black tracking-tight text-green-400 relative z-10",
+            cfg.scoreColor,
+          ].join(" ")}
+          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+        >
           {fmt(player.metric)}
         </p>
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1 pt-1 border-t border-border w-full text-center">
+
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1 pt-1 border-t border-border/50 w-full text-center relative z-10">
           {player.metricName}
         </p>
       </div>
+
+      {/* Shimmer keyframe */}
+      {isFirst && cfg.shimmer && (
+        <style>{`
+          @keyframes shimmer {
+            0%   { transform: translateX(-100%); }
+            50%  { transform: translateX(100%); }
+            100% { transform: translateX(100%); }
+          }
+        `}</style>
+      )}
     </div>
   );
 }
@@ -216,7 +339,6 @@ export default function LeaderboardPage() {
                 </div>
                 <div className="w-20 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
                 <p className="text-[10px] font-black flex justify-center text-muted-foreground uppercase tracking-[0.2em] flex items-center text-center gap-2">
-                                <Trophy className="w-3 h-3 text-primary" />                  
                                  Compare performance & portfolio metrics against the most successful users
                               </p>
               </section>
@@ -224,71 +346,212 @@ export default function LeaderboardPage() {
 
 
 
-              {/* ── Mobile Slider ── */}
-              <section className="relative flex lg:hidden items-center justify-center pb-12 px-5 mt-8 rounded-[1.5rem] bg-card border border-border overflow-hidden">
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-[1.5rem]" />
+              {/* ── Mobile Top 3 Slider (Peek Design) ── */}
 
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-lg bg-muted/20 hover:bg-muted border border-border transition-all z-10"
-                >
-                  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-lg bg-muted/20 hover:bg-muted border border-border transition-all z-10"
-                >
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </button>
+{/* ── Mobile Top 3 Slider (2nd-1st-3rd Order) ── */}
+<section className="relative lg:hidden pb-6 overflow-hidden">
+  {/* Section label */}
+  <p className="text-[9px] font-bold tracking-[0.3em] uppercase text-muted-foreground/30 text-center mb-5">
+    Top Players This Season
+  </p>
 
-                {/* Clipping container — card slides within this */}
-                <div className="w-full overflow-hidden">
-                  <div
-                    key={animKey}
-                    className={slideDir === "left" ? "slide-enter-left" : "slide-enter-right"}
+  {/* ── Track outer: clips overflow so only 80% + 10% peeks show ── */}
+  <div className="w-full overflow-hidden">
+    <div
+      className="flex transition-transform duration-[420ms] ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
+      style={{
+        // 80% per slide, offset by 10% so first card centers
+        transform: `translateX(calc(-${slideIdx * 80}% + 10%))`,
+      }}
+    >
+      {[topThree[1], topThree[0], topThree[2]].map((player, i) => {
+        const isActive = i === slideIdx;
+        const isFirst = player.rank === 1;
+
+        // Rank-specific tokens (NO SHADOWS)
+        const rankStyle = {
+          1: {
+            card:        "border-yellow-500/45 bg-gradient-to-b from-yellow-500/[0.08] via-card to-card",
+            topLine:     "via-yellow-500/70",
+            avatarBorder:"border-yellow-500/55",
+            badgeGlow:   "",
+            username:    "text-yellow-300",
+            panel:       "bg-yellow-500/[0.07] border-yellow-500/20",
+            score:       "text-yellow-300",
+          },
+          2: {
+            card:        "border-slate-400/30 bg-gradient-to-b from-slate-400/[0.05] via-card to-card",
+            topLine:     "via-slate-400/45",
+            avatarBorder:"border-slate-400/40",
+            badgeGlow:   "",
+            username:    "text-slate-300",
+            panel:       "bg-slate-400/[0.06] border-slate-400/15",
+            score:       "text-slate-200",
+          },
+          3: {
+            card:        "border-amber-700/30 bg-gradient-to-b from-amber-800/[0.06] via-card to-card",
+            topLine:     "via-amber-600/45",
+            avatarBorder:"border-amber-700/40",
+            badgeGlow:   "",
+            username:    "text-amber-400",
+            panel:       "bg-amber-800/[0.07] border-amber-700/16",
+            score:       "text-amber-300",
+          },
+        }[player.rank as 1 | 2 | 3];
+
+        return (
+          <div
+            key={player.rank}
+            // Each slide takes 80% of the track width
+            className="flex-[0_0_80%] px-1 transition-all duration-350"
+            style={{
+              opacity:   isActive ? 1 : 0.45,
+              transform: isActive ? "scale(1)" : "scale(0.93)",
+            }}
+          >
+            {/* Card */}
+            <div
+              className={[
+                "relative rounded-[1.25rem] border-[1.5px] overflow-hidden",
+                rankStyle.card,
+              ].join(" ")}
+            >
+              {/* Top accent line */}
+              <div
+                className={[
+                  "absolute inset-x-0 top-0 h-[1.5px] rounded-t-[1.25rem]",
+                  "bg-gradient-to-r from-transparent to-transparent",
+                  rankStyle.topLine,
+                ].join(" ")}
+              />
+
+              <div className="flex flex-col items-center gap-0 px-5 pt-7 pb-6 text-center relative z-10">
+                {/* Rank badge */}
+                <img
+                  src={RANK_IMAGES[player.rank]}
+                  alt={`Rank ${player.rank}`}
+                  className={[
+                    "object-contain mb-3",
+                    isFirst ? "w-14 h-14" : "w-11 h-11",
+                    rankStyle.badgeGlow,
+                    isFirst ? "animate-[float_3s_ease-in-out_infinite]" : "",
+                  ].join(" ")}
+                />
+
+                {/* Avatar */}
+                <Avatar
+                  className={[
+                    "rounded-[0.875rem] border-2 p-0.5 mb-4",
+                    "w-16 h-16",
+                    rankStyle.avatarBorder,
+                  ].join(" ")}
+                >
+                  <AvatarImage
+                    src={player.avatar}
+                    alt={player.username}
+                    className="rounded-[0.75rem] object-cover"
+                  />
+                  <AvatarFallback
+                    className="rounded-[0.75rem] text-xl font-black"
+                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   >
-                    <div className="flex flex-col items-center gap-5 text-center w-full max-w-xs mx-auto">
-                      <img
-                        src={RANK_IMAGES[active.rank]}
-                        alt={`Rank ${active.rank}`}
-                        className="w-20 h-20 object-contain drop-shadow-xl"
-                      />
-                      <Avatar className="w-24 h-24 rounded-[1.5rem] border-2 border-yellow-500/30 p-1">
-                        <AvatarImage src={active.avatar} alt={active.username} className="rounded-xl object-contain" />
-                        <AvatarFallback className="text-2xl font-black rounded-xl">{active.rank}</AvatarFallback>
-                      </Avatar>
-                      <p
-                        className="text-xl font-black uppercase text-yellow-300 tracking-widest"
-                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                      >
-                        {active.username}
-                      </p>
-                      <div className="border border-yellow-500/20 bg-yellow-500/[0.05] px-10 py-5 rounded-xl flex flex-col items-center gap-1.5 w-full">
-                        <p className="text-3xl font-black text-green-400" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                          {fmt(active.metric)}
-                        </p>
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                          {active.metricName}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    {player.rank}
+                  </AvatarFallback>
+                </Avatar>
 
-                {/* Dots */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
-                  {topThree.map((_, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => jumpTo(i)}
-                      className={[
-                        "rounded-full transition-all",
-                        i === slideIdx ? "w-4 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-muted-foreground/30",
-                      ].join(" ")}
-                    />
-                  ))}
+                {/* Username */}
+                <p
+                  className={["font-black uppercase tracking-[0.1em] mb-4", rankStyle.username].join(" ")}
+                  style={{
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {player.username}
+                </p>
+
+                {/* Score panel */}
+                <div
+                  className={[
+                    "w-full rounded-xl border flex flex-col items-center py-3.5 px-5 gap-1.5",
+                    rankStyle.panel,
+                  ].join(" ")}
+                >
+                  <p
+                    className={["font-black leading-none", rankStyle.score].join(" ")}
+                    style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: "2rem",
+                    }}
+                  >
+                    {fmt(player.metric)}
+                  </p>
+                  <p className="text-[8px] font-black uppercase tracking-[0.22em] text-muted-foreground pt-1.5 border-t border-border w-full text-center">
+                    {player.metricName}
+                  </p>
                 </div>
-              </section>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* ── Controls: arrow · dots · arrow (always below card) ── */}
+  <div className="flex items-center justify-center gap-4 mt-5 px-5">
+    {/* Prev arrow */}
+    <button
+      onClick={prevSlide}
+      aria-label="Previous"
+      className="w-9 h-9 rounded-[0.625rem] border border-border bg-muted/10 hover:bg-muted/30 hover:border-border/60 active:scale-90 transition-all duration-150 flex items-center justify-center text-muted-foreground hover:text-foreground"
+    >
+      <ChevronLeft className="w-4 h-4" />
+    </button>
+
+    {/* Dots - Rank colored */}
+    <div className="flex items-center gap-1.5">
+      {[topThree[1], topThree[0], topThree[2]].map((player, i) => {
+        const isActive = i === slideIdx;
+        const dotColor = {
+          1: isActive ? "bg-yellow-400/85"    : "bg-muted-foreground/25",
+          2: isActive ? "bg-slate-400/75"     : "bg-muted-foreground/25",
+          3: isActive ? "bg-amber-500/80"     : "bg-muted-foreground/25",
+        }[player.rank as 1 | 2 | 3];
+
+        return (
+          <button
+            key={i}
+            onClick={() => jumpTo(i)}
+            aria-label={`Go to rank ${player.rank}`}
+            className={[
+              "h-[5px] rounded-full transition-all duration-300",
+              isActive ? "w-5" : "w-[5px]",
+              dotColor,
+            ].join(" ")}
+          />
+        );
+      })}
+    </div>
+
+    {/* Next arrow */}
+    <button
+      onClick={nextSlide}
+      aria-label="Next"
+      className="w-9 h-9 rounded-[0.625rem] border border-border bg-muted/10 hover:bg-muted/30 hover:border-border/60 active:scale-90 transition-all duration-150 flex items-center justify-center text-muted-foreground hover:text-foreground"
+    >
+      <ChevronRight className="w-4 h-4" />
+    </button>
+  </div>
+
+  {/* Float animation for 1st place badge */}
+  <style jsx>{`
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+  `}</style>
+</section>
 
 
 

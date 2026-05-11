@@ -11,7 +11,7 @@ export default function UserManagementSkeleton() {
               <div className="relative flex-1 md:flex-none">
                 <div className="h-10 w-64 bg-muted rounded-xl animate-pulse"></div>
               </div>
-              <div className="h-10 w-10 bg-muted rounded-xl animate-pulse"></div>
+              <div className="h-10 w-32 bg-muted rounded-xl animate-pulse"></div>
             </div>
           </div>
 

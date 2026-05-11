@@ -12,7 +12,7 @@ export default function KYCVerificationSkeleton() {
                 <div className="relative">
                   <div className="h-10 w-64 bg-muted rounded-xl animate-pulse"></div>
                 </div>
-                <div className="h-10 w-10 bg-muted rounded-xl animate-pulse"></div>
+                <div className="h-10 w-32 bg-muted rounded-xl animate-pulse"></div>
               </div>
             </div>
 
@@ -29,13 +29,6 @@ export default function KYCVerificationSkeleton() {
 
             {/* Content Table Skeleton */}
             <div className="bg-card border border-border rounded-[1rem] shadow-sm overflow-hidden">
-              {/* Filter Tabs Skeleton */}
-              <div className="flex gap-1 p-2 bg-muted/30 border-b border-border">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-8 w-16 bg-muted rounded-xl animate-pulse"></div>
-                ))}
-              </div>
-
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>

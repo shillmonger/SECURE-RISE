@@ -4,11 +4,8 @@ export default function DepositsSkeleton() {
       {/* Header skeleton */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-4 bg-muted rounded-full animate-pulse"></div>
-            <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
-          </div>
           <div className="h-8 w-48 bg-muted rounded animate-pulse"></div>
+          <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-10 w-64 bg-muted rounded-lg animate-pulse"></div>
@@ -16,13 +13,22 @@ export default function DepositsSkeleton() {
         </div>
       </div>
 
+      {/* Stats Grid Skeleton */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="bg-card px-5 py-3 rounded-2xl border border-border shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+              <div className="h-3 w-8 bg-muted rounded animate-pulse"></div>
+            </div>
+            <div className="h-3 w-24 bg-muted rounded animate-pulse mb-2"></div>
+            <div className="h-6 w-12 bg-muted rounded animate-pulse"></div>
+          </div>
+        ))}
+      </div>
+
       {/* Table skeleton */}
       <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
-          <div className="w-5 h-5 bg-muted rounded animate-pulse"></div>
-        </div>
-        
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-muted text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
