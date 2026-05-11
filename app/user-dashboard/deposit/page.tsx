@@ -47,7 +47,7 @@ const getPaymentMethodUrl = (methodName: string) => {
   const urlMap: Record<string, string> = {
     "Bitcoin": "bitcoin",
     "Ethereum": "ethereum", 
-    "USDT-ERC20": "usdt-erc20",
+    "USDT-TRC20": "usdt-trc20",
     "Solana": "solana",
     "Dogecoin": "doge",
     "Cardano": "cardano",
@@ -62,7 +62,7 @@ const getPaymentMethodUrl = (methodName: string) => {
 const DepositPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [amount, setAmount] = useState("100");
-  const [selectedMethod, setSelectedMethod] = useState("USDT TRC20");
+  const [selectedMethod, setSelectedMethod] = useState("USDT-TRC20");
   const [deposits, setDeposits] = useState<DepositRecord[]>([]);
   const [loading, setLoading] = useState(true);
 

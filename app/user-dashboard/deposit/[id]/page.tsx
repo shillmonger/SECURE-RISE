@@ -41,8 +41,7 @@ const MakePaymentPage = () => {
   const paymentMethods: Record<string, { name: string; address: string; network: string }> = {
     bitcoin: { name: "Bitcoin", address: "bc1qj4m4uyfnyynxtkd4dhmx7r47rmsdvy4dqm4gad", network: "BTC" },
     ethereum: { name: "Ethereum", address: "0x21f0b7513264d07b54246123dd72ab4bdcb7dc64", network: "ERC20" },
-    "usdt-trc20": { name: "USDT TRC20", address: "TNx5x4TtsoYZVeaZPvVoGLk59Gyny9Px49", network: "TRC20" },
-    "usdt-erc20": { name: "USDT ERC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "ERC20" },
+    "usdt-trc20": { name: "USDT-TRC20", address: "TNx5x4TtsoYZVeaZPvVoGLk59Gyny9Px49", network: "TRC20" },
     solana: { name: "Solana", address: "BytFN7JYPcs8qfXGzhgjaA4okvc1usgpemd4iFrr9rwB", network: "SOL" },
     litecoin: { name: "Litecoin", address: "ltc1qkkmh2rtwje98jx8ffrgxquse7tq6phmcc96nyd", network: "LTC" },
     xrp: { name: "XRP", address: "re5NTE9hACgBpRE3LQZmY3d5nmBugicks", network: "XRP" },
