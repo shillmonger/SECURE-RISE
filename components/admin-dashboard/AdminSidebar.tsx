@@ -10,6 +10,7 @@ import {
   Settings,
   User,
   Briefcase,
+  Gift,
   LogOut,
   UserCog,
   IdCard,
@@ -32,6 +33,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
   const sidebarItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Manage Deposite", icon: Wallet, href: `${basePath}/manage-deposite` },
+    { name: "Gift Card Deposite", icon: Gift, href: `${basePath}/manage-gift-cards` },
     { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
     { name: "User Management", icon: Users, href: `${basePath}/user-management` },
     { name: "Investor Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },

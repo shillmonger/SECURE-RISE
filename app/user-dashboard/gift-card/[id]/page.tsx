@@ -133,7 +133,9 @@ const GiftCardSubmitPage = () => {
         return;
       }
       
-      formData.append("cardImage", selectedFile);
+      if (selectedFile) {
+        formData.append("cardImage", selectedFile);
+      }
       
       formData.append("userId", user.id);
       formData.append("username", user.username);
