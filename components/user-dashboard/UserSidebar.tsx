@@ -226,7 +226,7 @@ export default function UserSidebar({
             className="lg:hidden rounded-lg text-foreground"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 

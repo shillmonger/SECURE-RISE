@@ -139,11 +139,24 @@ interface PayoutAddress {
   address: string;
 }
 
+// Function to truncate wallet address
+const truncateAddress = (address: string, startChars: number = 6, endChars: number = 4) => {
+  if (!address || address.length <= startChars + endChars) {
+    return address;
+  }
+  return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
+};
+
 export default function UserSettingsPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const darkMode = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Personal Info State
   const [personalInfo, setPersonalInfo] = useState({
@@ -570,14 +583,22 @@ export default function UserSettingsPage() {
                   </h3>
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-bold">Dark Mode</p>
-                    <button
-                      onClick={toggleTheme}
-                      className={`relative w-14 h-8 rounded-full cursor-pointer border border-border transition-colors ${darkMode ? "bg-primary" : "bg-muted"}`}
-                    >
-                      <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform flex items-center justify-center ${darkMode ? "translate-x-6" : "translate-x-1"}`}>
-                        {darkMode ? <Moon className="w-3.5 h-3.5 text-black" /> : <Sun className="w-3.5 h-3.5 text-yellow-500" />}
+                    {mounted ? (
+                      <button
+                        onClick={toggleTheme}
+                        className={`relative w-14 h-8 rounded-full cursor-pointer border border-border transition-colors ${darkMode ? "bg-primary" : "bg-muted"}`}
+                      >
+                        <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform flex items-center justify-center ${darkMode ? "translate-x-6" : "translate-x-1"}`}>
+                          {darkMode ? <Moon className="w-3.5 h-3.5 text-black" /> : <Sun className="w-3.5 h-3.5 text-yellow-500" />}
+                        </div>
+                      </button>
+                    ) : (
+                      <div className="relative w-14 h-8 rounded-full border border-border bg-muted">
+                        <div className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform flex items-center justify-center translate-x-1">
+                          <Sun className="w-3.5 h-3.5 text-yellow-500" />
+                        </div>
                       </div>
-                    </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -715,8 +736,8 @@ export default function UserSettingsPage() {
                                 {item.crypto.name}
                                 <span className="text-xs text-muted-foreground font-mono">({item.crypto.symbol})</span>
                               </div>
-                              <div className="font-mono text-xs text-muted-foreground break-all">
-                                {item.address}
+                              <div className="font-mono text-xs text-muted-foreground">
+                                {truncateAddress(item.address)}
                               </div>
                             </div>
                           </div>

@@ -228,6 +228,9 @@ export default function UserHeader({
         const giftsResponse = await fetch("/api/user-dashboard/gift/history");
         const giftsResult = await giftsResponse.json();
 
+        const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${account.id}`);
+        const giftCardsResult = await giftCardsResponse.json();
+
         const allNotifications: any[] = [];
 
         // Process deposits as notifications (same logic as notifications page)
@@ -294,6 +297,18 @@ export default function UserHeader({
               type: "gift",
               isRead: false, // Gift notifications are always unread initially
               rawData: gift,
+            });
+          });
+        }
+
+        // Process gift cards as notifications
+        if (giftCardsResult.success && giftCardsResult.giftCards) {
+          giftCardsResult.giftCards.forEach((giftCard: any) => {
+            allNotifications.push({
+              id: `giftcard-${giftCard._id}`,
+              type: "giftcard",
+              isRead: giftCard.status === "approved",
+              rawData: giftCard,
             });
           });
         }
@@ -413,6 +428,16 @@ export default function UserHeader({
         const giftsResponse = await fetch("/api/user-dashboard/gift/history");
         const giftsResult = await giftsResponse.json();
 
+        // Fetch gift cards
+        let giftCardsResult: any = { success: false, giftCards: [] };
+        try {
+          const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userId}`);
+          giftCardsResult = await giftCardsResponse.json();
+          console.log('Gift cards API response:', giftCardsResult);
+        } catch (error) {
+          console.error('Error fetching gift cards:', error);
+        }
+
         let unreadCount = 0;
 
         // Count unread deposits (pending ones)
@@ -448,6 +473,19 @@ export default function UserHeader({
         // Count unread gifts (all gifts are unread initially)
         if (giftsResult.success && giftsResult.gifts) {
           unreadCount += giftsResult.gifts.length;
+        }
+
+        // Count unread gift cards (pending ones)
+        console.log('Processing gift cards:', giftCardsResult);
+        if (giftCardsResult.success && giftCardsResult.giftCards) {
+          const pendingGiftCards = giftCardsResult.giftCards.filter(
+            (gc: any) => gc.status !== "approved",
+          );
+          console.log('Pending gift cards:', pendingGiftCards);
+          console.log('Pending gift cards count:', pendingGiftCards.length);
+          unreadCount += pendingGiftCards.length;
+        } else {
+          console.log('Gift cards result not successful or no giftCards array');
         }
 
         setNotificationCount(unreadCount);

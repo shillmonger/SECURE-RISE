@@ -72,7 +72,7 @@ export default function AdminHeader({ sidebarOpen, setSidebarOpen }: HeaderProps
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             {sidebarOpen ? (
-              <X className="h-6 w-6 animate-in fade-in zoom-in duration-300" />
+              <X className="h-5 w-5 animate-in fade-in zoom-in duration-300" />
             ) : (
               <Menu className="h-6 w-6 animate-in fade-in zoom-in duration-300" />
             )}
