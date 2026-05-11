@@ -28,6 +28,13 @@ const TICKER_ITEMS = [
 
 export default function StatsGrid() {
   const [active, setActive] = useState(false);
+  const [userAvatars, setUserAvatars] = useState([
+    "https://randomuser.me/api/portraits/men/32.jpg",
+    "https://i.pravatar.cc/150?u=21",
+    "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
+    "https://i.pravatar.cc/150?u=43",
+    "https://i.pravatar.cc/150?u=54",
+  ]);
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -39,23 +46,34 @@ export default function StatsGrid() {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    fetchRandomUsers();
+  }, []);
+
+  const fetchRandomUsers = async () => {
+    try {
+      const response = await fetch('/api/users/random');
+      const data = await response.json();
+      if (data.success && data.users) {
+        const avatarUrls = data.users.map((user: any) => user.profileImage);
+        setUserAvatars(avatarUrls);
+      }
+    } catch (error) {
+      console.error('Failed to fetch random users:', error);
+      // Keep using default avatars on error
+    }
+  };
+
   const rewards = useCounter(2, 1600, active);
   const traders = useCounter(900, 2000, active);
   const countries = useCounter(160, 1400, active);
   const community = useCounter(1000, 2200, active);
 
-  const avatars = [
-    "https://randomuser.me/api/portraits/men/32.jpg",
-    "https://i.pravatar.cc/150?u=21",
-    "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
-    "https://i.pravatar.cc/150?u=43",
-    "https://i.pravatar.cc/150?u=54",
-  ];
-
+  
   return (
     <section
       ref={ref}
-      className="mx-auto max-w-[1400px] px-4 lg:px-8 py-0 pb-25 w-full"
+      className="mx-auto max-w-[1400px] px-4 lg:px-8 pt-10 pb-20 w-full"
     >
       {/* --- Header (Matches WhyPlatformSection Style) --- */}
       <div className="text-center mb-16">
@@ -103,7 +121,7 @@ export default function StatsGrid() {
           <div>
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-3 font-mono">Recently joined</p>
             <div className="flex items-center">
-              {avatars.map((url, i) => (
+              {userAvatars.map((url, i) => (
                 <img key={i} src={url} alt="trader"
                   className="w-12 h-12 rounded-full border-2 border-background -ml-3 first:ml-0 transition-all" />
               ))}

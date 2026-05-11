@@ -52,10 +52,26 @@ const Counter = ({ target }: { target: number }) => {
 
 export default function HeroSection() {
   const [isMounted, setIsMounted] = useState(false);
+  const [userAvatars, setUserAvatars] = useState(AVATARS);
 
   useEffect(() => {
     setIsMounted(true);
+    fetchRandomUsers();
   }, []);
+
+  const fetchRandomUsers = async () => {
+    try {
+      const response = await fetch('/api/users/random');
+      const data = await response.json();
+      if (data.success && data.users) {
+        const avatarUrls = data.users.map((user: any) => user.profileImage);
+        setUserAvatars(avatarUrls);
+      }
+    } catch (error) {
+      console.error('Failed to fetch random users:', error);
+      // Keep using default avatars on error
+    }
+  };
 
   if (!isMounted) return <div className="min-h-screen bg-background" />;
 
@@ -98,7 +114,7 @@ export default function HeroSection() {
               asChild
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto px-8 py-6 cursor-pointer text-sm font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
+              className="w-full sm:w-auto px-8 py-7 cursor-pointer text-sm font-bold rounded-xl border-border bg-background/50 backdrop-blur-md hover:bg-muted transition-all"
             >
               <Link href="/auth-page/login" className="flex items-center gap-2">
                 SIGN IN NOW
@@ -107,7 +123,7 @@ export default function HeroSection() {
             <Button
               asChild
               size="lg"
-              className="w-full sm:w-auto px-8 py-6 cursor-pointer text-sm font-extrabold rounded-xl hover:scale-105 transition-transform"
+              className="w-full sm:w-auto px-8 py-7 cursor-pointer text-sm font-extrabold rounded-xl hover:scale-105 transition-transform"
             >
               <Link
                 href="/auth-page/register"
@@ -140,7 +156,7 @@ export default function HeroSection() {
             <div className="h-7 w-px bg-border" />
             <div className="flex items-center gap-2.5">
               <div className="flex -space-x-2.5">
-                {AVATARS.map((src, i) => (
+                {userAvatars.map((src, i) => (
                   <div
                     key={i}
                     className="h-12 w-12 cursor-pointer rounded-full border-2 border-primary bg-background overflow-hidden"
