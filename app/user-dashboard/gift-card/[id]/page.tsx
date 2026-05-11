@@ -95,7 +95,7 @@ const GiftCardSubmitPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile) {
+    if (!selectedFile && !hasPreUploaded) {
       toast.error("Please upload the gift card image");
       return;
     }
@@ -125,7 +125,16 @@ const GiftCardSubmitPage = () => {
       formData.append("amount", amount);
       formData.append("currency", currency);
       formData.append("code", code);
+      
+      // For pre-uploaded images, user must re-upload the image on this page
+      // This is a security requirement - we can't access the original file
+      if (!selectedFile && hasPreUploaded) {
+        toast.error("Please re-upload your gift card image for security");
+        return;
+      }
+      
       formData.append("cardImage", selectedFile);
+      
       formData.append("userId", user.id);
       formData.append("username", user.username);
       formData.append("userEmail", user.email);
@@ -376,7 +385,7 @@ const GiftCardSubmitPage = () => {
                 >
                   <button
                     type="submit"
-                    disabled={isSubmitting || !selectedFile}
+                    disabled={isSubmitting || (!selectedFile && !hasPreUploaded)}
                     className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (

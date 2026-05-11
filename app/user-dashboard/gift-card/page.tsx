@@ -465,7 +465,7 @@ const GiftCardPage = () => {
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-50">No submissions yet</p>
                       </div>
                     ) : (
-                      giftCards.slice(0, 6).map((card) => {
+                      giftCards.slice(0, 5).map((card) => {
                         const style = getStatusStyles(card.status);
                         const formattedDate = new Date(card.createdAt).toLocaleDateString("en-US", {
                           month: "short",
