@@ -14,7 +14,7 @@ export default function DepositsSkeleton() {
       </div>
 
       {/* Stats Grid Skeleton */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-card px-5 py-3 rounded-2xl border border-border shadow-sm">
             <div className="flex items-center justify-between mb-3">
@@ -25,7 +25,7 @@ export default function DepositsSkeleton() {
             <div className="h-6 w-12 bg-muted rounded animate-pulse"></div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Table skeleton */}
       <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
