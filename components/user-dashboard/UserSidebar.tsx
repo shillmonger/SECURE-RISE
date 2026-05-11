@@ -62,6 +62,7 @@ export default function UserSidebar({
   const [countdown, setCountdown] = useState(10);
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    "Fund Account": true,
     Account: true,
     Community: true,
   });
