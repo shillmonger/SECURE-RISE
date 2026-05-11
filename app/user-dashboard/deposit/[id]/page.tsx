@@ -16,7 +16,9 @@ import {
   Loader2,
   ShieldCheck,
   Zap,
-  Check
+  Check,
+  AlertTriangle,
+  Info
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -36,11 +38,10 @@ const MakePaymentPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Updated Payment methods with correct addresses
   const paymentMethods: Record<string, { name: string; address: string; network: string }> = {
     bitcoin: { name: "Bitcoin", address: "bc1qj4m4uyfnyynxtkd4dhmx7r47rmsdvy4dqm4gad", network: "BTC" },
     ethereum: { name: "Ethereum", address: "0x21f0b7513264d07b54246123dd72ab4bdcb7dc64", network: "ERC20" },
-    "usdt-trc20": { name: "USDT TRC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "TRC20" },
+    "usdt-trc20": { name: "USDT TRC20", address: "TNx5x4TtsoYZVeaZPvVoGLk59Gyny9Px49", network: "TRC20" },
     "usdt-erc20": { name: "USDT ERC20", address: "0x21F0b7513264d07b54246123DD72AB4BdCB7dC64", network: "ERC20" },
     solana: { name: "Solana", address: "BytFN7JYPcs8qfXGzhgjaA4okvc1usgpemd4iFrr9rwB", network: "SOL" },
     litecoin: { name: "Litecoin", address: "ltc1qkkmh2rtwje98jx8ffrgxquse7tq6phmcc96nyd", network: "LTC" },
@@ -62,7 +63,6 @@ const MakePaymentPage = () => {
   useEffect(() => {
     const generateQRCode = async () => {
       try {
-        // Simple address QR
         const url = await QRCode.toDataURL(paymentMethod.address);
         setQrCodeUrl(url);
       } catch (err) {
@@ -93,7 +93,6 @@ const MakePaymentPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Get user info from server using auth token
       const userResponse = await fetch('/api/user/info');
       
       if (!userResponse.ok) {
@@ -118,26 +117,12 @@ const MakePaymentPage = () => {
       formData.append('username', user.username);
       formData.append('userEmail', user.email);
 
-      console.log('Submitting deposit with data:', {
-        amount,
-        paymentMethod: paymentMethod.name,
-        userId: user.id,
-        username: user.username,
-        userEmail: user.email,
-        fileSelected: !!selectedFile
-      });
-
       const response = await fetch('/api/user-dashboard/deposit', {
         method: 'POST',
         body: formData,
       });
 
       const result = await response.json();
-
-      console.log('Deposit submission response:', result);
-      console.log('Response ok:', response.ok);
-      console.log('Result success:', result.success);
-      console.log('Transaction ID:', result.transactionId);
 
       if (response.ok && result.success) {
         const depositData = {
@@ -146,12 +131,9 @@ const MakePaymentPage = () => {
           transactionId: result.transactionId,
           username: user.username
         };
-        console.log('Setting deposit data:', depositData);
         setDepositData(depositData);
-        console.log('Setting showSuccess to true');
         setShowSuccess(true);
       } else {
-        console.log('Submission failed:', result.error);
         toast.error(result.error || 'Failed to submit deposit');
       }
     } catch (error) {
@@ -175,7 +157,7 @@ const MakePaymentPage = () => {
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-black  uppercase tracking-tighter">Checkout</h1>
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Checkout</h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <ShieldCheck className="w-3 h-3 text-primary" /> Secure Payment Gateway
                 </p>
@@ -187,43 +169,36 @@ const MakePaymentPage = () => {
               </Link>
             </div>
 
+            
+
             <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
               {/* Method Indicator Bar */}
- <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
-  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-    
-    {/* Icon */}
-    <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
-      <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-    </div>
-
-    {/* Left Content */}
-    <div className="min-w-0">
-      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-        Pay with
-      </p>
-
-      <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
-        {paymentMethod.name}
-        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
-      </p>
-    </div>
-  </div>
-
-  {/* Right Content */}
-  <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
-    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-      Required Amount
-    </p>
-
-    <p className="text-lg sm:text-2xl font-black tracking-tight text-green-500">
-      ${parseFloat(amount).toLocaleString()}
-    </p>
-  </div>
-</div>
+              <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
+                      Pay with
+                    </p>
+                    <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
+                      {paymentMethod.name}
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
+                    </p>
+                  </div>
+                </div>
+                <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
+                  <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
+                    Required Amount
+                  </p>
+                  <p className="text-lg sm:text-2xl font-black tracking-tight text-green-500">
+                    ${parseFloat(amount).toLocaleString()}
+                  </p>
+                </div>
+              </div>
 
               <div className="p-5 md:p-8 space-y-10">
-                
                 <div className="grid md:grid-cols-2 gap-12 items-start">
                   
                   {/* Left Side: Visual/QR */}
@@ -246,15 +221,14 @@ const MakePaymentPage = () => {
 
                   {/* Right Side: Copy & Upload */}
                   <div className="space-y-8">
-                    {/* Wallet Address */}
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Official {paymentMethod.name} Address
                       </label>
                       <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black  leading-relaxed">
-  {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
-</div>
+                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black leading-relaxed">
+                          {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
+                        </div>
                         <button 
                           onClick={handleCopy}
                           className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
@@ -269,7 +243,6 @@ const MakePaymentPage = () => {
                       </div>
                     </div>
 
-                    {/* File Upload */}
                     <div className="space-y-3 pt-6 border-t border-border">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Upload Proof of Transfer
@@ -296,7 +269,7 @@ const MakePaymentPage = () => {
 
                 {/* Submit Action */}
                 <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
-                   <button 
+                  <button 
                     type="submit"
                     disabled={isSubmitting || !selectedFile}
                     className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
@@ -311,9 +284,91 @@ const MakePaymentPage = () => {
                     Review typically takes 5-30 minutes
                   </p>
                 </form>
-
               </div>
             </div>
+
+
+            {/* ⚠️ DEPOSIT WARNING BANNER */}
+<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-red-500/30 bg-gradient-to-br from-red-500/15 via-orange-500/10 to-red-500/5 p-4 md:p-5 backdrop-blur-sm">
+  {/* Background Effects */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-red-400 opacity-10" />
+
+  {/* Header */}
+  <div className="relative z-10 mb-5 flex items-center gap-3">
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30">
+      <AlertTriangle className="h-5 w-5 text-red-400" />
+    </div>
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-300">
+        Deposit Warning
+      </p>
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-red-100/70">
+        Read carefully before sending funds
+      </p>
+    </div>
+  </div>
+
+  {/* Warning Items */}
+  <div className="relative z-10 space-y-3">
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
+      <Copy className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+          Always Use The Copy Button
+        </span>
+        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+          Never type the address manually. One wrong character means permanent, unrecoverable loss of funds.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+      <Zap className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+          Send On The Correct Network Only
+        </span>
+        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+          Sending on the wrong network (e.g. ERC20 vs TRC20) will result in total loss. Network shown: <span className="text-red-300 font-black">{paymentMethod.network}</span>
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
+      <CheckCircle2 className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+          Send The Exact Amount
+        </span>
+        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+          Under- or over-payment may delay or void your deposit pending manual review.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3 rounded-xl border border-red-500/10 bg-black/20 px-4 py-3">
+      <Upload className="h-4 w-4 text-red-400 mt-0.5 shrink-0" />
+      <div>
+        <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+          Upload Clear Proof Of Transfer
+        </span>
+        <p className="mt-0.5 text-[10px] text-red-100/60 leading-relaxed">
+          Screenshot must show the transaction hash, amount & destination address. Blurry or cropped images will be rejected.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+      <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+        Transactions Are Irreversible
+      </span>
+      <span className="text-[11px] font-black text-red-400">
+        No Exceptions
+      </span>
+    </div>
+  </div>
+</div>
           </div>
         </main>
       </div>
@@ -329,23 +384,12 @@ const MakePaymentPage = () => {
           }}
         >
           <div
-            className="bg-card  border border-border rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
+            className="bg-card border border-border rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Animated checkmark */}
             <div className="mx-auto mb-5 h-20 w-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
-              <svg
-                className="h-9 w-9 text-green-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
+              <svg className="h-9 w-9 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <h3 className="text-2xl font-black text-foreground mb-1">Deposit Submitted! 🎉</h3>
@@ -377,7 +421,6 @@ const MakePaymentPage = () => {
                 ⏱️ Review typically takes 5-30 minutes. You'll receive an email once approved.
               </p>
             </div>
-            
             <button
               onClick={(e) => {
                 e.preventDefault();
