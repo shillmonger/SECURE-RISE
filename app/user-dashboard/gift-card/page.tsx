@@ -38,11 +38,12 @@ interface GiftCardRecord {
 }
 
 const GIFT_CARD_TYPES = [
-  { name: "Apple", icon: Smartphone, color: "text-gray-400" },
-  { name: "Amazon", icon: ShoppingBag, color: "text-orange-400" },
-  { name: "Steam", icon: Gamepad2, color: "text-blue-400" },
-  { name: "Google Play", icon: Gift, color: "text-green-400" },
-  { name: "Razer Gold", icon: CreditCard, color: "text-green-400" },
+  { name: "Apple", image: "https://i.postimg.cc/FzxYYWzf/apple.jpg" },
+  { name: "Xbox", image: "https://i.postimg.cc/hGxPJyZH/XBOX.jpg" },
+  { name: "Amazon", image: "https://i.postimg.cc/K8j1Y52S/amazon.jpg" },
+  { name: "Steam", image: "https://i.postimg.cc/VNb5qL58/Steam.jpg" },
+  { name: "Razer Gold", image: "https://i.postimg.cc/W1d4VbG3/Razer-Gold.jpg" },
+  { name: "Google Play", image: "https://i.postimg.cc/3RXRqSg2/Google-Play.jpg" },
 ];
 
 const COUNTRIES = [
@@ -50,6 +51,22 @@ const COUNTRIES = [
   { name: "UK", currency: "GBP", flag: "🇬🇧" },
   { name: "Canada", currency: "CAD", flag: "🇨🇦" },
   { name: "Australia", currency: "AUD", flag: "🇦🇺" },
+
+  { name: "Germany", currency: "EUR", flag: "🇩🇪" },
+  { name: "France", currency: "EUR", flag: "🇫🇷" },
+  { name: "Netherlands", currency: "EUR", flag: "🇳🇱" },
+  { name: "Italy", currency: "EUR", flag: "🇮🇹" },
+  { name: "Spain", currency: "EUR", flag: "🇪🇸" },
+
+  { name: "Ireland", currency: "EUR", flag: "🇮🇪" },
+  { name: "Switzerland", currency: "CHF", flag: "🇨🇭" },
+  { name: "Sweden", currency: "SEK", flag: "🇸🇪" },
+
+  { name: "UAE", currency: "AED", flag: "🇦🇪" },
+
+  { name: "Japan", currency: "JPY", flag: "🇯🇵" },
+  { name: "Singapore", currency: "SGD", flag: "🇸🇬" },
+
 ];
 
 const STEP_LABELS = ["Card Type", "Country", "Amount", "Upload", "Code"];
@@ -204,33 +221,55 @@ const GiftCardPage = () => {
                   {currentStep === 1 && (
                     <div className="space-y-3">
                       <p className="text-xs font-black uppercase tracking-tight">Select your gift card type</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {GIFT_CARD_TYPES.map((card) => {
-                          const Icon = card.icon;
-                          const isSelected = selectedCardType === card.name;
-                          return (
-                            <button
-                              key={card.name}
-                              onClick={() => setSelectedCardType(card.name)}
-                              className={`flex items-center justify-between cursor-pointer px-4 py-3.5 rounded-xl border-2 transition-all duration-200 ${
-                                isSelected
-                                  ? "bg-foreground border-transparent shadow-xl"
-                                  : "bg-background border-border hover:border-foreground/30"
-                              }`}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className={`p-1.5 rounded-lg ${isSelected ? "bg-background/10" : "bg-muted"}`}>
-                                  <Icon className={`w-4 h-4 ${isSelected ? "text-background" : card.color}`} />
-                                </div>
-                                <p className={`text-xs font-black uppercase tracking-tight ${isSelected ? "text-background" : "text-foreground"}`}>
-                                  {card.name}
-                                </p>
-                              </div>
-                              {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-background/70 shrink-0" />}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+  {GIFT_CARD_TYPES.map((card) => {
+    const isSelected = selectedCardType === card.name;
+
+    return (
+      <button
+        key={card.name}
+        onClick={() => setSelectedCardType(card.name)}
+        className={`relative flex items-center justify-between gap-3 overflow-hidden cursor-pointer px-4 py-2 rounded-lg border-2 transition-all duration-200 ${
+          isSelected
+            ? "bg-foreground border-transparent shadow-xl"
+            : "bg-background border-border hover:border-foreground/30"
+        }`}
+      >
+        {/* Left Content */}
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Logo */}
+          <div
+            className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shrink-0 ${
+              isSelected
+                ? "bg-background/10 ring-1 ring-background/10"
+                : "bg-muted"
+            }`}
+          >
+            <img
+              src={card.image}
+              alt={card.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Name */}
+          <p
+            className={`text-xs font-black uppercase tracking-tight text-left leading-tight ${
+              isSelected ? "text-background" : "text-foreground"
+            }`}
+          >
+            {card.name}
+          </p>
+        </div>
+
+        {/* Check */}
+        {isSelected && (
+          <CheckCircle2 className="w-4 h-4 text-background/70 shrink-0" />
+        )}
+      </button>
+    );
+  })}
+</div>
                     </div>
                   )}
 
@@ -238,7 +277,7 @@ const GiftCardPage = () => {
                   {currentStep === 2 && (
                     <div className="space-y-3">
                       <p className="text-xs font-black uppercase tracking-tight">Select card region</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5">
                         {COUNTRIES.map((country) => {
                           const isSelected = selectedCountry === country.name;
                           return (
@@ -254,11 +293,11 @@ const GiftCardPage = () => {
                               <div className="flex items-center gap-3">
                                 <span className="text-xl">{country.flag}</span>
                                 <div className="text-left">
-                                  <p className={`text-xs font-black uppercase tracking-tight ${isSelected ? "text-background" : "text-foreground"}`}>
-                                    {country.name}
-                                  </p>
                                   <p className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-background/60" : "text-muted-foreground"}`}>
                                     {country.currency}
+                                  </p>
+                                  <p className={`text-xs font-black uppercase tracking-tight ${isSelected ? "text-background" : "text-foreground"}`}>
+                                    {country.name}
                                   </p>
                                 </div>
                               </div>

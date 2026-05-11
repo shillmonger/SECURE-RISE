@@ -60,20 +60,22 @@ const GiftCardSubmitPage = () => {
     setHasPreUploaded(hasImage);
   }, [cardType, country, amount, code, router, hasImage]);
 
-  const getCardIcon = (type: string) => {
+  const getCardImage = (type: string) => {
     switch (type) {
       case "Apple":
-        return <CreditCard className="w-5 h-5" />;
+        return "https://i.postimg.cc/FzxYYWzf/apple.jpg";
       case "Amazon":
-        return <Gift className="w-5 h-5" />;
+        return "https://i.postimg.cc/K8j1Y52S/amazon.jpg";
       case "Steam":
-        return <CreditCard className="w-5 h-5" />;
+        return "https://i.postimg.cc/VNb5qL58/Steam.jpg";
       case "Google Play":
-        return <Gift className="w-5 h-5" />;
+        return "https://i.postimg.cc/3RXRqSg2/Google-Play.jpg";
       case "Razer Gold":
-        return <CreditCard className="w-5 h-5" />;
+        return "https://i.postimg.cc/W1d4VbG3/Razer-Gold.jpg";
+      case "Xbox":
+        return "https://i.postimg.cc/hGxPJyZH/XBOX.jpg";
       default:
-        return <CreditCard className="w-5 h-5" />;
+        return undefined;
     }
   };
 
@@ -201,7 +203,15 @@ const GiftCardSubmitPage = () => {
               <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="bg-primary/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
-                    {getCardIcon(cardType)}
+                    {getCardImage(cardType) ? (
+                      <img 
+                        src={getCardImage(cardType)} 
+                        alt={cardType}
+                        className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                      />
+                    ) : (
+                      <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
@@ -230,7 +240,15 @@ const GiftCardSubmitPage = () => {
                     <div className="relative group">
                       <div className="relative flex flex-col items-center justify-center p-5 bg-background border-2 border-dashed border-border rounded-[1rem]">
                         <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
-                          <Gift className="w-16 h-16 text-background" />
+                          {getCardImage(cardType) ? (
+                            <img 
+                              src={getCardImage(cardType)} 
+                              alt={cardType}
+                              className="w-16 h-16 object-contain"
+                            />
+                          ) : (
+                            <Gift className="w-16 h-16 text-background" />
+                          )}
                         </div>
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest text-center">
                           Gift Card Information

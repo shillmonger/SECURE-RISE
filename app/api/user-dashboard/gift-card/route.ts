@@ -44,7 +44,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate country
-    const validCountries = ['USA', 'UK', 'Canada', 'Australia'];
+    const validCountries = [
+      'USA', 'UK', 'Canada', 'Australia',
+      'Germany', 'France', 'Netherlands', 'Italy', 'Spain',
+      'Ireland', 'Switzerland', 'Sweden',
+      'UAE', 'Japan', 'Singapore'
+    ];
     if (!validCountries.includes(country)) {
       return NextResponse.json(
         { error: 'Invalid country' },
