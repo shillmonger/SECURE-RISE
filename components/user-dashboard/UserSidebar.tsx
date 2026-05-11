@@ -154,7 +154,7 @@ export default function UserSidebar({
           icon: Settings,
           href: `${basePath}/user-settings`,
         },
-        { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc` },
+        { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc` },
         {
           name: "Active Support 24/7",
           icon: HeadphonesIcon,

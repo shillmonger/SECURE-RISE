@@ -7,6 +7,8 @@ import {
   Wallet,
   Settings,
   UserCog,
+  CircleDollarSign,
+  Gift,
   User,
   Briefcase,
 } from "lucide-react";
@@ -18,9 +20,9 @@ export default function AdminNav() {
   const navItems = [
     { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit", icon: Wallet, href: `${basePath}/manage-deposite` },
-    { name: "Payouts", icon: Briefcase, href: `${basePath}/investment-payouts` },
+    { name: "Payouts", icon: CircleDollarSign, href: `${basePath}/investment-payouts` },
+    { name: "gifts", icon: Gift, href: `${basePath}/manage-gift-cards` },
     { name: "Users", icon: User, href: `${basePath}/user-management` },
-    { name: "Account", icon: UserCog, href: `${basePath}/manage-account` },
     { name: "Roles", icon: Settings, href: `${basePath}/role-settings` },
   ];
 
