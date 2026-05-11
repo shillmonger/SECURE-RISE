@@ -9,17 +9,20 @@ import {
   BarChart3,
   BadgeCheck,
   Trophy,
+  BanknoteArrowUp,
   TrendingUp,
+  Smile,
   CalendarDays,
   ChartNoAxesCombined,
   Award,
+  Bitcoin,
   Wallet,
   IdCard,
   CreditCard,
   Gift,
   History,
   Crown,
-  Medal,
+  ArrowUpRight,
   PieChart,
   Gem,
   Users,
@@ -28,6 +31,7 @@ import {
   Bell,
   Settings,
   LogOut,
+  BadgeDollarSign,
   ChevronDown,
   PartyPopper,
   MessageSquare,
@@ -94,18 +98,41 @@ export default function UserSidebar({
 
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
-    { name: "Deposit Capital", icon: CreditCard, href: `${basePath}/deposit` },
+    {
+      name: "Deposit",
+      icon: Wallet,
+      children: [
+        {
+          name: "Crypto Deposit",
+          icon: BadgeDollarSign,
+          href: `${basePath}/deposit`,
+        },
+        {
+          name: "Gift Card Deposit",
+          icon: Gift,
+          href: `${basePath}/gift-card`,
+        },
+      ],
+    },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Gift Member", icon: Gift, href: `${basePath}/gift-member` },
-    { name: "Investments Hub", icon: ChartNoAxesCombined, href: `${basePath}/my-investments` },
+    { name: "Gift Member", icon: Smile, href: `${basePath}/gift-member` },
+    {
+      name: "Investments Hub",
+      icon: ChartNoAxesCombined,
+      href: `${basePath}/my-investments`,
+    },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
-    { name: "Withdrawals", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
     { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
     {
       name: "Community",
       icon: Users,
       children: [
-        { name: "daily streak", icon: PartyPopper, href: `${basePath}/daily-streak` },
+        {
+          name: "daily streak",
+          icon: PartyPopper,
+          href: `${basePath}/daily-streak`,
+        },
         { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
@@ -117,12 +144,30 @@ export default function UserSidebar({
       name: "Account",
       icon: Settings,
       children: [
-        { name: "Notifications", icon: Bell, href: `${basePath}/notifications` },
-        { name: "Settings & Profile", icon: Settings, href: `${basePath}/user-settings` },
+        {
+          name: "Notifications",
+          icon: Bell,
+          href: `${basePath}/notifications`,
+        },
+        {
+          name: "Settings & Profile",
+          icon: Settings,
+          href: `${basePath}/user-settings`,
+        },
         { name: "KYC Verification", icon: IdCard, href: `${basePath}/kyc` },
-        { name: "Active Support 24/7", icon: HeadphonesIcon, href: `${basePath}/support` },
+        {
+          name: "Active Support 24/7",
+          icon: HeadphonesIcon,
+          href: `${basePath}/support`,
+        },
         ...(userRole.includes("admin")
-          ? [{ name: "Switch to Admin", icon: Lock, href: `/admin-dashboard/dashboard` }]
+          ? [
+              {
+                name: "Switch to Admin",
+                icon: Lock,
+                href: `/admin-dashboard/dashboard`,
+              },
+            ]
           : []),
       ],
     },
@@ -131,7 +176,9 @@ export default function UserSidebar({
   useEffect(() => {
     navItems.forEach((item) => {
       if ("children" in item) {
-        const hasActive = item.children.some((child) => pathname === child.href);
+        const hasActive = item.children.some(
+          (child) => pathname === child.href,
+        );
         if (hasActive) {
           setOpenGroups((prev) => ({ ...prev, [item.name]: true }));
         }
@@ -212,7 +259,9 @@ export default function UserSidebar({
             }
 
             const isOpen = !!openGroups[item.name];
-            const hasActiveChild = item.children.some((c) => pathname === c.href);
+            const hasActiveChild = item.children.some(
+              (c) => pathname === c.href,
+            );
 
             return (
               <div key={item.name} className="flex flex-col">
@@ -239,7 +288,9 @@ export default function UserSidebar({
                   />
                 </button>
 
-                <div className={`${isOpen ? "block" : "hidden"} transition-all duration-300 ease-in-out`}>
+                <div
+                  className={`${isOpen ? "block" : "hidden"} transition-all duration-300 ease-in-out`}
+                >
                   <div className="ml-4 mt-1 mb-1 pl-4 border-l border-border space-y-0.5">
                     {item.children.map((child) => {
                       const childActive = pathname === child.href;
@@ -256,7 +307,9 @@ export default function UserSidebar({
                         >
                           <child.icon
                             className={`w-4 h-4 flex-shrink-0 transition-transform ${
-                              childActive ? "scale-110" : "group-hover:scale-110"
+                              childActive
+                                ? "scale-110"
+                                : "group-hover:scale-110"
                             }`}
                           />
                           <span className="text-[11px] font-black uppercase tracking-widest">
