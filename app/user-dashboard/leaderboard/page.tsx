@@ -234,7 +234,7 @@ function PodiumCard({ player }: { player: TopThreeUser }) {
 
 export default function LeaderboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [slideIdx, setSlideIdx] = useState(0);
+  const [slideIdx, setSlideIdx] = useState(1);
   const [animKey, setAnimKey] = useState(0);
   const [slideDir, setSlideDir] = useState<"left" | "right">("left");
   const [search, setSearch] = useState("");
@@ -568,7 +568,7 @@ export default function LeaderboardPage() {
 
               {/* ── Leaderboard Table ── */}
               <section className="bg-card border border-border rounded-[1rem] overflow-hidden">
-                <div className="flex items-center justify-between gap-4 p-6 md:p-5 border-b border-border flex-wrap">
+                <div className="flex items-center justify-between gap-2 p-3 md:p-4 md:gap-4 border-b border-border flex-wrap">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-2xl">
                       <Users className="w-5 h-5 text-primary" />
@@ -627,7 +627,7 @@ export default function LeaderboardPage() {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <Avatar className="w-12 h-12 rounded-xl border border-border/40 p-0.5 flex-shrink-0">
-                                <AvatarImage src={row.profileImage} className="rounded-xl" />
+                                <AvatarImage src={row.profileImage} className="rounded-lg" />
                                 <AvatarFallback className="text-xs rounded-sm">{row.rank}</AvatarFallback>
                               </Avatar>
                               <span
