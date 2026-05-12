@@ -89,7 +89,7 @@ const testData = {
     userEmail: 'john.doe@example.com',
     amount: 1000,
     paymentMethod: 'Bank Transfer',
-    proofImage: 'https://i.postimg.cc/example/proof.jpg',
+    proofImage: 'https://i.postimg.cc/SKkm38h0/favicon-ico.png',
     transactionId: 'TXN123456'
   },
   withdrawalNotification: {
@@ -113,7 +113,7 @@ const testData = {
     amount: 100,
     currency: 'USD',
     code: 'AMZN-GIFT-123456',
-    cardImage: 'https://i.postimg.cc/example/giftcard.jpg',
+    cardImage: 'https://i.postimg.cc/SKkm38h0/favicon-ico.png',
     transactionId: 'GIFT345678'
   }
 };

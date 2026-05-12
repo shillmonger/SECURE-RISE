@@ -1,12 +1,4 @@
-import { Text, Section } from '@react-email/components';
-import { 
-  EmailLayout, 
-  EmailHeader, 
-  EmailFooter, 
-  CTAButton, 
-  InfoCard, 
-  InfoGrid 
-} from './components';
+import { Html, Head, Preview, Body, Container, Text, Img, Section } from '@react-email/components';
 
 interface InvestmentConfirmationEmailProps {
   userEmail: string;
@@ -34,94 +26,165 @@ export const InvestmentConfirmationEmail: React.FC<InvestmentConfirmationEmailPr
   investmentId
 }) => {
   return (
-    <EmailLayout preview={`Investment Confirmed - ${planName} - $${amount.toLocaleString()}`}>
-      <EmailHeader 
-        title="Investment Confirmed! 🎉" 
-        subtitle="Your investment has been successfully activated" 
-      />
-      
-      <Text>
-        Hi <strong>{username}</strong>,
-      </Text>
-      
-      <Text>
-        Your investment in <strong>{planName}</strong> has been confirmed and is now active. Your daily ROI will be automatically credited to your account balance.
-      </Text>
-
-      <InfoCard
-        label="Investment Amount"
-        value={`$${amount.toLocaleString()}`}
-        variant="success"
-        fullWidth
-      />
-
-      <Text style={{ textAlign: 'center', margin: '8px 0 0 0', fontSize: '14px', opacity: 0.9 }}>
-        {planName}
-      </Text>
-
-      <InfoGrid
-        columns={2}
-        items={[
-          { label: 'Daily ROI Rate', value: `${roiPerDay}%` },
-          { label: 'Duration', value: `${duration} days` },
-          { label: 'Investment ID', value: investmentId },
-          { label: 'Daily Earnings', value: `$${dailyEarnings.toFixed(2)}` }
-        ]}
-      />
-
-      <Section style={{ 
-        backgroundColor: '#f4f4f5', 
-        padding: '24px', 
-        borderRadius: '16px', 
-        margin: '24px 0' 
-      }}>
-        <Text style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600 }}>
-          Projected Returns
-        </Text>
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <Text style={{ fontSize: '14px', color: '#71717a', margin: 0 }}>Daily Earnings</Text>
-          <Text style={{ fontSize: '14px', fontWeight: 600, color: '#22c55e', margin: 0 }}>
-            +${dailyEarnings.toFixed(2)}
+    <Html>
+      <Head>
+        <style>
+          {`
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #ffffff;
+              color: #000000;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 40px 20px;
+            }
+            .logo {
+              margin-bottom: 40px;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: 600;
+              margin-bottom: 16px;
+            }
+            .amount {
+              font-size: 32px;
+              font-weight: 700;
+              margin: 24px 0;
+              padding: 20px;
+              background-color: #f5f5f5;
+              border-radius: 8px;
+              text-align: center;
+              letter-spacing: 1px;
+            }
+            .footer {
+              margin-top: 60px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e5e5;
+              font-size: 12px;
+              color: #666666;
+            }
+            .details {
+              margin: 20px 0;
+              font-size: 14px;
+              line-height: 1.6;
+            }
+            .returns {
+              background-color: #f4f4f5;
+              padding: 24px;
+              border-radius: 8px;
+              margin: 24px 0;
+            }
+            .returns-title {
+              font-size: 16px;
+              font-weight: 600;
+              margin-bottom: 16px;
+            }
+            .return-row {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 12px;
+              font-size: 14px;
+            }
+            .return-row:last-child {
+              margin-bottom: 0;
+              padding-top: 12px;
+              border-top: 1px solid #e4e4e7;
+            }
+            .return-label {
+              color: #71717a;
+            }
+            .return-value {
+              font-weight: 600;
+            }
+            .positive {
+              color: #22c55e;
+            }
+          `}
+        </style>
+      </Head>
+      <Preview>Investment Confirmed</Preview>
+      <Body style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
+        <Container className="container">
+          <Img 
+            src="https://i.postimg.cc/SKkm38h0/favicon-ico.png" 
+            alt="Secure Rise" 
+            width="32" 
+            height="32"
+            className="logo"
+          />
+          
+          <Text className="title">Investment Confirmed</Text>
+          
+          <Text>
+            Hi {username},
           </Text>
-        </div>
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <Text style={{ fontSize: '14px', color: '#71717a', margin: 0 }}>Duration</Text>
-          <Text style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>
-            {duration} days
+          
+          <Text>
+            Your investment in <strong>{planName}</strong> has been confirmed and is now active. Your daily ROI will be automatically credited to your account balance.
           </Text>
-        </div>
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <Text style={{ fontSize: '14px', color: '#71717a', margin: 0 }}>Total Profit</Text>
-          <Text style={{ fontSize: '14px', fontWeight: 600, color: '#22c55e', margin: 0 }}>
-            +${totalProfit.toFixed(2)}
+          
+          <div className="amount">
+            <strong>${amount.toLocaleString()}</strong>
+          </div>
+          
+          <Text style={{ textAlign: 'center', margin: '8px 0 0 0', fontSize: '14px', opacity: 0.9 }}>
+            {planName}
           </Text>
-        </div>
-        
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          paddingTop: '12px', 
-          borderTop: '1px solid #e4e4e7' 
-        }}>
-          <Text style={{ fontSize: '14px', color: '#71717a', margin: 0 }}>Total Return</Text>
-          <Text style={{ fontSize: '14px', fontWeight: 700, margin: 0 }}>
-            ${totalReturn.toFixed(2)}
+          
+          <div className="details">
+            <Text>
+              Daily ROI Rate: <strong>{roiPerDay}%</strong><br />
+              Duration: <strong>{duration} days</strong><br />
+              Investment ID: {investmentId}<br />
+              Daily Earnings: <strong>${dailyEarnings.toFixed(2)}</strong>
+            </Text>
+          </div>
+          
+          <div className="returns">
+            <Text className="returns-title">Projected Returns</Text>
+            
+            <div className="return-row">
+              <span className="return-label">Daily Earnings</span>
+              <span className="return-value positive">+${dailyEarnings.toFixed(2)}</span>
+            </div>
+            
+            <div className="return-row">
+              <span className="return-label">Duration</span>
+              <span className="return-value">{duration} days</span>
+            </div>
+            
+            <div className="return-row">
+              <span className="return-label">Total Profit</span>
+              <span className="return-value positive">+${totalProfit.toFixed(2)}</span>
+            </div>
+            
+            <div className="return-row">
+              <span className="return-label">Total Return</span>
+              <span className="return-value">${totalReturn.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <Text style={{ textAlign: 'center', margin: '24px 0' }}>
+            Daily ROI will be automatically credited to your account balance every 24 hours.
           </Text>
-        </div>
-      </Section>
-
-      <Text style={{ textAlign: 'center', margin: '24px 0' }}>
-        Daily ROI will be automatically credited to your account balance every 24 hours.
-      </Text>
-
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`}>
-        View Your Investments
-      </CTAButton>
-
-      <EmailFooter userEmail={userEmail} />
-    </EmailLayout>
+          
+          <Text>
+            Best,<br />
+            The Secure Rise team
+          </Text>
+          
+          <Section className="footer">
+            <Text>
+              Secure Rise<br />
+              <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Dashboard</a> • <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Help Center</a>
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
   );
 };

@@ -1,11 +1,4 @@
-import { Text, Section } from '@react-email/components';
-import { 
-  EmailLayout, 
-  EmailHeader, 
-  EmailFooter, 
-  InfoCard, 
-  InfoGrid 
-} from './components';
+import { Html, Head, Preview, Body, Container, Text, Img, Section } from '@react-email/components';
 
 interface WithdrawalOTPEmailProps {
   userEmail: string;
@@ -23,73 +16,101 @@ export const WithdrawalOTPEmail: React.FC<WithdrawalOTPEmailProps> = ({
   cryptoName
 }) => {
   return (
-    <EmailLayout preview="Withdrawal Verification Code - Secure Rise">
-      <EmailHeader 
-        title="Withdrawal Verification" 
-        subtitle="Enter the code below to confirm your withdrawal" 
-      />
-      
-      <Text>
-        Hi <strong>{username}</strong>,
-      </Text>
-      
-      <Text>
-        You have initiated a withdrawal request. Use the verification code below to proceed:
-      </Text>
-
-      <InfoGrid
-        columns={2}
-        items={[
-          { label: 'Amount', value: `$${amount.toLocaleString()}` },
-          { label: 'Currency', value: cryptoName }
-        ]}
-      />
-
-      <InfoCard
-        label="Verification Code"
-        value={otpCode}
-        variant="default"
-        fullWidth
-      />
-
-      <Text style={{ textAlign: 'center', margin: '10px 0 0 0', fontSize: '13px', opacity: 0.8 }}>
-        Expires in 5 minutes
-      </Text>
-
-      <Section style={{ margin: '24px 0', padding: 0 }}>
-        <Text style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          marginBottom: '12px', 
-          fontSize: '14px', 
-          color: '#4b5563' 
-        }}>
-          <span style={{ color: '#09090b', fontWeight: 'bold', marginRight: '10px' }}>!</span>
-          Never share this verification code with anyone.
-        </Text>
-        <Text style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          marginBottom: '12px', 
-          fontSize: '14px', 
-          color: '#4b5563' 
-        }}>
-          <span style={{ color: '#09090b', fontWeight: 'bold', marginRight: '10px' }}>!</span>
-          Secure Rise staff will never ask for this code.
-        </Text>
-        <Text style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          marginBottom: '12px', 
-          fontSize: '14px', 
-          color: '#4b5563' 
-        }}>
-          <span style={{ color: '#09090b', fontWeight: 'bold', marginRight: '10px' }}>!</span>
-          If you didn't request this withdrawal, contact support immediately.
-        </Text>
-      </Section>
-
-      <EmailFooter userEmail={userEmail} />
-    </EmailLayout>
+    <Html>
+      <Head>
+        <style>
+          {`
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #ffffff;
+              color: #000000;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 40px 20px;
+            }
+            .logo {
+              margin-bottom: 40px;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: 600;
+              margin-bottom: 16px;
+            }
+            .code {
+              font-size: 32px;
+              font-weight: 700;
+              margin: 24px 0;
+              padding: 20px;
+              background-color: #f5f5f5;
+              border-radius: 8px;
+              text-align: center;
+              letter-spacing: 2px;
+            }
+            .footer {
+              margin-top: 60px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e5e5;
+              font-size: 12px;
+              color: #666666;
+            }
+            .disclaimer {
+              font-size: 13px;
+              color: #666666;
+              margin-top: 20px;
+            }
+            .details {
+              margin: 20px 0;
+              font-size: 14px;
+            }
+          `}
+        </style>
+      </Head>
+      <Preview>Withdrawal Verification Code</Preview>
+      <Body style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
+        <Container className="container">
+          <Img 
+            src="https://i.postimg.cc/SKkm38h0/favicon-ico.png" 
+            alt="Secure Rise" 
+            width="32" 
+            height="32"
+            className="logo"
+          />
+          
+          <Text className="title">Enter this temporary verification code to continue:</Text>
+          
+          <div className="code">
+            <strong>{otpCode}</strong>
+          </div>
+          
+          <div className="details">
+            <Text>
+              Withdrawal Details:<br />
+              Amount: <strong>${amount.toLocaleString()}</strong><br />
+              Currency: <strong>{cryptoName}</strong>
+            </Text>
+          </div>
+          
+          <Text className="disclaimer">
+            Please ignore this email if this wasn't you trying to make a withdrawal from your Secure Rise account.
+          </Text>
+          
+          <Text>
+            Best,<br />
+            The Secure Rise team
+          </Text>
+          
+          <Section className="footer">
+            <Text>
+              Secure Rise<br />
+              <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Dashboard</a> • <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Help Center</a>
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
   );
 };

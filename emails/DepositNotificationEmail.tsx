@@ -1,12 +1,4 @@
-import { Text, Img } from '@react-email/components';
-import { 
-  EmailLayout, 
-  EmailHeader, 
-  EmailFooter, 
-  CTAButton, 
-  InfoCard, 
-  InfoGrid 
-} from './components';
+import { Html, Head, Preview, Body, Container, Text, Img, Section } from '@react-email/components';
 
 interface DepositNotificationEmailProps {
   depositId: string;
@@ -28,60 +20,115 @@ export const DepositNotificationEmail: React.FC<DepositNotificationEmailProps> =
   transactionId
 }) => {
   return (
-    <EmailLayout preview={`New Deposit Alert - ${username} - $${amount.toLocaleString()}`}>
-      <EmailHeader 
-        title="New Deposit Alert" 
-        subtitle="A user has submitted a new deposit for review" 
-        showLogo={false}
-      />
-      
-      <InfoCard
-        label="Deposit Amount"
-        value={`$${amount.toLocaleString()}`}
-        variant="warning"
-        fullWidth
-      />
-
-      <Text style={{ textAlign: 'center', margin: '0', fontSize: '14px', opacity: 0.9 }}>
-        {paymentMethod}
-      </Text>
-
-      <InfoGrid
-        columns={1}
-        items={[
-          { label: 'User', value: username },
-          { label: 'Email', value: userEmail },
-          { label: 'Transaction ID', value: transactionId },
-          { label: 'Payment Method', value: paymentMethod }
-        ]}
-      />
-
-      <Text style={{ textAlign: 'center', margin: '24px 0', fontSize: '14px', fontWeight: 600 }}>
-        Proof of Transfer
-      </Text>
-      
-      <Img
-        src={proofImage}
-        alt="Proof of Transfer"
-        width={300}
-        height="auto"
-        style={{
-          maxWidth: '100%',
-          height: 'auto',
-          borderRadius: '12px',
-          margin: '16px auto',
-          display: 'block',
-        }}
-      />
-
-      <CTAButton 
-        href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-deposit`}
-        variant="warning"
-      >
-        Review Deposit
-      </CTAButton>
-
-      <EmailFooter showUnsubscribe={false} />
-    </EmailLayout>
+    <Html>
+      <Head>
+        <style>
+          {`
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #ffffff;
+              color: #000000;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 40px 20px;
+            }
+            .logo {
+              margin-bottom: 40px;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: 600;
+              margin-bottom: 16px;
+            }
+            .amount {
+              font-size: 32px;
+              font-weight: 700;
+              margin: 24px 0;
+              padding: 20px;
+              background-color: #f5f5f5;
+              border-radius: 8px;
+              text-align: center;
+              letter-spacing: 1px;
+            }
+            .footer {
+              margin-top: 60px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e5e5;
+              font-size: 12px;
+              color: #666666;
+            }
+            .details {
+              margin: 20px 0;
+              font-size: 14px;
+              line-height: 1.6;
+            }
+            .proof-image {
+              width: 100%;
+              max-width: 560px;
+              height: auto;
+              margin: 30px 0;
+              border-radius: 8px;
+            }
+          `}
+        </style>
+      </Head>
+      <Preview>New Deposit Received</Preview>
+      <Body style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
+        <Container className="container">
+          <Img 
+            src="https://i.postimg.cc/SKkm38h0/favicon-ico.png" 
+            alt="Secure Rise" 
+            width="32" 
+            height="32"
+            className="logo"
+          />
+          
+          <Text className="title">New Deposit Received</Text>
+          
+          <Text>
+            A new deposit has been submitted for review:
+          </Text>
+          
+          <div className="amount">
+            <strong>${amount.toLocaleString()}</strong>
+          </div>
+          
+          <div className="details">
+            <Text>
+              User: <strong>{username}</strong><br />
+              Email: {userEmail}<br />
+              Payment Method: <strong>{paymentMethod}</strong><br />
+              Transaction ID: {transactionId}
+            </Text>
+          </div>
+          
+          <Text style={{ textAlign: 'center', margin: '24px 0', fontSize: '14px', fontWeight: 600 }}>
+            Proof of Transfer
+          </Text>
+          
+          <Img
+            src={proofImage}
+            alt="Proof of Transfer"
+            className="proof-image"
+          />
+          
+          <Text>
+            Best,<br />
+            The Secure Rise team
+          </Text>
+          
+          <Section className="footer">
+            <Text>
+              Secure Rise<br />
+              <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Dashboard</a> • <a href="#" style={{ color: '#666666', textDecoration: 'underline' }}>Help Center</a>
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
   );
 };
