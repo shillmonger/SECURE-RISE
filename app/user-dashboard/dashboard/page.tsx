@@ -627,7 +627,7 @@ export default function UserOverviewPage() {
               </div>
               <Link
                 href="/user-dashboard/invest"
-                className="hidden md:block bg-primary text-primary-foreground px-4 py-4 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto text-center"
+                className="hidden md:block bg-primary text-primary-foreground px-4 py-3 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl w-full md:w-auto text-center"
               >
                 Start Investing
               </Link>
