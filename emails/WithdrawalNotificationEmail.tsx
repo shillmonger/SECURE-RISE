@@ -68,7 +68,6 @@ export const WithdrawalNotificationEmail: React.FC<WithdrawalNotificationEmailPr
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/investment-payouts`}
         variant="warning"
-        fullWidth
       >
         Review Withdrawal
       </CTAButton>

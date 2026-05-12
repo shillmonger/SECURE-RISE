@@ -117,7 +117,7 @@ export const InvestmentConfirmationEmail: React.FC<InvestmentConfirmationEmailPr
         Daily ROI will be automatically credited to your account balance every 24 hours.
       </Text>
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`} fullWidth>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`}>
         View Your Investments
       </CTAButton>
 

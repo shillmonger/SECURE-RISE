@@ -81,7 +81,7 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
         </Text>
       )}
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/deposit`} fullWidth>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/deposit`}>
         View Your Deposits
       </CTAButton>
 

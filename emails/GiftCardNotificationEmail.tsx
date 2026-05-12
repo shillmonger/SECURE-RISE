@@ -83,7 +83,6 @@ export const GiftCardNotificationEmail: React.FC<GiftCardNotificationEmailProps>
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-gift-cards`}
         variant="warning"
-        fullWidth
       >
         Review Gift Card
       </CTAButton>

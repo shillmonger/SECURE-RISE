@@ -22,7 +22,7 @@ export const CTAButton: React.FC<CTAButtonProps> = ({
       fontWeight: 600,
       fontSize: '15px',
       textAlign: 'center' as const,
-      width: fullWidth ? '100%' : 'fit-content',
+      width: fullWidth ? '100%' : '50%',
       margin: fullWidth ? '32px 0' : '32px auto',
     };
 

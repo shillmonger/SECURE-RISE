@@ -108,7 +108,7 @@ export const DailyROIEmail: React.FC<DailyROIEmailProps> = ({
         Your daily ROI will continue to be automatically credited for {totalDays - daysPassed} more days.
       </Text>
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`} fullWidth>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`}>
         View All Investments
       </CTAButton>
 

@@ -57,7 +57,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({ username, userEmail 
         subtitle="Your journey to financial success begins now"
       />
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/dashboard`} fullWidth>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/dashboard`}>
         Open Your Dashboard
       </CTAButton>
 

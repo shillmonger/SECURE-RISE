@@ -77,7 +77,6 @@ export const DepositNotificationEmail: React.FC<DepositNotificationEmailProps> =
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-deposit`}
         variant="warning"
-        fullWidth
       >
         Review Deposit
       </CTAButton>
