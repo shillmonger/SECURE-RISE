@@ -1,26 +1,20 @@
 import { Html, Head, Preview, Body, Container, Text, Img, Section } from '@react-email/components';
 
-interface DepositStatusEmailProps {
-  userEmail: string;
+interface DepositApprovedAdminEmailProps {
   username: string;
+  userEmail: string;
   amount: number;
   paymentMethod: string;
   transactionId: string;
-  status: 'approved' | 'rejected';
-  rejectionReason?: string;
 }
 
-export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({ 
-  userEmail,
+export const DepositApprovedAdminEmail: React.FC<DepositApprovedAdminEmailProps> = ({ 
   username,
+  userEmail,
   amount,
   paymentMethod,
-  transactionId,
-  status,
-  rejectionReason
+  transactionId
 }) => {
-  const isApproved = status === 'approved';
-
   return (
     <Html>
       <Head>
@@ -51,17 +45,11 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
               font-weight: 700;
               margin: 24px 0;
               padding: 20px;
+              background-color: #f0f9f0;
+              color: #166534;
               border-radius: 8px;
               text-align: center;
               letter-spacing: 1px;
-            }
-            .status.approved {
-              background-color: #f0f9f0;
-              color: #166534;
-            }
-            .status.rejected {
-              background-color: #fef2f2;
-              color: #dc2626;
             }
             .amount {
               font-size: 32px;
@@ -85,17 +73,10 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
               font-size: 14px;
               line-height: 1.6;
             }
-            .rejection-reason {
-              background-color: #fef2f2;
-              padding: 16px;
-              border-radius: 8px;
-              margin: 20px 0;
-              font-size: 14px;
-            }
           `}
         </style>
       </Head>
-      <Preview>Deposit {isApproved ? 'Approved' : 'Rejected'}</Preview>
+      <Preview>Deposit Approved</Preview>
       <Body style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
         <Container className="container">
           <Img 
@@ -106,49 +87,36 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
             className="logo"
           />
           
-          <Text className="title">Deposit {isApproved ? 'Approved' : 'Rejected'}</Text>
+          <Text className="title">Deposit Approved</Text>
           
           <Text>
-            Hi {username},
+            A user deposit has been approved and processed:
           </Text>
           
-          <Text>
-            Your deposit has been reviewed.
-          </Text>
-          
-          <div className={`status ${isApproved ? 'approved' : 'rejected'}`}>
-            <strong>{isApproved ? 'APPROVED' : 'REJECTED'}</strong>
+          <div className="status">
+            <strong>APPROVED</strong>
           </div>
           
           <div className="amount">
             <strong>${amount.toLocaleString()}</strong>
           </div>
           
-          <Text style={{ textAlign: 'center', margin: '8px 0 0 0', fontSize: '14px', opacity: 0.9 }}>
+          <Text style={{ textAlign: 'center', margin: '0', fontSize: '14px', opacity: 0.9 }}>
             {paymentMethod}
           </Text>
           
-          {!isApproved && rejectionReason && (
-            <div className="rejection-reason">
-              <Text>
-                <strong>Rejection Reason:</strong><br />
-                {rejectionReason}
-              </Text>
-            </div>
-          )}
-          
           <div className="details">
             <Text>
+              User: <strong>{username}</strong><br />
+              Email: {userEmail}<br />
               Transaction ID: {transactionId}<br />
               Payment Method: <strong>{paymentMethod}</strong>
             </Text>
           </div>
           
-          {isApproved && (
-            <Text style={{ textAlign: 'center', margin: '24px 0' }}>
-              The funds have been added to your account balance. You can now use them for investments.
-            </Text>
-          )}
+          <Text style={{ textAlign: 'center', margin: '24px 0' }}>
+            The funds have been added to the user's account balance.
+          </Text>
           
           <Text>
             Best,<br />
