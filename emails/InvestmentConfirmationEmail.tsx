@@ -60,7 +60,7 @@ export const InvestmentConfirmationEmail: React.FC<InvestmentConfirmationEmailPr
       </Text>
 
       <InfoGrid
-        columns={1}
+        columns={2}
         items={[
           { label: 'Daily ROI Rate', value: `${roiPerDay}%` },
           { label: 'Duration', value: `${duration} days` },

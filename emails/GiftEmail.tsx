@@ -57,7 +57,7 @@ export const GiftEmail: React.FC<GiftEmailProps> = ({
       </Text>
 
       <InfoGrid
-        columns={1}
+        columns={2}
         items={[
           { label: isReceived ? 'From' : 'Recipient', value: isReceived ? senderName : receiverName },
           { label: 'Transaction ID', value: transactionId }

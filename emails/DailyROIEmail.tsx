@@ -60,7 +60,7 @@ export const DailyROIEmail: React.FC<DailyROIEmailProps> = ({
       </Text>
 
       <InfoGrid
-        columns={1}
+        columns={2}
         items={[
           { label: 'Investment Plan', value: planName },
           { label: 'Investment ID', value: investmentId },

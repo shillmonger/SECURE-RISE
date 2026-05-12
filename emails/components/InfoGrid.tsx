@@ -15,22 +15,28 @@ export const InfoGrid: React.FC<InfoGridProps> = ({
   columns = 2 
 }) => {
   const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: columns === 2 ? '1fr 1fr' : '1fr',
+    display: 'flex',
+    flexWrap: 'wrap' as const,
     gap: '16px',
     margin: '24px 0',
-  };
+  } as const;
+
+  const itemStyle = {
+    flex: columns === 2 ? '1 1 calc(50% - 8px)' : '1 1 100%',
+    minWidth: '0',
+  } as const;
 
   return (
     <Section style={gridStyle} className="mobile-grid">
       {items.map((item, index) => (
-        <InfoCard
-          key={index}
-          label={item.label}
-          value={item.value}
-          variant={item.variant}
-          fullWidth
-        />
+        <div key={index} style={itemStyle}>
+          <InfoCard
+            label={item.label}
+            value={item.value}
+            variant={item.variant}
+            fullWidth={columns === 1}
+          />
+        </div>
       ))}
     </Section>
   );
