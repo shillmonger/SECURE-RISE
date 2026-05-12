@@ -51,24 +51,7 @@ export const WithdrawalStatusEmail: React.FC<WithdrawalStatusEmailProps> = ({
               font-weight: 600;
               margin-bottom: 16px;
             }
-            .status {
-              font-size: 32px;
-              font-weight: 700;
-              margin: 24px 0;
-              padding: 20px;
-              border-radius: 8px;
-              text-align: center;
-              letter-spacing: 1px;
-            }
-            .status.approved {
-              background-color: #f0f9f0;
-              color: #166534;
-            }
-            .status.rejected {
-              background-color: #fef2f2;
-              color: #dc2626;
-            }
-            .amount {
+            .code {
               font-size: 32px;
               font-weight: 700;
               margin: 24px 0;
@@ -76,7 +59,7 @@ export const WithdrawalStatusEmail: React.FC<WithdrawalStatusEmailProps> = ({
               background-color: #f5f5f5;
               border-radius: 8px;
               text-align: center;
-              letter-spacing: 1px;
+              letter-spacing: 2px;
             }
             .footer {
               margin-top: 60px;
@@ -84,26 +67,6 @@ export const WithdrawalStatusEmail: React.FC<WithdrawalStatusEmailProps> = ({
               border-top: 1px solid #e5e5e5;
               font-size: 12px;
               color: #666666;
-            }
-            .details {
-              margin: 20px 0;
-              font-size: 14px;
-              line-height: 1.6;
-            }
-            .address {
-              font-family: monospace;
-              background-color: #f5f5f5;
-              padding: 12px;
-              border-radius: 6px;
-              word-break: break-all;
-              margin: 10px 0;
-            }
-            .rejection-reason {
-              background-color: #fef2f2;
-              padding: 16px;
-              border-radius: 8px;
-              margin: 20px 0;
-              font-size: 14px;
             }
           `}
         </style>
@@ -129,55 +92,28 @@ export const WithdrawalStatusEmail: React.FC<WithdrawalStatusEmailProps> = ({
             Your withdrawal request has been reviewed and {isApproved ? 'approved' : 'rejected'}.
           </Text>
           
-          <div className={`status ${isApproved ? 'approved' : 'rejected'}`}>
+          <div className="code">
             <strong>{isApproved ? 'APPROVED' : 'REJECTED'}</strong>
           </div>
           
-          <div className="amount">
-            <strong>${amount.toLocaleString()}</strong>
-          </div>
-          
-          <Text style={{ textAlign: 'center', margin: '0', fontSize: '14px', opacity: 0.9 }}>
-            {crypto.name} ({crypto.symbol})
+          <Text>
+            Amount: <strong>${amount.toLocaleString()}</strong><br />
+            Currency: <strong>{crypto.name}</strong><br />
+            Transaction ID: {transactionId}
           </Text>
           
-          <div className="details">
+          {isApproved && (
             <Text>
-              Transaction ID: {transactionId}<br />
-              Currency: <strong>{crypto.name}</strong><br />
-              Amount: <strong>${amount.toLocaleString()}</strong>
+              Destination Address: {destinationAddress}<br /><br />
+              The funds have been sent to your designated wallet address.
             </Text>
-          </div>
+          )}
           
-          {isApproved ? (
-            <>
-              <Text>
-                Destination Address:
-              </Text>
-              
-              <div className="address">
-                {destinationAddress}
-              </div>
-              
-              <Text style={{ textAlign: 'center', margin: '24px 0' }}>
-                The funds have been sent to your designated wallet address.
-              </Text>
-            </>
-          ) : (
-            <>
-              {rejectionReason && (
-                <div className="rejection-reason">
-                  <Text>
-                    <strong>Rejection Reason:</strong><br />
-                    {rejectionReason}
-                  </Text>
-                </div>
-              )}
-              
-              <Text style={{ textAlign: 'center', margin: '24px 0' }}>
-                Please review the feedback above and submit a new withdrawal request if needed.
-              </Text>
-            </>
+          {!isApproved && rejectionReason && (
+            <Text>
+              Rejection Reason: {rejectionReason}<br /><br />
+              Please review the feedback above and submit a new withdrawal request if needed.
+            </Text>
           )}
           
           <Text>
