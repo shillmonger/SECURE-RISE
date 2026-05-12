@@ -29,6 +29,7 @@ export const InfoGrid: React.FC<InfoGridProps> = ({
           label={item.label}
           value={item.value}
           variant={item.variant}
+          fullWidth
         />
       ))}
     </Section>
