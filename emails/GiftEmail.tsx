@@ -57,6 +57,7 @@ export const GiftEmail: React.FC<GiftEmailProps> = ({
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: isReceived ? 'From' : 'Recipient', value: isReceived ? senderName : receiverName },
           { label: 'Transaction ID', value: transactionId }
@@ -75,6 +76,7 @@ export const GiftEmail: React.FC<GiftEmailProps> = ({
             ? `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/dashboard`
             : `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/gift-member`
         }
+        fullWidth
       >
         {isReceived ? 'View Your Dashboard' : 'Send Another Gift'}
       </CTAButton>

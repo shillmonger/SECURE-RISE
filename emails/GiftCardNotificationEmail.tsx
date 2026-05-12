@@ -53,6 +53,7 @@ export const GiftCardNotificationEmail: React.FC<GiftCardNotificationEmailProps>
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'User', value: username },
           { label: 'Email', value: userEmail },
@@ -82,6 +83,7 @@ export const GiftCardNotificationEmail: React.FC<GiftCardNotificationEmailProps>
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-gift-cards`}
         variant="warning"
+        fullWidth
       >
         Review Gift Card
       </CTAButton>

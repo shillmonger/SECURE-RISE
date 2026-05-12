@@ -652,7 +652,7 @@ export default function UserOverviewPage() {
                   {loading ? (
                     <div className="h-8 w-16 bg-muted rounded animate-pulse mb-1"></div>
                   ) : (
-                    <p className="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter mb-1">
+                    <p className="text-xl sm:text-2xl md:text-2xl font-black tracking-tighter mb-1">
                       {stat.value}
                     </p>
                   )}

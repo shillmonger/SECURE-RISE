@@ -49,6 +49,7 @@ export const WithdrawalNotificationEmail: React.FC<WithdrawalNotificationEmailPr
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'User', value: username },
           { label: 'Email', value: userEmail },
@@ -67,6 +68,7 @@ export const WithdrawalNotificationEmail: React.FC<WithdrawalNotificationEmailPr
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/investment-payouts`}
         variant="warning"
+        fullWidth
       >
         Review Withdrawal
       </CTAButton>

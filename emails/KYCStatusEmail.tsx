@@ -60,7 +60,7 @@ export const KYCStatusEmail: React.FC<KYCStatusEmailProps> = ({
         </Text>
       )}
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/kyc`}>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/kyc`} fullWidth>
         View KYC Status
       </CTAButton>
 

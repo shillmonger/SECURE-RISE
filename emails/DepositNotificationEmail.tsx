@@ -47,6 +47,7 @@ export const DepositNotificationEmail: React.FC<DepositNotificationEmailProps> =
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'User', value: username },
           { label: 'Email', value: userEmail },
@@ -76,6 +77,7 @@ export const DepositNotificationEmail: React.FC<DepositNotificationEmailProps> =
       <CTAButton 
         href={`${process.env.NEXT_PUBLIC_APP_URL}/admin-dashboard/manage-deposit`}
         variant="warning"
+        fullWidth
       >
         Review Deposit
       </CTAButton>

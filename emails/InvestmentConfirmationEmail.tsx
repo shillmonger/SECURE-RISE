@@ -60,6 +60,7 @@ export const InvestmentConfirmationEmail: React.FC<InvestmentConfirmationEmailPr
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'Daily ROI Rate', value: `${roiPerDay}%` },
           { label: 'Duration', value: `${duration} days` },
@@ -116,7 +117,7 @@ export const InvestmentConfirmationEmail: React.FC<InvestmentConfirmationEmailPr
         Daily ROI will be automatically credited to your account balance every 24 hours.
       </Text>
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`}>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`} fullWidth>
         View Your Investments
       </CTAButton>
 

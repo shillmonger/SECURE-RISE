@@ -38,6 +38,7 @@ export const WithdrawalOTPEmail: React.FC<WithdrawalOTPEmailProps> = ({
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'Amount', value: `$${amount.toLocaleString()}` },
           { label: 'Currency', value: cryptoName }

@@ -60,6 +60,7 @@ export const DailyROIEmail: React.FC<DailyROIEmailProps> = ({
       </Text>
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'Investment Plan', value: planName },
           { label: 'Investment ID', value: investmentId },
@@ -107,7 +108,7 @@ export const DailyROIEmail: React.FC<DailyROIEmailProps> = ({
         Your daily ROI will continue to be automatically credited for {totalDays - daysPassed} more days.
       </Text>
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`}>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/my-investments`} fullWidth>
         View All Investments
       </CTAButton>
 

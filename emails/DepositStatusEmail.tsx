@@ -68,6 +68,7 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
       )}
 
       <InfoGrid
+        columns={1}
         items={[
           { label: 'Transaction ID', value: transactionId },
           { label: 'Payment Method', value: paymentMethod }
@@ -80,7 +81,7 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
         </Text>
       )}
 
-      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/deposit`}>
+      <CTAButton href={`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/deposit`} fullWidth>
         View Your Deposits
       </CTAButton>
 
