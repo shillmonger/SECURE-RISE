@@ -13,7 +13,8 @@ import {
   Loader2,
   Trash2,
   Trash,
-  Sun, Moon
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -140,7 +141,10 @@ export default function UserHeader({
   };
 
   // Remove account
-  const handleRemoveAccount = async (accountId: string, accountName: string) => {
+  const handleRemoveAccount = async (
+    accountId: string,
+    accountName: string,
+  ) => {
     setConfirmModal({
       isOpen: true,
       type: "remove",
@@ -151,7 +155,7 @@ export default function UserHeader({
 
   // Clear all inactive accounts
   const handleClearAccounts = () => {
-    const inactiveAccounts = accounts.filter(account => !account.isActive);
+    const inactiveAccounts = accounts.filter((account) => !account.isActive);
     if (inactiveAccounts.length === 0) {
       toast.info("No inactive accounts to clear");
       return;
@@ -169,10 +173,10 @@ export default function UserHeader({
     try {
       if (confirmModal.type === "remove" && confirmModal.accountId) {
         // Remove single account
-        const response = await fetch('/api/auth/remove-account', {
-          method: 'POST',
+        const response = await fetch("/api/auth/remove-account", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ accountId: confirmModal.accountId }),
         });
@@ -180,32 +184,32 @@ export default function UserHeader({
         const data = await response.json();
 
         if (data.success) {
-          toast.success('Account removed successfully');
+          toast.success("Account removed successfully");
           fetchAccounts();
         } else {
-          toast.error(data.error || 'Failed to remove account');
+          toast.error(data.error || "Failed to remove account");
         }
       } else if (confirmModal.type === "clear") {
         // Clear all inactive accounts
-        const response = await fetch('/api/auth/remove-accounts', {
-          method: 'POST',
+        const response = await fetch("/api/auth/remove-accounts", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         const data = await response.json();
 
         if (data.success) {
-          toast.success('All inactive accounts removed successfully');
+          toast.success("All inactive accounts removed successfully");
           fetchAccounts();
         } else {
-          toast.error(data.error || 'Failed to clear accounts');
+          toast.error(data.error || "Failed to clear accounts");
         }
       }
     } catch (error) {
-      console.error('Error performing action:', error);
-      toast.error('An error occurred while performing the action');
+      console.error("Error performing action:", error);
+      toast.error("An error occurred while performing the action");
     } finally {
       setIsRemoving(false);
       setConfirmModal({ isOpen: false, type: "remove" });
@@ -235,7 +239,9 @@ export default function UserHeader({
         const giftsResponse = await fetch("/api/user-dashboard/gift/history");
         const giftsResult = await giftsResponse.json();
 
-        const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${account.id}`);
+        const giftCardsResponse = await fetch(
+          `/api/user-dashboard/gift-card?userId=${account.id}`,
+        );
         const giftCardsResult = await giftCardsResponse.json();
 
         const allNotifications: any[] = [];
@@ -438,11 +444,13 @@ export default function UserHeader({
         // Fetch gift cards
         let giftCardsResult: any = { success: false, giftCards: [] };
         try {
-          const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userId}`);
+          const giftCardsResponse = await fetch(
+            `/api/user-dashboard/gift-card?userId=${userId}`,
+          );
           giftCardsResult = await giftCardsResponse.json();
-          console.log('Gift cards API response:', giftCardsResult);
+          console.log("Gift cards API response:", giftCardsResult);
         } catch (error) {
-          console.error('Error fetching gift cards:', error);
+          console.error("Error fetching gift cards:", error);
         }
 
         let unreadCount = 0;
@@ -483,16 +491,16 @@ export default function UserHeader({
         }
 
         // Count unread gift cards (pending ones)
-        console.log('Processing gift cards:', giftCardsResult);
+        console.log("Processing gift cards:", giftCardsResult);
         if (giftCardsResult.success && giftCardsResult.giftCards) {
           const pendingGiftCards = giftCardsResult.giftCards.filter(
             (gc: any) => gc.status !== "approved",
           );
-          console.log('Pending gift cards:', pendingGiftCards);
-          console.log('Pending gift cards count:', pendingGiftCards.length);
+          console.log("Pending gift cards:", pendingGiftCards);
+          console.log("Pending gift cards count:", pendingGiftCards.length);
           unreadCount += pendingGiftCards.length;
         } else {
-          console.log('Gift cards result not successful or no giftCards array');
+          console.log("Gift cards result not successful or no giftCards array");
         }
 
         setNotificationCount(unreadCount);
@@ -544,17 +552,18 @@ export default function UserHeader({
 
         <div className="flex items-center gap-4">
           {/* Theme toggle — icon only, white on dark / black on light */}
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors"
-          title="Toggle theme"
-        >
-          {mounted && (theme === "dark" ? (
-            <Sun className="w-5 h-5 text-white" />
-          ) : (
-            <Moon className="w-5 h-5 text-black" />
-          ))}
-        </button>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors"
+            title="Toggle theme"
+          >
+            {mounted &&
+              (theme === "dark" ? (
+                <Sun className="w-5 h-5 text-white" />
+              ) : (
+                <Moon className="w-5 h-5 text-black" />
+              ))}
+          </button>
 
           {/* Notification Bell replaced the Cart Icon */}
           <Link
@@ -562,9 +571,10 @@ export default function UserHeader({
             className="p-2 hover:bg-secondary rounded-full relative cursor-pointer"
           >
             <Bell className="h-5 w-5" />
+
             {!notificationLoading && notificationCount > 0 && (
-              <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black rounded-full h-4 w-4 flex items-center justify-center border-2 border-background">
-                {notificationCount > 99 ? "99+" : notificationCount}
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-black rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center border-2 border-background leading-none">
+                {notificationCount > 9 ? "9+" : notificationCount}
               </span>
             )}
           </Link>
@@ -597,173 +607,173 @@ export default function UserHeader({
             {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-[260px] sm:w-80 overflow-hidden rounded-xl lg:rounded-2xl border border-border bg-background p-2 shadow-xl z-50">
-  {/* User Profiles Section */}
-  <div className="p-2">
-    <div className="mb-2 py-1">
-      <h3 className="text-[12px] font-black uppercase tracking-tighter leading-none text-muted-foreground">
-        User Profiles
-      </h3>
+                {/* User Profiles Section */}
+                <div className="p-2">
+                  <div className="mb-2 py-1">
+                    <h3 className="text-[12px] font-black uppercase tracking-tighter leading-none text-muted-foreground">
+                      User Profiles
+                    </h3>
 
-      <p className="mt-1 text-[9px] font-medium uppercase tracking-tighter text-muted-foreground leading-none">
-        Switch between your connected accounts
-      </p>
-    </div>
+                    <p className="mt-1 text-[9px] font-medium uppercase tracking-tighter text-muted-foreground leading-none">
+                      Switch between your connected accounts
+                    </p>
+                  </div>
 
-    {/* Profile Items */}
-    <div className="space-y-1">
-      {accountsLoading ? (
-        <>
-          {/* Loading Skeleton */}
-          <div className="flex items-center gap-3 p-3">
-            <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
+                  {/* Profile Items */}
+                  <div className="space-y-1">
+                    {accountsLoading ? (
+                      <>
+                        {/* Loading Skeleton */}
+                        <div className="flex items-center gap-3 p-3">
+                          <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
 
-            <div className="flex-1 space-y-1">
-              <div className="h-3 w-3/4 rounded bg-secondary animate-pulse"></div>
-              <div className="h-2 w-1/2 rounded bg-secondary animate-pulse"></div>
-            </div>
-          </div>
+                          <div className="flex-1 space-y-1">
+                            <div className="h-3 w-3/4 rounded bg-secondary animate-pulse"></div>
+                            <div className="h-2 w-1/2 rounded bg-secondary animate-pulse"></div>
+                          </div>
+                        </div>
 
-          <div className="flex items-center gap-3 p-3">
-            <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
+                        <div className="flex items-center gap-3 p-3">
+                          <div className="h-10 w-10 rounded-lg bg-secondary animate-pulse"></div>
 
-            <div className="flex-1 space-y-1">
-              <div className="h-3 w-2/3 rounded bg-secondary animate-pulse"></div>
-              <div className="h-2 w-1/3 rounded bg-secondary animate-pulse"></div>
-            </div>
-          </div>
-        </>
-      ) : (
-        accounts.map((account) => (
-          <div
-            key={account.id}
-            onClick={() =>
-              !account.isActive && handleSwitchAccount(account.id)
-            }
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              account.isActive
-                ? "border border-primary/20 bg-primary/10"
-                : "cursor-pointer hover:bg-secondary"
-            }`}
-          >
-            {/* Avatar */}
-            <Avatar className="h-10 w-10 rounded-lg shrink-0">
-              <AvatarImage
-                src={account.profileImage || defaultProfileImage}
-                className="rounded-lg object-cover"
-              />
+                          <div className="flex-1 space-y-1">
+                            <div className="h-3 w-2/3 rounded bg-secondary animate-pulse"></div>
+                            <div className="h-2 w-1/3 rounded bg-secondary animate-pulse"></div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      accounts.map((account) => (
+                        <div
+                          key={account.id}
+                          onClick={() =>
+                            !account.isActive && handleSwitchAccount(account.id)
+                          }
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                            account.isActive
+                              ? "border border-primary/20 bg-primary/10"
+                              : "cursor-pointer hover:bg-secondary"
+                          }`}
+                        >
+                          {/* Avatar */}
+                          <Avatar className="h-10 w-10 rounded-lg shrink-0">
+                            <AvatarImage
+                              src={account.profileImage || defaultProfileImage}
+                              className="rounded-lg object-cover"
+                            />
 
-              <AvatarFallback className="rounded-lg text-sm font-bold">
-                {(account.fullName || account.username || "U")
-                  .charAt(0)
-                  .toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+                            <AvatarFallback className="rounded-lg text-sm font-bold">
+                              {(account.fullName || account.username || "U")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
 
-            {/* User Info */}
-            <div className="flex flex-1 items-center justify-between min-w-0">
-              {/* Name + Username */}
-              <div className="flex flex-col justify-center leading-[1] gap-[5px] min-w-0">
-                <span className="truncate text-[10px] font-black uppercase tracking-tight text-foreground">
-                  {account.fullName ||
-                    account.username ||
-                    "Unknown User"}
-                </span>
+                          {/* User Info */}
+                          <div className="flex flex-1 items-center justify-between min-w-0">
+                            {/* Name + Username */}
+                            <div className="flex flex-col justify-center leading-[1] gap-[5px] min-w-0">
+                              <span className="truncate text-[10px] font-black uppercase tracking-tight text-foreground">
+                                {account.fullName ||
+                                  account.username ||
+                                  "Unknown User"}
+                              </span>
 
-                <span className="truncate text-[9px] font-bold uppercase tracking-tighter text-muted-foreground">
-                  @
-                  {account.email ||
-                    (account.username
-                      ? account.username.split("@")[0]
-                      : "user")}
-                </span>
-              </div>
+                              <span className="truncate text-[9px] font-bold uppercase tracking-tighter text-muted-foreground">
+                                @
+                                {account.email ||
+                                  (account.username
+                                    ? account.username.split("@")[0]
+                                    : "user")}
+                              </span>
+                            </div>
 
-              {/* Status Icon + Remove Button */}
-              <div className="flex items-center gap-2 shrink-0">
-                {account.isActive ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <>
-                    {/* {accountNotifications[account.id] > 0 && (
+                            {/* Status Icon + Remove Button */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              {account.isActive ? (
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <>
+                                  {/* {accountNotifications[account.id] > 0 && (
                       <Circle className="h-2.5 w-2.5 fill-blue-500 text-blue-500" />
                     )} */}
 
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveAccount(
+                                        account.id,
+                                        account.fullName ||
+                                          account.username ||
+                                          "Unknown User",
+                                      );
+                                    }}
+                                    className="p-1 hover:bg-red-50 cursor-pointer rounded transition-colors group"
+                                    title="Remove account"
+                                  >
+                                    <Trash2 className="h-3 w-3 text-red-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-border" />
+
+                {/* Account Management Section */}
+                <div className="p-2">
+                  <div className="space-y-1">
+                    {/* Add Account */}
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveAccount(
-                          account.id,
-                          account.fullName ||
-                            account.username ||
-                            "Unknown User"
-                        );
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setIsDropdownOpen(false);
                       }}
-                      className="p-1 hover:bg-red-50 cursor-pointer rounded transition-colors group"
-                      title="Remove account"
+                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
                     >
-                      <Trash2 className="h-3 w-3 text-red-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                      <Plus className="h-4 w-4 shrink-0" />
+
+                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-foreground">
+                        Add an existing account
+                      </span>
                     </button>
-                  </>
-                )}
+
+                    {/* Clear Existing Accounts */}
+                    <button
+                      onClick={() => {
+                        handleClearAccounts();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-red-50 cursor-pointer group"
+                    >
+                      <Trash className="h-4 w-4 shrink-0 text-red-500 group-hover:text-red-600" />
+
+                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500 group-hover:text-red-600">
+                        Clear existing accounts
+                      </span>
+                    </button>
+
+                    {/* Logout */}
+                    <button
+                      onClick={() => {
+                        window.location.href = "/auth-page/login";
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
+                    >
+                      <LogOut className="h-4 w-4 shrink-0 text-red-500" />
+
+                      <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500">
+                        Log out @{isLoading ? "" : user.email.split("@")[0]}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))
-      )}
-    </div>
-  </div>
-
-  {/* Divider */}
-  <div className="border-t border-border" />
-
-  {/* Account Management Section */}
-  <div className="p-2">
-    <div className="space-y-1">
-      {/* Add Account */}
-      <button
-        onClick={() => {
-          setIsModalOpen(true);
-          setIsDropdownOpen(false);
-        }}
-        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
-      >
-        <Plus className="h-4 w-4 shrink-0" />
-
-        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-foreground">
-          Add an existing account
-        </span>
-      </button>
-
-      {/* Clear Existing Accounts */}
-      <button
-        onClick={() => {
-          handleClearAccounts();
-        }}
-        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-red-50 cursor-pointer group"
-      >
-        <Trash className="h-4 w-4 shrink-0 text-red-500 group-hover:text-red-600" />
-
-        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500 group-hover:text-red-600">
-          Clear existing accounts
-        </span>
-      </button>
-
-      {/* Logout */}
-      <button
-        onClick={() => {
-          window.location.href = "/auth-page/login";
-        }}
-        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary cursor-pointer"
-      >
-        <LogOut className="h-4 w-4 shrink-0 text-red-500" />
-
-        <span className="text-[11px] font-black uppercase tracking-tight leading-none text-red-500">
-          Log out @{isLoading ? "" : user.email.split("@")[0]}
-        </span>
-      </button>
-    </div>
-  </div>
-</div>
             )}
           </div>
         </div>
@@ -784,13 +794,19 @@ export default function UserHeader({
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, type: "remove" })}
         onConfirm={handleConfirmAction}
-        title={confirmModal.type === "remove" ? "Remove Account" : "Clear All Accounts"}
+        title={
+          confirmModal.type === "remove"
+            ? "Remove Account"
+            : "Clear All Accounts"
+        }
         message={
           confirmModal.type === "remove"
             ? `Are you sure you want to remove "${confirmModal.accountName}" from your accounts?`
             : "Are you sure you want to remove all inactive accounts? This action cannot be undone."
         }
-        confirmText={confirmModal.type === "remove" ? "Remove Account" : "Clear All"}
+        confirmText={
+          confirmModal.type === "remove" ? "Remove Account" : "Clear All"
+        }
         cancelText="Cancel"
         type="danger"
         isLoading={isRemoving}

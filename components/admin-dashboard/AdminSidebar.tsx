@@ -59,22 +59,10 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
 
   return (
     <>
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar Container */}
-      <aside
-        className={`${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 left-0 z-100 w-75 md:w-65 transform bg-background border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none`}
-      >
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-65 border-r h-screen sticky top-0 bg-background flex-col shadow-xl">
         {/* Logo Section */}
-        <div className="flex items-center justify-between h-15 lg:h-15 px-6 border-b border-border">
+        <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase tracking-tighter italic text-foreground">
               SECURE<span className="text-muted-foreground italic"> RISE</span>
@@ -83,40 +71,31 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
               Management Portal
             </p>
           </div>
-          
-          <button   
-            className="lg:hidden text-foreground" 
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-6 w-6" />
-          </button>
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-col justify-between h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)]">
-          <nav className="px-4 py-5 space-y-1 overflow-y-auto">
-            {sidebarItems.map(({ name, icon: Icon, href }) => {
-              const active = pathname === href;
-              return (
-                <Link
-                  key={name}
-                  href={href}
-                  className={`group flex items-center px-3 py-2.5 rounded-sm transition-all duration-200 ${
-                    active
-                      ? "bg-foreground text-background shadow-lg shadow-black/10"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <Icon className={`w-5 h-5 mr-3 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className="text-[12px] font-black uppercase tracking-widest">{name}</span>
-                </Link>
-              );
-            })}
-          </nav>
+        <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-5 space-y-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+          {sidebarItems.map(({ name, icon: Icon, href }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={name}
+                href={href}
+                className={`group flex items-center px-3 py-2.5 rounded-sm transition-all duration-200 ${
+                  active
+                    ? "bg-foreground text-background shadow-lg shadow-black/10"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                }`}
+              >
+                <Icon className={`w-5 h-5 mr-3 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
+                <span className="text-[12px] font-black uppercase tracking-widest">{name}</span>
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Logout Section */}
-         <div className="flex-shrink-0 flex items-center justify-center px-4 py-3 lg:py-2 border-t border-border">
+        {/* Logout Section */}
+        <div className="flex-shrink-0 border-t border-border px-4 py-2">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
@@ -127,8 +106,77 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
             </span>
           </button>
         </div>
-        </div>
       </aside>
+
+      {/* Mobile Sidebar */}
+      {sidebarOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <aside
+            className="fixed top-0 left-0 w-full h-full bg-background z-100 flex flex-col shadow-2xl lg:hidden"
+          >
+            {/* Mobile Logo Section */}
+            <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
+              <div className="flex flex-col">
+                <h1 className="text-xl font-black uppercase tracking-tighter italic text-foreground">
+                  SECURE<span className="text-muted-foreground italic"> RISE</span>
+                </h1>
+                <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
+                  Management Portal
+                </p>
+              </div>
+
+              <button
+                className="text-foreground"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Mobile Navigation */}
+            <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-5 space-y-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+              {sidebarItems.map(({ name, icon: Icon, href }) => {
+                const active = pathname === href;
+                return (
+                  <Link
+                    key={name}
+                    href={href}
+                    className={`group flex items-center px-3 py-2.5 rounded-sm transition-all duration-200 ${
+                      active
+                        ? "bg-foreground text-background shadow-lg shadow-black/10"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Icon className={`w-5 h-5 mr-3 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
+                    <span className="text-[12px] font-black uppercase tracking-widest">{name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Logout Section */}
+            <div className="flex-shrink-0 border-t border-border px-4 py-2">
+              <button
+                onClick={() => {
+                  setSidebarOpen(false);
+                  setShowLogoutConfirm(true);
+                }}
+                className="flex items-center cursor-pointer w-full px-4 py-3 text-red-500 hover:bg-red-500/10 transition-all rounded-sm group"
+              >
+                <LogOut className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
+                <span className="text-xs font-black uppercase tracking-widest">
+                  Logout
+                </span>
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
 
       {/* Logout Modal */}
       {showLogoutConfirm && (
