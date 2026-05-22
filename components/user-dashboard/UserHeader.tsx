@@ -13,12 +13,15 @@ import {
   Loader2,
   Trash2,
   Trash,
+  Sun, Moon
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import Link from "next/link";
 import AddAccountModal from "./AddAccountModal";
 import ConfirmModal from "./ConfirmModal";
+import { useTheme } from "../custom-theme-provider";
+import { useMounted } from "@/hooks/useMounted";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -79,6 +82,10 @@ export default function UserHeader({
     accountName?: string;
   }>({ isOpen: false, type: "remove" });
   const [isRemoving, setIsRemoving] = useState(false);
+
+  // Theme state
+  const mounted = useMounted();
+  const { theme, setTheme } = useTheme();
 
   // Default profile image constant
   const defaultProfileImage = "https://github.com/shadcn.png";
@@ -536,7 +543,18 @@ export default function UserHeader({
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Crypto dropdown removed as requested */}
+          {/* Theme toggle — icon only, white on dark / black on light */}
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="p-2 rounded-xl cursor-pointer hover:bg-secondary transition-colors"
+          title="Toggle theme"
+        >
+          {mounted && (theme === "dark" ? (
+            <Sun className="w-5 h-5 text-white" />
+          ) : (
+            <Moon className="w-5 h-5 text-black" />
+          ))}
+        </button>
 
           {/* Notification Bell replaced the Cart Icon */}
           <Link
@@ -565,7 +583,7 @@ export default function UserHeader({
                   {isLoading ? "" : user.email}
                 </p>
               </div>
-              <Avatar className="h-9 w-9 border-2 border-foreground/20 rounded-xl p-0.5">
+              <Avatar className="h-10 w-10 border-2 border-foreground/20 rounded-xl p-0.5">
                 <AvatarImage
                   src={user.profileImage || defaultProfileImage}
                   className="rounded-lg object-cover"

@@ -12,10 +12,10 @@ const montserrat = Montserrat({
 });
 
 const AVATARS = [
-  "https://i.postimg.cc/0yJ0FsJS/LE-MAC.jpg",
-  "https://i.postimg.cc/rFsJGWVf/Kamala-Harris.jpg",
-  "https://i.postimg.cc/mZ8jFVsy/Nailed-it.jpg",
-  "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
+  "https://github.com/shadcn.png",
+  "https://github.com/shadcn.png",
+  "https://github.com/shadcn.png",
+  "https://github.com/shadcn.png",
 ];
 
 const BOTTOM_STATS = [

@@ -208,7 +208,7 @@ export default function UserSidebar({
           flex flex-col
           bg-background border-r border-border
           transform transition-transform duration-300 ease-in-out
-          lg:translate-x-0 lg:static lg:inset-0
+          lg:translate-x-0 lg:sticky lg:top-0
           shadow-2xl lg:shadow-none
           h-screen
         `}
@@ -350,9 +350,6 @@ export default function UserSidebar({
             className="bg-background/95 border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-15 h-15 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <LogOut className="w-7 h-7 text-foreground" />
-            </div>
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">
               Logout?
             </h2>

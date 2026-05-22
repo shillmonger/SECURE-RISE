@@ -63,7 +63,7 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
       <Body style={{ backgroundColor: '#ffffff', margin: 0, padding: 0 }}>
         <Container className="container">
           <Img 
-            src="https://i.postimg.cc/SKkm38h0/favicon-ico.png" 
+            src="https://i.postimg.cc/0NK6BRV6/favicon-ico.png" 
             alt="Secure Rise" 
             width="32" 
             height="32"

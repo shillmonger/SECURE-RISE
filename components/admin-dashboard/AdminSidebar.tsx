@@ -140,9 +140,9 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
             className="bg-background/95 border border-border rounded-[1.5rem] shadow-2xl w-full max-w-sm p-8 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
+            {/* <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-6">
               <LogOut className="w-8 h-8 text-foreground" />
-            </div>
+            </div> */}
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-2">Logout?</h2>
             <p className="text-sm text-muted-foreground mb-4">
               Are you sure you want to sign out? You'll need to log in again to access your admin panel.

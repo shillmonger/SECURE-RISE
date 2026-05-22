@@ -15,7 +15,7 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
     <Section style={{ textAlign: 'center', marginBottom: '32px' }}>
       {showLogo && (
         <Img
-          src="https://i.postimg.cc/SKkm38h0/favicon-ico.png"
+          src="https://i.postimg.cc/0NK6BRV6/favicon-ico.png"
           alt="Secure Rise Logo"
           width={80}
           height={80}

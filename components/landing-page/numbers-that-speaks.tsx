@@ -29,11 +29,11 @@ const TICKER_ITEMS = [
 export default function StatsGrid() {
   const [active, setActive] = useState(false);
   const [userAvatars, setUserAvatars] = useState([
-    "https://randomuser.me/api/portraits/men/32.jpg",
-    "https://i.pravatar.cc/150?u=21",
-    "https://i.postimg.cc/LXVTD3gC/The-secret.jpg",
-    "https://i.pravatar.cc/150?u=43",
-    "https://i.pravatar.cc/150?u=54",
+    "https://github.com/shadcn.png",
+    "https://github.com/shadcn.png",
+    "https://github.com/shadcn.png",
+    "https://github.com/shadcn.png",
+    "https://github.com/shadcn.png",
   ]);
   const ref = useRef<HTMLElement>(null);
 
