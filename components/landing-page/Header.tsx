@@ -69,6 +69,13 @@ export default function Header() {
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden md:flex items-center gap-1 bg-black/[0.02] dark:bg-white/[0.02] border border-border/50 px-2 py-1.5 rounded-full">
             <Link
+              href="/"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/")}
+            >
+              Home
+            </Link>
+            <Link
               href="/landing-page/investment-plan"
               className={desktopLinkStyles("/landing-page/investment-plan")}
             >
@@ -195,13 +202,6 @@ export default function Header() {
 
           {/* Nav links */}
           <nav className="flex flex-col">
-            <Link
-              href="/"
-              onClick={closeMobileMenu}
-              className={mobileLinkStyles("/")}
-            >
-              Home
-            </Link>
             <Link
               href="/landing-page/investment-plan"
               onClick={closeMobileMenu}
