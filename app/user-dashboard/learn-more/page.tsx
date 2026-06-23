@@ -27,6 +27,7 @@ import {
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+import ReadAloud from "@/components/user-dashboard/read-aloud";
 import Link from "next/link";
 
 export default function LearnMorePage() {
@@ -40,16 +41,25 @@ export default function LearnMorePage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-12">
-            
+          <div
+            id="learn-more-content"
+            className="max-w-4xl mx-auto space-y-12"
+          >
             {/* Page Header */}
-            <section className="space-y-2">
-              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
-                Learn More
-              </h1>
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                Detailed information about our platform features
-              </p>
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
+                    Learn More
+                  </h1>
+
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                    Detailed information about our platform features
+                  </p>
+                </div>
+
+                <ReadAloud targetId="learn-more-content" />
+              </div>
             </section>
 
             {/* XP Redemption Section */}
