@@ -14,7 +14,8 @@ import {
   Circle,
   Gift,
   TrendingUp,
-  ArrowDownCircle
+  ArrowDownCircle,
+  Coins
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -23,7 +24,7 @@ import Link from "next/link";
 
 // ─── Data & Types ──────────────────────────────────────────────────────────────
 
-type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift' | 'gift_card';
+type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift' | 'gift_card' | 'redeem_xp';
 
 interface Notification {
   id: string;
@@ -108,6 +109,10 @@ const NotificationsPage = () => {
         // Fetch gift cards
         const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`);
         const giftCardsResult = await giftCardsResponse.json();
+
+        // Fetch XP redemptions
+        const redemptionsResponse = await fetch("/api/user-dashboard/redeem-xp/history");
+        const redemptionsResult = await redemptionsResponse.json();
 
         const allNotifications: Notification[] = [];
 
@@ -211,6 +216,21 @@ const NotificationsPage = () => {
           });
         }
 
+        // Process XP redemptions as notifications
+        if (redemptionsResult.success && redemptionsResult.redemptions) {
+          redemptionsResult.redemptions.forEach((redemption: any) => {
+            allNotifications.push({
+              id: `redemption-${redemption._id}`,
+              type: 'redeem_xp',
+              title: 'XP Redemption Successful',
+              message: `Successfully redeemed ${redemption.xpAmount.toLocaleString()} ${redemption.xpType === 'daily' ? 'Daily Streak' : 'Achievement'} XP for $${redemption.usdtAmount.toFixed(2)}`,
+              time: formatTimeAgo(new Date(redemption.createdAt)),
+              isRead: redemption.status === 'completed',
+              rawData: redemption
+            });
+          });
+        }
+
         // Sort by date (most recent first)
         allNotifications.sort((a, b) => {
           const dateA = new Date(a.rawData?.createdAt || a.rawData?.timestamp || Date.now());
@@ -296,6 +316,7 @@ const NotificationsPage = () => {
       case 'investment': return <Gift className="w-4 h-4 text-blue-500" />;
       case 'gift_card': return <Gift className="w-4 h-4 text-orange-500" />;
       case 'gift': return <Gift className="w-4 h-4 text-pink-500" />;
+      case 'redeem_xp': return <Coins className="w-4 h-4 text-yellow-500" />;
       case 'system': return <Megaphone className="w-4 h-4 text-muted-foreground" />;
     }
   };
