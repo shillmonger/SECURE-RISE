@@ -38,13 +38,13 @@ import Alerts from "@/components/user-dashboard/Alerts";
 // Helper function to format numbers with K, M, B notation
 const formatNumber = (num: number): string => {
   if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + "b";
+    return (num / 1000000000).toFixed(1) + "B";
   }
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + "m";
+    return (num / 1000000).toFixed(1) + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + "k";
+    return (num / 1000).toFixed(1) + "K";
   }
   return num.toString();
 };

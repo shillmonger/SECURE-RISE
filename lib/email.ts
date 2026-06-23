@@ -11,7 +11,8 @@ import {
   renderGiftEmail,
   renderDepositNotificationEmail,
   renderWithdrawalNotificationEmail,
-  renderGiftCardNotificationEmail
+  renderGiftCardNotificationEmail,
+  renderXPRedemptionEmail
 } from './email-renderer';
 
 const transporter = nodemailer.createTransport({
@@ -618,6 +619,34 @@ export const sendGiftCardStatusEmail = async (userEmail: string, giftCardData: {
     console.log(`Gift card ${giftCardData.status === 'approved' ? 'approval' : 'rejection'} email sent to ${userEmail}`);
   } catch (error) {
     console.error(`Error sending gift card ${giftCardData.status === 'approved' ? 'approval' : 'rejection'} email:`, error);
+    throw error;
+  }
+};
+
+export const sendXPRedemptionEmail = async (userEmail: string, username: string, redemptionData: {
+  xpType: 'daily' | 'achievement';
+  xpAmount: number;
+  usdtAmount: number;
+  transactionId: string;
+}) => {
+  const htmlContent = await renderXPRedemptionEmail({
+    userEmail,
+    username,
+    ...redemptionData
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `XP Redemption Successful - ${redemptionData.transactionId}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`XP redemption email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending XP redemption email:', error);
     throw error;
   }
 };

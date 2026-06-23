@@ -125,7 +125,7 @@ export default function UserSidebar({
     {
       name: "XP to USDT (Redeem)",
       icon: BadgeDollarSign,
-      href: `#`,
+      href: `${basePath}/redeem-xp`,
     },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },

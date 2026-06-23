@@ -13,6 +13,7 @@ import { GiftEmail } from '../emails/GiftEmail';
 import { DepositNotificationEmail } from '../emails/DepositNotificationEmail';
 import { WithdrawalNotificationEmail } from '../emails/WithdrawalNotificationEmail';
 import { GiftCardNotificationEmail } from '../emails/GiftCardNotificationEmail';
+import { XPRedemptionEmail } from '../emails/XPRedemptionEmail';
 
 export const renderWelcomeEmail = (props: { username: string; userEmail: string }) => {
   return render(React.createElement(WelcomeEmail, props));
@@ -133,4 +134,15 @@ export const renderGiftCardNotificationEmail = (props: {
   transactionId: string;
 }) => {
   return render(React.createElement(GiftCardNotificationEmail, props));
+};
+
+export const renderXPRedemptionEmail = (props: {
+  userEmail: string;
+  username: string;
+  xpType: 'daily' | 'achievement';
+  xpAmount: number;
+  usdtAmount: number;
+  transactionId: string;
+}) => {
+  return render(React.createElement(XPRedemptionEmail, props));
 };
