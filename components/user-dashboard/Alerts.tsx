@@ -9,7 +9,7 @@ import Link from "next/link";
 
 interface AlertItem {
   id: string;
-  type: "welcome" | "profit" | "withdrawal" | "gift" | "giftcard" | "investment";
+  type: "welcome" | "profit" | "withdrawal" | "gift" | "giftcard" | "investment" | "redeem_xp";
   isNew: boolean;
   title: string;
   message: string;
@@ -22,6 +22,7 @@ interface AlertsProps {
   giftHistory: any[];
   giftCards: any[];
   recentWithdrawals: any[];
+  xpRedemptions: any[];
   alertsLoading: boolean;
 }
 
@@ -30,6 +31,7 @@ export default function Alerts({
   giftHistory,
   giftCards,
   recentWithdrawals,
+  xpRedemptions,
   alertsLoading,
 }: AlertsProps) {
   const [alertsPage, setAlertsPage] = useState(1);
@@ -124,6 +126,19 @@ export default function Alerts({
       message: `${giftCard.cardType} gift card for $${giftCard.amount.toFixed(2)} ${giftCard.currency} has been ${giftCard.status === "approved" ? "approved" : giftCard.status === "rejected" ? "rejected" : "submitted for review"}${giftCard.status === "rejected" && giftCard.rejectionReason ? `: ${giftCard.rejectionReason}` : ""}`,
       time: new Date(giftCard.createdAt).toLocaleDateString(),
       timestamp: new Date(giftCard.createdAt),
+    });
+  });
+
+  // Add XP redemption alerts
+  xpRedemptions.forEach((redemption, index) => {
+    allAlerts.push({
+      id: `redemption-${redemption._id}`,
+      type: "redeem_xp",
+      isNew: false,
+      title: "XP Redemption Successful",
+      message: `Successfully redeemed ${redemption.xpAmount.toLocaleString()} ${redemption.xpType === 'daily' ? 'Daily Streak' : 'Achievement'} XP for $${redemption.usdtAmount.toFixed(2)}`,
+      time: new Date(redemption.createdAt).toLocaleDateString(),
+      timestamp: new Date(redemption.createdAt),
     });
   });
 

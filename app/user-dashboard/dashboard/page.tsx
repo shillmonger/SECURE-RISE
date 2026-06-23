@@ -73,6 +73,7 @@ export default function UserOverviewPage() {
   const [userInvestments, setUserInvestments] = useState<any[]>([]);
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [giftCards, setGiftCards] = useState<any[]>([]);
+  const [xpRedemptions, setXpRedemptions] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
@@ -148,6 +149,14 @@ export default function UserOverviewPage() {
 
         if (giftCardsResult.success) {
           setGiftCards(giftCardsResult.giftCards);
+        }
+
+        // Fetch XP redemptions
+        const redemptionsResponse = await fetch("/api/user-dashboard/redeem-xp/history");
+        const redemptionsResult = await redemptionsResponse.json();
+
+        if (redemptionsResult.success) {
+          setXpRedemptions(redemptionsResult.redemptions);
         }
 
         if (Array.isArray(investments)) {
@@ -715,6 +724,7 @@ export default function UserOverviewPage() {
                   userInvestments={userInvestments}
                   giftHistory={giftHistory}
                   giftCards={giftCards}
+                  xpRedemptions={xpRedemptions}
                   activityLoading={activityLoading}
                 />
               </div>
@@ -750,6 +760,7 @@ export default function UserOverviewPage() {
                   giftHistory={giftHistory}
                   giftCards={giftCards}
                   recentWithdrawals={recentWithdrawals}
+                  xpRedemptions={xpRedemptions}
                   alertsLoading={alertsLoading}
                 />
 

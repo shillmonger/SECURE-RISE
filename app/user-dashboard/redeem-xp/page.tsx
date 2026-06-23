@@ -37,6 +37,20 @@ interface UserBalanceData {
 
 const EXCHANGE_RATE = 0.02; // 100 XP = $2 USDT ($0.02 per XP)
 
+// Helper function to format numbers with K, M, B notation
+const formatNumber = (num: number): string => {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + "B";
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toString();
+};
+
 const DailyStreakPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -164,29 +178,29 @@ const DailyStreakPage = () => {
 
   const balanceCards = [
     {
-      label: "Total USDT Balance",
-      value: `$${balances.usdtBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      label: "Account Balance",
+      value: `$${formatNumber(balances.usdtBalance)}`,
       unit: "USDT",
       icon: <Wallet className="w-5 h-5 text-green-400" />,
       dark: true,
     },
     {
       label: "Daily XP Balance",
-      value: `${balances.dailyXP.toLocaleString()}`,
+      value: `${formatNumber(balances.dailyXP)}`,
       unit: "XP",
       icon: <Flame className="w-5 h-5 text-orange-400" />,
       dark: false,
     },
     {
-      label: "Achievement XP Balance",
-      value: `${balances.achievementXP.toLocaleString()}`,
+      label: "Achv XP Balance",
+      value: `${formatNumber(balances.achievementXP)}`,
       unit: "XP",
       icon: <Trophy className="w-5 h-5 text-yellow-400" />,
       dark: false,
     },
     {
       label: "Conversion Rate",
-      value: `100 : 2`,
+      value: `50 : 1`,
       unit: "XP/USDT",
       icon: <ArrowRightLeft className="w-5 h-5 text-sky-400" />,
       dark: false,
@@ -253,25 +267,38 @@ const DailyStreakPage = () => {
                 <form onSubmit={handleRedeemExchange} className="space-y-5">
                   {/* Dropdown Selection */}
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">
-                      Select Source Pool
-                    </label>
-                    <Select
-                      value={selectedXPType}
-                      onValueChange={(value) => {
-                        setSelectedXPType(value as XPType);
-                        setXpInput("");
-                      }}
-                    >
-                      <SelectTrigger className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-black uppercase tracking-wider focus:ring-1 focus:ring-yellow-400/50">
-                        <SelectValue placeholder="Select XP type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="daily">Daily Streak XP ({balances.dailyXP.toLocaleString()} Available)</SelectItem>
-                        <SelectItem value="achievement">Achievement Milestone XP ({balances.achievementXP.toLocaleString()} Available)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">
+    Select Source Pool
+  </label>
+
+  <Select
+    value={selectedXPType}
+    onValueChange={(value) => {
+      setSelectedXPType(value as XPType);
+      setXpInput("");
+    }}
+  >
+    <SelectTrigger className="w-full bg-background border cursor-pointer border-border rounded-lg px-4 py-5 text-xs font-black uppercase tracking-wider focus:ring-1 focus:ring-yellow-400/50">
+      <SelectValue placeholder="Select XP type" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem
+        value="daily"
+        className="px-2 py-2"
+      >
+        Daily Streak XP ({balances.dailyXP.toLocaleString()} Available)
+      </SelectItem>
+
+      <SelectItem
+        value="achievement"
+        className="px-2 py-2"
+      >
+        Achievement Milestone XP ({balances.achievementXP.toLocaleString()} Available)
+      </SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
                   {/* Input field with Max button */}
                   <div className="space-y-2">

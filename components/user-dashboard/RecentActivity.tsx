@@ -9,11 +9,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Coins,
 } from "lucide-react";
 import Link from "next/link";
 
 interface ActivityItem {
-  type: "deposit" | "withdrawal" | "investment" | "profit" | "gift" | "giftcard";
+  type: "deposit" | "withdrawal" | "investment" | "profit" | "gift" | "giftcard" | "redeem_xp";
   data: any;
   date: Date;
   icon: any;
@@ -32,6 +33,7 @@ interface RecentActivityProps {
   userInvestments: any[];
   giftHistory: any[];
   giftCards: any[];
+  xpRedemptions: any[];
   activityLoading: boolean;
 }
 
@@ -41,6 +43,7 @@ export default function RecentActivity({
   userInvestments,
   giftHistory,
   giftCards,
+  xpRedemptions,
   activityLoading,
 }: RecentActivityProps) {
   const [activityPage, setActivityPage] = useState(1);
@@ -155,6 +158,23 @@ export default function RecentActivity({
       amount: `$${giftCard.amount.toFixed(2)}`,
       amountColor: "text-blue-500",
       status: giftCard.status,
+    });
+  });
+
+  // Add XP redemptions
+  xpRedemptions.forEach((redemption) => {
+    activities.push({
+      type: "redeem_xp",
+      data: redemption,
+      date: new Date(redemption.createdAt),
+      icon: Coins,
+      iconBg: "bg-yellow-500/10",
+      iconColor: "text-yellow-500",
+      title: "XP Redemption",
+      subtitle: `${redemption.xpType === 'daily' ? 'Daily Streak' : 'Achievement'} XP - ${redemption.xpAmount.toLocaleString()} XP`,
+      amount: `+$${redemption.usdtAmount.toFixed(2)}`,
+      amountColor: "text-green-500",
+      status: redemption.status,
     });
   });
 

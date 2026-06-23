@@ -16,6 +16,7 @@ import {
   Gift,
   TrendingUp,
   ArrowDownCircle,
+  Coins,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -23,7 +24,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp";
 type TransactionStatus =
   | "completed"
   | "pending"
@@ -79,6 +80,9 @@ export default function TransactionsPage() {
           `/api/user-dashboard/gift-card?userId=${userResult.user.id}`
         );
         const giftCardsResult = await giftCardsResponse.json();
+
+        const redemptionsResponse = await fetch("/api/user-dashboard/redeem-xp/history");
+        const redemptionsResult = await redemptionsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
@@ -191,6 +195,21 @@ export default function TransactionsPage() {
           });
         }
 
+        if (redemptionsResult.success && redemptionsResult.redemptions) {
+          redemptionsResult.redemptions.forEach((redemption: any) => {
+            allTransactions.push({
+              id: redemption.transactionId,
+              type: "redeem_xp",
+              amount: redemption.usdtAmount,
+              method: `${redemption.xpType === 'daily' ? 'Daily Streak' : 'Achievement'} XP Redemption`,
+              status: redemption.status,
+              date: new Date(redemption.createdAt).toLocaleDateString(),
+              timestamp: new Date(redemption.createdAt).toLocaleTimeString(),
+              rawData: redemption,
+            });
+          });
+        }
+
         allTransactions.sort((a, b) => {
           const dateA = new Date(
             a.rawData?.createdAt || a.rawData?.timestamp || Date.now()
@@ -282,6 +301,12 @@ export default function TransactionsPage() {
             <Gift className="w-4 h-4 text-pink-500" />
           </div>
         );
+      case "redeem_xp":
+        return (
+          <div className="w-8 h-8 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+            <Coins className="w-4 h-4 text-yellow-500" />
+          </div>
+        );
     }
   };
 
@@ -364,6 +389,10 @@ export default function TransactionsPage() {
         label: "Gift",
         cls: "text-pink-400 bg-pink-500/10 border border-pink-500/20",
       },
+      redeem_xp: {
+        label: "XP Redemption",
+        cls: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20",
+      },
     };
 
     const a = map[type];
@@ -377,7 +406,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountColor = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi" || type === "gift_card") return "text-green-400";
+    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp") return "text-green-400";
     if (type === "withdrawal" || type === "investment") return "text-red-400";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -387,7 +416,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountPrefix = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi" || type === "gift_card") return "+";
+    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp") return "+";
     if (type === "withdrawal" || type === "investment") return "-";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -456,7 +485,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp"].map(
                   (type) => (
                     <button
                       key={type}
