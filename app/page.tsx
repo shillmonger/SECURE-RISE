@@ -32,6 +32,7 @@ export default function HomePage() {
         <TradingTools />
         <NumbersThatSpeaks />
         <LiveMarkets />
+        <TradingView />
         <ProfitBlueprint />
         <FAQ />
         <RiskProtection />

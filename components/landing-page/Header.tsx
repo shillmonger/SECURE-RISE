@@ -14,6 +14,7 @@ import {
   Home,
   Headset,
   Briefcase,
+  HelpCircle,
 } from "lucide-react";
 
 const montserrat = Montserrat({
@@ -91,6 +92,18 @@ export default function Header() {
             >
               Contact Page
             </Link>
+            <button
+              onClick={() => {
+                const faqSection = document.getElementById('faq');
+                if (faqSection) {
+                  faqSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`px-4 py-2 text-[14px] font-bold tracking-wide transition-all rounded-full flex items-center gap-2 cursor-pointer hover:text-foreground text-muted-foreground hover:bg-black/[0.03] dark:hover:bg-white/[0.03]`}
+            >
+              {/* <HelpCircle className="w-4 h-4" /> */}
+              FAQ
+            </button>
           </nav>
 
           {/* RIGHT SECTION: AUTH */}
@@ -225,6 +238,19 @@ export default function Header() {
             >
               Terms &amp; Conditions
             </Link>
+            <button
+              onClick={() => {
+                closeMobileMenu();
+                const faqSection = document.getElementById('faq');
+                if (faqSection) {
+                  faqSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="relative flex items-center gap-3 px-1 py-3.5 text-[15px] font-bold tracking-wide transition-colors border-b border-border/40 last:border-b-0 text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              <HelpCircle className="w-5 h-5" />
+              Frequently Asked Questions
+            </button>
           </nav>
 
           {/* Auth buttons */}

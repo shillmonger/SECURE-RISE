@@ -64,8 +64,8 @@ export default function StatsGrid() {
     }
   };
 
-  const rewards = useCounter(2, 1600, active);
-  const traders = useCounter(900, 2000, active);
+  const rewards = useCounter(1.3, 1600, active);
+  const traders = useCounter(3000, 2000, active);
   const countries = useCounter(160, 1400, active);
   const community = useCounter(1000, 2200, active);
 
@@ -87,7 +87,7 @@ export default function StatsGrid() {
       </div>
 
       {/* --- Bento Grid --- */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         
         {/* Rewards */}
         <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col justify-between min-h-[280px] transition-all hover:-translate-y-1">
@@ -177,7 +177,7 @@ export default function StatsGrid() {
             </div>
             <Headphones className="w-8 h-8 text-primary/20" />
           </div>
-          <div className="mt-4 rounded-xl px-4 py-2 text-[10px] tracking-widest uppercase font-mono text-muted-foreground bg-primary/5 border border-primary/10">
+          <div className="mt-4 rounded-lg px-4 py-2 text-[10px] tracking-widest uppercase font-mono text-muted-foreground bg-primary/5 border border-primary/10">
             Avg response &lt; 60 seconds
           </div>
         </div>
