@@ -374,11 +374,11 @@ export default function WithdrawPage() {
                       <p className="text-[10px] font-black uppercase text-muted-foreground">
                         Available:{" "}
                         <span className="text-green-500">
-  $
-  {loading
-    ? "Loading..."
-    : userData?.accountBalance?.toLocaleString() || "0"}
-</span>
+                          $
+                          {loading
+                            ? "Loading..."
+                            : userData?.accountBalance?.toLocaleString() || "0"}
+                        </span>
                       </p>
                     </div>
                     <div className="relative">
@@ -447,71 +447,71 @@ export default function WithdrawPage() {
               {/* Right: Stats & History */}
               <div className="w-full lg:w-[400px] space-y-6">
                 <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/15 via-orange-500/10 to-red-500/15 p-4 md:p-5  backdrop-blur-sm">
-  {/* Background Effects */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+                  {/* Background Effects */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
 
-  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-yellow-400 opacity-10" />
+                  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-yellow-400 opacity-10" />
 
-  {/* Header */}
-  <div className="relative z-10 mb-5 flex items-center gap-3">
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20 border border-yellow-500/30">
-      <AlertTriangle className="h-5 w-5 text-yellow-400" />
-    </div>
+                  {/* Header */}
+                  <div className="relative z-10 mb-5 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20 border border-yellow-500/30">
+                      <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    </div>
 
-    <div>
-      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-300">
-        Withdrawal Rules
-      </p>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-300">
+                        Withdrawal Rules
+                      </p>
 
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-yellow-100/70">
-        Please review carefully before proceeding
-      </p>
-    </div>
-  </div>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-yellow-100/70">
+                        Please review carefully before proceeding
+                      </p>
+                    </div>
+                  </div>
 
-  {/* Rules */}
-  <div className="relative z-10 space-y-3">
-    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
-        Minimum Amount
-      </span>
+                  {/* Rules */}
+                  <div className="relative z-10 space-y-3">
+                    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+                        Minimum Amount
+                      </span>
 
-      <span className="text-sm font-black text-yellow-300">
-        $100.00
-      </span>
-    </div>
+                      <span className="text-sm font-black text-yellow-300">
+                        $100.00
+                      </span>
+                    </div>
 
-    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
-        Processing Fee
-      </span>
+                    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+                        Processing Fee
+                      </span>
 
-      <span className="text-sm font-black text-green-400">
-        0%
-      </span>
-    </div>
+                      <span className="text-sm font-black text-green-400">
+                        0%
+                      </span>
+                    </div>
 
-    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
-        Deposit Requirement
-      </span>
+                    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-red-100">
+                        Deposit Requirement
+                      </span>
 
-      <span className="text-sm font-black text-red-400">
-        Required
-      </span>
-    </div>
+                      <span className="text-sm font-black text-red-400">
+                        Required
+                      </span>
+                    </div>
 
-    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
-        Timeframe
-      </span>
+                    <div className="flex items-center justify-between rounded-xl border border-yellow-500/10 bg-black/20 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-yellow-100/80">
+                        Timeframe
+                      </span>
 
-      <span className="text-sm font-black text-yellow-300">
-        0-24 Hours
-      </span>
-    </div>
-  </div>
-</div>
+                      <span className="text-sm font-black text-yellow-300">
+                        0-24 Hours
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="bg-card border border-border rounded-[1rem] p-4 md:p-5 space-y-4">
                   <div className="flex items-center justify-between">
@@ -546,7 +546,7 @@ export default function WithdrawPage() {
                       withdrawalHistory.slice(0, 20).map((log, index) => (
                         <div
                           key={log.id}
-                          className={`${index >= 3 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
+                          className={`${index >= 2 ? 'lg:hidden flex' : 'flex'} bg-muted/30 border border-border/50 px-4 py-3 cursor-pointer rounded-xl items-center justify-between group hover:border-foreground/20 transition-all`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-background rounded-lg">
@@ -574,13 +574,12 @@ export default function WithdrawPage() {
                                 <XCircle className="w-3 h-3 text-red-500" />
                               )}
                               <p
-                                className={`text-[8px] font-black uppercase tracking-widest ${
-                                  log.status === "approved"
+                                className={`text-[8px] font-black uppercase tracking-widest ${log.status === "approved"
                                     ? "text-green-500"
                                     : log.status === "pending"
                                       ? "text-amber-700"
                                       : "text-red-500"
-                                }`}
+                                  }`}
                               >
                                 {log.status}
                               </p>

@@ -9,6 +9,8 @@ import { Montserrat } from "next/font/google";
 import {
   Wallet,
   Gift,
+  Send,
+  History,
 } from "lucide-react";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700", "800", "900"] });
@@ -181,9 +183,18 @@ export default function GiftUserPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [balance, setBalance] = useState(0);
   const [giftPercents, setGiftPercents] = useState(0);
+  const [totalSent, setTotalSent] = useState(0);
+  const [giftHistory, setGiftHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const formatNumber = (num: number) => {
+    if (num >= 1000000000) {
+      return (num / 1000000000).toFixed(1) + 'B';
+    }
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    }
     if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
+      return (num / 1000).toFixed(1) + 'K';
     }
     return num.toFixed(2);
   };
@@ -200,12 +211,32 @@ export default function GiftUserPage() {
         if (data.success) {
           setBalance(data.balance);
           setGiftPercents(data.giftPercents);
+          setTotalSent(data.totalSent || 0);
         }
       } catch (error) {
         console.error('Error fetching balance:', error);
       }
     };
     fetchBalance();
+  }, []);
+
+  // Fetch gift history
+  useEffect(() => {
+    const fetchGiftHistory = async () => {
+      setLoadingHistory(true);
+      try {
+        const response = await fetch('/api/user-dashboard/gift/history');
+        const data = await response.json();
+        if (data.success) {
+          setGiftHistory(data.gifts || []);
+        }
+      } catch (error) {
+        console.error('Error fetching gift history:', error);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+    fetchGiftHistory();
   }, []);
 
   // Debounced search
@@ -650,6 +681,153 @@ export default function GiftUserPage() {
               Need help?{" "}
               <a href="#" className="text-primary hover:underline font-semibold cursor-pointer">Contact support</a>
             </p>
+
+            {/* Gift History Section */}
+            <div
+              className="mt-12"
+              style={{ animation: "fadeSlideUp 0.5s ease 0.3s both" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <History className="w-5 h-5 text-primary" />
+                <h2
+                  className={`${montserrat.className} text-xl font-black text-foreground uppercase`}
+                >
+                  Gift History
+                </h2>
+              </div>
+
+              {loadingHistory ? (
+                <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted/50 border-b border-border">
+                        <tr>
+                          <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Recipient
+                          </th>
+                          <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Email
+                          </th>
+                          <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Amount
+                          </th>
+                          <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Status
+                          </th>
+                          <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Date
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {[1, 2, 3].map((i) => (
+                          <tr key={i} className="animate-pulse">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-muted" />
+                                <div className="h-4 bg-muted rounded w-24" />
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="h-4 bg-muted rounded w-32" />
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="h-4 bg-muted rounded w-16 ml-auto" />
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <div className="h-6 bg-muted rounded w-20 mx-auto" />
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="h-4 bg-muted rounded w-20 ml-auto" />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : giftHistory.length === 0 ? (
+                <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                  <Gift className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-foreground font-semibold mb-2">No gifts sent yet</p>
+                  <p className="text-sm text-muted-foreground">
+                    Start sending gifts to see your history here.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted/50 border-b border-border">
+                        <tr>
+                          <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Recipient
+                          </th>
+                          <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Email
+                          </th>
+                          <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Amount
+                          </th>
+                          <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Status
+                          </th>
+                          <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Date
+                          </th>
+                        </tr>
+                      </thead>
+                     <tbody className="divide-y divide-border">
+  {giftHistory.slice(0, 10).map((gift) => (
+    <tr key={gift._id} className="hover:bg-muted/30 transition-colors">
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3 flex-nowrap">
+          <img
+            src={gift.receiverProfileImage || "https://github.com/shadcn.png"}
+            alt={gift.receiverName}
+            className="h-10 w-10 rounded-xl object-cover border-2 border-border shrink-0"
+          />
+          <span className="text-sm font-semibold text-foreground whitespace-nowrap truncate max-w-[120px] sm:max-w-none">
+            {gift.receiverName}
+          </span>
+        </div>
+      </td>
+      <td className="px-6 py-4">
+        <span className="text-sm text-muted-foreground">
+          {gift.receiverEmail}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-right">
+        <span className="text-sm font-black text-primary">
+          ${gift.amount}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-center">
+        <span
+          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            gift.status === 'completed'
+              ? 'bg-emerald-500/10 text-emerald-500'
+              : gift.status === 'pending'
+              ? 'bg-amber-500/10 text-amber-500'
+              : 'bg-red-500/10 text-red-500'
+          }`}
+        >
+          {gift.status}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-right">
+        <span className="text-xs text-muted-foreground">
+          {new Date(gift.createdAt).toLocaleDateString()}
+        </span>
+      </td>
+    </tr>
+  ))}
+</tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
           </main>
         </div>
       </div>

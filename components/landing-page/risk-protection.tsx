@@ -26,7 +26,7 @@ export default function RiskProtection() {
       </div>
 
       {/* Bordered Card */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-card/40 dark:bg-black/40 backdrop-blur-md shadow-xl dark:shadow-none">
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-primary/20 bg-card/40 dark:bg-black/40 backdrop-blur-md shadow-xl dark:shadow-none">
         {/* Main Image Section — top of card */}
         {/* Main Image Section — top of card */}
         <div className="relative w-full h-[350px] md:h-[1000px] bg-gradient-to-b from-primary/5 to-transparent">

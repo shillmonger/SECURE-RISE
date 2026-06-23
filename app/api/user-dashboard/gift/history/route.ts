@@ -33,6 +33,24 @@ export async function GET(request: NextRequest) {
       .limit(50)
       .toArray();
 
+    // Get all unique user IDs from gifts
+    const userIds = new Set<ObjectId>();
+    gifts.forEach(gift => {
+      userIds.add(gift.senderId);
+      userIds.add(gift.receiverId);
+    });
+
+    // Fetch profile images for all users
+    const users = await db.collection('users')
+      .find({ _id: { $in: Array.from(userIds) } })
+      .project({ _id: 1, profileImage: 1 })
+      .toArray();
+
+    const userMap = new Map();
+    users.forEach(u => {
+      userMap.set(u._id.toString(), u.profileImage);
+    });
+
     // Format gifts for display
     const formattedGifts = gifts.map(gift => {
       const isSender = gift.senderId.toString() === user._id.toString();
@@ -44,9 +62,11 @@ export async function GET(request: NextRequest) {
         senderId: gift.senderId.toString(),
         senderName: gift.senderName,
         senderEmail: gift.senderEmail,
+        senderProfileImage: userMap.get(gift.senderId.toString()),
         receiverId: gift.receiverId.toString(),
         receiverName: gift.receiverName,
         receiverEmail: gift.receiverEmail,
+        receiverProfileImage: userMap.get(gift.receiverId.toString()),
         amount: gift.amount,
         status: gift.status,
         createdAt: gift.createdAt,

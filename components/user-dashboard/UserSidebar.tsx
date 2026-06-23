@@ -122,6 +122,11 @@ export default function UserSidebar({
       icon: ChartNoAxesCombined,
       href: `${basePath}/my-investments`,
     },
+    {
+      name: "XP to USDT (Redeem)",
+      icon: BadgeDollarSign,
+      href: `#`,
+    },
     { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
     { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
@@ -130,15 +135,15 @@ export default function UserSidebar({
       icon: Users,
       children: [
         {
-          name: "daily streak",
+          name: "daily streak (XP)",
           icon: PartyPopper,
           href: `${basePath}/daily-streak`,
         },
-        { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
+        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-        // { name: "Referrals", icon: Users, href: `#` },
-        // { name: "Give Feedback", icon: BadgeCheck, href: `${basePath}/feedback` },
+        { name: "Referrals", icon: Users, href: `#` },
+        { name: "Give Feedback", icon: BadgeCheck, href: `#` },
       ],
     },
     {
