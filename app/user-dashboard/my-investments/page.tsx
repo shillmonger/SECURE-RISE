@@ -25,9 +25,12 @@ import Link from "next/link";
 
 // ─── Image Constants ───────────────────────────────────────────────────────
 const IMAGES = [
-  "https://i.postimg.cc/ZnDX5Ff3/5.jpg",
-  "https://i.postimg.cc/VvF1MffN/Bull-and-Bear.jpg",
-  "https://i.postimg.cc/9Q9sc9yF/6.jpg",
+  "https://i.postimg.cc/gkW8VrZk/Banner-1.jpg",
+  "https://i.postimg.cc/jS8fYX3G/Banner-2.jpg",
+  "https://i.postimg.cc/7LdTfLkX/Banner-3.jpg",
+  "https://i.postimg.cc/15BnDBSY/Banner-4.webp",
+  "https://i.postimg.cc/gjdjZXBs/Banner-5.jpg",
+  "https://i.postimg.cc/Zqd5sFG6/Banner-6.jpg",
 ];
 
 // ─── Helper Functions ───────────────────────────────────────────────────────
@@ -76,8 +79,8 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group">
       {/* Header */}
-      <div 
-        className="p-4 lg:px-5 lg:py-5 text-background flex justify-between items-center relative overflow-hidden"
+      <div
+        className="px-4 py-10 lg:px-5 lg:py-5 text-background flex justify-between items-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
@@ -87,7 +90,7 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
       >
         {/* Dark overlay for better text visibility */}
         <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 -rotate-45 translate-x-16 -translate-y-16" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 -rotate-45 translate-x-16 -translate-y-16" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
             <span
@@ -274,13 +277,13 @@ export default function MyInvestmentsPage() {
   const filteredInvestments =
     activeTab === "all"
       ? [...investments].sort((a, b) => {
-          // Active investments first, then completed
-          if (a.status === "active" && b.status !== "active") return -1;
-          if (a.status !== "active" && b.status === "active") return 1;
-          if (a.status === "completed" && b.status !== "completed") return -1;
-          if (a.status !== "completed" && b.status === "completed") return 1;
-          return 0;
-        })
+        // Active investments first, then completed
+        if (a.status === "active" && b.status !== "active") return -1;
+        if (a.status !== "active" && b.status === "active") return 1;
+        if (a.status === "completed" && b.status !== "completed") return -1;
+        if (a.status !== "completed" && b.status === "completed") return 1;
+        return 0;
+      })
       : investments.filter((inv) => inv.status === activeTab);
 
   const stats = [
@@ -350,11 +353,10 @@ export default function MyInvestmentsPage() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab as any)}
-                    className={`cursor-pointer px-3 sm:px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex-1 sm:flex-none text-center ${
-                      activeTab === tab
+                    className={`cursor-pointer px-3 sm:px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex-1 sm:flex-none text-center ${activeTab === tab
                         ? "bg-foreground text-background shadow-md"
                         : "text-muted-foreground hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     {tab}
                   </button>
@@ -387,8 +389,8 @@ export default function MyInvestmentsPage() {
               ))}
             </div>
 
-                    {/* <TradingView /> */}
-            
+            {/* <TradingView /> */}
+
 
             {/* Main Display */}
             {isLoading ? (
@@ -442,13 +444,13 @@ export default function MyInvestmentsPage() {
               </div>
             )}
           </div>
-                {/* <TradingView /> */}
+          {/* <TradingView /> */}
         </main>
 
-        
+
       </div>
       <UserNav />
     </div>
   );
-  
+
 }
