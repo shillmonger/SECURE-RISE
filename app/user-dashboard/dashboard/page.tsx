@@ -35,8 +35,14 @@ import UserNav from "@/components/user-dashboard/UserNav";
 import RecentActivity from "@/components/user-dashboard/RecentActivity";
 import Alerts from "@/components/user-dashboard/Alerts";
 
-// Helper function to format numbers with K notation
+// Helper function to format numbers with K, M, B notation
 const formatNumber = (num: number): string => {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + "b";
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "m";
+  }
   if (num >= 1000) {
     return (num / 1000).toFixed(1) + "k";
   }
