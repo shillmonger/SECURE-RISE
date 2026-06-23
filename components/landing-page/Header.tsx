@@ -52,7 +52,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-100 bg-background border-b border-border">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-17">
           {/* LOGO */}
@@ -81,17 +81,23 @@ export default function Header() {
               About Us
             </Link>
             <Link
+              href="/landing-page/learn-more"
+              className={desktopLinkStyles("/landing-page/learn-more")}
+            >
+              Learn More
+            </Link>
+            {/* <Link
               href="/landing-page/testimonials"
               className={desktopLinkStyles("/landing-page/testimonials")}
             >
               Testimonials
-            </Link>
-            <Link
+            </Link> */}
+            {/* <Link
               href="/landing-page/contact-us"
               className={desktopLinkStyles("/landing-page/contact-us")}
             >
               Contact Page
-            </Link>
+            </Link> */}
             <button
               onClick={() => {
                 const faqSection = document.getElementById('faq');
@@ -190,6 +196,13 @@ export default function Header() {
           {/* Nav links */}
           <nav className="flex flex-col">
             <Link
+              href="/"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/")}
+            >
+              Home
+            </Link>
+            <Link
               href="/landing-page/investment-plan"
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/investment-plan")}
@@ -202,13 +215,6 @@ export default function Header() {
               className={mobileLinkStyles("/landing-page/about")}
             >
               About Secure Rise
-            </Link>
-            <Link
-              href="/landing-page/testimonials"
-              onClick={closeMobileMenu}
-              className={mobileLinkStyles("/landing-page/testimonials")}
-            >
-              Testimonials
             </Link>
             <Link
               href="/landing-page/contact-us"
@@ -224,6 +230,20 @@ export default function Header() {
             >
               Live Chat
             </Link>
+            <Link
+              href="/landing-page/learn-more"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/learn-more")}
+            >
+              Learn More
+            </Link>
+            {/* <Link
+              href="/landing-page/testimonials"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/testimonials")}
+            >
+              Traders Testimonials
+            </Link> */}
             <Link
               href="/landing-page/privacy"
               onClick={closeMobileMenu}

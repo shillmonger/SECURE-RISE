@@ -52,29 +52,29 @@ const faqs = [
     answer: "Most cryptocurrency deposits are reviewed and credited within a short period after network confirmation. Processing times may vary depending on blockchain congestion, payment method, and verification requirements."
   },
   {
-   question: "How do I track my earnings?",
-answer: "Your dashboard provides real-time access to your account activity, investment status, transaction history, earnings, withdrawals, and overall portfolio performance."
-},
+    question: "How do I track my earnings?",
+    answer: "Your dashboard provides real-time access to your account activity, investment status, transaction history, earnings, withdrawals, and overall portfolio performance."
+  },
   {
     question: "What happens if a trade results in a loss of my capital?",
     answer: "We stand by our strategies. If a trade results in a loss of your initial capital, SECURE RISE covers it 100%. Not only do we refund your full investment immediately, but we also credit an additional 20% of your capital as compensation—fully withdrawable the moment it hits your account."
   },
   {
-question: "What payment methods are supported?",
-answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH). We also support selected gift card deposits through our approved funding channels."
-},
+    question: "What payment methods are supported?",
+    answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH). We also support selected gift card deposits through our approved funding channels."
+  },
   {
-question: "Is SECURE RISE available internationally?",
-answer: "Yes. SECURE RISE is designed to serve users from multiple countries, allowing investors from different regions to participate using supported funding methods."
-},
-{
-question: "Can I have more than one active investment?",
-answer: "Yes. Depending on your account status and available balance, you may activate multiple investment plans simultaneously and manage them from a single dashboard."
-},
-{
-  question: "How can I contact customer support?",
-  answer: "You can reach our support team through the contact options available on the platform. For direct assistance, join our Telegram community at https://t.me/secure_rise or contact an administrator via Telegram: @secure_rise_trading. We are available to assist with account issues, deposits, withdrawals, investment inquiries, and technical support."
-}
+    question: "Is SECURE RISE available internationally?",
+    answer: "Yes. SECURE RISE is designed to serve users from multiple countries, allowing investors from different regions to participate using supported funding methods."
+  },
+  {
+    question: "Can I have more than one active investment?",
+    answer: "Yes. Depending on your account status and available balance, you may activate multiple investment plans simultaneously and manage them from a single dashboard."
+  },
+  {
+    question: "How can I contact customer support?",
+    answer: "You can reach our support team through the contact options available on the platform. For direct assistance, join our Telegram community at https://t.me/secure_rise or contact an administrator via Telegram: @secure_rise_trading. We are available to assist with account issues, deposits, withdrawals, investment inquiries, and technical support."
+  }
 ];
 
 export default function FAQSection() {
@@ -82,23 +82,23 @@ export default function FAQSection() {
 
   return (
     <section id="faq" className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 w-full">
-     <div className="text-center mb-16 relative z-10">
-  {/* Badge */}
-  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-[.2em] mb-4 text-primary">
-    Support
-  </div>
+      <div className="text-center mb-8 relative z-10">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-[.2em] mb-4 text-primary">
+          Support
+        </div>
 
-  {/* Main Heading */}
-  <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
-    Frequently Asked <span className="text-primary">Questions</span>
-  </h2>
+        {/* Main Heading */}
+        <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
+          Frequently Asked <span className="text-primary">Questions</span>
+        </h2>
 
-  {/* Centered Paragraph */}
-  <p className="text-muted-foreground max-w-lg mx-auto text-base md:text-lg font-light leading-relaxed">
-    Everything you need to know about the SECURE RISE ecosystem. 
-    From registration bonuses to our institutional-grade trading cycles.
-  </p>
-</div>
+        {/* Centered Paragraph */}
+        <p className="text-muted-foreground max-w-lg mx-auto text-base md:text-lg font-light leading-relaxed">
+          Everything you need to know about the SECURE RISE ecosystem.
+          From registration bonuses to our institutional-grade trading cycles.
+        </p>
+      </div>
 
       {/* Two Column Layout like the image */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -132,12 +132,11 @@ export default function FAQSection() {
 
 function FAQItem({ faq, isOpen, onClick }: { faq: any, isOpen: boolean, onClick: () => void }) {
   return (
-    <div 
-      className={`group transition-all duration-300 rounded-[1rem] border ${
-        isOpen 
-        ? "bg-card border-primary shadow-xl shadow-primary/5" 
-        : "bg-card/40 border-primary/10 hover:border-primary/30"
-      }`}
+    <div
+      className={`group transition-all duration-300 rounded-[1rem] border ${isOpen
+          ? "bg-card border-primary shadow-xl shadow-primary/5"
+          : "bg-card/40 border-primary/10 hover:border-primary/30"
+        }`}
     >
       <button
         onClick={onClick}
@@ -154,7 +153,7 @@ function FAQItem({ faq, isOpen, onClick }: { faq: any, isOpen: boolean, onClick:
           )}
         </div>
       </button>
-      
+
       {isOpen && (
         <div className="px-6 pb-8">
           <div className="h-px bg-primary/10 mb-6" />
