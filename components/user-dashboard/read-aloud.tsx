@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Volume2, Pause, Play } from "lucide-react";
+import { Volume2, Pause, Play, VolumeX } from "lucide-react";
 
 interface ReadAloudProps {
   targetId: string;
@@ -10,6 +10,12 @@ interface ReadAloudProps {
 export default function ReadAloud({ targetId }: ReadAloudProps) {
   const [isReading, setIsReading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
+  const stopReading = () => {
+    window.speechSynthesis.cancel();
+    setIsReading(false);
+    setIsPaused(false);
+  };
 
   const handleClick = () => {
     // Resume
@@ -56,7 +62,40 @@ export default function ReadAloud({ targetId }: ReadAloudProps) {
     window.speechSynthesis.speak(utterance);
   };
 
-  return (
+return (
+  <>
+    {isPaused && (
+      <button
+        onClick={stopReading}
+        className="
+          fixed
+          bottom-39
+          lg:bottom-24
+          right-3
+          lg:right-7
+          z-50
+          h-9
+          w-9
+          rounded-lg
+          cursor-pointer
+          border
+          border-border
+          bg-red-500
+          text-white
+          shadow-xl
+          flex
+          items-center
+          justify-center
+          hover:scale-110
+          transition-all
+          duration-200
+        "
+        title="Stop Reading"
+      >
+        <VolumeX className="w-4 h-4 fill-current" />
+      </button>
+    )}
+
     <button
       onClick={handleClick}
       className="
@@ -66,8 +105,8 @@ export default function ReadAloud({ targetId }: ReadAloudProps) {
         right-2
         lg:right-6
         z-50
-        h-12
-        w-12
+        h-11
+        w-11
         rounded-xl
         cursor-pointer
         border
@@ -84,10 +123,10 @@ export default function ReadAloud({ targetId }: ReadAloudProps) {
       "
       title={
         !isReading
-          ? "Read Aloud"
+          ? 'Read Aloud'
           : isPaused
-          ? "Resume Reading"
-          : "Pause Reading"
+          ? 'Resume Reading'
+          : 'Pause Reading'
       }
     >
       {!isReading ? (
@@ -98,5 +137,6 @@ export default function ReadAloud({ targetId }: ReadAloudProps) {
         <Pause className="w-5 h-5" />
       )}
     </button>
-  );
+  </>
+);
 }

@@ -43,7 +43,7 @@ export default function LearnMorePage() {
         <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
           <div
             id="learn-more-content"
-            className="max-w-4xl mx-auto space-y-12"
+            className="max-w-7xl mx-auto space-y-12"
           >
             {/* Page Header */}
             <section className="space-y-4">
