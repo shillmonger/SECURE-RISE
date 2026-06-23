@@ -7,6 +7,7 @@ import {
   ArrowDownCircle,
   ChevronRight,
   ChevronLeft,
+  ArrowRightLeft,
   AlertCircle,
   PiggyBank,
   Clock,
@@ -441,11 +442,11 @@ export default function UserOverviewPage() {
       try {
         const cryptoPairs = allPairs.filter((pair) => pair.type === "crypto");
         const coinIds = cryptoPairs.map((crypto) => crypto.coinId).join(",");
-        
+
         // Add timeout and better error handling
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
+
         const response = await fetch(
           `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=10&page=1&sparkline=false`,
           {
@@ -455,13 +456,13 @@ export default function UserOverviewPage() {
             }
           }
         );
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
 
         const cryptoImageMap = new Map();
@@ -540,9 +541,8 @@ export default function UserOverviewPage() {
     const isPositive = change >= 0;
     return (
       <div
-        className={`flex items-center gap-1 whitespace-nowrap ${
-          isPositive ? "text-green-500" : "text-red-500"
-        }`}
+        className={`flex items-center gap-1 whitespace-nowrap ${isPositive ? "text-green-500" : "text-red-500"
+          }`}
       >
         {isPositive ? (
           <TrendingUp className="w-3 h-3 flex-shrink-0" />
@@ -588,9 +588,8 @@ export default function UserOverviewPage() {
       <div className="relative w-12 h-6">
         <svg
           viewBox="0 0 100 100"
-          className={`w-full h-full ${
-            isPositive ? "text-green-500" : "text-red-500"
-          }`}
+          className={`w-full h-full ${isPositive ? "text-green-500" : "text-red-500"
+            }`}
         >
           <path
             d={pathData}
@@ -605,7 +604,7 @@ export default function UserOverviewPage() {
             cx="100"
             cy={
               ((maxData - sparklineData[sparklineData.length - 1]) / range) *
-                80 +
+              80 +
               10
             }
             r="3"
@@ -733,25 +732,27 @@ export default function UserOverviewPage() {
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
                 {/* Account Summary Panel */}
                 <section className="bg-card border border-border rounded-3xl p-6">
-                  <h2 className="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <PiggyBank className="w-4 h-4 text-primary" /> Account
-                    Summary
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ArrowRightLeft className="w-4 h-4 text-primary" /> Redeem Rewards (XP)
                   </h2>
                   <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground font-medium uppercase text-[10px]">
-                        Active Trades
-                      </span>
-                     <span className="font-black text-[11px] text-green-500">
-  {activeInvestments}
-</span>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
+                      Convert your earned XP directly into tradeable USDT digital assets sent to your Account balance with secure Rise.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      <Link
+                        href="/user-dashboard/redeem-xp"
+                        className="bg-foreground text-background text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
+                      >
+                        Redeem XP
+                      </Link>
+                      <Link
+                        href="/user-dashboard/learn-more"
+                        className="border border-border cursor-pointer text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background"
+                      >
+                        Learn More
+                      </Link>
                     </div>
-                    <Link
-                      href="/user-dashboard/my-investments"
-                      className="block w-full text-center py-3 border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-colors mt-4"
-                    >
-                      View My Investments Hub
-                    </Link>
                   </div>
                 </section>
 
@@ -783,12 +784,12 @@ export default function UserOverviewPage() {
                     >
                       Send Gift
                     </Link>
-                    <button className="border border-border cursor-pointer text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background">
-                    <Link href="/user-dashboard/support">
+                    <Link
+                      href="/user-dashboard/learn-more"
+                      className="border border-border cursor-pointer text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-background"
+                    >
                       Learn More
                     </Link>
-                    </button>
-
                   </div>
                 </section>
               </div>
@@ -841,123 +842,122 @@ export default function UserOverviewPage() {
                     <div className="divide-y divide-border/50">
                       {marketLoading
                         ? Array.from({ length: 5 }).map((_, i) => (
-                            <div
-                              key={i}
-                              className="flex justify-between items-center px-6 py-4 animate-pulse"
-                            >
-                              <div className="flex-1 h-4 bg-muted rounded w-24"></div>
-                              <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
-                              <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
-                              <div className="flex-1 h-4 bg-muted rounded w-12 mx-auto"></div>
-                              <div className="flex-1 h-4 bg-muted rounded w-10 ml-auto"></div>
-                            </div>
-                          ))
+                          <div
+                            key={i}
+                            className="flex justify-between items-center px-6 py-4 animate-pulse"
+                          >
+                            <div className="flex-1 h-4 bg-muted rounded w-24"></div>
+                            <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
+                            <div className="flex-1 h-4 bg-muted rounded w-16 ml-auto"></div>
+                            <div className="flex-1 h-4 bg-muted rounded w-12 mx-auto"></div>
+                            <div className="flex-1 h-4 bg-muted rounded w-10 ml-auto"></div>
+                          </div>
+                        ))
                         : marketData.map((item, index) => (
-                            <div
-                              key={index}
-                              className="flex justify-between items-center px-6 py-4 hover:bg-muted/30 transition-colors flex-nowrap"
-                            >
-                              {/* 1. Asset */}
-                              <div className="flex-1 flex items-center gap-3 min-w-0">
-                                <div className="relative flex-shrink-0">
-                                  {item.type === "crypto" ? (
-                                    item.image ? (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center px-6 py-4 hover:bg-muted/30 transition-colors flex-nowrap"
+                          >
+                            {/* 1. Asset */}
+                            <div className="flex-1 flex items-center gap-3 min-w-0">
+                              <div className="relative flex-shrink-0">
+                                {item.type === "crypto" ? (
+                                  item.image ? (
+                                    <img
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="w-8 h-8 rounded-full object-cover border border-border"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20">
+                                      <span className="text-[10px] font-black text-orange-500">
+                                        {item.symbol.slice(0, 2)}
+                                      </span>
+                                    </div>
+                                  )
+                                ) : (
+                                  <div className="flex -space-x-2">
+                                    {item.baseFlag && (
                                       <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="w-8 h-8 rounded-full object-cover border border-border"
+                                        src={`https://flagcdn.com/${item.baseFlag}.svg`}
+                                        alt="Base currency"
+                                        className="w-6 h-6 rounded-full object-cover border-2 border-background"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display =
+                                            "none";
+                                        }}
                                       />
-                                    ) : (
-                                      <div className="w-8 h-8 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20">
-                                        <span className="text-[10px] font-black text-orange-500">
+                                    )}
+                                    {item.quoteFlag && (
+                                      <img
+                                        src={`https://flagcdn.com/${item.quoteFlag}.svg`}
+                                        alt="Quote currency"
+                                        className="w-6 h-6 rounded-full object-cover border-2 border-background"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display =
+                                            "none";
+                                        }}
+                                      />
+                                    )}
+                                    {(!item.baseFlag || !item.quoteFlag) && (
+                                      <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
+                                        <span className="text-[10px] font-black text-blue-500">
                                           {item.symbol.slice(0, 2)}
                                         </span>
                                       </div>
-                                    )
-                                  ) : (
-                                    <div className="flex -space-x-2">
-                                      {item.baseFlag && (
-                                        <img
-                                          src={`https://flagcdn.com/${item.baseFlag}.svg`}
-                                          alt="Base currency"
-                                          className="w-6 h-6 rounded-full object-cover border-2 border-background"
-                                          onError={(e) => {
-                                            e.currentTarget.style.display =
-                                              "none";
-                                          }}
-                                        />
-                                      )}
-                                      {item.quoteFlag && (
-                                        <img
-                                          src={`https://flagcdn.com/${item.quoteFlag}.svg`}
-                                          alt="Quote currency"
-                                          className="w-6 h-6 rounded-full object-cover border-2 border-background"
-                                          onError={(e) => {
-                                            e.currentTarget.style.display =
-                                              "none";
-                                          }}
-                                        />
-                                      )}
-                                      {(!item.baseFlag || !item.quoteFlag) && (
-                                        <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
-                                          <span className="text-[10px] font-black text-blue-500">
-                                            {item.symbol.slice(0, 2)}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="truncate">
-                                  <div className="font-black text-sm uppercase tracking-tighter leading-none">
-                                    {item.symbol}
+                                    )}
                                   </div>
-                                  <div className="text-[10px] text-muted-foreground font-medium truncate">
-                                    {item.name}
-                                  </div>
-                                </div>
+                                )}
                               </div>
-
-                              {/* 2. Price */}
-                              <div className="flex-1 text-right">
-                                <div className="font-bold text-sm tracking-tight">
-                                  {formatPrice(item.price, item.type)}
+                              <div className="truncate">
+                                <div className="font-black text-sm uppercase tracking-tighter leading-none">
+                                  {item.symbol}
                                 </div>
-                              </div>
-
-                              {/* 3. Change */}
-                              <div className="flex-1 text-right">
-                                <div className="inline-block">
-                                  {formatChange(
-                                    item.change,
-                                    item.changePercent,
-                                  )}
+                                <div className="text-[10px] text-muted-foreground font-medium truncate">
+                                  {item.name}
                                 </div>
-                              </div>
-
-                              {/* 4. Trend */}
-                              <div className="flex-1 flex justify-center">
-                                <div className="w-16">
-                                  <MiniSparkline
-                                    isPositive={item.changePercent >= 0}
-                                  />
-                                </div>
-                              </div>
-
-                              {/* 5. Type */}
-                              <div className="flex-1 flex justify-end">
-                                <span
-                                  className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                                    item.type === "crypto"
-                                      ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
-                                      : "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                                  }`}
-                                >
-                                  {item.type}
-                                </span>
                               </div>
                             </div>
-                          ))}
+
+                            {/* 2. Price */}
+                            <div className="flex-1 text-right">
+                              <div className="font-bold text-sm tracking-tight">
+                                {formatPrice(item.price, item.type)}
+                              </div>
+                            </div>
+
+                            {/* 3. Change */}
+                            <div className="flex-1 text-right">
+                              <div className="inline-block">
+                                {formatChange(
+                                  item.change,
+                                  item.changePercent,
+                                )}
+                              </div>
+                            </div>
+
+                            {/* 4. Trend */}
+                            <div className="flex-1 flex justify-center">
+                              <div className="w-16">
+                                <MiniSparkline
+                                  isPositive={item.changePercent >= 0}
+                                />
+                              </div>
+                            </div>
+
+                            {/* 5. Type */}
+                            <div className="flex-1 flex justify-end">
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${item.type === "crypto"
+                                  ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
+                                  : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                  }`}
+                              >
+                                {item.type}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
