@@ -81,7 +81,7 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="mx-auto max-w-[1400px] px-4 lg:px-8 py-20 w-full">
+    <section id="faq" className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 w-full">
      <div className="text-center mb-16 relative z-10">
   {/* Badge */}
   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-[.2em] mb-4 text-primary">
@@ -89,7 +89,7 @@ export default function FAQSection() {
   </div>
 
   {/* Main Heading */}
-  <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-none">
+  <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
     Frequently Asked <span className="text-primary">Questions</span>
   </h2>
 

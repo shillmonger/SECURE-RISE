@@ -76,8 +76,8 @@ export default function StatsGrid() {
       className="mx-auto max-w-[1400px] px-4 lg:px-8 pt-10 pb-20 w-full"
     >
       {/* --- Header (Matches WhyPlatformSection Style) --- */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">
+      <div className="text-center mb-8">
+        <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-2">
           Numbers that speaks
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">

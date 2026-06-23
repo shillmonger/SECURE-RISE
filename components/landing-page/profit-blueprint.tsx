@@ -68,7 +68,7 @@ export default function InvestmentFeatureGrid() {
         {/* Right Column: Platform/Trading Detail */}
         <div className="md:col-span-8 rounded-3xl border bg-card/50 border-primary/10 overflow-hidden relative transition-all hover:-translate-y-1 min-h-[500px] flex flex-col">
           <div className="p-10 md:p-12 relative z-10 md:max-w-[60%]">
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-none">
+            <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
               Expert Trading <br />
               <span className="text-primary">Platforms</span>
             </h2>

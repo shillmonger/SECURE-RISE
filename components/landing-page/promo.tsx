@@ -25,7 +25,7 @@ export default function PromoSection() {
             New User Exclusive
           </div>
           
-          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-4 text-primary-foreground">
+          <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-4 text-primary-foreground">
             Claim Your $20 Bonus
           </h2>
           

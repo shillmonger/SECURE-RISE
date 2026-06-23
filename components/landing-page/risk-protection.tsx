@@ -15,7 +15,7 @@ export default function RiskProtection() {
       {/* Header Content — OUTSIDE the card */}
       <div className="text-center mb-8 px-6">
         <h2
-          className={`${montserrat.className} text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-4 text-foreground`}
+          className={`${montserrat.className} text-3xl md:text-4xl font-black uppercase italic tracking-tighter mb-4 text-foreground`}
         >
           What If We Lose Your Money ?
         </h2>

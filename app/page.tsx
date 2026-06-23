@@ -10,8 +10,9 @@ import HeroSection from "@/components/landing-page/hero-section";
 import Promo from "@/components/landing-page/promo";
 import LiveMarkets from "@/components/landing-page/LiveMarkets";
 import HowItWorks from "@/components/landing-page/how-It-works";
-import TradingTools from "@/components/landing-page/trading-tools";
+import CoreCapabilities from "@/components/landing-page/CoreCapabilities";
 import RiskProtection from "@/components/landing-page/risk-protection";
+import OurTools from "@/components/landing-page/OurTools";
 import TradingView from "@/components/landing-page/trading-view-slide";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
@@ -29,12 +30,15 @@ export default function HomePage() {
         <TradingView />
         <Promo />
         <HowItWorks />
-        <TradingTools />
+        <CoreCapabilities />
         <NumbersThatSpeaks />
         <LiveMarkets />
         <TradingView />
         <ProfitBlueprint />
         <FAQ />
+       <div className="hidden lg:block">
+  <OurTools />
+</div>
         <RiskProtection />
         <TradingView />
       </main>

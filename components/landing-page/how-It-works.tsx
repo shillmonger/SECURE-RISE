@@ -63,7 +63,7 @@ export default function WhyPlatformSection() {
       className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 lg:py-10 w-full"
     >
       {/* Header */}
-      <div className="mb-14">
+      <div className="mb-8">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-3 py-1.5 mb-5">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -72,7 +72,7 @@ export default function WhyPlatformSection() {
           </span>
         </div>
 
-        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">
+        <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-2">
           How It Works
         </h2>
 

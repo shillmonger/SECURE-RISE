@@ -465,8 +465,8 @@ export default function LiveMarkets() {
       
       <div className="container mx-auto relative z-10">
         {/* Header */}
-        <div className="mb-12">
-          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">
+        <div className="mb-8">
+          <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-2">
             Live Markets
           </h2>
           <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">

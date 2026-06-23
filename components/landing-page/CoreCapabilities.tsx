@@ -106,7 +106,7 @@ export default function FeaturesSection() {
 
       {/* ── SECTION HEADER ── */}
       <div
-        className="relative z-10 text-center mb-10 px-4"
+        className="relative z-10 text-center mb-8 px-4"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(20px)",
@@ -121,7 +121,7 @@ export default function FeaturesSection() {
           Platform Features
         </div>
         <h2
-          className={`${montserrat.className} text-4xl mb-6 md:text-5xl xl:text-5xl font-black uppercase tracking-tight text-foreground`}
+          className={`${montserrat.className} text-4xl mb-4 md:text-5xl xl:text-4xl font-black uppercase tracking-tight text-foreground`}
         >
           Core Capabilities
         </h2>
