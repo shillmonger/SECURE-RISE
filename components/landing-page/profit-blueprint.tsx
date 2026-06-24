@@ -12,7 +12,7 @@ export default function InvestmentFeatureGrid() {
         <div className="md:col-span-4 flex flex-col gap-6">
           
           {/* Card 1: Bonus */}
-          <div className="rounded-3xl border bg-card/50 border-primary/10 p-8 relative overflow-hidden transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[260px]">
+          <div className="rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 relative overflow-hidden transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[0px]">
             <div className="relative z-10">
               <h3 className="text-2xl font-black uppercase tracking-tighter mb-3">
                 Instant $20 Bonus
@@ -22,7 +22,7 @@ export default function InvestmentFeatureGrid() {
               </p>
             </div>
             
-            <div className="relative z-10 mt-6">
+            <div className="relative z-10 mt-4">
               <div className="inline-block rounded-xl px-4 py-3 text-[10px] tracking-widest uppercase font-mono text-primary bg-primary/5 border border-primary/10">
                 Bonus unlock: 1st Payout
               </div>
@@ -37,7 +37,7 @@ export default function InvestmentFeatureGrid() {
           </div>
 
           {/* Card 2: Passive Income */}
-          <div className="rounded-3xl border bg-card/50 border-primary/10 p-8 relative overflow-hidden transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[220px]">
+          <div className="rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 relative overflow-hidden transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[0px]">
             <div className="relative z-10">
               <h3 className="text-2xl font-black uppercase tracking-tighter mb-3">
                 Daily Passive Income
@@ -47,7 +47,7 @@ export default function InvestmentFeatureGrid() {
               </p>
             </div>
 
-            <div className="relative z-10 mt-6 flex items-center gap-2">
+            <div className="relative z-10 mt-4 flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-primary" />
               </div>
@@ -66,9 +66,9 @@ export default function InvestmentFeatureGrid() {
         </div>
 
         {/* Right Column: Platform/Trading Detail */}
-        <div className="md:col-span-8 rounded-3xl border bg-card/50 border-primary/10 overflow-hidden relative transition-all hover:-translate-y-1 min-h-[500px] flex flex-col">
-          <div className="p-10 md:p-12 relative z-10 md:max-w-[60%]">
-            <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
+        <div className="md:col-span-8 rounded-3xl border bg-card/50 border-primary/10 overflow-hidden relative transition-all hover:-translate-y-1 min-h-[0px] flex flex-col">
+          <div className="p-5 md:p-7 relative z-10 md:max-w-[60%]">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-6 leading-none">
               Expert Trading <br />
               <span className="text-primary">Platforms</span>
             </h2>
@@ -79,8 +79,8 @@ export default function InvestmentFeatureGrid() {
             </p>
 
             {/* Trading Badges */}
-            <div className="flex flex-wrap gap-4 mt-10">
-              {['MT4', 'MT5', 'cTrader', 'Match-Trader', 'Trade Locker'].map((tool) => (
+            <div className="flex flex-wrap gap-2 lg:gap-4 mt-10">
+              {['MT4', 'MT5', 'cTrader', 'Match-Trader', 'Ethereum','Exness','C Trader','Tether','Bitcoin ','Solana', 'Trade Locker', 'Meme Coins'].map((tool) => (
                 <div key={tool} className="px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-[10px] font-mono font-bold tracking-widest uppercase text-primary">
                   {tool}
                 </div>

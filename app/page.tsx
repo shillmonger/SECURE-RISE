@@ -32,14 +32,14 @@ export default function HomePage() {
         <HowItWorks />
         <CoreCapabilities />
         <NumbersThatSpeaks />
-        <LiveMarkets />
         <TradingView />
         <ProfitBlueprint />
-        <FAQ />
+        {/* <LiveMarkets /> */}
        <div className="hidden lg:block">
   <OurTools />
 </div>
         <RiskProtection />
+        <FAQ />
         <TradingView />
       </main>
 

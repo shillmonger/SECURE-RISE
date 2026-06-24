@@ -80,7 +80,7 @@ export default function TradingToolsSection() {
       `}} />
 
       {/* Header Container */}
-     <div className="text-center mb-0 relative z-10">
+     {/*<div className="text-center mb-0 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-[.2em] mb-4 text-primary">
           Ecosystem
         </div>
@@ -91,7 +91,7 @@ export default function TradingToolsSection() {
           Everything you need to know about the SECURE RISE ecosystem. 
           From registration bonuses to our institutional-grade trading cycles.
         </p>
-      </div>
+      </div>*/}
 
       {/* Interactive Visual Icon Stage */}
       <div className="relative w-full overflow-hidden flex items-end justify-center min-h-[300px] -mt-5 md:-mt-3">

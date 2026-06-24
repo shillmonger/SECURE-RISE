@@ -90,7 +90,7 @@ export default function StatsGrid() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         
         {/* Rewards */}
-        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col justify-between min-h-[280px] transition-all hover:-translate-y-1">
+        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 min-h-[200px] flex flex-col justify-between transition-all hover:-translate-y-1">
           <div>
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-2 font-mono">
               Total Rewards Paid
@@ -111,7 +111,7 @@ export default function StatsGrid() {
         </div>
 
         {/* Traders */}
-        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col justify-between min-h-[280px] transition-all hover:-translate-y-1">
+        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 min-h-[200px] flex flex-col justify-between transition-all hover:-translate-y-1">
           <div>
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-2 font-mono">Active Traders</p>
             <h3 className="text-6xl font-black tracking-tighter">
@@ -133,7 +133,7 @@ export default function StatsGrid() {
         </div>
 
         {/* Countries */}
-        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col justify-between min-h-[280px] relative overflow-hidden transition-all hover:-translate-y-1">
+        <div className="md:col-span-4 rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 min-h-[200px] flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all hover:-translate-y-1">
           <div className="relative z-10">
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-2 font-mono">Countries</p>
             <h3 className="text-6xl font-black tracking-tighter">
@@ -149,7 +149,7 @@ export default function StatsGrid() {
         </div>
 
         {/* Community */}
-        <div className="md:col-span-7 rounded-3xl border bg-card/50 border-primary/10 p-8 flex  md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:-translate-y-1">
+        <div className="md:col-span-7 rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 flex  md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:-translate-y-1">
           <div>
             <p className="text-[10px] tracking-[.2em] uppercase text-muted-foreground mb-2 font-mono">Community Members</p>
             <h3 className="text-5xl font-black tracking-tighter">
@@ -161,25 +161,25 @@ export default function StatsGrid() {
                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Users className="w-5 h-5 text-primary" /></div>
                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center"><ArrowUpRight className="w-5 h-5 text-primary-foreground" /></div>
             </div>
-            <p className="text-[10px] tracking-widest uppercase text-muted-foreground/40 font-mono">Telegram • X</p>
+            <p className="text-[8px] tracking-widest uppercase text-muted-foreground/40 font-mono">Telegram • X</p>
           </div>
         </div>
 
         {/* Support */}
-        <div className="md:col-span-5 rounded-3xl border bg-card/50 border-primary/10 p-8 flex flex-col justify-between transition-all hover:-translate-y-1">
+        <div className="md:col-span-5 rounded-3xl border bg-card/50 border-primary/10 p-4 lg:p-6 flex flex-col justify-between transition-all hover:-translate-y-1">
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="text-[10px] tracking-widest uppercase font-mono text-primary">Online now</span>
               </div>
-              <h3 className="text-2xl font-black uppercase tracking-tight">24/7 Expert Support</h3>
+              <h3 className="text-xl lg:text-2xl font-black uppercase tracking-tight">24/7 Expert Support</h3>
             </div>
             <Headphones className="w-8 h-8 text-primary/20" />
           </div>
-          <div className="mt-4 rounded-lg px-4 py-2 text-[10px] tracking-widest uppercase font-mono text-muted-foreground bg-primary/5 border border-primary/10">
+          {/* <div className="mt-4 rounded-lg px-4 py-2 text-[10px] tracking-widest uppercase font-mono text-muted-foreground bg-primary/5 border border-primary/10">
             Avg response &lt; 60 seconds
-          </div>
+          </div> */}
         </div>
       </div>
 

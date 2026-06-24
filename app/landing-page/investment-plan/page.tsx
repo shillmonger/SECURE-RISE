@@ -3,7 +3,7 @@
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
-import HowItWorks from "@/components/landing-page/how-It-works";
+import LiveMarkets from "@/components/landing-page/LiveMarkets";
 import Footer from "@/components/landing-page/Footer";
 import TradingView from "@/components/landing-page/trading-view-slide";
 
@@ -215,7 +215,7 @@ export default function SubscriptionPage() {
         </div>
       </section>
 
-      <HowItWorks />
+      <LiveMarkets />
       <TradingView />
       <ThemeAndScroll />
       <CookieConsent />

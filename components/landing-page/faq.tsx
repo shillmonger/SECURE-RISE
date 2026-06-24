@@ -140,9 +140,9 @@ function FAQItem({ faq, isOpen, onClick }: { faq: any, isOpen: boolean, onClick:
     >
       <button
         onClick={onClick}
-        className="w-full flex items-center cursor-pointer justify-between p-6 text-left"
+        className="w-full flex items-center cursor-pointer justify-between p-4 lg:p-5 text-left"
       >
-        <span className={`text-sm md:text-[15px] font-bold uppercase tracking-tight ${isOpen ? "text-primary" : "text-foreground"}`}>
+        <span className={`text-sm md:text-[14px] font-bold uppercase tracking-tight ${isOpen ? "text-primary" : "text-foreground"}`}>
           {faq.question}
         </span>
         <div className={`flex-shrink-0 ml-4 transition-transform duration-300 ${isOpen ? "rotate-0" : "rotate-0"}`}>
