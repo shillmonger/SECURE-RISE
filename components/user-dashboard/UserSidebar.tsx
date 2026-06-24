@@ -103,6 +103,11 @@ export default function UserSidebar({
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     {
+      name: "My Portfolio",
+      icon: ChartSpline,
+      href: `${basePath}/my-investments`,
+    },
+    {
       name: "Fund Account",
       icon: Wallet,
       children: [
@@ -120,19 +125,12 @@ export default function UserSidebar({
     },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Gift Members", icon: Smile, href: `${basePath}/gift-member` },
-    {
-      name: "My Investments",
-      icon: ChartSpline,
-      href: `${basePath}/my-investments`,
-    },
-    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
     { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
     {
       name: "XP to USDT (Redeem)",
       icon: ArrowRightLeft,
       href: `${basePath}/redeem-xp`,
     },
-    { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
     {
       name: "Community",
       icon: Users,
@@ -148,6 +146,8 @@ export default function UserSidebar({
         { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },
       ],
     },
+    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+    { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
     {
       name: "Account",
       icon: Settings,
