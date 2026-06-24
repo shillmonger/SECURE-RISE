@@ -215,7 +215,7 @@ export default function SubscriptionPage() {
         </div>
       </section>
 
-      <LiveMarkets />
+      <LiveMarkets /> 
       <TradingView />
       <ThemeAndScroll />
       <CookieConsent />
