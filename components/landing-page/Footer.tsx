@@ -26,7 +26,7 @@ const montserrat = Montserrat({
 
 export default function Footer() {
   const socialLinks = [
-    { name: "Telegram", icon: <Send size={24} />, href: "https://t.me/secure_rise" },
+    { name: "Telegram", icon: <Send size={24} />, href: "https://t.me/+2J3hQtWxTbVlZjVk" },
     { name: "Discord", icon: <FaDiscord size={24} />, href: "#" },
     { name: "X (Twitter)", icon: <Twitter size={24} />, href: "#" },
     { name: "Instagram", icon: <Instagram size={24} />, href: "#" },
@@ -81,24 +81,11 @@ export default function Footer() {
             Trading Tools
           </h3>
           <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#" className="hover:text-primary transition-colors">Exness</Link></li>
-            <li><Link href="#" className="hover:text-primary transition-colors">C Trader</Link></li>
-            <li><Link href="#" className="hover:text-primary transition-colors">Trade Locker</Link></li>
-            <li><Link href="#" className="hover:text-primary transition-colors">Match Trader</Link></li>
-            <li><Link href="#" className="hover:text-primary transition-colors">MetaTrader 5 (MT5)</Link></li>
-          </ul>
-        </div>
-
-         {/* Supported Wallets Section */}
-        <div className="flex flex-col space-y-4">
-          <h3 className="text-lg font-bold uppercase tracking-tight flex items-center gap-2 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent">
-            Platform Pages
-          </h3>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="/landing-page/live-chat" className="hover:text-primary transition-colors">Live Chat</Link></li>
-            <li><Link href="/auth-page/login" className="hover:text-primary transition-colors">Investor Signin</Link></li>
-            <li><Link href="/auth-page/register" className="hover:text-primary transition-colors">Investor Signup</Link></li>
-            <li><Link href="/landing-page/contact-us" className="hover:text-primary transition-colors">Support Center</Link></li>
+            <li><Link href="#" className="hover:text-primary transition-colors text-muted-foreground">Exness</Link></li>
+            <li><Link href="#" className="hover:text-primary transition-colors text-muted-foreground">C Trader</Link></li>
+            <li><Link href="#" className="hover:text-primary transition-colors text-muted-foreground">Trade Locker</Link></li>
+            <li><Link href="#" className="hover:text-primary transition-colors text-muted-foreground">MetaTrader 5 (MT5)</Link></li>
+            <li><Link href="#" className="hover:text-primary transition-colors text-muted-foreground">Match Trader ETC</Link></li>
           </ul>
         </div>
 
@@ -106,10 +93,24 @@ export default function Footer() {
         <div className="flex flex-col space-y-4">
           <h3 className="text-lg font-bold uppercase tracking-tight bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent">Investor Area</h3>
           <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="/landing-page/learn-more" className="hover:text-primary transition-colors">Learn More</Link></li>
-            <li><Link href="/landing-page/investment-plan" className="hover:text-primary transition-colors">Investment Plans</Link></li>
-            <li><Link href="/landing-page/about" className="hover:text-primary transition-colors">About Secure Rise</Link></li>
-            <li><Link href="/landing-page/testimonials" className="hover:text-primary transition-colors">Traders Testimonials</Link></li>
+            <li><Link href="/landing-page/investment-plan" className="hover:text-primary transition-colors text-muted-foreground">Investment Plans</Link></li>
+            <li><Link href="/landing-page/about" className="hover:text-primary transition-colors text-muted-foreground">About Secure Rise</Link></li>
+            <li><Link href="/landing-page/testimonials" className="hover:text-primary transition-colors text-muted-foreground">Traders Testimonials</Link></li>
+            <li><Link href="/landing-page/privacy" className="hover:text-primary transition-colors text-muted-foreground">Privacy Policy</Link></li>
+            <li><Link href="/landing-page/terms" className="hover:text-primary transition-colors text-muted-foreground">Terms & Conditions</Link></li>
+          </ul>
+        </div>
+
+        {/* Supported Wallets Section */}
+        <div className="flex flex-col space-y-4">
+          <h3 className="text-lg font-bold uppercase tracking-tight flex items-center gap-2 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent">
+            Our Pages
+          </h3>
+          <ul className="space-y-2 text-muted-foreground">
+            <li><Link href="/landing-page/learn-more" className="hover:text-primary transition-colors text-muted-foreground">Learn More</Link></li>
+            <li><Link href="/auth-page/login" className="hover:text-primary transition-colors text-muted-foreground">Investor Signin</Link></li>
+            <li><Link href="/auth-page/register" className="hover:text-primary transition-colors text-muted-foreground">Investor Signup</Link></li>
+            <li><Link href="/landing-page/contact-us" className="hover:text-primary transition-colors text-muted-foreground">Contact Us</Link></li>
           </ul>
         </div>
       </div>

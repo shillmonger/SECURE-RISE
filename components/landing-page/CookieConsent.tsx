@@ -49,10 +49,10 @@ export default function CookieConsent() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="relative w-full max-w-[400px] bg-card border border-border rounded-[1.5rem] shadow-2xl p-8 overflow-hidden"
+              className="relative w-full max-w-[400px] bg-card border border-border rounded-[1.5rem] shadow-2xl p-6 lg:p-6 overflow-hidden"
             >
               {/* Decorative Background Glow */}
-              <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
 
               {/* Close Button */}
               <button
@@ -76,11 +76,11 @@ export default function CookieConsent() {
               </button>
 
               {/* Cookie Illustration */}
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center">
                 <img
-                  src="https://i.postimg.cc/0NK6BRV6/favicon-ico.png"
+                  src="https://i.postimg.cc/L5wkcDJ6/cookie.png"
                   alt="Cookie"
-                  className="w-30 h-30 object-contain drop-shadow-2xl"
+                  className="w-40 h-40 object-contain drop-shadow-2xl"
                 />
               </div>
 
@@ -100,14 +100,14 @@ export default function CookieConsent() {
                 <div className="flex  gap-3">
                   <button
                     onClick={() => handleConsent("accepted")}
-                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-lg
+                    className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-bold text-lg
                                hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg cursor-pointer"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleConsent("declined")}
-                    className="w-full py-3 rounded-xl bg-secondary/50 text-secondary-foreground font-medium
+                    className="w-full py-2 rounded-lg bg-secondary/50 text-secondary-foreground font-medium
                                hover:bg-secondary transition-colors cursor-pointer"
                   >
                     No thanks

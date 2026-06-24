@@ -12,7 +12,8 @@ import {
   renderDepositNotificationEmail,
   renderWithdrawalNotificationEmail,
   renderGiftCardNotificationEmail,
-  renderXPRedemptionEmail
+  renderXPRedemptionEmail,
+  renderContactFormEmail
 } from './email-renderer';
 
 const transporter = nodemailer.createTransport({
@@ -649,4 +650,40 @@ export const sendXPRedemptionEmail = async (userEmail: string, username: string,
     console.error('Error sending XP redemption email:', error);
     throw error;
   }
+};
+
+export const sendContactFormNotificationToAdmins = async (contactData: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactReason: string;
+  message: string;
+  submittedAt: string;
+}) => {
+  const htmlContent = await renderContactFormEmail(contactData);
+  const fullName = `${contactData.firstName} ${contactData.lastName}`;
+
+  // Get all admin users
+  const db = await connectToDatabase();
+  const usersCollection = db.collection('users');
+  const adminUsers = await usersCollection.find({ role: 'admin' }).toArray();
+
+  // Send email to all admins
+  const emailPromises = adminUsers.map(async (admin: any) => {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: admin.email,
+      subject: `New Contact Inquiry - ${fullName} - ${contactData.contactReason}`,
+      html: htmlContent,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Contact form notification sent to admin: ${admin.email}`);
+    } catch (error) {
+      console.error(`Error sending contact form notification to ${admin.email}:`, error);
+    }
+  });
+
+  await Promise.all(emailPromises);
 };

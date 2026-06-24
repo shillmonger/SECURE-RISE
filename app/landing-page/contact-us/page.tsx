@@ -65,8 +65,22 @@ export default function ContactUsPage() {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("Your inquiry has been sent to our investment team!");
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to send message. Please try again.');
+        return;
+      }
+
+      toast.success(data.message || "Your inquiry has been sent to our investment team!");
       setFormData({
         firstName: "",
         lastName: "",
@@ -84,15 +98,15 @@ export default function ContactUsPage() {
       <GiveAway />
       <Header />
 
-      <div className="flex-1 py-30 sm:py-20 lg:pt-32">
+      <div className="flex-1 pb-0 pt-35 sm:pb-10 lg:pt-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Page Title */}
           <div className="text-center mb-12">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent"
+              className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 bg-gradient-to-b from-foreground to-foreground/40 bg-clip-text text-transparent"
             >
               Get in Touch
             </motion.h1>
@@ -105,7 +119,7 @@ export default function ContactUsPage() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <Card className="shadow-sm border border-border bg-card rounded-[1.5rem] overflow-hidden">
-                <CardHeader className="p-8 md:p-10 pb-0">
+                <CardHeader className="p-5 md:p-8 pb-0">
                   <CardTitle className="text-2xl font-bold">
                     Connect with our Experts
                   </CardTitle>
@@ -113,7 +127,9 @@ export default function ContactUsPage() {
                     Have questions about your $20 bonus or trading cycles? Send us a message below.
                   </p>
                 </CardHeader>
-                <CardContent className="p-8 md:p-10">
+
+
+                <CardContent className="p-5 md:p-8">
                   <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -125,7 +141,7 @@ export default function ContactUsPage() {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          placeholder="John"
+                          placeholder="SECURE"
                           className="h-12 bg-secondary/50 border-border focus:ring-primary rounded-xl"
                         />
                       </div>
@@ -138,7 +154,7 @@ export default function ContactUsPage() {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          placeholder="Doe"
+                          placeholder="RISE"
                           className="h-12 bg-secondary/50 border-border focus:ring-primary rounded-xl"
                         />
                       </div>
@@ -165,15 +181,16 @@ export default function ContactUsPage() {
                           Inquiry Reason
                         </Label>
                         <Select onValueChange={handleSelectChange} value={formData.contactReason}>
-                          <SelectTrigger className="h-12 w-full px-3 py-6 bg-secondary/50 border-border rounded-xl focus:ring-primary">
+                          <SelectTrigger className="h-15 w-full px-5 py-6 bg-secondary/30 border-none rounded-xl focus:ring-1 focus:ring-[#229ED9] focus:ring-offset-0 cursor-pointer text-muted-foreground/70">
                             <SelectValue placeholder="Select a reason" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="general">General Investment Inquiry</SelectItem>
-                            <SelectItem value="payout">Withdrawals & Payouts</SelectItem>
-                            <SelectItem value="trading">Trading Strategy Info</SelectItem>
-                            <SelectItem value="bonus">Bonus & Promotions</SelectItem>
-                            <SelectItem value="billing">Deposit & Verification</SelectItem>
+                            <SelectItem value="general" className="py-3 cursor-pointer">General Investment Inquiry</SelectItem>
+                            <SelectItem value="payout" className="py-3 cursor-pointer">Withdrawals & Payouts</SelectItem>
+                            <SelectItem value="trading" className="py-3 cursor-pointer">Trading Strategy Info</SelectItem>
+                            <SelectItem value="bonus" className="py-3 cursor-pointer">Bonus & Promotions</SelectItem>
+                            <SelectItem value="billing" className="py-3 cursor-pointer">Deposit & Verification</SelectItem>
+                            <SelectItem value="other" className="py-3 cursor-pointer">Others</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -197,9 +214,9 @@ export default function ContactUsPage() {
 
                     <Button
                       type="submit"
-                      className="w-full sm:w-auto px-10 h-14 bg-primary cursor-pointer text-primary-foreground hover:scale-105 transition-transform rounded-xl font-bold uppercase tracking-tighter italic flex items-center gap-2"
+                      className="w-full sm:w-auto px-10 py-6 bg-primary cursor-pointer text-primary-foreground hover:scale-105 transition-transform rounded-xl font-bold uppercase tracking-tighter  flex items-center gap-2"
                     >
-                      <Send className="h-4 w-4" />
+                      <Send className="h-5 w-5" />
                       Send Inquiry
                     </Button>
                   </form>
@@ -207,48 +224,73 @@ export default function ContactUsPage() {
               </Card>
             </div>
 
+
+
+
             {/* Sidebar Info */}
             <aside className="space-y-6">
-              <div className="bg-primary p-8 rounded-[1.5rem] text-primary-foreground shadow-lg">
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-4">
-                  Secure Support
-                </h3>
-                <p className="opacity-90 mb-8 text-sm leading-relaxed">
-                  Our portfolio managers and technical team are available to ensure your assets are always working for you.
-                </p>
+              <div className="bg-[#229ED9] p-6 sm:p-7 rounded-[1.5rem] text-white shadow-md space-y-8">
+                <div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">
+                    Secure Support
+                  </h3>
+                  <p className="opacity-90 text-sm leading-relaxed">
+                    Our portfolio managers and technical team are available to ensure your assets are always working for you.
+                  </p>
+                </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <Phone className="h-5 w-5" />
+                  {/* Group Admin Link */}
+                  <a
+                    href="https://t.me/SecureRiseOfficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 group transition-opacity hover:opacity-90"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors">
+                      <Send className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">Support Line</p>
-                      <p className="font-bold">+0 (000) 000-000</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">Group Admin</p>
+                      <p className="font-bold border-b border-transparent group-hover:border-white/50 transition-colors inline-block">
+                        @SecureRiseOfficial
+                      </p>
                     </div>
-                  </div>
+                  </a>
 
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <Mail className="h-5 w-5" />
+                  {/* Telegram Group/Channel Link */}
+                  <a
+                    href="https://t.me/+2J3hQtWxTbVlZjVk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 group transition-opacity hover:opacity-90"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors">
+                      <Send className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">Support Email</p>
-                      <p className="font-bold">support@securerise.com</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">Telegram Group</p>
+                      <p className="font-bold border-b border-transparent group-hover:border-white/50 transition-colors inline-block text-sm sm:text-base break-all">
+                        Join Telegram Channel
+                      </p>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
 
-              <div className="bg-card border border-border p-8 rounded-[1.5rem]">
+
+
+
+
+              <div className="bg-card border border-border p-6 sm:p-7 rounded-[1.5rem]">
                 <h4 className="font-bold mb-2 flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-primary" />
                   Transparency First
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">Learn how we use your investments in high-yield trading.</p>
-                <Link href="/">
-                  <Button variant="link" className="p-0 text-primary font-bold uppercase tracking-tighter italic">
-                    How it works →
+                <Link href="/landing-page/learn-more">
+                  <Button variant="link" className="p-0 text-primary font-bold uppercase tracking-tighter ">
+                    <Send className="h-5 w-5" /> Learn More About Us
                   </Button>
                 </Link>
               </div>

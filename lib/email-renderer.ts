@@ -14,6 +14,7 @@ import { DepositNotificationEmail } from '../emails/DepositNotificationEmail';
 import { WithdrawalNotificationEmail } from '../emails/WithdrawalNotificationEmail';
 import { GiftCardNotificationEmail } from '../emails/GiftCardNotificationEmail';
 import { XPRedemptionEmail } from '../emails/XPRedemptionEmail';
+import { ContactFormEmail } from '../emails/ContactFormEmail';
 
 export const renderWelcomeEmail = (props: { username: string; userEmail: string }) => {
   return render(React.createElement(WelcomeEmail, props));
@@ -145,4 +146,15 @@ export const renderXPRedemptionEmail = (props: {
   transactionId: string;
 }) => {
   return render(React.createElement(XPRedemptionEmail, props));
+};
+
+export const renderContactFormEmail = (props: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactReason: string;
+  message: string;
+  submittedAt: string;
+}) => {
+  return render(React.createElement(ContactFormEmail, props));
 };
