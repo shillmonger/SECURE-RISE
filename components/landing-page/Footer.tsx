@@ -26,10 +26,11 @@ const montserrat = Montserrat({
 
 export default function Footer() {
   const socialLinks = [
-    { name: "Telegram", icon: <Send size={24} />, href: "https://t.me/+2J3hQtWxTbVlZjVk" },
-    { name: "Discord", icon: <FaDiscord size={24} />, href: "#" },
-    { name: "X (Twitter)", icon: <Twitter size={24} />, href: "#" },
-    { name: "Instagram", icon: <Instagram size={24} />, href: "#" },
+    { name: "Telegram", icon: <Send size={20} />, href: "https://t.me/+2J3hQtWxTbVlZjVk" },
+    { name: "Discord", icon: <FaDiscord size={20} />, href: "#" },
+    { name: "Instagram", icon: <Instagram size={20} />, href: "#" },
+    { name: "X (Twitter)", icon: <Twitter size={20} />, href: "#" },
+    { name: "YouTube", icon: <Youtube size={20} />, href: "#" },
   ];
 
   return (
@@ -43,7 +44,7 @@ export default function Footer() {
   {/* Text Logo */}
   <span
     className={`${montserrat.className} 
-    text-3xl md:text-4xl font-black italic tracking-tight 
+    text-2xl md:text-3xl font-black italic tracking-tight 
     bg-gradient-to-b from-foreground to-foreground/40 
     bg-clip-text text-transparent uppercase`}
   >
@@ -65,7 +66,7 @@ export default function Footer() {
                 <Link
                   key={social.name}
                   href={social.href}
-                  className="p-3 bg-secondary/50 rounded-xl hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-sm border border-border"
+                  className="p-2 bg-secondary/50 rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-sm border border-border"
                   title={social.name}
                 >
                   {social.icon}

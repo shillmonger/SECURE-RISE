@@ -188,50 +188,50 @@ const sortedAlerts = allAlerts.sort((a, b) => {
               </div>
             ))}
           </div>
+        ) : paginatedAlerts.length === 0 ? (
+          // Empty state
+          <div className="p-8 text-center">
+            <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm font-medium">
+              No alerts yet
+            </p>
+          </div>
         ) : (
+          // Data
           <>
             <div className="divide-y divide-border">
-              {paginatedAlerts.length > 0 ? (
-                paginatedAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="p-4 hover:bg-muted/30 transition-colors flex gap-3"
-                  >
-                    <div className="flex-shrink-0 mt-1.5">
-                      {alert.isNew ? (
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      ) : (
-                        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">
-                        {alert.title}
-                      </p>
-                      <p
-                        className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed"
-                        dangerouslySetInnerHTML={{
-                          __html: alert.message.replace(
-                            /(\$\d+\.\d{2})/g,
-                            '<span class="text-green-500 font-semibold">$1</span>',
-                          ),
-                        }}
-                      />
-                      <p className="text-[10px] text-muted-foreground mt-2">
-                        {alert.time}
-                      </p>
-                    </div>
+              {paginatedAlerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className="p-4 hover:bg-muted/30 transition-colors flex gap-3"
+                >
+                  <div className="flex-shrink-0 mt-1.5">
+                    {alert.isNew ? (
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                    )}
                   </div>
-                ))
-              ) : (
-                <div className="p-8 text-center">
-                  <Bell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm font-medium">
-                    No alerts yet
-                  </p>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">
+                      {alert.title}
+                    </p>
+                    <p
+                      className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html: alert.message.replace(
+                          /(\$\d+\.\d{2})/g,
+                          '<span class="text-green-500 font-semibold">$1</span>',
+                        ),
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-2">
+                      {alert.time}
+                    </p>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
 
             {/* Pagination Controls */}

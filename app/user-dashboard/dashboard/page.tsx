@@ -677,7 +677,7 @@ export default function UserOverviewPage() {
               ))}
             </section>
 
-            <div className="lg:flex lg:items-stretch grid grid-cols-1 gap-8">
+            <div className="lg:flex lg:items-start grid grid-cols-1 gap-8">
               {/* Left Column: Active Plans & History */}
               <div className="lg:flex-1 lg:w-2/3 flex flex-col space-y-10">
                 {/* Active Investment Plans (Alert Style) */}
@@ -728,6 +728,11 @@ export default function UserOverviewPage() {
                 />
               </div>
 
+
+
+
+
+
               {/* Right Column: Wallet & Notifications */}
               <div className="lg:w-1/3 lg:col-span-4 space-y-8 flex flex-col">
                 {/* Account Summary Panel */}
@@ -737,12 +742,12 @@ export default function UserOverviewPage() {
                   </h2>
                   <div className="space-y-4">
                     <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
-                      Convert your earned XP directly into tradeable USDT digital assets sent to your Account balance with secure Rise.
+                      Convert your earned XP directly into tradeable USDT digital assets sent to your Account balance.
                     </p>
                     <div className="grid grid-cols-2 gap-2 mt-4">
                       <Link
                         href="/user-dashboard/redeem-xp"
-                        className="bg-foreground text-background text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
+                        className="bg-[#229ED9] text-white text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
                       >
                         Redeem XP
                       </Link>
@@ -775,12 +780,12 @@ export default function UserOverviewPage() {
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-medium uppercase mt-2 leading-relaxed">
                     Fuel someone's portfolio. You can now gift capital directly
-                    to other members to help them scale their trading.
+                    to other members to help them scale.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-6">
                     <Link
                       href="/user-dashboard/gift-member"
-                      className="bg-foreground text-background text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
+                      className="bg-[#229ED9] text-white text-center py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:opacity-90"
                     >
                       Send Gift
                     </Link>

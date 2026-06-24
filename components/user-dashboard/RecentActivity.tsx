@@ -187,42 +187,6 @@ export default function RecentActivity({
   const paginatedActivities = activities.slice(startIndex, endIndex);
   const hasMoreActivities = activities.length > itemsPerPage;
 
-  if (paginatedActivities.length === 0 && activityPage === 1) {
-    return (
-      <section className="space-y-4 flex-1 flex flex-col">
-        <div className="flex justify-between items-end">
-          <h2 className="text-sm font-black uppercase tracking-widest">
-            Recent Activity
-          </h2>
-          <Link
-            href="/user-dashboard/transactions"
-            className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
-          >
-            Full Ledger
-          </Link>
-        </div>
-
-        <div className="bg-card border border-border rounded-3xl overflow-hidden flex-1">
-          <div className="p-12 text-center">
-            <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-sm font-black uppercase tracking-tighter mb-2">
-              No activity yet
-            </p>
-            <p className="text-[10px] text-muted-foreground uppercase mb-6">
-              Once you deposit or invest, they will appear here
-            </p>
-            <Link
-              href="/user-dashboard/deposit"
-              className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="space-y-4 flex-1 flex flex-col">
       <div className="flex justify-between items-end">
@@ -258,7 +222,25 @@ export default function RecentActivity({
               </div>
             ))}
           </div>
+        ) : paginatedActivities.length === 0 && activityPage === 1 ? (
+          // Empty state
+          <div className="p-12 text-center">
+            <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm font-black uppercase tracking-tighter mb-2">
+              No activity yet
+            </p>
+            <p className="text-[10px] text-muted-foreground uppercase mb-6">
+              Once you deposit or invest, they will appear here
+            </p>
+            <Link
+              href="/user-dashboard/deposit"
+              className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+            >
+              Get Started
+            </Link>
+          </div>
         ) : (
+          // Data
           <div>
             <div className="divide-y divide-border">
               {paginatedActivities.map((activity, index) => (
