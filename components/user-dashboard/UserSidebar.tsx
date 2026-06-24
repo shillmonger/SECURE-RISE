@@ -152,11 +152,11 @@ export default function UserSidebar({
       name: "Account",
       icon: Settings,
       children: [
-        {
-          name: "Notifications",
-          icon: Bell,
-          href: `${basePath}/notifications`,
-        },
+        // {
+        //   name: "Notifications",
+        //   icon: Bell,
+        //   href: `${basePath}/notifications`,
+        // },
         {
           name: "Settings & Profile",
           icon: Settings,

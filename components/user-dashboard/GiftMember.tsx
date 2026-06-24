@@ -7,9 +7,12 @@ import { ArrowUpRight, Gift, Users, ShieldCheck } from "lucide-react";
 
 
 const IMAGES = [
-  "https://i.postimg.cc/ZnDX5Ff3/5.jpg",
-  "https://i.postimg.cc/VvF1MffN/Bull-and-Bear.jpg",
-  "https://i.postimg.cc/9Q9sc9yF/6.jpg",
+  "https://i.postimg.cc/gkW8VrZk/Banner-1.jpg",
+  "https://i.postimg.cc/jS8fYX3G/Banner-2.jpg",
+  "https://i.postimg.cc/7LdTfLkX/Banner-3.jpg",
+  "https://i.postimg.cc/15BnDBSY/Banner-4.webp",
+  "https://i.postimg.cc/gjdjZXBs/Banner-5.jpg",
+  "https://i.postimg.cc/Zqd5sFG6/Banner-6.jpg",
 ];
 
 export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
