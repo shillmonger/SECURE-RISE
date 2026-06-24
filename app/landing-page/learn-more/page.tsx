@@ -44,7 +44,7 @@ export default function LearnMorePage() {
         >
           {/* Page Header */}
           <section className="space-y-4">
-            <div className="flex items-center justify-between mt-15">
+            <div className="flex items-center justify-between mt-25">
               <div>
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                   Learn More

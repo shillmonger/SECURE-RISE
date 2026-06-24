@@ -163,11 +163,6 @@ export default function UserSidebar({
           href: `${basePath}/user-settings`,
         },
         { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc` },
-        {
-          name: "Active Support 24/7",
-          icon: HeadphonesIcon,
-          href: `${basePath}/support`,
-        },
         ...(userRole.includes("admin")
           ? [
               {

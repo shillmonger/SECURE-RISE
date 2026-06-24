@@ -157,7 +157,7 @@ export default function SubscriptionPage() {
                     {plan.duration}
                   </span>
                 </div>
-                <CardTitle className="text-5xl font-black tracking-tight italic uppercase">
+                <CardTitle className="text-5xl font-black tracking-tight  uppercase">
                   ${plan.amount}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-2 uppercase tracking-tight">
