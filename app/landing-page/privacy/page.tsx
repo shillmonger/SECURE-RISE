@@ -219,7 +219,7 @@ export default function TermsOfService() {
         </aside>
 
         {/* ── Mobile sticky nav ── */}
-        <div className="lg:hidden sticky top-[72px] z-30 -mx-4 px-4 py-3 bg-background/90 backdrop-blur-md border-b border-border">
+        <div className="lg:hidden sticky top-[80px] z-30 -mx-4 px-4 py-3 bg-background/90 backdrop-blur-md border-b border-border">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
             {sections.map((s) => {
               const Icon = s.icon;

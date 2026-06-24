@@ -224,6 +224,13 @@ export default function Header() {
               Privacy Policy
             </Link>
             <Link
+              href="/landing-page/refund"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/refund")}
+            >
+              Refund Policy
+            </Link>
+            <Link
               href="/landing-page/terms"
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/terms")}

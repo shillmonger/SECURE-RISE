@@ -111,6 +111,7 @@ export default function Footer() {
             <li><Link href="/auth-page/login" className="hover:text-primary transition-colors text-muted-foreground">Investor Signin</Link></li>
             <li><Link href="/auth-page/register" className="hover:text-primary transition-colors text-muted-foreground">Investor Signup</Link></li>
             <li><Link href="/landing-page/contact-us" className="hover:text-primary transition-colors text-muted-foreground">Contact Us</Link></li>
+            <li><Link href="/landing-page/refund" className="hover:text-primary transition-colors text-muted-foreground">Refunds Policy</Link></li>
           </ul>
         </div>
       </div>
@@ -169,6 +170,7 @@ export default function Footer() {
           <div className="flex gap-4 text-[12px]">
             <Link href="/landing-page/privacy" className="hover:text-primary">Privacy Policy</Link>
             <Link href="/landing-page/terms" className="hover:text-primary">Investor Agreement</Link>
+            <Link href="/landing-page/refund" className="hover:text-primary">Refunds Policy</Link>
           </div>
         </div>
         <p className="italic text-xs text-center md:text-right max-w-md opacity-60">

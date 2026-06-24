@@ -22,7 +22,7 @@ export default function PromoSection() {
   {/* Badge */}
   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/10 border border-white/20 text-[10px] font-bold uppercase tracking-[.2em] mb-4 text-primary-foreground">
     <Gift className="w-3 h-3" />
-    10,000+ Members & Growing
+    3,000+ Members & Growing
   </div>
 
   <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-4 text-primary-foreground">
@@ -30,7 +30,7 @@ export default function PromoSection() {
   </h2>
 
   <p className="text-primary-foreground/90 text-sm md:text-base max-w-md mb-8 leading-relaxed">
-    Become part of our thriving Telegram community with over 10,000 active
+    Become part of our thriving Telegram community with over 3,000 active
     members and growing every day. Get the latest updates and
     instant notifications about new features and promotions.
   </p>
