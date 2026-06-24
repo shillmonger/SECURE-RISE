@@ -98,7 +98,7 @@ export default function HeroSection() {
               className={`${montserrat.className} text-3xl md:text-5xl xl:text-5xl font-black leading-[1.1] uppercase`}
             >
               We connect your funds to {" "}
-              <span className="text-blue-500">skilled traders.</span>
+              <span className="text-[#229ED9]">skilled traders.</span>
             </h1>
             <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto lg:mx-0">
               Trade on Bitcoin, Gold, Oil, Apple, Tesla and 6,400+ other

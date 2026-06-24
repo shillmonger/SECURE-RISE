@@ -1,6 +1,7 @@
 // app/page.tsx
 "use client";
 
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -16,16 +17,18 @@ import OurTools from "@/components/landing-page/OurTools";
 import TradingView from "@/components/landing-page/trading-view-slide";
 import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
 import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
+import JoinTelegram from "@/components/landing-page/JoinTelegram";
 
 
 export default function HomePage() {
   return (
     <>
+      <GiveAway />
       <ThemeAndScroll />
       <Header />
 
-      <main className="min-h-screen pt-0 md:pt-10">
-        {/* section 1  */}
+<main className="min-h-screen pt-28">
+          {/* section 1  */}
         <HeroSection />
         <TradingView />
         <Promo />
@@ -40,6 +43,7 @@ export default function HomePage() {
 </div>
         <RiskProtection />
         <FAQ />
+        <JoinTelegram />
         <TradingView />
       </main>
 

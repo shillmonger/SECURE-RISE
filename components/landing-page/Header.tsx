@@ -52,9 +52,9 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-100 bg-background border-b border-border">
+    <header className="fixed top-9 left-0 right-0 z-[100] bg-background border-b border-border">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-17">
+        <div className="flex items-center justify-between h-15 md:h-17">
           {/* LOGO */}
           <Link href="/">
             <span
@@ -159,6 +159,8 @@ export default function Header() {
                 <Link href="/auth-page/register">Start Investing</Link>
               </Button>
             </div>
+
+
 
             {/* MOBILE TOGGLE */}
             <button

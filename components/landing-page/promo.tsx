@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function PromoSection() {
   return (
     <section className="mx-auto max-w-[1400px] px-4 lg:px-8 py-10 w-full">
-      <div className="relative overflow-hidden rounded-[1.5rem] bg-primary px-6 py-10 md:px-12 md:py-10">
+      <div className="relative overflow-hidden rounded-[1.5rem] bg-primary px-5 py-6 md:px-6 md:py-8">
         
         {/* Background Image - Positioned at right end corner */}
         <img 
