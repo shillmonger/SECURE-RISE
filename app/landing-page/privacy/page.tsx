@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -49,6 +50,7 @@ export default function TermsOfService() {
 
   return (
     <main className="min-h-screen bg-background text-foreground transition-colors duration-300 flex flex-col">
+      <GiveAway />
       <Header />
 
       {/* ── Hero (same style as About Us) ────────────────────────── */}

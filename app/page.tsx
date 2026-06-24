@@ -27,8 +27,8 @@ export default function HomePage() {
       <ThemeAndScroll />
       <Header />
 
-<main className="min-h-screen pt-28">
-          {/* section 1  */}
+      <main className="min-h-screen pt-0 md:pt-10">
+        {/* section 1  */}
         <HeroSection />
         <TradingView />
         <Promo />

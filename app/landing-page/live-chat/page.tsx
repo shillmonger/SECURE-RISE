@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -63,6 +64,7 @@ export default function LetsTalkPage() {
 
   return (
     <main className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col">
+      <GiveAway />
       <Header />
 
       {/* ── Hero (same style as About Us) ────────────────────────── */}

@@ -24,6 +24,7 @@ import {
   Clock,
   Star,
 } from "lucide-react";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import FAQ from "@/components/landing-page/faq";
@@ -33,6 +34,7 @@ import Link from "next/link";
 export default function LearnMorePage() {
   return (
     <div className="min-h-screen bg-background font-sans">
+      <GiveAway />
       <Header />
 
       <main className="py-12 px-4 md:px-8">

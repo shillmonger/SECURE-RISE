@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -78,6 +79,7 @@ export default function AboutUs() {
 
   return (
     <main className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col">
+      <GiveAway />
       <Header />
 
       {/* ── Hero ─────────────────────────────────────────────────── */}

@@ -52,7 +52,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-9 left-0 right-0 z-[100] bg-background border-b border-border">
+    <header className="fixed top-7 lg:top-9 left-0 right-0 z-[100] bg-background border-b border-border">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-15 md:h-17">
           {/* LOGO */}
@@ -68,12 +68,12 @@ export default function Header() {
 
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden md:flex items-center gap-1 bg-black/[0.02] dark:bg-white/[0.02] border border-border/50 px-2 py-1.5 rounded-full">
-            <Link
+            {/* <Link
               href="/"
               className={desktopLinkStyles("/")}
             >
               Home
-            </Link>
+            </Link> */}
             <Link
               href="/landing-page/investment-plan"
               className={desktopLinkStyles("/landing-page/investment-plan")}

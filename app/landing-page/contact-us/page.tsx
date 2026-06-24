@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -80,6 +81,7 @@ export default function ContactUsPage() {
 
   return (
     <main className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col">
+      <GiveAway />
       <Header />
 
       <div className="flex-1 py-30 sm:py-20 lg:pt-32">

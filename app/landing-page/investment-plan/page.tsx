@@ -1,5 +1,6 @@
 "use client";
 
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
@@ -103,6 +104,7 @@ export default function SubscriptionPage() {
 
   return (
     <main className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
+      <GiveAway />
       <Header />
 
       {/* Hero Header */}

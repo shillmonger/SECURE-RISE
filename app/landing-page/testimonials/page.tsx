@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import Footer from "@/components/landing-page/Footer";
@@ -12,6 +13,7 @@ import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
 export default function TestimonialPage() {
   return (
     <main className="min-h-screen bg-background text-foreground overflow-hidden flex flex-col">
+      <GiveAway />
       <Header />
       
       <Testimonials />
