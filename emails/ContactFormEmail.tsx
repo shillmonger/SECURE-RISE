@@ -81,12 +81,15 @@ export const ContactFormEmail: React.FC<ContactFormEmailProps> = ({
               color: #09090b;
               word-break: break-all;
             }
-            .message-box {
-              background-color: #f0fdf4;
-              border: 1px solid #bbf7d0;
-              border-radius: 12px;
-              padding: 24px;
-              margin: 24px 0;
+            .info-row {
+              margin-bottom: 16px;
+              padding-bottom: 16px;
+              border-bottom: 1px solid #e4e4e7;
+            }
+            .info-row:last-child {
+              margin-bottom: 0;
+              padding-bottom: 0;
+              border-bottom: none;
             }
             .message-content {
               font-size: 15px;
@@ -135,25 +138,30 @@ export const ContactFormEmail: React.FC<ContactFormEmailProps> = ({
           </div>
           
           <div className="info-box">
-            <Text className="info-label">Contact Information</Text>
-            <Text className="info-value">{fullName}</Text>
-            <Text className="info-value" style={{ marginTop: '8px' }}>{email}</Text>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div className="reason-badge">
-              {contactReason}
+            <div className="info-row">
+              <Text className="info-label">Contact Information</Text>
+              <Text className="info-value">{fullName}</Text>
+              <Text className="info-value" style={{ marginTop: '4px' }}>{email}</Text>
             </div>
-          </div>
-          
-          <div className="message-box">
-            <Text className="info-label" style={{ marginBottom: '12px' }}>Message</Text>
-            <Text className="message-content">{message}</Text>
-          </div>
-          
-          <div className="info-box">
-            <Text className="info-label">Submitted At</Text>
-            <Text className="info-value">{submittedAt}</Text>
+            
+            <div className="info-row">
+              <Text className="info-label">Inquiry Reason</Text>
+              <div style={{ marginTop: '8px' }}>
+                <div className="reason-badge">
+                  {contactReason}
+                </div>
+              </div>
+            </div>
+            
+            <div className="info-row">
+              <Text className="info-label">Message</Text>
+              <Text className="message-content" style={{ marginTop: '8px' }}>{message}</Text>
+            </div>
+            
+            <div className="info-row">
+              <Text className="info-label">Submitted At</Text>
+              <Text className="info-value" style={{ marginTop: '4px' }}>{submittedAt}</Text>
+            </div>
           </div>
           
           <Hr style={{ margin: '32px 0', border: 'none', borderTop: '1px solid #e4e4e7' }} />
