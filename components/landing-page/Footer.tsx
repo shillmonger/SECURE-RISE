@@ -48,7 +48,7 @@ export default function Footer() {
     bg-gradient-to-b from-foreground to-foreground/40 
     bg-clip-text text-transparent uppercase`}
   >
-    SECURE RISE
+    SECURE<span className="text-[#229ED9]"> RISE</span>
   </span>
 </Link>
            <p className="mt-5 leading-relaxed text-muted-foreground max-w-sm">

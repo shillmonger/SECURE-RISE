@@ -201,7 +201,7 @@ export default function UserSidebar({
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase tracking-tighter text-foreground">
-              SECURE<span className="text-muted-foreground"> RISE</span>
+              SECURE<span className="text-[#229ED9]"> RISE</span>
             </h1>
             <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
               Your Investments, Our Traders
@@ -330,7 +330,7 @@ export default function UserSidebar({
             <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
               <div className="flex flex-col">
                 <h1 className="text-xl font-black uppercase tracking-tighter text-foreground">
-                  SECURE<span className="text-muted-foreground"> RISE</span>
+                  SECURE<span className="text-[#229ED9]"> RISE</span>
                 </h1>
                 <p className="text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
                   Your Investments, Our Traders

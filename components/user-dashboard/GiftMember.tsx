@@ -132,7 +132,7 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
 
           {/* Action Button */}
           <Link href="/user-dashboard/gift-member">
-            <button className="group relative w-full cursor-pointer bg-foreground text-background font-bold py-3 px-6 rounded-2xl flex items-center justify-between overflow-hidden transition-all hover:pr-8 active:scale-[0.98]">
+            <button className="group relative w-full cursor-pointer bg-[#229ED9] text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-between overflow-hidden transition-all hover:pr-8 active:scale-[0.98]">
               <span className="relative z-10">Gift Member Now</span>
               <div className="h-8 w-8 bg-background/20 rounded-full flex items-center justify-center transition-transform group-hover:rotate-45">
                 <ArrowUpRight className="w-5 h-5" />

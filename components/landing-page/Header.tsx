@@ -62,7 +62,7 @@ export default function Header() {
             text-[20px] md:text-2xl font-black italic tracking-tight bg-gradient-to-b from-foreground
             to-foreground/40 bg-clip-text text-transparent uppercase`}
             >
-              SECURE RISE
+              SECURE<span className="text-[#229ED9]"> RISE</span>
             </span>
           </Link>
 
@@ -168,7 +168,7 @@ export default function Header() {
         <div className="p-6 h-full flex flex-col">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <span className="font-black tracking-widest text-xs opacity-50 uppercase">
+            <span className="text-[#229ED9] font-black tracking-widest text-xs opacity-50 uppercase">
               Menu
             </span>
             <button
