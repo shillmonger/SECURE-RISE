@@ -205,7 +205,7 @@ export default function RecentActivity({
         {activityLoading ? (
           // Loading skeleton
           <div className="p-4 space-y-4">
-            {[...Array(7)].map((_, index) => (
+            {[...Array(8)].map((_, index) => (
               <div key={index} className="animate-pulse">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-muted rounded-lg" />

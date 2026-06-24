@@ -34,7 +34,7 @@ import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import RecentActivity from "@/components/user-dashboard/RecentActivity";
-import Alerts from "@/components/user-dashboard/Alerts";
+import PortfolioValue from "@/components/user-dashboard/PortfolioValue";
 
 // Helper function to format numbers with K, M, B notation
 const formatNumber = (num: number): string => {
@@ -761,13 +761,12 @@ export default function UserOverviewPage() {
                   </div>
                 </section>
 
-                <Alerts
+                <PortfolioValue
                   userInvestments={userInvestments}
                   giftHistory={giftHistory}
-                  giftCards={giftCards}
                   recentWithdrawals={recentWithdrawals}
                   xpRedemptions={xpRedemptions}
-                  alertsLoading={alertsLoading}
+                  loading={loading}
                 />
 
                 {/* Gift Awareness Section */}
