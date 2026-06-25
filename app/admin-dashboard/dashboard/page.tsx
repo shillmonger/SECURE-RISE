@@ -67,7 +67,8 @@ export default function AdminDashboardPage() {
     Shield,
     Gift,
     Trophy,
-    Star
+    Star,
+    DollarSign
   };
 
   useEffect(() => {
@@ -101,6 +102,12 @@ export default function AdminDashboardPage() {
             if (!isNaN(numericValue)) {
               formattedValue = `$${formatCompactNumber(numericValue)}`;
             }
+          } else if (typeof stat.value === 'string' && !isNaN(parseFloat(stat.value))) {
+            // Apply compact formatting to numeric values (XP counts)
+            const numericValue = parseFloat(stat.value);
+            if (!isNaN(numericValue)) {
+              formattedValue = formatCompactNumber(numericValue);
+            }
           }
           
           return {
@@ -126,9 +133,14 @@ export default function AdminDashboardPage() {
         { label: "Total Withdrawal", value: "$0", icon: ArrowDownLeft, color: "text-primary", bg: "bg-primary/10" },
         { label: "Pending Withdrawal", value: "$0", icon: ArrowUpRight, color: "text-red-500", bg: "bg-red-500/10" },
         { label: "Total KYC Submitted", value: "0", icon: Shield, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-        { label: "Total Gifts", value: "0", icon: Gift, color: "text-pink-500", bg: "bg-pink-500/10" },
-        { label: "User Achievements", value: "0", icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-500/10" },
-        { label: "Total Users XP", value: "0", icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { label: "Total Gifts", value: formatCompactNumber(0), icon: Gift, color: "text-pink-500", bg: "bg-pink-500/10" },
+        { label: "User Achievements", value: formatCompactNumber(0), icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-500/10" },
+        { label: "Total Users XP", value: formatCompactNumber(0), icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { label: "Total Redeemed", value: formatCompactNumber(0), icon: Star, color: "text-green-500", bg: "bg-green-500/10" },
+        { label: "USDT Redeemed", value: "$0", icon: DollarSign, color: "text-teal-500", bg: "bg-teal-500/10" },
+        { label: "XP Redeemed", value: formatCompactNumber(0), icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { label: "Total Daily XP", value: formatCompactNumber(0), icon: Star, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { label: "Total Achievements XP", value: formatCompactNumber(0), icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-500/10" },
       ]);
     } finally {
       setLoading(false);
@@ -155,7 +167,7 @@ export default function AdminDashboardPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,].map((item) => (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
                 <div key={item} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-2 rounded-xl bg-muted animate-pulse">

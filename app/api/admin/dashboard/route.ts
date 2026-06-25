@@ -213,6 +213,60 @@ export async function GET(request: NextRequest) {
     ]).toArray();
     const totalUserXP = userXpStats[0]?.totalXP || 0;
 
+    // Get XP redemption statistics
+    const xpRedemptionCollection = db.collection('xpredemptions');
+    
+    // Total completed redemptions
+    const totalRedeemed = await xpRedemptionCollection.countDocuments({ status: 'completed' });
+    
+    // Total USDT redeemed (sum of usdtAmount for completed redemptions)
+    const usdtRedeemedStats = await xpRedemptionCollection.aggregate([
+      { $match: { status: 'completed' } },
+      {
+        $group: {
+          _id: null,
+          totalUSDT: { $sum: '$usdtAmount' }
+        }
+      }
+    ]).toArray();
+    const totalUSDTRedeemed = usdtRedeemedStats[0]?.totalUSDT || 0;
+    
+    // Total XP redeemed (sum of xpAmount for completed redemptions)
+    const xpRedeemedStats = await xpRedemptionCollection.aggregate([
+      { $match: { status: 'completed' } },
+      {
+        $group: {
+          _id: null,
+          totalXP: { $sum: '$xpAmount' }
+        }
+      }
+    ]).toArray();
+    const totalXPRedeemed = xpRedeemedStats[0]?.totalXP || 0;
+    
+    // Total Daily XP (sum of xpAmount where xpType is 'daily')
+    const dailyXPStats = await xpRedemptionCollection.aggregate([
+      { $match: { status: 'completed', xpType: 'daily' } },
+      {
+        $group: {
+          _id: null,
+          totalDailyXP: { $sum: '$xpAmount' }
+        }
+      }
+    ]).toArray();
+    const totalDailyXP = dailyXPStats[0]?.totalDailyXP || 0;
+    
+    // Total Achievements XP (sum of xpAmount where xpType is 'achievement')
+    const achievementXPStats = await xpRedemptionCollection.aggregate([
+      { $match: { status: 'completed', xpType: 'achievement' } },
+      {
+        $group: {
+          _id: null,
+          totalAchievementXP: { $sum: '$xpAmount' }
+        }
+      }
+    ]).toArray();
+    const totalAchievementXP = achievementXPStats[0]?.totalAchievementXP || 0;
+
     // Format stats for frontend
     const formattedStats = [
       { label: "Total Users", value: totalUsers.toString(), icon: "Users", color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -230,6 +284,11 @@ export async function GET(request: NextRequest) {
       { label: "Total Gifts", value: totalGifts.toString(), icon: "Gift", color: "text-pink-500", bg: "bg-pink-500/10" },
       { label: "User Achievements", value: totalUserAchievements.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
       { label: "Total User XP", value: totalUserXP.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
+      { label: "Total Redeemed", value: totalRedeemed.toString(), icon: "Star", color: "text-green-500", bg: "bg-green-500/10" },
+      { label: "USDT Redeemed", value: `$${totalUSDTRedeemed.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "XP Redeemed", value: totalXPRedeemed.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
+      { label: "Total Daily XP", value: totalDailyXP.toString(), icon: "Star", color: "text-blue-500", bg: "bg-blue-500/10" },
+      { label: "Total Achievements XP", value: totalAchievementXP.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
     ];
 
     // Combine and sort all transactions by date
