@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Users, 
+import {
+  Users,
   FileText,
   Search,
   Filter,
@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Calendar,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
@@ -64,6 +65,8 @@ export default function AdminKYCVerificationPage() {
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [kycSubmissions, setKycSubmissions] = useState<KYCSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; action: 'approve' | 'reject'; submissionId: string; userName: string } | null>(null);
 
   // Fetch KYC submissions on component mount
   useEffect(() => {
@@ -98,6 +101,7 @@ export default function AdminKYCVerificationPage() {
   });
 
   const handleApprove = async (id: string) => {
+    setActionLoading(id);
     try {
       const response = await fetch(`/api/admin/kyc/${id}`, {
         method: 'PUT',
@@ -108,13 +112,13 @@ export default function AdminKYCVerificationPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success('KYC submission approved successfully');
         // Update local state
-        setKycSubmissions(prev => 
-          prev.map(sub => 
-            sub._id === id 
+        setKycSubmissions(prev =>
+          prev.map(sub =>
+            sub._id === id
               ? { ...sub, status: 'approved', reviewedAt: new Date().toISOString() }
               : sub
           )
@@ -125,10 +129,14 @@ export default function AdminKYCVerificationPage() {
     } catch (error) {
       console.error('Error approving KYC:', error);
       toast.error('Failed to approve submission');
+    } finally {
+      setActionLoading(null);
+      setConfirmModal(null);
     }
   };
 
   const handleReject = async (id: string) => {
+    setActionLoading(id);
     try {
       const response = await fetch(`/api/admin/kyc/${id}`, {
         method: 'PUT',
@@ -139,13 +147,13 @@ export default function AdminKYCVerificationPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         toast.error('KYC submission rejected');
         // Update local state
-        setKycSubmissions(prev => 
-          prev.map(sub => 
-            sub._id === id 
+        setKycSubmissions(prev =>
+          prev.map(sub =>
+            sub._id === id
               ? { ...sub, status: 'rejected', reviewedAt: new Date().toISOString() }
               : sub
           )
@@ -156,6 +164,26 @@ export default function AdminKYCVerificationPage() {
     } catch (error) {
       console.error('Error rejecting KYC:', error);
       toast.error('Failed to reject submission');
+    } finally {
+      setActionLoading(null);
+      setConfirmModal(null);
+    }
+  };
+
+  const openConfirmModal = (action: 'approve' | 'reject', submissionId: string, userName: string) => {
+    setConfirmModal({ isOpen: true, action, submissionId, userName });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal(null);
+  };
+
+  const confirmAction = () => {
+    if (!confirmModal) return;
+    if (confirmModal.action === 'approve') {
+      handleApprove(confirmModal.submissionId);
+    } else {
+      handleReject(confirmModal.submissionId);
     }
   };
 
@@ -340,7 +368,7 @@ export default function AdminKYCVerificationPage() {
                             {/* Actions */}
                             <td className="px-6 py-4">
                               <div className="flex justify-end gap-2">
-                                <button 
+                                <button
                                   onClick={() => setSelectedUser(submission)}
                                   className="p-3 bg-muted/50 rounded-lg text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                                 >
@@ -349,16 +377,26 @@ export default function AdminKYCVerificationPage() {
                                 {submission.status === "pending" && (
                                   <>
                                     <button
-                                      onClick={() => handleApprove(submission._id)}
-                                      className="p-3 bg-emerald-500/10 cursor-pointer hover:bg-emerald-500/20 rounded-lg text-emerald-500 transition-all"
+                                      onClick={() => openConfirmModal('approve', submission._id, submission.userProfile.fullName)}
+                                      disabled={actionLoading === submission._id}
+                                      className="p-3 bg-emerald-500/10 cursor-pointer hover:bg-emerald-500/20 rounded-lg text-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      <CheckCircle className="w-5 h-5" />
+                                      {actionLoading === submission._id ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                      ) : (
+                                        <CheckCircle className="w-5 h-5" />
+                                      )}
                                     </button>
                                     <button
-                                      onClick={() => handleReject(submission._id)}
-                                      className="p-3 bg-rose-500/10 cursor-pointer hover:bg-rose-500/20 rounded-lg text-rose-500 transition-all"
+                                      onClick={() => openConfirmModal('reject', submission._id, submission.userProfile.fullName)}
+                                      disabled={actionLoading === submission._id}
+                                      className="p-3 bg-rose-500/10 cursor-pointer hover:bg-rose-500/20 rounded-lg text-rose-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      <XCircle className="w-5 h-5" />
+                                      {actionLoading === submission._id ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                      ) : (
+                                        <XCircle className="w-5 h-5" />
+                                      )}
                                     </button>
                                   </>
                                 )}
@@ -578,6 +616,100 @@ export default function AdminKYCVerificationPage() {
             </div>
           </div>
         </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            onClick={closeConfirmModal}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* Modal */}
+          <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            {/* Icon */}
+            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+              confirmModal.action === 'approve'
+                ? 'bg-emerald-500/10'
+                : 'bg-rose-500/10'
+            }`}>
+              {confirmModal.action === 'approve' ? (
+                <CheckCircle className="w-8 h-8 text-emerald-500" />
+              ) : (
+                <XCircle className="w-8 h-8 text-rose-500" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl font-black text-center uppercase tracking-tight mb-2">
+              {confirmModal.action === 'approve' ? 'Approve KYC' : 'Reject KYC'}
+            </h2>
+
+            {/* Warning */}
+            <div className="bg-muted/50 border border-border rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This action <strong>cannot be undone</strong>. Please review the details below before confirming.
+                </p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">User</span>
+                <span className="text-sm font-bold text-foreground">{confirmModal.userName}</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Action</span>
+                <span className={`text-sm font-bold uppercase ${
+                  confirmModal.action === 'approve' ? 'text-emerald-500' : 'text-rose-500'
+                }`}>
+                  {confirmModal.action}
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={closeConfirmModal}
+                disabled={actionLoading === confirmModal.submissionId}
+                className="flex-1 px-4 py-3 cursor-pointer bg-muted text-foreground rounded-lg text-xs font-black uppercase tracking-wider hover:bg-muted/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAction}
+                disabled={actionLoading === confirmModal.submissionId}
+                className={`flex-1 px-4 py-3 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                  confirmModal.action === 'approve'
+                    ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                    : 'bg-rose-500 text-white hover:bg-rose-600'
+                }`}
+              >
+                {actionLoading === confirmModal.submissionId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {confirmModal.action === 'approve' ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      <XCircle className="w-4 h-4" />
+                    )}
+                    {confirmModal.action === 'approve' ? 'Approve' : 'Reject'}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
