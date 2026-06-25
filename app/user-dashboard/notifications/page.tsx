@@ -1,30 +1,36 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Bell, 
-  CheckCircle2, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  Zap, 
-  Megaphone, 
-  Clock, 
+import {
+  Bell,
+  CheckCircle2,
+  ArrowUpRight,
+  Megaphone,
+  Clock,
   Trash2,
-  MoreHorizontal,
   Circle,
   Gift,
   TrendingUp,
   ArrowDownCircle,
-  Coins
+  Coins,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
-import Link from "next/link";
 
-// ─── Data & Types ──────────────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
-type NotificationType = 'deposit' | 'withdrawal' | 'roi' | 'investment' | 'system' | 'gift' | 'gift_card' | 'redeem_xp';
+type NotificationType =
+  | "deposit"
+  | "withdrawal"
+  | "roi"
+  | "investment"
+  | "system"
+  | "gift"
+  | "gift_card"
+  | "redeem_xp";
 
 interface Notification {
   id: string;
@@ -36,211 +42,315 @@ interface Notification {
   rawData?: any;
 }
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: "1",
-    type: "roi",
-    title: "ROI Credited",
-    message: "Your Daily ROI of $145.00 from the 'Platinum Plan' has been added to your balance.",
-    time: "2 mins ago",
-    isRead: false
-  },
-  {
-    id: "2",
-    type: "system",
-    title: "System Update",
-    message: "Cetadel is upgrading its security protocols. Expect minor latency during the next 2 hours.",
-    time: "1 hour ago",
-    isRead: false
-  },
-  {
-    id: "3",
-    type: "deposit",
-    title: "Deposit Confirmed",
-    message: "Your deposit of 0.045 BTC has been successfully processed and verified.",
-    time: "5 hours ago",
-    isRead: false
-  },
-  {
-    id: "4",
-    type: "withdrawal",
-    title: "Withdrawal Sent",
-    message: "Your withdrawal request #WID-882 for $500.00 has been completed.",
-    time: "1 day ago",
-    isRead: false
-  }
-];
+// ─── Constants ─────────────────────────────────────────────────────────────────
+
+const MESSAGE_PREVIEW_LENGTH = 70;
+
+// ─── Sub-components ────────────────────────────────────────────────────────────
+
+const NotificationIcon = ({ type }: { type: NotificationType }) => {
+  const map: Record<NotificationType, { icon: React.ReactNode; bg: string; border: string }> = {
+    deposit:     { icon: <ArrowDownCircle className="w-4 h-4" />, bg: "bg-green-500/10",  border: "border-green-500/30"  },
+    withdrawal:  { icon: <ArrowUpRight    className="w-4 h-4" />, bg: "bg-red-500/10",    border: "border-red-500/30"    },
+    roi:         { icon: <TrendingUp      className="w-4 h-4" />, bg: "bg-purple-500/10", border: "border-purple-500/30" },
+    investment:  { icon: <Gift            className="w-4 h-4" />, bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
+    gift_card:   { icon: <Gift            className="w-4 h-4" />, bg: "bg-orange-500/10", border: "border-orange-500/30" },
+    gift:        { icon: <Gift            className="w-4 h-4" />, bg: "bg-pink-500/10",   border: "border-pink-500/30"   },
+    redeem_xp:   { icon: <Coins           className="w-4 h-4" />, bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+    system:      { icon: <Megaphone       className="w-4 h-4" />, bg: "bg-muted",         border: "border-border"        },
+  };
+
+  const colorMap: Record<NotificationType, string> = {
+    deposit: "text-green-500", withdrawal: "text-red-500", roi: "text-purple-500",
+    investment: "text-blue-500", gift_card: "text-orange-500", gift: "text-pink-500",
+    redeem_xp: "text-yellow-500", system: "text-muted-foreground",
+  };
+
+  const { icon, bg, border } = map[type];
+  return (
+    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${bg} ${border} ${colorMap[type]} flex-shrink-0`}>
+      {icon}
+    </div>
+  );
+};
+
+const NotificationCard = ({
+  notification,
+  onMarkRead,
+  onDelete,
+}: {
+  notification: Notification;
+  onMarkRead: (id: string) => void;
+  onDelete: (id: string) => void;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = notification.message.length > MESSAGE_PREVIEW_LENGTH;
+  const preview = isLong ? notification.message.slice(0, MESSAGE_PREVIEW_LENGTH).trimEnd() + "..." : notification.message;
+
+  const typeBadgeColors: Record<NotificationType, string> = {
+    deposit: "bg-green-500/10 text-green-500",
+    withdrawal: "bg-red-500/10 text-red-500",
+    roi: "bg-purple-500/10 text-purple-500",
+    investment: "bg-blue-500/10 text-blue-500",
+    gift_card: "bg-orange-500/10 text-orange-500",
+    gift: "bg-pink-500/10 text-pink-500",
+    redeem_xp: "bg-yellow-500/10 text-yellow-500",
+    system: "bg-muted text-muted-foreground",
+  };
+
+  return (
+    <div
+      className={`group relative flex flex-col gap-3 rounded-2xl border p-4 transition-all duration-200 hover:shadow-md hover:border-foreground/20 ${
+        !notification.isRead
+          ? "bg-card border-border/80"
+          : "bg-muted/20 border-border/40"
+      }`}
+    >
+      {/* Unread dot */}
+      {!notification.isRead && (
+        <span className="absolute top-4 right-4 w-2 h-2 rounded-full bg-primary" />
+      )}
+
+      {/* Top row: icon + title */}
+      <div className="flex items-start gap-3 pr-4">
+        <NotificationIcon type={notification.type} />
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-0.5">
+            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${typeBadgeColors[notification.type]}`}>
+              {notification.type.replace("_", " ")}
+            </span>
+          </div>
+          <h4 className="text-sm font-bold leading-tight text-foreground truncate">
+            {notification.title}
+          </h4>
+        </div>
+      </div>
+
+      {/* Message */}
+      <div className="pl-0">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {expanded ? notification.message : preview}
+        </p>
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-1.5 flex items-center cursor-pointer gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
+          >
+            {expanded ? (
+              <><ChevronUp className="w-3 h-3" /> Show less</>
+            ) : (
+              <><ChevronDown className="w-3 h-3" /> Read more</>
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Bottom row: time + actions */}
+      <div className="flex items-center justify-between pt-1 border-t border-border/40">
+        <div className="flex items-center gap-1.5 text-muted-foreground">
+          <Clock className="w-3 h-3" />
+          <span className="text-[9px] font-black uppercase tracking-widest">{notification.time}</span>
+        </div>
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {!notification.isRead && (
+            <button
+              onClick={() => onMarkRead(notification.id)}
+              className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <CheckCircle2 className="w-3 h-3" /> Mark read
+            </button>
+          )}
+          <button
+            onClick={() => onDelete(notification.id)}
+            className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-colors flex items-center gap-1"
+          >
+            <Trash2 className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SkeletonCard = () => (
+  <div className="rounded-2xl border border-border bg-card p-4 animate-pulse space-y-3">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-muted flex-shrink-0" />
+      <div className="space-y-2 flex-1">
+        <div className="h-3 bg-muted rounded w-1/4" />
+        <div className="h-4 bg-muted rounded w-1/2" />
+      </div>
+    </div>
+    <div className="h-3 bg-muted rounded w-full" />
+    <div className="h-3 bg-muted rounded w-3/4" />
+  </div>
+);
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
 
 const NotificationsPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);<div className="flex items-center justify-center lg:justify-between"></div>
+  const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
 
-  // Fetch real data on component mount
+  const formatTimeAgo = (date: any): string => {
+    try {
+      let dateObj: Date;
+      if (typeof date === "string") dateObj = new Date(date);
+      else if (date && typeof date === "object") {
+        if (date.$date) dateObj = new Date(date.$date);
+        else if (date instanceof Date) dateObj = date;
+        else dateObj = new Date(date);
+      } else dateObj = new Date(date);
+
+      if (isNaN(dateObj.getTime())) return "Just now";
+
+      const diffInMs = Date.now() - dateObj.getTime();
+      if (diffInMs < 0) return "Just now";
+
+      const mins = Math.floor(diffInMs / 60000);
+      const hrs = Math.floor(mins / 60);
+      const days = Math.floor(hrs / 24);
+
+      if (days > 0) return `${days}d ago`;
+      if (hrs > 0) return `${hrs}h ago`;
+      if (mins > 0) return `${mins}m ago`;
+      return "Just now";
+    } catch {
+      return "Just now";
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data
         const userResponse = await fetch("/api/user/info");
         const userResult = await userResponse.json();
-        
-        if (userResult.success) {
-          setUserData(userResult.user);
-        }
+        if (userResult.success) setUserData(userResult.user);
 
-        // Fetch deposits
-        const depositsResponse = await fetch(`/api/user-dashboard/deposit?userId=${userResult.user.id}`);
-        const depositsResult = await depositsResponse.json();
-        
-        // Fetch withdrawals
-        const withdrawalsResponse = await fetch("/api/withdraw");
-        const withdrawalsResult = await withdrawalsResponse.json();
-        
-        // Fetch investments
-        const investmentsResponse = await fetch("/api/investments");
-        const investmentsResult = await investmentsResponse.json();
+        const [depositsRes, withdrawalsRes, investmentsRes, giftsRes, giftCardsRes, redemptionsRes] = await Promise.all([
+          fetch(`/api/user-dashboard/deposit?userId=${userResult.user.id}`).then(r => r.json()),
+          fetch("/api/withdraw").then(r => r.json()),
+          fetch("/api/investments").then(r => r.json()),
+          fetch("/api/user-dashboard/gift/history").then(r => r.json()),
+          fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`).then(r => r.json()),
+          fetch("/api/user-dashboard/redeem-xp/history").then(r => r.json()),
+        ]);
 
-        // Fetch gift history
-        const giftsResponse = await fetch("/api/user-dashboard/gift/history");
-        const giftsResult = await giftsResponse.json();
+        const all: Notification[] = [];
 
-        // Fetch gift cards
-        const giftCardsResponse = await fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`);
-        const giftCardsResult = await giftCardsResponse.json();
-
-        // Fetch XP redemptions
-        const redemptionsResponse = await fetch("/api/user-dashboard/redeem-xp/history");
-        const redemptionsResult = await redemptionsResponse.json();
-
-        const allNotifications: Notification[] = [];
-
-        // Process deposits as notifications
-        if (depositsResult.success && depositsResult.deposits) {
-          depositsResult.deposits.forEach((deposit: any) => {
-            allNotifications.push({
-              id: `deposit-${deposit._id}`,
-              type: 'deposit',
-              title: 'Deposit Received',
-              message: `Your deposit of $${deposit.amount.toFixed(2)} via ${deposit.paymentMethod} has been ${deposit.status}.`,
-              time: formatTimeAgo(new Date(deposit.createdAt)),
-              isRead: deposit.status === 'approved',
-              rawData: deposit
+        if (depositsRes.success && depositsRes.deposits) {
+          depositsRes.deposits.forEach((d: any) => {
+            all.push({
+              id: `deposit-${d._id}`,
+              type: "deposit",
+              title: "Deposit Received",
+              message: `Your deposit of $${d.amount.toFixed(2)} via ${d.paymentMethod} has been processed and is currently ${d.status}. Funds will be available after verification.`,
+              time: formatTimeAgo(new Date(d.createdAt)),
+              isRead: d.status === "approved",
+              rawData: d,
             });
           });
         }
 
-        // Process withdrawals as notifications
-        if (withdrawalsResult.withdrawals) {
-          withdrawalsResult.withdrawals.forEach((withdrawal: any) => {
-            // Use withdrawal.date like the transactions page does
-            const withdrawalDate = withdrawal.date || new Date().toLocaleDateString();
-            const dateObj = new Date(withdrawalDate);
-            
-            allNotifications.push({
-              id: `withdrawal-${withdrawal._id}`,
-              type: 'withdrawal',
-              title: 'Withdrawal ' + withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1),
-              message: `Your withdrawal request of $${withdrawal.amount.toFixed(2)} via ${withdrawal.crypto?.name || 'Unknown'} has been ${withdrawal.status}.`,
-              time: formatTimeAgo(dateObj),
-              isRead: withdrawal.status === 'approved',
-              rawData: withdrawal
+        if (withdrawalsRes.withdrawals) {
+          withdrawalsRes.withdrawals.forEach((w: any) => {
+            all.push({
+              id: `withdrawal-${w._id}`,
+              type: "withdrawal",
+              title: `Withdrawal ${w.status.charAt(0).toUpperCase() + w.status.slice(1)}`,
+              message: `Your withdrawal of $${w.amount.toFixed(2)} via ${w.crypto?.name || "Unknown"} has been ${w.status}. Funds are being transferred to your wallet.`,
+              time: formatTimeAgo(new Date(w.date || Date.now())),
+              isRead: w.status === "approved",
+              rawData: w,
             });
           });
         }
 
-        // Process investments as notifications
-        if (investmentsResult.investments) {
-          investmentsResult.investments.forEach((investment: any) => {
-            // Investment started notification
-            allNotifications.push({
-              id: `investment-${investment._id}`,
-              type: 'investment',
-              title: 'Investment Started',
-              message: `Your investment of $${investment.investmentAmount.toFixed(2)} in ${investment.planName} is now ${investment.status}.`,
-              time: formatTimeAgo(new Date(investment.startDate)),
-              isRead: investment.status === 'completed',
-              rawData: investment
+        if (investmentsRes.investments) {
+          investmentsRes.investments.forEach((inv: any) => {
+            all.push({
+              id: `investment-${inv._id}`,
+              type: "investment",
+              title: "Investment Started",
+              message: `Your investment of $${inv.investmentAmount.toFixed(2)} in the ${inv.planName} plan is now ${inv.status}. Funds are actively generating returns per the plan terms.`,
+              time: formatTimeAgo(new Date(inv.startDate)),
+              isRead: inv.status === "completed",
+              rawData: inv,
             });
 
-            // Add profit history as ROI notifications
-            if (investment.profitHistory && investment.profitHistory.length > 0) {
-              investment.profitHistory.forEach((profit: any) => {
-                allNotifications.push({
-                  id: `roi-${investment._id}-${profit.timestamp}`,
-                  type: 'roi',
-                  title: 'ROI Credited',
-                  message: `Your ROI of $${profit.amount.toFixed(2)} from ${investment.planName} at ${profit.rate}% rate has been added to your balance.`,
-                  time: formatTimeAgo(new Date(profit.timestamp)),
-                  isRead: false, // ROI notifications are always unread initially
-                  rawData: { ...profit, investment }
+            if (inv.profitHistory?.length) {
+              inv.profitHistory.forEach((p: any) => {
+                all.push({
+                  id: `roi-${inv._id}-${p.timestamp}`,
+                  type: "roi",
+                  title: "ROI Credited",
+                  message: `Daily ROI of $${p.amount.toFixed(2)} from the ${inv.planName} plan at ${p.rate}% has been credited to your balance.`,
+                  time: formatTimeAgo(new Date(p.timestamp)),
+                  isRead: false,
+                  rawData: { ...p, inv },
                 });
               });
             }
           });
         }
 
-        // Process gift cards as notifications
-        if (giftCardsResult.success && giftCardsResult.giftCards) {
-          giftCardsResult.giftCards.forEach((giftCard: any) => {
-            const statusText = giftCard.status === 'pending_review' ? 'Pending Review' : 
-                              giftCard.status === 'approved' ? 'Approved' : 
-                              giftCard.status === 'rejected' ? 'Rejected' : 
-                              giftCard.status === 'processing' ? 'Processing' : giftCard.status;
-            
-            allNotifications.push({
-              id: `gift-card-${giftCard._id}`,
-              type: 'gift_card',
+        if (giftCardsRes.success && giftCardsRes.giftCards) {
+          giftCardsRes.giftCards.forEach((gc: any) => {
+            const statusText = { pending_review: "Pending Review", approved: "Approved", rejected: "Rejected", processing: "Processing" }[gc.status as string] || gc.status;
+            all.push({
+              id: `gift-card-${gc._id}`,
+              type: "gift_card",
               title: `Gift Card ${statusText}`,
-              message: `Your ${giftCard.cardType} gift card worth ${giftCard.currency} ${giftCard.amount.toFixed(2)} from ${giftCard.country} has been ${statusText.toLowerCase()}.${giftCard.rejectionReason ? ` Reason: ${giftCard.rejectionReason}` : ''}`,
-              time: formatTimeAgo(new Date(giftCard.createdAt)),
-              isRead: giftCard.status === 'approved' || giftCard.status === 'rejected',
-              rawData: giftCard
+              message: `Your ${gc.cardType} gift card worth ${gc.currency} ${gc.amount.toFixed(2)} from ${gc.country} is ${statusText.toLowerCase()}. Details will be sent to your email upon approval.${gc.rejectionReason ? ` Reason: ${gc.rejectionReason}` : ""}`,
+              time: formatTimeAgo(new Date(gc.createdAt)),
+              isRead: gc.status === "approved" || gc.status === "rejected",
+              rawData: gc,
             });
           });
         }
 
-        // Process gifts as notifications
-        if (giftsResult.success && giftsResult.gifts) {
-          giftsResult.gifts.forEach((gift: any) => {
-            allNotifications.push({
-              id: `gift-${gift._id}`,
-              type: 'gift',
-              title: gift.title,
-              message: gift.message,
-              time: formatTimeAgo(new Date(gift.createdAt)),
-              isRead: false, // Gift notifications are always unread initially
-              rawData: gift
+        if (giftsRes.success && giftsRes.gifts) {
+          giftsRes.gifts.forEach((g: any) => {
+            all.push({
+              id: `gift-${g._id}`,
+              type: "gift",
+              title: g.title || (g.isSender ? "Gift Sent" : "Gift Received"),
+              message: g.isSender
+                ? `You sent a gift of $${g.amount.toFixed(2)} to ${g.recipientName || g.recipientUsername || "a member"}. The recipient has been notified.`
+                : `You received a gift of $${g.amount.toFixed(2)} from ${g.senderName || g.senderUsername || "a member"}. The amount has been added to your balance.`,
+              time: formatTimeAgo(new Date(g.createdAt)),
+              isRead: false,
+              rawData: g,
             });
           });
         }
 
-        // Process XP redemptions as notifications
-        if (redemptionsResult.success && redemptionsResult.redemptions) {
-          redemptionsResult.redemptions.forEach((redemption: any) => {
-            allNotifications.push({
-              id: `redemption-${redemption._id}`,
-              type: 'redeem_xp',
-              title: 'XP Redemption Successful',
-              message: `Successfully redeemed ${redemption.xpAmount.toLocaleString()} ${redemption.xpType === 'daily' ? 'Daily Streak' : 'Achievement'} XP for $${redemption.usdtAmount.toFixed(2)}`,
-              time: formatTimeAgo(new Date(redemption.createdAt)),
-              isRead: redemption.status === 'completed',
-              rawData: redemption
+        if (redemptionsRes.success && redemptionsRes.redemptions) {
+          redemptionsRes.redemptions.forEach((r: any) => {
+            all.push({
+              id: `redemption-${r._id}`,
+              type: "redeem_xp",
+              title: "XP Redeemed",
+              message: `You redeemed ${r.xpAmount.toLocaleString()} ${r.xpType === "daily" ? "Daily Streak" : "Achievement"} XP for $${r.usdtAmount.toFixed(2)} USDT, credited to your account.`,
+              time: formatTimeAgo(new Date(r.createdAt)),
+              isRead: r.status === "completed",
+              rawData: r,
             });
           });
         }
 
-        // Sort by date (most recent first)
-        allNotifications.sort((a, b) => {
-          const dateA = new Date(a.rawData?.createdAt || a.rawData?.timestamp || Date.now());
-          const dateB = new Date(b.rawData?.createdAt || b.rawData?.timestamp || Date.now());
-          return dateB.getTime() - dateA.getTime();
+        all.sort((a, b) => {
+          const da = new Date(a.rawData?.createdAt || a.rawData?.timestamp || 0).getTime();
+          const db = new Date(b.rawData?.createdAt || b.rawData?.timestamp || 0).getTime();
+          return db - da;
         });
 
-        setNotifications(allNotifications);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
+        setNotifications(all);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
       } finally {
         setLoading(false);
       }
@@ -249,77 +359,34 @@ const NotificationsPage = () => {
     fetchData();
   }, []);
 
-  // Helper function to format time ago
-  const formatTimeAgo = (date: any) => {
-    try {
-      // Handle MongoDB date objects and various date formats
-      let dateObj: Date;
-      
-      if (typeof date === 'string') {
-        dateObj = new Date(date);
-      } else if (date && typeof date === 'object') {
-        // Handle MongoDB date format { "$date": "2026-04-29T05:23:33.263Z" }
-        if (date.$date) {
-          dateObj = new Date(date.$date);
-        } else if (date instanceof Date) {
-          dateObj = date;
-        } else {
-          dateObj = new Date(date);
-        }
-      } else {
-        dateObj = new Date(date);
-      }
+  const markRead = (id: string) =>
+    setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
 
-      // Validate the date
-      if (isNaN(dateObj.getTime())) {
-        return 'Just now';
-      }
+  const deleteNotification = (id: string) =>
+    setNotifications(prev => prev.filter(n => n.id !== id));
 
-      const now = new Date();
-      const diffInMs = now.getTime() - dateObj.getTime();
-      
-      // Handle future dates
-      if (diffInMs < 0) {
-        return 'Just now';
-      }
-      
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-      const diffInHours = Math.floor(diffInMinutes / 60);
-      const diffInDays = Math.floor(diffInHours / 24);
-      
-      if (diffInDays > 0) {
-        return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-      } else if (diffInHours > 0) {
-        return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-      } else if (diffInMinutes > 0) {
-        return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
-      } else {
-        return 'Just now';
-      }
-    } catch (error) {
-      console.error('Error formatting time ago:', error);
-      return 'Just now';
-    }
-  };
+  const markAllRead = () =>
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
 
-  const filteredNotifications = activeTab === 'all' 
-    ? notifications 
-    : notifications.filter(n => !n.isRead);
+  const deleteAll = () => setNotifications([]);
 
+  const filtered = activeTab === "all" ? notifications : notifications.filter(n => !n.isRead);
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  const getIcon = (type: NotificationType) => {
-    switch (type) {
-      case 'deposit': return <ArrowDownCircle className="w-4 h-4 text-green-500" />;
-      case 'withdrawal': return <ArrowUpRight className="w-4 h-4 text-red-500" />;
-      case 'roi': return <TrendingUp className="w-4 h-4 text-purple-500" />;
-      case 'investment': return <Gift className="w-4 h-4 text-blue-500" />;
-      case 'gift_card': return <Gift className="w-4 h-4 text-orange-500" />;
-      case 'gift': return <Gift className="w-4 h-4 text-pink-500" />;
-      case 'redeem_xp': return <Coins className="w-4 h-4 text-yellow-500" />;
-      case 'system': return <Megaphone className="w-4 h-4 text-muted-foreground" />;
-    }
+  // Split into two columns for grid layout
+  const leftCol = filtered.filter((_, i) => i % 2 === 0);
+  const rightCol = filtered.filter((_, i) => i % 2 !== 0);
+
+  const TYPE_LABELS: Record<NotificationType, string> = {
+    deposit: "Deposit", withdrawal: "Withdrawal", roi: "ROI", investment: "Investment",
+    system: "System", gift: "Gift", gift_card: "Gift Card", redeem_xp: "XP",
   };
+
+  // Summary counts by type
+  const typeCounts = notifications.reduce((acc, n) => {
+    acc[n.type] = (acc[n.type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
@@ -328,123 +395,129 @@ const NotificationsPage = () => {
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-8">
-            
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div className="space-y-2">
-                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
+        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto space-y-6">
+
+            {/* ── Page Header ── */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                   Alert Center
                 </h1>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
-                   Live updates from your financial network
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1">
+                  Live updates from your financial network
                 </p>
               </div>
-              
-              <div className="flex items-center gap-3">
-                <button className="flex-1 md:flex-none cursor-pointer bg-muted/50 text-foreground px-3 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all flex items-center justify-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" /> Mark All Read
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={markAllRead}
+                  className="flex items-center gap-2 bg-muted/60 hover:bg-muted text-foreground px-4 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Mark All Read
                 </button>
-                <button className="bg-muted/50 text-foreground cursor-pointer p-3 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all">
+                <button
+                  onClick={deleteAll}
+                  className="bg-muted/60 hover:bg-red-500/10 hover:text-red-500 text-muted-foreground p-3 rounded-lg transition-all"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Filter Tabs */}
+            {/* ── Summary Strip ── */}
+            {!loading && notifications.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary rounded-full px-3 py-1.5">
+                  <Bell className="w-3 h-3" />
+                  <span className="text-[9px] font-black uppercase tracking-widest">{unreadCount} Unread</span>
+                </div>
+                {Object.entries(typeCounts).map(([type, count]) => (
+                  <div key={type} className="bg-muted/60 border border-border rounded-full px-3 py-1.5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                      {TYPE_LABELS[type as NotificationType] || type}: {count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── Tabs ── */}
             <div className="flex items-center border-b border-border">
-              <button 
-                onClick={() => setActiveTab('all')}
-                className={`px-8 py-4 text-[10px] cursor-pointer font-black uppercase tracking-widest transition-all relative ${activeTab === 'all' ? 'text-foreground' : 'text-muted-foreground'}`}
-              >
-                All Activity
-                {activeTab === 'all' && <div className="absolute bottom-0 left-0 w-full h-1 bg-foreground rounded-t-full" />}
-              </button>
-              <button 
-                onClick={() => setActiveTab('unread')}
-                className={`px-8 py-4 text-[10px] cursor-pointer font-black uppercase tracking-widest transition-all relative ${activeTab === 'unread' ? 'text-foreground' : 'text-muted-foreground'}`}
-              >
-                Unread
-                <span className="ml-2 bg-primary text-background px-1.5 py-0.5 rounded text-[8px]">{unreadCount}</span>
-                {activeTab === 'unread' && <div className="absolute bottom-0 left-0 w-full h-1 bg-foreground rounded-t-full" />}
-              </button>
+              {(["all", "unread"] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`relative px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-colors ${
+                    activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab === "all" ? "All Activity" : (
+                    <>Unread <span className="ml-1.5 bg-primary text-background px-1.5 py-0.5 rounded text-[8px]">{unreadCount}</span></>
+                  )}
+                  {activeTab === tab && (
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-foreground rounded-t-full" />
+                  )}
+                </button>
+              ))}
             </div>
 
-            {/* Notifications List */}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="bg-card border border-border rounded-[1rem] p-6 animate-pulse">
-                      <div className="flex items-start gap-6">
-                        <div className="w-12 h-12 rounded-2xl bg-muted flex-shrink-0"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-muted rounded w-1/3"></div>
-                          <div className="h-3 bg-muted rounded w-2/3"></div>
-                          <div className="h-3 bg-muted rounded w-1/4 mt-2"></div>
-                        </div>
-                      </div>
-                    </div>
+            {/* ── Content ── */}
+            {loading ? (
+              /* Skeleton — two col on lg */
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 gap-4 border-2 border-dashed border-border rounded-3xl opacity-30">
+                <Bell className="w-14 h-14" />
+                <p className="text-[10px] font-black uppercase tracking-[0.4em]">
+                  {activeTab === "unread" ? "No unread notifications" : "Nothing here yet"}
+                </p>
+              </div>
+            ) : (
+              /* Two-column masonry-style grid */
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+                {/* Left column */}
+                <div className="flex flex-col gap-4">
+                  {leftCol.map(n => (
+                    <NotificationCard
+                      key={n.id}
+                      notification={n}
+                      onMarkRead={markRead}
+                      onDelete={deleteNotification}
+                    />
                   ))}
                 </div>
-              ) : filteredNotifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 space-y-4 opacity-20 border-2 border-dashed border-border rounded-[3rem]">
-                  <Bell className="w-16 h-16" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">
-                    {activeTab === 'unread' ? 'No unread notifications' : 'Zero alerts in queue'}
-                  </p>
+
+                {/* Right column */}
+                <div className="flex flex-col gap-4">
+                  {rightCol.map(n => (
+                    <NotificationCard
+                      key={n.id}
+                      notification={n}
+                      onMarkRead={markRead}
+                      onDelete={deleteNotification}
+                    />
+                  ))}
                 </div>
-              ) : (
-                filteredNotifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`group relative bg-card border border-border cursor-pointer rounded-[1rem] p-6 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 transition-all hover:border-foreground/40 hover:shadow-xl ${
-                      !notification.isRead ? "bg-muted/10" : ""
-                    }`}
-                  >
-                    {/* Icon Wrapper */}
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-border transition-all group-hover:bg-foreground group-hover:text-background flex-shrink-0 self-start sm:mx-0">
-                      {getIcon(notification.type)}
-                    </div>
+              </div>
+            )}
 
-                    {/* Content */}
-                    <div className="flex-1 space-y-2 text-left sm:text-left">
-                      <div className="flex sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-                        <h4 className="text-sm font-black  uppercase tracking-tight flex items-center justify-start sm:justify-start gap-2">
-                          {notification.title}
-                          {!notification.isRead && (
-                            <Circle className="w-2 h-2 fill-primary text-primary" />
-                          )}
-                        </h4>
-
-                        <div className="flex items-center justify-start sm:justify-end gap-2 text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          <span className="text-[9px] font-black uppercase tracking-widest">
-                            {notification.time}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p className="text-xs text-muted-foreground font-medium leading-relaxed max-w-2xl text-left">
-                        {notification.message}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Pagination / Load More */}
-            <div className="flex justify-center pt-8">
-                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
-                  End of history reached
+            {/* ── End of list ── */}
+            {!loading && filtered.length > 0 && (
+              <div className="flex items-center gap-3 pt-4">
+                <div className="flex-1 h-px bg-border" />
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                  End of history
                 </p>
-            </div>
-
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            )}
           </div>
         </main>
       </div>
+
       <UserNav />
     </div>
   );
