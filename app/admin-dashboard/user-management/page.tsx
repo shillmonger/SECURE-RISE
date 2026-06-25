@@ -47,6 +47,7 @@ import UserManagementSkeleton from "@/components/LoadingSkeleton/UserManagementS
 // Types
 interface User {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   username: string;
@@ -659,211 +660,215 @@ export default function AdminUsersPage() {
 
       {/* User Details Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-background/10 backdrop-blur-sm px-4">
-          <div
-            className="bg-card border border-border rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-            style={{ animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">
-                User Details
-              </h3>
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="p-3 bg-muted/50 rounded-lg text-muted-foreground transition-all cursor-pointer"
-              >
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-background/10 backdrop-blur-sm px-4">
+    <div
+      className="bg-card border border-border rounded-3xl w-full max-w-2xl shadow-2xl flex flex-col"
+      style={{ 
+        height: '90vh',
+        animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" 
+      }}
+    >
 
-            {/* User Profile */}
-            <div className="flex items-center gap-4 mb-6 p-4 bg-muted/30 rounded-xl">
-              <img
-                src={selectedUser.user.profileImage || defaultProfileImage}
-                alt={selectedUser.user.fullName || selectedUser.user.name}
-                className="w-16 h-16 rounded-xl object-cover border border-border"
-              />
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  @{selectedUser.user.username}
-                </p>
-                <h4 className="font-black text-sm text-foreground">
-                  {selectedUser.user.fullName || selectedUser.user.name}
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  {selectedUser.user.email}
-                </p>
-              </div>
-            </div>
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border rounded-t-3xl">
+        <div className="flex items-center gap-3">
+          <h3 className="text-sm font-medium text-foreground">User Details</h3>
+          <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
+            selectedUser.user.status === "Active"
+              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+              : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+          }`}>
+            {selectedUser.user.status}
+          </span>
+        </div>
+        <button
+          onClick={() => setSelectedUser(null)}
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+        >
+          <XCircle className="w-4 h-4" />
+        </button>
+      </div>
 
-            {/* Personal Information */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-lg font-black text-blue-600 uppercase tracking-tighter">
-                Personal Information
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Full Name
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.fullName || selectedUser.user.name}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Phone Number
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.phone}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Country
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.country}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Status
-                  </p>
-                  <span
-                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                      selectedUser.user.status === "Active"
-                        ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                        : "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                    }`}
-                  >
-                    {selectedUser.user.status}
-                  </span>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Joined
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatDate(selectedUser.user.createdAt)}
-                  </p>
-                </div>
-              </div>
-            </div>
+      {/* Scrollable Body */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
 
-            {/* Financial Information */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-lg font-black text-green-600 uppercase tracking-tighter">
-                Financial Information
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Account Balance
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatCurrency(
-                      selectedUser.user.accountBalance ||
-                        selectedUser.user.balance ||
-                        0,
-                    )}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Total Deposits
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatCurrency(selectedUser.user.totalDeposit)}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Total Withdrawals
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatCurrency(selectedUser.user.totalWithdrawal)}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Total Profit
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatCurrency(selectedUser.user.totalProfits || 0)}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Welcome Bonus
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {formatCurrency(selectedUser.user.welcomeBonus || 0)}
-                  </p>
-                </div>
-              </div>
-            </div>
+        {/* User Profile */}
+        <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border">
+          <img
+            src={selectedUser.user.profileImage || defaultProfileImage}
+            alt={selectedUser.user.fullName || selectedUser.user.name}
+            className="w-14 h-14 rounded-xl object-cover border border-border flex-shrink-0"
+          />
+          <div>
+            <h4 className="text-sm font-medium text-foreground">
+              {selectedUser.user.fullName || selectedUser.user.name}
+            </h4>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              @{selectedUser.user.username} · {selectedUser.user.email}
+            </p>
+          </div>
+        </div>
 
-            {/* Role Information */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-lg font-black text-purple-600 uppercase tracking-tighter">
-                Role Information
-              </h4>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Roles
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.user.roles?.join(", ") || "N/A"}
-                </p>
-              </div>
+        {/* Personal Information */}
+        <div>
+          <p className="text-[11px] font-medium text-blue-600 uppercase tracking-widest mb-3">
+            Personal Information
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Full name</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedUser.user.fullName || selectedUser.user.name}
+              </p>
             </div>
-
-            {/* Referral Information */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-lg font-black text-orange-600 uppercase tracking-tighter">
-                Referral Information
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    My Referral ID
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.myReferralId || "N/A"}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Referred By
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.referralId || "N/A"}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Total Referrals
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.totalReferrals || 0}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                    Active Referrals
-                  </p>
-                  <p className="font-black text-sm text-foreground">
-                    {selectedUser.user.activeReferrals || 0}
-                  </p>
-                </div>
-              </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Phone number</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedUser.user.phone}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Country</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedUser.user.country}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Joined</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatDate(selectedUser.user.createdAt)}
+              </p>
             </div>
           </div>
         </div>
-      )}
 
+        <hr className="border-border" />
+
+        {/* Financial Information */}
+        <div>
+          <p className="text-[11px] font-medium text-green-600 uppercase tracking-widest mb-3">
+            Financial Information
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Account balance</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatCurrency(selectedUser.user.accountBalance || selectedUser.user.balance || 0)}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Total deposits</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatCurrency(selectedUser.user.totalDeposit)}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Total withdrawals</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatCurrency(selectedUser.user.totalWithdrawal)}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Total profit</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatCurrency(selectedUser.user.totalProfits || 0)}
+              </p>
+            </div>
+            <div className="col-span-2 p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Welcome bonus</p>
+              <p className="text-sm font-medium text-foreground">
+                {formatCurrency(selectedUser.user.welcomeBonus || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <hr className="border-border" />
+
+        {/* Role Information */}
+        <div>
+          <p className="text-[11px] font-medium text-purple-600 uppercase tracking-widest mb-3">
+            Role Information
+          </p>
+          <div className="p-3 bg-muted/30 rounded-lg border border-border">
+            <p className="text-[11px] text-muted-foreground mb-1">Roles</p>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {(selectedUser.user.roles?.length ? selectedUser.user.roles : ["N/A"]).map((role) => (
+                <span
+                  key={role}
+                  className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 border border-purple-500/20"
+                >
+                  {role}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <hr className="border-border" />
+
+        {/* Referral Information */}
+        <div>
+          <p className="text-[11px] font-medium text-orange-600 uppercase tracking-widest mb-3">
+            Referral Information
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">My referral ID</p>
+              <p className="text-sm font-medium text-foreground font-mono">
+                {selectedUser.user.myReferralId || "N/A"}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Referred by</p>
+              <p className="text-sm font-medium text-foreground font-mono">
+                {selectedUser.user.referralId || "N/A"}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Total referrals</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedUser.user.totalReferrals || 0}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Active referrals</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedUser.user.activeReferrals || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Fixed Footer */}
+      <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-t border-border rounded-b-3xl">
+        <p className="text-xs text-muted-foreground font-mono">
+          ID: {selectedUser.user._id || selectedUser.user.id}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setSelectedUser(null)}
+            className="text-xs font-medium px-4 py-2 rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+          >
+            Close
+          </button>
+          <button
+            className={`text-xs font-medium px-4 py-2 rounded-lg border cursor-pointer transition-opacity hover:opacity-80 ${
+              selectedUser.user.status === "Active"
+                ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+            }`}
+          >
+            {selectedUser.user.status === "Active" ? "Suspend user" : "Activate user"}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
       {/* Confirmation Modal */}
       {confirmModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">

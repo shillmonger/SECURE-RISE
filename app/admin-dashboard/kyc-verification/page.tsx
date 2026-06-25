@@ -426,198 +426,152 @@ export default function AdminKYCVerificationPage() {
         <AdminNav />
       </div>
 
-      {/* User Details Modal */}
-      {selectedUser && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-background/10 backdrop-blur-sm px-4">
-          <div
-            className="bg-card border border-border rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-            style={{ animation: "popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)" }}
-          >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">
-              User Details
-            </h3>
-            <button
-              onClick={() => setSelectedUser(null)}
-              className="p-3 bg-muted/50 rounded-lg text-muted-foreground transition-all cursor-pointer"
-            >
-              <XCircle className="w-5 h-5" />
-            </button>
-          </div>
+{selectedUser && (
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div className="bg-card border border-border rounded-2xl w-full max-w-2xl flex flex-col" style={{ height: '90vh' }}>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-4 mb-6 p-4 bg-muted/30 rounded-xl">
-            <img 
-              src={selectedUser.userProfile.profileImage} 
-              alt={selectedUser.userProfile.fullName}
-              className="w-16 h-16 rounded-xl object-cover border border-border"
-            />
-            <div>
-              <h4 className="font-black text-lg text-foreground">
-                {selectedUser.userProfile.fullName}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                @{selectedUser.userProfile.username}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {selectedUser.userProfile.email}
-              </p>
-            </div>
-          </div>
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <h3 className="text-sm font-medium text-foreground">User details</h3>
+          <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
+            selectedUser.status === "approved"
+              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+              : selectedUser.status === "rejected"
+              ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+              : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+          }`}>
+            {selectedUser.status}
+          </span>
+        </div>
+        <button
+          onClick={() => setSelectedUser(null)}
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+        >
+          <XCircle className="w-4 h-4" />
+        </button>
+      </div>
 
-          {/* Personal Information */}
-          <div className="space-y-4 mb-6">
-            <h4 className="text-lg font-black text-foreground uppercase tracking-tighter">
-              Personal Information
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Full Name
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.firstName} {selectedUser.lastName}
-                </p>
+      {/* Scrollable Body */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+        {/* User hero */}
+        <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border">
+          <img
+            src={selectedUser.userProfile.profileImage}
+            alt={selectedUser.userProfile.fullName}
+            className="w-13 h-13 rounded-xl object-cover border border-border flex-shrink-0"
+          />
+          <div>
+            <p className="text-sm font-medium text-foreground">{selectedUser.userProfile.fullName}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              @{selectedUser.userProfile.username} · {selectedUser.userProfile.email}
+            </p>
+          </div>
+        </div>
+
+        {/* Personal information */}
+        <div>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+            Personal information
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: "Full name", value: `${selectedUser.firstName} ${selectedUser.lastName}` },
+              { label: "Date of birth", value: selectedUser.dob },
+              { label: "Nationality", value: selectedUser.nationality },
+              { label: "Postal code", value: selectedUser.postalCode },
+            ].map(({ label, value }) => (
+              <div key={label} className="p-3 bg-muted/30 rounded-lg border border-border">
+                <p className="text-[11px] text-muted-foreground mb-1">{label}</p>
+                <p className="text-sm font-medium text-foreground">{value}</p>
               </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Date of Birth
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.dob}
-                </p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Nationality
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.nationality}
-                </p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Postal Code
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.postalCode}
-                </p>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                Address
-              </p>
-              <p className="font-black text-sm text-foreground">
+            ))}
+            <div className="col-span-2 p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Address</p>
+              <p className="text-sm font-medium text-foreground">
                 {selectedUser.address}, {selectedUser.city}, {selectedUser.country}
               </p>
             </div>
           </div>
+        </div>
 
-          {/* Document Information */}
-          <div className="space-y-4 mb-6">
-            <h4 className="text-lg font-black text-foreground uppercase tracking-tighter">
-              Document Information
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Document Type
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.idType}
-                </p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Document Number
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {selectedUser.idNumber}
-                </p>
-              </div>
+        <hr className="border-border" />
+
+        {/* Identity document */}
+        <div>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+            Identity document
+          </p>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Document type</p>
+              <p className="text-sm font-medium text-foreground">{selectedUser.idType}</p>
             </div>
-            
-            {/* Document Images */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">
-                  Front Document
-                </p>
-                <img 
-                  src={selectedUser.frontImage} 
-                  alt="Front of document"
-                  className="w-full h-40 object-cover rounded-lg border border-border cursor-pointer"
-                  onClick={() => window.open(selectedUser.frontImage, '_blank')}
-                />
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">
-                  Back Document
-                </p>
-                <img 
-                  src={selectedUser.backImage} 
-                  alt="Back of document"
-                  className="w-full h-40 object-cover rounded-lg border border-border cursor-pointer"
-                  onClick={() => window.open(selectedUser.backImage, '_blank')}
-                />
-              </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Document number</p>
+              <p className="text-sm font-medium text-foreground font-mono">{selectedUser.idNumber}</p>
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: "Front", src: selectedUser.frontImage },
+              { label: "Back", src: selectedUser.backImage },
+            ].map(({ label, src }) => (
+              <div key={label} className="rounded-lg border border-border overflow-hidden bg-muted/30">
+                <p className="text-[11px] text-muted-foreground px-3 pt-2.5 pb-1.5">{label}</p>
+                <img
+                  src={src}
+                  alt={`${label} of document`}
+                  className="w-full h-36 object-cover border-t border-border cursor-pointer"
+                  onClick={() => window.open(src, '_blank')}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* Submission Details */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-black text-foreground uppercase tracking-tighter">
-              Submission Details
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Submission ID
-                </p>
-                <p className="font-black text-sm text-foreground font-mono">
-                  {selectedUser.submissionId}
-                </p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Status
-                </p>
-                <span
-                  className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                    selectedUser.status === "approved"
-                      ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                      : selectedUser.status === "rejected"
-                      ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                      : "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                  }`}
-                >
-                  {selectedUser.status}
-                </span>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Submitted At
-                </p>
-                <p className="font-black text-sm text-foreground">
-                  {new Date(selectedUser.createdAt).toLocaleString()}
-                </p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  IP Address
-                </p>
-                <p className="font-black text-sm text-foreground font-mono">
-                  {selectedUser.ipAddress}
-                </p>
-              </div>
+        <hr className="border-border" />
+
+        {/* Submission details */}
+        <div>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+            Submission details
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="col-span-2 p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Submission ID</p>
+              <p className="text-sm font-medium text-foreground font-mono">{selectedUser.submissionId}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">Submitted</p>
+              <p className="text-sm font-medium text-foreground">
+                {new Date(selectedUser.createdAt).toLocaleString()}
+              </p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg border border-border">
+              <p className="text-[11px] text-muted-foreground mb-1">IP address</p>
+              <p className="text-sm font-medium text-foreground font-mono">{selectedUser.ipAddress}</p>
             </div>
           </div>
         </div>
-        </div>
-      )}
+
+      </div>
+
+
+{/* Fixed Footer */}
+      <div className="flex-shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+        <button className="text-xs font-medium px-4 py-2 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-600 hover:opacity-80 transition-opacity cursor-pointer">
+          Reject
+        </button>
+        <button className="text-xs font-medium px-4 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:opacity-80 transition-opacity cursor-pointer">
+          Approve
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
       {/* Confirmation Modal */}
       {confirmModal && (
