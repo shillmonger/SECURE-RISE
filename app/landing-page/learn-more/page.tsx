@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Coins,
   Gift,
@@ -30,59 +32,263 @@ import {
   BarChart2,
   Target,
   RefreshCw,
+  ChevronRight,
+  Scale,
 } from "lucide-react";
 import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
+import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
+import CookieConsent from "@/components/landing-page/CookieConsent";
 import Footer from "@/components/landing-page/Footer";
-import FAQ from "@/components/landing-page/faq";
-import ReadAloud from "@/components/user-dashboard/read-aloud";
 import Link from "next/link";
 
+const sections = [
+  { id: "welcome", title: "Welcome to Secure Rise", icon: TrendingUp },
+  { id: "xp-rewards", title: "XP & Rewards System", icon: Coins },
+  { id: "gift-member", title: "Gift Member", icon: Gift },
+  { id: "affiliate-network", title: "Affiliate Network", icon: Users },
+  { id: "withdraw", title: "Withdraw Funds", icon: ArrowUpRight },
+  { id: "achievements", title: "Achievements", icon: Trophy },
+  { id: "daily-streak", title: "Daily Streak", icon: Flame },
+  { id: "kyc", title: "KYC Verification", icon: ShieldCheck },
+  { id: "deposit", title: "Deposit Funds", icon: CreditCard },
+  { id: "gift-card", title: "Gift Card Deposit", icon: ShoppingBag },
+  { id: "investment", title: "Investment Plans", icon: TrendingUp },
+  { id: "leaderboard", title: "Leaderboard", icon: Trophy },
+  { id: "analytics", title: "Performance Analytics", icon: BarChart2 },
+];
+
 export default function LearnMorePage() {
+  const pathname = usePathname();
+  const [activeSection, setActiveSection] = useState<string>("welcome");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY + 140;
+      for (const section of sections) {
+        const el = document.getElementById(section.id);
+        if (el && scrollY >= el.offsetTop && scrollY < el.offsetTop + el.offsetHeight) {
+          setActiveSection(section.id);
+          break;
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setActiveSection(id);
+    setSidebarOpen(false);
+  };
+
+  const activeIndex = sections.findIndex((s) => s.id === activeSection);
+
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <main className="min-h-screen bg-background text-foreground transition-colors duration-300 flex flex-col">
       <GiveAway />
       <Header />
 
-      <main className="py-12 px-4 md:px-8">
+      {/* ── Hero ──────────────────────────────────────────────────── */}
+      <section className="relative h-[30vh] min-h-[400px] w-full flex items-center justify-center overflow-hidden">
+        {/* Background */}
         <div
-          id="learn-more-content"
-          className="max-w-7xl mx-auto space-y-12"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://i.postimg.cc/CKFgjjwZ/BANNA.jpg')",
+          }}
+        />
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/65 to-black/90" />
+
+        {/* Subtle grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        <div className="relative z-10 text-center text-white px-4 max-w-3xl mx-auto mt-20">
+          {/* Eyebrow badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/6 backdrop-blur-sm px-4 py-1.5 mb-6"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
+              Platform Guide
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="text-4xl md:text-6xl font-black uppercase  tracking-tighter mb-5 text-white leading-none"
+          >
+            Learn{" "}
+            <span className="text-primary">More</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.22 }}
+            className="text-sm md:text-base font-light tracking-wide text-white/60 max-w-lg mx-auto leading-relaxed"
+          >
+            Comprehensive guide to all Secure Rise platform features, rewards, and investment opportunities.
+          </motion.p>
+
+          {/* Progress bar — sections overview */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center justify-center gap-1.5 mt-8"
+          >
+            {sections.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => scrollTo(s.id)}
+                aria-label={s.title}
+                className={`h-[3px] rounded-full transition-all duration-300 ${
+                  s.id === activeSection
+                    ? "bg-primary w-8"
+                    : i < activeIndex
+                    ? "bg-primary/40 w-4"
+                    : "bg-white/20 w-4"
+                }`}
+              />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Scroll cue */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
         >
-          {/* Page Header */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between mt-25">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
-                  Learn More
-                </h1>
+          <span className="text-[9px] uppercase tracking-[0.25em] text-white/35 font-medium">
+            Scroll
+          </span>
+          <div className="w-[1px] h-7 bg-gradient-to-b from-white/35 to-transparent" />
+        </motion.div>
+      </section>
 
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                  Detailed information about our platform features
-                </p>
+      {/* ── Body ──────────────────────────────────────────────────── */}
+      <section className="max-w-[1400px] mx-auto px-4 lg:px-8 pb-24 pt-12 flex flex-col lg:flex-row gap-10 w-full">
+
+        {/* ── Sidebar (desktop) ── */}
+        <aside className="hidden lg:block w-72 shrink-0">
+          <div className="sticky top-32 space-y-1.5">
+            {/* Header label */}
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-5 px-1">
+              Sections
+            </p>
+
+            {sections.map((item, i) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  className={`group w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
+                >
+                  <span
+                    className={`flex items-center justify-center w-6 h-6 rounded-md text-xs font-mono shrink-0 transition-colors ${
+                      isActive
+                        ? "bg-white/15 text-white"
+                        : "bg-secondary text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                    }`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="leading-tight">{item.title}</span>
+                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-60" />}
+                </button>
+              );
+            })}
+
+            {/* Reading progress */}
+            <div className="mt-6 px-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-medium">
+                  Progress
+                </span>
+                <span className="text-[9px] font-mono text-muted-foreground">
+                  {activeIndex + 1}/{sections.length}
+                </span>
               </div>
-
-              <ReadAloud targetId="learn-more-content" />
+              <div className="h-[3px] bg-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${((activeIndex + 1) / sections.length) * 100}%` }}
+                />
+              </div>
             </div>
-          </section>
+          </div>
+        </aside>
 
+        {/* ── Mobile sticky nav ── */}
+        <div className="lg:hidden sticky top-[80px] z-30 -mx-4 px-4 py-3 bg-background/90 backdrop-blur-md border-b border-border">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+            {sections.map((s) => {
+              const Icon = s.icon;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => scrollTo(s.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 ${
+                    activeSection === s.id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="w-3 h-3" />
+                  {s.title}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="flex-1 min-w-0 space-y-6" id="learn-more-content">
           {/* Welcome to Secure Rise Section */}
-          <section className="bg-gradient-to-br from-primary/10 via-card to-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary/20 rounded-xl border border-primary/30">
-                <TrendingUp className="w-6 h-6 text-primary" />
+          <motion.div
+            id="welcome"
+            className="scroll-mt-32 bg-gradient-to-br from-primary/10 via-card to-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                01
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <TrendingUp className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Welcome to Secure Rise
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Your Trading & Investment Hub
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Welcome to Secure Rise</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 Secure Rise is a premier trading and investment platform that connects your capital with skilled professional traders. Our platform offers institutional-grade trading infrastructure, advanced AI technology, and comprehensive risk protection to help you grow your wealth safely and efficiently.
               </p>
@@ -141,33 +347,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <TrendingUp className="w-4 h-4" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* XP & Rewards System Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
-                <Coins className="w-6 h-6 text-yellow-500" />
+          <motion.div
+            id="xp-rewards"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                02
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Coins className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  XP & Rewards System
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Complete Guide to Earning and Converting XP
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">XP & Rewards System</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Secure Rise XP & Rewards System allows you to earn Experience Points (XP) through daily engagement and platform milestones. Convert your XP into USDT at any time to grow your trading capital. This comprehensive guide explains all ways to earn XP and how to maximize your rewards.
               </p>
@@ -296,33 +497,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Coins className="w-4 h-4 text-yellow-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Gift Member Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
-                <Gift className="w-6 h-6 text-primary" />
+          <motion.div
+            id="gift-member"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                03
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Gift className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Empower a Fellow Trader
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Send gifts to other platform members
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Gift Member</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Gift Transfer feature allows you to send USDT directly to other members of the Secure Rise platform. This is a great way to help fellow traders scale their portfolios, support friends, or participate in community initiatives. Plus, you earn rewards for every gift you send!
               </p>
@@ -376,33 +572,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Gift className="w-4 h-4" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Referral/Affiliate Network Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                <Users className="w-6 h-6 text-emerald-500" />
+          <motion.div
+            id="affiliate-network"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                04
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Users className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Affiliate Network
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Expand your network, increase your earnings
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Affiliate Network</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Affiliate Network allows you to earn commissions by referring new users to Secure Rise. Share your unique referral link and earn a percentage of your referrals' deposits. Build a multi-level network and maximize your earning potential through our tiered commission structure.
               </p>
@@ -471,33 +662,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Users className="w-4 h-4" />
-              Start Referring
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Withdraw Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-                <ArrowUpRight className="w-6 h-6 text-red-500" />
+          <motion.div
+            id="withdraw"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                05
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <ArrowUpRight className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Withdraw Funds
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Securely withdraw your earnings to crypto wallets
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Withdraw Funds</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Withdrawal feature allows you to cash out your earnings securely to your linked cryptocurrency wallets. We support multiple cryptocurrencies including Bitcoin, Ethereum, Solana, USDT, and USDC. All withdrawals are processed with security measures to protect your funds.
               </p>
@@ -551,33 +737,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <ArrowUpRight className="w-4 h-4 text-red-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Achievements Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                <Trophy className="w-6 h-6 text-purple-500" />
+          <motion.div
+            id="achievements"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                06
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Trophy className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Achievements
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Unlock rewards by reaching platform milestones
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Achievements</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Achievements system rewards you for your activity on the platform. Complete various milestones to unlock achievements and earn XP. Achievements are organized into categories and have different rarity levels, with higher rarity achievements granting more XP.
               </p>
@@ -620,33 +801,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Trophy className="w-4 h-4 text-purple-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Daily Streak Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20">
-                <Flame className="w-6 h-6 text-orange-500" />
+          <motion.div
+            id="daily-streak"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                07
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Flame className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Daily Streak
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Log in daily to earn XP rewards
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Daily Streak</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Daily Streak feature rewards you for consistent platform engagement. Log in every day to claim 100 XP and build your streak. The longer your streak, the more XP you accumulate. Your streak progress is tracked in a calendar view, showing completed, missed, and upcoming days.
               </p>
@@ -698,33 +874,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Flame className="w-4 h-4 text-orange-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* KYC Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                <ShieldCheck className="w-6 h-6 text-blue-500" />
+          <motion.div
+            id="kyc"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                08
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <ShieldCheck className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  KYC Verification
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Verify your identity to unlock full platform access
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">KYC Verification</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 KYC (Know Your Customer) verification is required to access certain platform features and increase withdrawal limits. The verification process involves submitting personal information and government-issued ID documents for review by our compliance team.
               </p>
@@ -776,33 +947,28 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Deposit Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-500/10 rounded-xl border border-green-500/20">
-                <CreditCard className="w-6 h-6 text-green-500" />
+          <motion.div
+            id="deposit"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                09
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <CreditCard className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Fund Balance
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Add funds to your account using cryptocurrency
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Deposit Funds</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Deposit feature allows you to fund your account balance using various cryptocurrencies. Simply enter the amount you wish to deposit, select your preferred cryptocurrency, and proceed to checkout to receive payment instructions. Deposits are credited to your account after confirmation.
               </p>
@@ -843,33 +1009,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4 text-green-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Gift Card Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-pink-500/10 rounded-xl border border-pink-500/20">
-                <ShoppingBag className="w-6 h-6 text-pink-500" />
+          <motion.div
+            id="gift-card"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                10
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <ShoppingBag className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Gift Card Deposit
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Convert gift cards into account balance
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Gift Card Deposit</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Gift Card Deposit feature allows you to convert physical or digital gift cards into account balance. We accept gift cards from major retailers including Apple, Xbox, Amazon, Steam, Razer Gold, and Google Play. Simply follow the 5-step verification process to submit your gift card.
               </p>
@@ -918,33 +1079,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <ShoppingBag className="w-4 h-4 text-pink-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Investment Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
-                <TrendingUp className="w-6 h-6 text-cyan-500" />
+          <motion.div
+            id="investment"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                11
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <TrendingUp className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Investment Plans
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Grow your wealth with our high-yield investment plans
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Investment Plans</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 Our Investment Plans offer a straightforward way to grow your wealth with a fixed 50% daily ROI. Choose from 6 different plan tiers based on your investment amount. All plans run for 7 days with daily ROI payouts credited to your account balance.
               </p>
@@ -1000,33 +1156,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
-              Get Started
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Leaderboard Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                <Trophy className="w-6 h-6 text-amber-500" />
+          <motion.div
+            id="leaderboard"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                12
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <Trophy className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Leaderboard
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Compare performance against top traders
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Leaderboard</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Leaderboard showcases the top-performing traders on Secure Rise. Compare your portfolio metrics, withdrawals, profits, and deposits against the most successful users. The leaderboard updates 24/7 to reflect real-time performance data.
               </p>
@@ -1085,33 +1236,28 @@ export default function LearnMorePage() {
                 </p>
               </div>
             </div>
-
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <Trophy className="w-4 h-4" />
-              Climb the Ranks
-            </Link>
-          </section>
+            </motion.div>
 
           {/* Analytics/Performance Section */}
-          <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                <BarChart2 className="w-6 h-6 text-blue-500" />
+          <motion.div
+            id="analytics"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                13
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
+                <BarChart2 className="w-4 h-4 text-primary" />
               </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Performance Analytics
-                </h2>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Track investment growth & trade metrics
-                </p>
-              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Performance Analytics</h3>
             </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
               <p>
                 The Performance Analytics dashboard provides comprehensive insights into your trading performance, portfolio growth, and investment metrics. Track your progress over different time ranges and make data-driven decisions to optimize your investment strategy.
               </p>
@@ -1215,21 +1361,23 @@ export default function LearnMorePage() {
                 </ul>
               </div>
             </div>
+            </motion.div>
 
-            <Link
-              href="/landing-page/auth/register"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
-            >
-              <BarChart2 className="w-4 h-4" />
-              Track Performance
-            </Link>
-          </section>
+          {/* ── Footer strip ── */}
+          <div className="flex items-center gap-4 pt-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+            <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-medium whitespace-nowrap">
+              Secure Rise · Platform Guide
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+          </div>
 
         </div>
-      </main>
+      </section>
 
-      <FAQ />
+      <ThemeAndScroll />
+      <CookieConsent />
       <Footer />
-    </div>
+    </main>
   );
 }
