@@ -7,6 +7,7 @@ import {
   BarChart3,
   CreditCard,
   Wallet,
+  ChartSpline,
   CandlestickChart,
   ChartNoAxesCombined,
   Gift,
@@ -20,8 +21,8 @@ export default function UserNav() {
     { name: "Home", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     { name: "Deposit", icon: CreditCard, href: `${basePath}/deposit` },
     { name: "Invest", icon: BarChart3, href: `${basePath}/invest` },
-    { name: "Trades", icon: ChartNoAxesCombined, href: `${basePath}/my-investments` },
     { name: "Payout", icon: Wallet, href: `${basePath}/withdraw` },
+    { name: "Trades", icon: ChartSpline, href: `${basePath}/my-investments` },
     { name: "Settings", icon: Settings, href: `${basePath}/user-settings` },
   ];
 

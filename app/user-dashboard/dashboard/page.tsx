@@ -625,7 +625,7 @@ export default function UserOverviewPage() {
             {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
-                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
+                <h1 className="text-xl md:text-3xl font-black uppercase tracking-tighter  leading-none">
                   {loading ? (
                     <div className="h-10 w-64 bg-muted rounded animate-pulse"></div>
                   ) : (

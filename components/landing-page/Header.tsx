@@ -41,7 +41,7 @@ export default function Header() {
   /* Mobile underline styles — thinner active underline */
   const mobileLinkStyles = (href: string, exact: boolean = true) => {
     const isActive = exact ? pathname === href : pathname.startsWith(href);
-    return `relative flex items-center gap-3 px-1 py-3.5 text-[15px] font-bold tracking-wide transition-colors
+    return `relative flex items-center gap-3 px-0 pt-3.5 pb-2.5 text-[15px] font-bold tracking-wide transition-colors
       border-b border-border/40 last:border-b-0
       after:absolute after:bottom-0 after:left-0 after:h-[1px] after:rounded-full after:transition-all after:duration-300
       ${
@@ -138,8 +138,6 @@ export default function Header() {
               </Button>
             </div>
 
-
-
             {/* MOBILE TOGGLE */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -150,6 +148,18 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* MOBILE MENU BACKDROP */}
       <div
@@ -189,13 +199,6 @@ export default function Header() {
                Trading Plans
             </Link>
             <Link
-              href="/landing-page/about"
-              onClick={closeMobileMenu}
-              className={mobileLinkStyles("/landing-page/about")}
-            >
-              About Secure Rise
-            </Link>
-            <Link
               href="/landing-page/contact-us"
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/contact-us")}
@@ -208,6 +211,13 @@ export default function Header() {
               className={mobileLinkStyles("/landing-page/learn-more")}
             >
               Learn More
+            </Link>
+            <Link
+              href="/landing-page/about"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/about")}
+            >
+              About Secure Rise
             </Link>
             {/* <Link
               href="/landing-page/testimonials"
