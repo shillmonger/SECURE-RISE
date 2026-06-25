@@ -125,12 +125,12 @@ export default function UserSidebar({
     },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
     { name: "Gift Members", icon: Smile, href: `${basePath}/gift-member` },
-    { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
     {
-      name: "XP to USDT (Redeem)",
+      name: "XP Redemption",
       icon: ArrowRightLeft,
       href: `${basePath}/redeem-xp`,
     },
+    { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
     {
       name: "Community",
       icon: Users,

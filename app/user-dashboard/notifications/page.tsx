@@ -133,7 +133,12 @@ const NotificationCard = ({
         </p>
         {isLong && (
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => {
+              setExpanded(!expanded);
+              if (!expanded && !notification.isRead) {
+                onMarkRead(notification.id);
+              }
+            }}
             className="mt-1.5 flex items-center cursor-pointer gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
           >
             {expanded ? (
@@ -249,7 +254,7 @@ const NotificationsPage = () => {
               title: "Deposit Received",
               message: `Your deposit of $${d.amount.toFixed(2)} via ${d.paymentMethod} has been processed and is currently ${d.status}. Funds will be available after verification.`,
               time: formatTimeAgo(new Date(d.createdAt)),
-              isRead: d.status === "approved",
+              isRead: false,
               rawData: d,
             });
           });
@@ -263,7 +268,7 @@ const NotificationsPage = () => {
               title: `Withdrawal ${w.status.charAt(0).toUpperCase() + w.status.slice(1)}`,
               message: `Your withdrawal of $${w.amount.toFixed(2)} via ${w.crypto?.name || "Unknown"} has been ${w.status}. Funds are being transferred to your wallet.`,
               time: formatTimeAgo(new Date(w.date || Date.now())),
-              isRead: w.status === "approved",
+              isRead: false,
               rawData: w,
             });
           });
@@ -277,7 +282,7 @@ const NotificationsPage = () => {
               title: "Investment Started",
               message: `Your investment of $${inv.investmentAmount.toFixed(2)} in the ${inv.planName} plan is now ${inv.status}. Funds are actively generating returns per the plan terms.`,
               time: formatTimeAgo(new Date(inv.startDate)),
-              isRead: inv.status === "completed",
+              isRead: false,
               rawData: inv,
             });
 
@@ -306,7 +311,7 @@ const NotificationsPage = () => {
               title: `Gift Card ${statusText}`,
               message: `Your ${gc.cardType} gift card worth ${gc.currency} ${gc.amount.toFixed(2)} from ${gc.country} is ${statusText.toLowerCase()}. Details will be sent to your email upon approval.${gc.rejectionReason ? ` Reason: ${gc.rejectionReason}` : ""}`,
               time: formatTimeAgo(new Date(gc.createdAt)),
-              isRead: gc.status === "approved" || gc.status === "rejected",
+              isRead: false,
               rawData: gc,
             });
           });
@@ -336,7 +341,7 @@ const NotificationsPage = () => {
               title: "XP Redeemed",
               message: `You redeemed ${r.xpAmount.toLocaleString()} ${r.xpType === "daily" ? "Daily Streak" : "Achievement"} XP for $${r.usdtAmount.toFixed(2)} USDT, credited to your account.`,
               time: formatTimeAgo(new Date(r.createdAt)),
-              isRead: r.status === "completed",
+              isRead: false,
               rawData: r,
             });
           });
@@ -348,7 +353,14 @@ const NotificationsPage = () => {
           return db - da;
         });
 
-        setNotifications(all);
+        // Load read status from localStorage
+        const readStatus = JSON.parse(localStorage.getItem('notificationReadStatus') || '{}');
+        const notificationsWithStatus = all.map(n => ({
+          ...n,
+          isRead: readStatus[n.id] || false
+        }));
+
+        setNotifications(notificationsWithStatus);
       } catch (err) {
         console.error("Error fetching notifications:", err);
       } finally {
@@ -359,14 +371,26 @@ const NotificationsPage = () => {
     fetchData();
   }, []);
 
-  const markRead = (id: string) =>
+  const markRead = (id: string) => {
     setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    // Persist to localStorage
+    const readStatus = JSON.parse(localStorage.getItem('notificationReadStatus') || '{}');
+    readStatus[id] = true;
+    localStorage.setItem('notificationReadStatus', JSON.stringify(readStatus));
+  };
 
   const deleteNotification = (id: string) =>
     setNotifications(prev => prev.filter(n => n.id !== id));
 
-  const markAllRead = () =>
+  const markAllRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    // Persist all to localStorage
+    const readStatus: Record<string, boolean> = {};
+    notifications.forEach(n => {
+      readStatus[n.id] = true;
+    });
+    localStorage.setItem('notificationReadStatus', JSON.stringify(readStatus));
+  };
 
   const deleteAll = () => setNotifications([]);
 
@@ -428,12 +452,12 @@ const NotificationsPage = () => {
             {/* ── Summary Strip ── */}
             {!loading && notifications.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary rounded-full px-3 py-1.5">
+                <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary rounded-xl px-3 py-1.5">
                   <Bell className="w-3 h-3" />
                   <span className="text-[9px] font-black uppercase tracking-widest">{unreadCount} Unread</span>
                 </div>
                 {Object.entries(typeCounts).map(([type, count]) => (
-                  <div key={type} className="bg-muted/60 border border-border rounded-full px-3 py-1.5">
+                  <div key={type} className="bg-muted/60 border border-border rounded-xl px-3 py-1.5">
                     <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                       {TYPE_LABELS[type as NotificationType] || type}: {count}
                     </span>
