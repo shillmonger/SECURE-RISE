@@ -8,9 +8,11 @@ import {
   LayoutDashboard,
   BarChart3,
   BadgeCheck,
+  Package,
   ArrowRightLeft,
   Trophy,
   BanknoteArrowUp,
+  Swords,
   TrendingUp,
   ChartSpline,
   Smile,
@@ -66,8 +68,9 @@ export default function UserSidebar({
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "Fund Account": true,
+    "Earn Free USDT": true,
     Account: true,
-    Community: true,
+    // Community: true,
   });
 
   const basePath = "/user-dashboard";
@@ -103,11 +106,6 @@ export default function UserSidebar({
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
     {
-      name: "My Portfolio",
-      icon: ChartSpline,
-      href: `${basePath}/my-investments`,
-    },
-    {
       name: "Fund Account",
       icon: Wallet,
       children: [
@@ -124,7 +122,30 @@ export default function UserSidebar({
       ],
     },
     { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
+    {
+      name: "My Portfolio",
+      icon: Package,
+      href: `${basePath}/my-investments`,
+    },
     { name: "Gift Members", icon: Smile, href: `${basePath}/gift-member` },
+
+{
+      name: "Earn Free USDT",
+      icon: ChartSpline,
+      children: [
+        {
+          name: "Predict Market (XP)",
+          icon: Swords ,
+          href: `${basePath}/predict`,
+        },
+         {
+          name: "daily streak (XP)",
+          icon: PartyPopper,
+          href: `${basePath}/daily-streak`,
+        },
+        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
+      ],
+    },
     {
       name: "XP Redemption",
       icon: ArrowRightLeft,
@@ -135,12 +156,6 @@ export default function UserSidebar({
       name: "Community",
       icon: Users,
       children: [
-        {
-          name: "daily streak (XP)",
-          icon: PartyPopper,
-          href: `${basePath}/daily-streak`,
-        },
-        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
         { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
         { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },

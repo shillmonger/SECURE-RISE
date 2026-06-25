@@ -41,7 +41,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
     { name: "Investor Payouts", icon: CircleDollarSign, href: `${basePath}/investment-payouts` },
     { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
     { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc-verification` },
-    { name: "Switch to User", icon: User, href: "/user-dashboard/dashboard" },
+    { name: "Switch to Investor", icon: User, href: "/user-dashboard/dashboard" },
   ];
 
   useEffect(() => {

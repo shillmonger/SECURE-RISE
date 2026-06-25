@@ -564,13 +564,13 @@ export default function AdminUsersPage() {
                             >
                               {user.name.charAt(0)}
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col gap-1">
                               <span className="font-bold  text-sm text-foreground">
                                 {user.name}
                               </span>
-                              <span className="text-xs text-muted-foreground">
+                              {/* <span className="text-xs text-muted-foreground">
                                 @{user.username}
-                              </span>
+                              </span> */}
                               <span className="text-xs text-muted-foreground flex items-center gap-1">
                                 <Mail className="w-3 h-3" /> {user.email}
                               </span>
