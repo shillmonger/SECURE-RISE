@@ -11,6 +11,8 @@ import {
   Loader2,
   Gift,
   CreditCard,
+  AlertTriangle,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -94,6 +96,7 @@ export default function AdminGiftCardsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; action: 'approve' | 'reject'; giftCardId: string; userName: string; amount: number; currency: string } | null>(null);
 
   useEffect(() => {
     fetchGiftCards();
@@ -147,6 +150,7 @@ export default function AdminGiftCardsPage() {
       toast.error("Error approving gift card");
     } finally {
       setActionLoading(null);
+      setConfirmModal(null);
     }
   };
 
@@ -176,7 +180,31 @@ export default function AdminGiftCardsPage() {
       toast.error("Error rejecting gift card");
     } finally {
       setActionLoading(null);
+      setConfirmModal(null);
     }
+  };
+
+  const openConfirmModal = (action: 'approve' | 'reject', giftCardId: string, userName: string, amount: number, currency: string) => {
+    setConfirmModal({ isOpen: true, action, giftCardId, userName, amount, currency });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal(null);
+  };
+
+  const confirmAction = () => {
+    if (!confirmModal) return;
+
+    if (confirmModal.action === 'approve') {
+      handleApprove(confirmModal.giftCardId, confirmModal.userName);
+    } else {
+      handleReject(confirmModal.giftCardId, confirmModal.userName);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Code copied to clipboard");
   };
 
   const filteredGiftCards = giftCards.filter((giftCard) => {
@@ -397,9 +425,18 @@ export default function AdminGiftCardsPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                              {giftCard.code}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                                {giftCard.code}
+                              </span>
+                              <button
+                                onClick={() => copyToClipboard(giftCard.code)}
+                                className="p-1.5 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                                title="Copy code"
+                              >
+                                <Copy className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                              </button>
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <a
@@ -426,37 +463,33 @@ export default function AdminGiftCardsPage() {
                                 <>
                                   <button
                                     onClick={() =>
-                                      handleApprove(
+                                      openConfirmModal(
+                                        'approve',
                                         giftCard._id,
-                                        giftCard.userId?.fullName ||
-                                          "Unknown User",
+                                        giftCard.userId?.fullName || "Unknown User",
+                                        giftCard.amount,
+                                        giftCard.currency
                                       )
                                     }
                                     disabled={actionLoading === giftCard._id}
-                                    className="p-3 bg-green-500/10 text-green-600 rounded-lg cursor-pointer hover:bg-green-500 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="p-3 bg-teal-500/10 text-teal-600 rounded-lg cursor-pointer hover:bg-teal-500 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
-                                    {actionLoading === giftCard._id ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <Check className="w-4 h-4" />
-                                    )}
+                                    <Check className="w-4 h-4" />
                                   </button>
                                   <button
                                     onClick={() =>
-                                      handleReject(
+                                      openConfirmModal(
+                                        'reject',
                                         giftCard._id,
-                                        giftCard.userId?.fullName ||
-                                          "Unknown User",
+                                        giftCard.userId?.fullName || "Unknown User",
+                                        giftCard.amount,
+                                        giftCard.currency
                                       )
                                     }
                                     disabled={actionLoading === giftCard._id}
                                     className="p-3 bg-red-500/10 text-red-500 cursor-pointer rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
-                                    {actionLoading === giftCard._id ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <X className="w-4 h-4" />
-                                    )}
+                                    <X className="w-4 h-4" />
                                   </button>
                                 </>
                               ) : (
@@ -478,6 +511,104 @@ export default function AdminGiftCardsPage() {
 
         <AdminNav />
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            onClick={closeConfirmModal}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* Modal */}
+          <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            {/* Icon */}
+            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+              confirmModal.action === 'approve'
+                ? 'bg-teal-500/10'
+                : 'bg-red-500/10'
+            }`}>
+              {confirmModal.action === 'approve' ? (
+                <Check className="w-8 h-8 text-teal-500" />
+              ) : (
+                <X className="w-8 h-8 text-red-500" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl font-black text-center uppercase tracking-tight mb-2">
+              {confirmModal.action === 'approve' ? 'Confirm Gift Card' : 'Reject Gift Card'}
+            </h2>
+
+            {/* Warning */}
+            <div className="bg-muted/50 border border-border rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This action <strong>cannot be undone</strong>. Please review the details below before confirming.
+                </p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">User</span>
+                <span className="text-sm font-bold text-foreground">{confirmModal.userName}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Amount</span>
+                <span className="text-sm font-bold text-foreground">{confirmModal.currency} {confirmModal.amount.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Action</span>
+                <span className={`text-sm font-bold uppercase ${
+                  confirmModal.action === 'approve' ? 'text-teal-500' : 'text-red-500'
+                }`}>
+                  {confirmModal.action}
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={closeConfirmModal}
+                disabled={actionLoading === confirmModal.giftCardId}
+                className="flex-1 px-4 py-3 cursor-pointer bg-muted text-foreground rounded-lg text-xs font-black uppercase tracking-wider hover:bg-muted/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAction}
+                disabled={actionLoading === confirmModal.giftCardId}
+                className={`flex-1 px-4 py-3 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                  confirmModal.action === 'approve'
+                    ? 'bg-teal-500 text-white hover:bg-teal-600'
+                    : 'bg-red-500 text-white hover:bg-red-600'
+                }`}
+              >
+                {actionLoading === confirmModal.giftCardId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {confirmModal.action === 'approve' ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
+                    {confirmModal.action === 'approve' ? 'Confirm' : 'Reject'}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

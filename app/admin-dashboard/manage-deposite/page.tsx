@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check, X, Clock, DollarSign, Search, Filter, ExternalLink, Loader2 } from "lucide-react";
+import { Check, X, Clock, DollarSign, Search, Filter, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
@@ -54,13 +54,14 @@ const getStatusIcon = (status: string) => {
 export default function AdminPaymentsPage() {
   // Default profile image constant
   const defaultProfileImage = "https://github.com/shadcn.png";
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; action: 'approve' | 'reject'; depositId: string; userName: string; amount: number } | null>(null);
 
   useEffect(() => {
     fetchDeposits();
@@ -114,6 +115,7 @@ export default function AdminPaymentsPage() {
       toast.error('Error approving payment');
     } finally {
       setActionLoading(null);
+      setConfirmModal(null);
     }
   };
 
@@ -143,6 +145,25 @@ export default function AdminPaymentsPage() {
       toast.error('Error rejecting payment');
     } finally {
       setActionLoading(null);
+      setConfirmModal(null);
+    }
+  };
+
+  const openConfirmModal = (action: 'approve' | 'reject', depositId: string, userName: string, amount: number) => {
+    setConfirmModal({ isOpen: true, action, depositId, userName, amount });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal(null);
+  };
+
+  const confirmAction = () => {
+    if (!confirmModal) return;
+
+    if (confirmModal.action === 'approve') {
+      handleApprove(confirmModal.depositId, confirmModal.userName);
+    } else {
+      handleReject(confirmModal.depositId, confirmModal.userName);
     }
   };
 
@@ -320,26 +341,18 @@ export default function AdminPaymentsPage() {
                               {deposit.status === "pending" ? (
                                 <>
                                   <button
-                                    onClick={() => handleApprove(deposit._id, deposit.userId?.fullName || 'Unknown User')}
+                                    onClick={() => openConfirmModal('approve', deposit._id, deposit.userId?.fullName || 'Unknown User', deposit.amount)}
                                     disabled={actionLoading === deposit._id}
                                     className="p-3 bg-teal-500/10 text-teal-600 rounded-lg cursor-pointer hover:bg-teal-500 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
-                                    {actionLoading === deposit._id ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <Check className="w-4 h-4" />
-                                    )}
+                                    <Check className="w-4 h-4" />
                                   </button>
                                   <button
-                                    onClick={() => handleReject(deposit._id, deposit.userId?.fullName || 'Unknown User')}
+                                    onClick={() => openConfirmModal('reject', deposit._id, deposit.userId?.fullName || 'Unknown User', deposit.amount)}
                                     disabled={actionLoading === deposit._id}
                                     className="p-3 bg-red-500/10 text-red-500 cursor-pointer rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                  > 
-                                    {actionLoading === deposit._id ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <X className="w-4 h-4" />
-                                    )}
+                                  >
+                                    <X className="w-4 h-4" />
                                   </button>
                                 </>
                               ) : (
@@ -359,6 +372,104 @@ export default function AdminPaymentsPage() {
 
         <AdminNav />
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            onClick={closeConfirmModal}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* Modal */}
+          <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            {/* Icon */}
+            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+              confirmModal.action === 'approve'
+                ? 'bg-teal-500/10'
+                : 'bg-red-500/10'
+            }`}>
+              {confirmModal.action === 'approve' ? (
+                <Check className="w-8 h-8 text-teal-500" />
+              ) : (
+                <X className="w-8 h-8 text-red-500" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl font-black text-center uppercase tracking-tight mb-2">
+              {confirmModal.action === 'approve' ? 'Confirm Deposit' : 'Reject Deposit'}
+            </h2>
+
+            {/* Warning */}
+            <div className="bg-muted/50 border border-border rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This action <strong>cannot be undone</strong>. Please review the details below before confirming.
+                </p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">User</span>
+                <span className="text-sm font-bold text-foreground">{confirmModal.userName}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Amount</span>
+                <span className="text-sm font-bold text-foreground">${confirmModal.amount.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Action</span>
+                <span className={`text-sm font-bold uppercase ${
+                  confirmModal.action === 'approve' ? 'text-teal-500' : 'text-red-500'
+                }`}>
+                  {confirmModal.action}
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={closeConfirmModal}
+                disabled={actionLoading === confirmModal.depositId}
+                className="flex-1 px-4 py-3 cursor-pointer bg-muted text-foreground rounded-lg text-xs font-black uppercase tracking-wider hover:bg-muted/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAction}
+                disabled={actionLoading === confirmModal.depositId}
+                className={`flex-1 px-4 py-3 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                  confirmModal.action === 'approve'
+                    ? 'bg-teal-500 text-white hover:bg-teal-600'
+                    : 'bg-red-500 text-white hover:bg-red-600'
+                }`}
+              >
+                {actionLoading === confirmModal.depositId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {confirmModal.action === 'approve' ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
+                    {confirmModal.action === 'approve' ? 'Confirm' : 'Reject'}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
