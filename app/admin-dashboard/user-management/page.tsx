@@ -29,6 +29,7 @@ import {
   MapPin,
   Building,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import {
@@ -159,6 +160,7 @@ export default function AdminUsersPage() {
   const [loadingUserDetails, setLoadingUserDetails] = useState<string | null>(
     null,
   );
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; action: 'suspend' | 'activate' | 'delete'; userId: string; userName: string; currentStatus?: string } | null>(null);
   const [stats, setStats] = useState([
     {
       label: "Total Users",
@@ -291,6 +293,7 @@ export default function AdminUsersPage() {
       toast.error("Failed to update user status");
     } finally {
       setUpdatingUserId(null);
+      setConfirmModal(null);
     }
   };
 
@@ -324,6 +327,25 @@ export default function AdminUsersPage() {
       toast.error("Failed to delete user");
     } finally {
       setUpdatingUserId(null);
+      setConfirmModal(null);
+    }
+  };
+
+  const openConfirmModal = (action: 'suspend' | 'activate' | 'delete', userId: string, userName: string, currentStatus?: string) => {
+    setConfirmModal({ isOpen: true, action, userId, userName, currentStatus });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal(null);
+  };
+
+  const confirmAction = () => {
+    if (!confirmModal) return;
+
+    if (confirmModal.action === 'delete') {
+      deleteUser(confirmModal.userId, confirmModal.userName);
+    } else {
+      toggleUserStatus(confirmModal.userId, confirmModal.currentStatus || 'Active');
     }
   };
 
@@ -592,7 +614,12 @@ export default function AdminUsersPage() {
                             </button>
                             <button
                               onClick={() =>
-                                toggleUserStatus(user.id, user.status)
+                                openConfirmModal(
+                                  user.status === "Active" ? 'suspend' : 'activate',
+                                  user.id,
+                                  user.name,
+                                  user.status
+                                )
                               }
                               disabled={updatingUserId === user.id}
                               className={`p-3 cursor-pointer rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -606,14 +633,10 @@ export default function AdminUsersPage() {
                                   : "Activate User"
                               }
                             >
-                              {updatingUserId === user.id ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <Ban className="w-4 h-4" />
-                              )}
+                              <Ban className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => deleteUser(user.id, user.name)}
+                              onClick={() => openConfirmModal('delete', user.id, user.name)}
                               disabled={updatingUserId === user.id}
                               className="p-3 bg-red-500/10 text-red-500 cursor-pointer hover:bg-red-500/20 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Delete User"
@@ -836,6 +859,108 @@ export default function AdminUsersPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            onClick={closeConfirmModal}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* Modal */}
+          <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            {/* Icon */}
+            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+              confirmModal.action === 'delete'
+                ? 'bg-red-500/10'
+                : confirmModal.action === 'suspend'
+                  ? 'bg-orange-500/10'
+                  : 'bg-green-500/10'
+            }`}>
+              {confirmModal.action === 'delete' ? (
+                <Trash2 className="w-8 h-8 text-red-500" />
+              ) : confirmModal.action === 'suspend' ? (
+                <Ban className="w-8 h-8 text-orange-500" />
+              ) : (
+                <UserCheck className="w-8 h-8 text-green-500" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl font-black text-center uppercase tracking-tight mb-2">
+              {confirmModal.action === 'delete' ? 'Delete User' : confirmModal.action === 'suspend' ? 'Suspend User' : 'Activate User'}
+            </h2>
+
+            {/* Warning */}
+            <div className="bg-muted/50 border border-border rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This action <strong>cannot be undone</strong>. Please review the details below before confirming.
+                </p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">User</span>
+                <span className="text-sm font-bold text-foreground">{confirmModal.userName}</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Action</span>
+                <span className={`text-sm font-bold uppercase ${
+                  confirmModal.action === 'delete' ? 'text-red-500' : confirmModal.action === 'suspend' ? 'text-orange-500' : 'text-green-500'
+                }`}>
+                  {confirmModal.action}
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={closeConfirmModal}
+                disabled={updatingUserId === confirmModal.userId}
+                className="flex-1 px-4 py-3 cursor-pointer bg-muted text-foreground rounded-lg text-xs font-black uppercase tracking-wider hover:bg-muted/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAction}
+                disabled={updatingUserId === confirmModal.userId}
+                className={`flex-1 px-4 py-3 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                  confirmModal.action === 'delete'
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : confirmModal.action === 'suspend'
+                      ? 'bg-orange-500 text-white hover:bg-orange-600'
+                      : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+              >
+                {updatingUserId === confirmModal.userId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {confirmModal.action === 'delete' ? (
+                      <Trash2 className="w-4 h-4" />
+                    ) : confirmModal.action === 'suspend' ? (
+                      <Ban className="w-4 h-4" />
+                    ) : (
+                      <UserCheck className="w-4 h-4" />
+                    )}
+                    {confirmModal.action === 'delete' ? 'Delete' : confirmModal.action}
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

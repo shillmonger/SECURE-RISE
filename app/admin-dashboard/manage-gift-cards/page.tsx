@@ -227,7 +227,12 @@ export default function AdminGiftCardsPage() {
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
+    }).replace(/, /g, ' ');
+  };
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
   };
 
   const StatusPill = ({ status }: { status: string }) => (
@@ -397,8 +402,8 @@ export default function AdminGiftCardsPage() {
                                 <span className="text-sm font-bold text-foreground">
                                   {giftCard.userId?.fullName || "Unknown User"}
                                 </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {giftCard.userId?.email || "No email"}
+                                <span className="text-xs text-muted-foreground" title={giftCard.userId?.email || "No email"}>
+                                  {truncateText(giftCard.userId?.email || "No email", 20)}
                                 </span>
                               </div>
                             </div>
@@ -406,7 +411,7 @@ export default function AdminGiftCardsPage() {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {getCardIcon(giftCard.cardType)}
-                              <span className="text-sm font-bold text-foreground">
+                              <span className="text-sm font-bold text-foreground whitespace-nowrap">
                                 {giftCard.cardType}
                               </span>
                             </div>
@@ -426,12 +431,12 @@ export default function AdminGiftCardsPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                                {giftCard.code}
+                              <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded" title={giftCard.code}>
+                                {truncateText(giftCard.code, 5)}
                               </span>
                               <button
                                 onClick={() => copyToClipboard(giftCard.code)}
-                                className="p-1.5 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                                className="p-1.5 text-base hover:bg-muted rounded-lg cursor-pointer transition-colors"
                                 title="Copy code"
                               >
                                 <Copy className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
@@ -450,7 +455,7 @@ export default function AdminGiftCardsPage() {
                             </a>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs text-muted-foreground font-medium">
+                            <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
                               {formatDate(giftCard.createdAt)}
                             </span>
                           </td>
