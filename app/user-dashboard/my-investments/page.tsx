@@ -16,6 +16,7 @@ import {
   Calendar,
   DollarSign,
   Trash2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
@@ -70,6 +71,7 @@ interface Investment {
 // ─── Refined Investment Card ──────────────────────────────────────────
 function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; index: number; onDelete: (id: string) => void; onRefresh: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
@@ -233,12 +235,58 @@ function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; 
           </div>
         </div>
 
-        {/* Dynamic Detail Section */}
-        {showDetails && (
-          <div className="pt-4 border-t border-border animate-in fade-in slide-in-from-top-4 duration-500">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-              <History className="w-3 h-3" /> Profit Distribution Log
-            </h4>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowDetailsModal(true)}
+            className="cursor-pointer flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+          >
+            <ChevronDown className="w-3 h-3" /> View Full Details
+          </button>
+          <Link
+            href="/user-dashboard/invest"
+            className="cursor-pointer px-2 lg-px-4 bg-primary text-primary-foreground hover:opacity-90 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+          >
+            <PlusCircle className="w-3.5 h-3.5" />
+            Reinvest
+          </Link> 
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="cursor-pointer px-3 bg-[#229ED9] text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+            title="Delete investment"
+          >
+            <EllipsisVertical className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Profit Distribution Log Modal */}
+      {showDetailsModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-500 p-4">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="hidden lg:block p-2 bg-blue-500/10 rounded-lg">
+                  <History className="w-5 h-5 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-black uppercase tracking-tighter">
+                  Profit Distribution Log
+                </h3>
+              </div>
+              {/* <button
+                onClick={() => setShowDetailsModal(false)}
+                className="p-2 hover:bg-muted rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button> */}
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold">{inv.planName}</span> - ${inv.investmentAmount.toLocaleString()}
+              </p>
+            </div>
 
             <div className="rounded-xl border border-border overflow-hidden bg-muted/20">
               <table className="w-full text-left border-collapse">
@@ -286,41 +334,18 @@ function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; 
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowDetails(!showDetails)}
-            className="cursor-pointer flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-          >
-            {showDetails ? (
-              <>
-                <ChevronUp className="w-3 h-3" /> Hide Details
-              </>
-            ) : (
-              <>
-                <ChevronDown className="w-3 h-3" /> View Full Details
-              </>
-            )}
-          </button>
-          <Link
-            href="/user-dashboard/invest"
-            className="cursor-pointer px-2 lg-px-4 bg-primary text-primary-foreground hover:opacity-90 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            Reinvest
-          </Link> 
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="cursor-pointer px-3 bg-[#229ED9] text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-            title="Delete investment"
-          >
-            <EllipsisVertical className="w-4 h-4" />
-          </button>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="px-6 py-3 bg-foreground text-background rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
