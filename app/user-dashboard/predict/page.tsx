@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { toast } from "sonner";
 import {
   TrendingUp,
   TrendingDown,
@@ -64,17 +65,58 @@ interface LeaderboardEntry {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const SUPPORTED_PAIRS: TradingPair[] = [
-  { symbol: "XAUUSD", tvSymbol: "OANDA:XAUUSD", name: "Gold vs USD", type: "forex", baseFlag: "us", quoteFlag: "us" },
   { symbol: "BTCUSDT", tvSymbol: "BINANCE:BTCUSDT", name: "Bitcoin / USDT", type: "crypto", coinId: "bitcoin" },
   { symbol: "ETHUSDT", tvSymbol: "BINANCE:ETHUSDT", name: "Ethereum / USDT", type: "crypto", coinId: "ethereum" },
   { symbol: "SOLUSDT", tvSymbol: "BINANCE:SOLUSDT", name: "Solana / USDT", type: "crypto", coinId: "solana" },
-  { symbol: "XRPUSDT", tvSymbol: "BINANCE:XRPUSDT", name: "Ripple / USDT", type: "crypto", coinId: "ripple" },
-  { symbol: "EURUSD", tvSymbol: "OANDA:EURUSD", name: "Euro vs USD", type: "forex", baseFlag: "eu", quoteFlag: "us" },
-  { symbol: "GBPUSD", tvSymbol: "OANDA:GBPUSD", name: "GBP vs USD", type: "forex", baseFlag: "gb", quoteFlag: "us" },
-  { symbol: "USDJPY", tvSymbol: "OANDA:USDJPY", name: "USD vs Yen", type: "forex", baseFlag: "us", quoteFlag: "jp" },
-  { symbol: "NAS100", tvSymbol: "OANDA:NAS100USD", name: "Nasdaq 100", type: "index" },
-  { symbol: "US30", tvSymbol: "OANDA:US30USD", name: "Dow Jones 30", type: "index" },
+  { symbol: "BNBUSDT", tvSymbol: "BINANCE:BNBUSDT", name: "BNB / USDT", type: "crypto", coinId: "binancecoin" },
 ];
+
+// ─── Price Fetching Functions ─────────────────────────────────────────────────
+
+// Map trading symbols to CoinGecko IDs
+const COINGECKO_ID_MAP: Record<string, string> = {
+  'BTCUSDT': 'bitcoin',
+  'ETHUSDT': 'ethereum',
+  'SOLUSDT': 'solana',
+  'BNBUSDT': 'binancecoin',
+};
+
+async function fetchCryptoPrice(symbol: string): Promise<number | null> {
+  try {
+    const coinId = COINGECKO_ID_MAP[symbol];
+    if (!coinId) return null;
+
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd`
+    );
+    const data = await response.json();
+    
+    if (data[coinId] && data[coinId].usd) {
+      return data[coinId].usd;
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error fetching crypto price for ${symbol}:`, error);
+    return null;
+  }
+}
+
+async function fetchLivePrice(pair: TradingPair): Promise<number> {
+  const price = await fetchCryptoPrice(pair.symbol);
+  
+  // Fallback to a reasonable default if API fails
+  if (price === null) {
+    const defaults: Record<string, number> = {
+      'BTCUSDT': 65000,
+      'ETHUSDT': 3500,
+      'SOLUSDT': 145,
+      'BNBUSDT': 580,
+    };
+    return defaults[pair.symbol] || 1000;
+  }
+  
+  return price;
+}
 
 const MOCK_LEADERBOARD_TODAY: LeaderboardEntry[] = [
   { rank: 1, username: "CryptoKing", xp: 12400, winRate: 87, avatar: "CK" },
@@ -290,14 +332,28 @@ function PairSearch({
 
 // ─── User Stats Card ──────────────────────────────────────────────────────────
 
-function UserStatsCard() {
-  const stats = [
-    { label: "Current XP", value: "4,200", icon: Zap, color: "text-yellow-500", bg: "bg-yellow-500/10" },
-    { label: "Streak", value: "7 Days", icon: Flame, color: "text-orange-500", bg: "bg-orange-500/10" },
-    { label: "Predictions", value: "34", icon: Target, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Win Rate", value: "71%", icon: BarChart3, color: "text-green-500", bg: "bg-green-500/10" },
-    { label: "Correct", value: "24", icon: CheckCircle2, color: "text-green-500", bg: "bg-green-500/10" },
-    { label: "Incorrect", value: "10", icon: XCircle, color: "text-red-500", bg: "bg-red-500/10" },
+interface UserStatsCardProps {
+  stats?: {
+    totalPredictions: number;
+    correctPredictions: number;
+    incorrectPredictions: number;
+    pendingPredictions: number;
+    totalXPEarned: number;
+    winRate: number;
+    currentStreak: number;
+    longestStreak: number;
+  };
+  loading?: boolean;
+}
+
+function UserStatsCard({ stats, loading = false }: UserStatsCardProps) {
+  const statsData = [
+    { label: "Total XP Earned", value: stats?.totalXPEarned?.toLocaleString() || "0", icon: Zap, color: "text-yellow-500", bg: "bg-yellow-500/10" },
+    { label: "Current Streak", value: `${stats?.currentStreak || 0} Days`, icon: Flame, color: "text-orange-500", bg: "bg-orange-500/10" },
+    { label: "Total Predictions", value: stats?.totalPredictions?.toString() || "0", icon: Target, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: "Win Rate", value: `${stats?.winRate || 0}%`, icon: BarChart3, color: "text-green-500", bg: "bg-green-500/10" },
+    { label: "Correct", value: stats?.correctPredictions?.toString() || "0", icon: CheckCircle2, color: "text-green-500", bg: "bg-green-500/10" },
+    { label: "Incorrect", value: stats?.incorrectPredictions?.toString() || "0", icon: XCircle, color: "text-red-500", bg: "bg-red-500/10" },
   ];
 
   return (
@@ -306,15 +362,25 @@ function UserStatsCard() {
         <Activity className="w-4 h-4 text-primary" /> Your Statistics
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {stats.map((s, i) => (
-          <div key={i} className="bg-muted/30 rounded-2xl p-3 border border-border/50">
-            <div className={`${s.bg} w-7 h-7 rounded-lg flex items-center justify-center mb-2`}>
-              <s.icon className={`w-3.5 h-3.5 ${s.color}`} />
+        {loading ? (
+          [1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-muted/30 rounded-2xl p-3 border border-border/50 animate-pulse">
+              <div className="w-7 h-7 rounded-lg bg-muted mb-2" />
+              <div className="h-6 bg-muted rounded mb-1" />
+              <div className="h-3 bg-muted rounded w-2/3" />
             </div>
-            <p className="text-base font-black tracking-tighter">{s.value}</p>
-            <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{s.label}</p>
-          </div>
-        ))}
+          ))
+        ) : (
+          statsData.map((s, i) => (
+            <div key={i} className="bg-muted/30 rounded-2xl p-3 border border-border/50">
+              <div className={`${s.bg} w-7 h-7 rounded-lg flex items-center justify-center mb-2`}>
+                <s.icon className={`w-3.5 h-3.5 ${s.color}`} />
+              </div>
+              <p className="text-base font-black tracking-tighter">{s.value}</p>
+              <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{s.label}</p>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
@@ -357,13 +423,13 @@ function ConfirmDialog({
         <div className="flex gap-2">
           <button
             onClick={onCancel}
-            className="flex-1 border border-border py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all"
+            className="flex-1 border cursor-pointer border-border py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${direction === "BUY" ? "bg-green-500 text-white hover:bg-green-600" : "bg-red-500 text-white hover:bg-red-600"}`}
+            className={`flex-1 py-3 rounded-xl cursor-pointer text-[10px] font-black uppercase tracking-widest transition-all ${direction === "BUY" ? "bg-green-500 text-white hover:bg-green-600" : "bg-red-500 text-white hover:bg-red-600"}`}
           >
             Submit
           </button>
@@ -384,40 +450,134 @@ export default function MarketOraclePage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [prediction, setPrediction] = useState<PredictionSummary | null>(null);
-  const [livePrice, setLivePrice] = useState(2345.67);
+  const [livePrice, setLivePrice] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<UserStatsCardProps["stats"]>();
+  const [submitting, setSubmitting] = useState(false);
 
-  // Simulate live price ticks
+  // Fetch live price on mount and when pair changes
   useEffect(() => {
-    const id = setInterval(() => {
-      setLivePrice((p) => parseFloat((p + (Math.random() - 0.5) * p * 0.0008).toFixed(2)));
-    }, 2000);
+    const updatePrice = async () => {
+      const price = await fetchLivePrice(selectedPair);
+      setLivePrice(price);
+    };
+
+    updatePrice();
+
+    // Update price every 5 seconds
+    const id = setInterval(updatePrice, 5000);
     return () => clearInterval(id);
-  }, []);
-
-  // Auto-fill entry price when pair changes
-  useEffect(() => {
-    setEntryPrice(livePrice.toFixed(2));
   }, [selectedPair]);
+
+  // Auto-fill entry price when live price changes
+  useEffect(() => {
+    if (livePrice > 0) {
+      setEntryPrice(livePrice.toFixed(2));
+    }
+  }, [livePrice]);
+
+  // Fetch prediction status and stats on load
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Check if user has submitted today
+        const statusRes = await fetch('/api/user-dashboard/predictions');
+        const statusData = await statusRes.json();
+        
+        if (statusData.success && statusData.data.hasSubmittedToday) {
+          setSubmitted(true);
+          setPrediction({
+            pair: statusData.data.todayPrediction.pair,
+            direction: statusData.data.todayPrediction.direction,
+            entryPrice: statusData.data.todayPrediction.entryPrice,
+            submissionTime: new Date(statusData.data.todayPrediction.submittedAt).toLocaleTimeString(),
+            status: statusData.data.todayPrediction.status,
+          });
+        }
+
+        // Fetch user stats
+        const statsRes = await fetch('/api/user-dashboard/predictions/stats');
+        const statsData = await statsRes.json();
+        
+        if (statsData.success) {
+          setStats(statsData.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = () => {
     if (!direction) return;
+    
+    // Check if already submitted
+    if (submitted) {
+      toast.error("Already submitted for today. Predict again tomorrow!");
+      return;
+    }
+    
     setShowConfirm(true);
   };
 
-  const handleConfirm = () => {
-    setShowConfirm(false);
-    const now = new Date();
-    setPrediction({
-      pair: selectedPair.symbol,
-      direction: direction!,
-      entryPrice,
-      submissionTime: now.toLocaleTimeString(),
-      status: "pending",
-    });
-    setSubmitted(true);
+  const handleConfirm = async () => {
+    if (!direction) return;
+    
+    try {
+      setSubmitting(true);
+      setShowConfirm(false);
+
+      const response = await fetch('/api/user-dashboard/predictions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pair: selectedPair.symbol,
+          direction,
+          entryPrice: parseFloat(entryPrice),
+          confidence,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const now = new Date();
+        setPrediction({
+          pair: selectedPair.symbol,
+          direction,
+          entryPrice,
+          submissionTime: now.toLocaleTimeString(),
+          status: "pending",
+        });
+        setSubmitted(true);
+        toast.success("Prediction submitted successfully!");
+        
+        // Refresh stats
+        const statsRes = await fetch('/api/user-dashboard/predictions/stats');
+        const statsData = await statsRes.json();
+        if (statsData.success) {
+          setStats(statsData.data);
+        }
+      } else {
+        toast.error(data.message || "Failed to submit prediction");
+      }
+    } catch (error) {
+      console.error('Error submitting prediction:', error);
+      toast.error("Failed to submit prediction");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const canSubmit = !submitted && direction !== null && entryPrice.trim() !== "";
+  const canSubmit = !submitted && !submitting && direction !== null && entryPrice.trim() !== "";
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -561,17 +721,29 @@ export default function MarketOraclePage() {
                       {/* BUY / SELL */}
                       <div className="grid grid-cols-2 gap-2">
                         <button
-                          onClick={() => !submitted && setDirection("BUY")}
+                          onClick={() => {
+                            if (submitted) {
+                              toast.error("Already submitted for today. Predict again tomorrow!");
+                              return;
+                            }
+                            setDirection("BUY");
+                          }}
                           disabled={submitted}
-                          className={`flex flex-col items-center gap-1.5 py-4 rounded-2xl border-2 font-black text-xs uppercase tracking-tighter transition-all hover:scale-[1.02] active:scale-[0.98] ${direction === "BUY" ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20" : "bg-green-500/5 border-green-500/20 text-green-500 hover:border-green-500/60"} ${submitted ? "opacity-50 cursor-not-allowed" : ""}`}
+                          className={`flex flex-col items-center gap-1.5 py-4 cursor-pointer rounded-2xl border-2 font-black text-xs uppercase tracking-tighter transition-all hover:scale-[1.02] active:scale-[0.98] ${direction === "BUY" ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20" : "bg-green-500/5 border-green-500/20 text-green-500 hover:border-green-500/60"} ${submitted ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           <TrendingUp className="w-5 h-5" />
                           BUY
                         </button>
                         <button
-                          onClick={() => !submitted && setDirection("SELL")}
+                          onClick={() => {
+                            if (submitted) {
+                              toast.error("Already submitted for today. Predict again tomorrow!");
+                              return;
+                            }
+                            setDirection("SELL");
+                          }}
                           disabled={submitted}
-                          className={`flex flex-col items-center gap-1.5 py-4 rounded-2xl border-2 font-black text-xs uppercase tracking-tighter transition-all hover:scale-[1.02] active:scale-[0.98] ${direction === "SELL" ? "bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20" : "bg-red-500/5 border-red-500/20 text-red-500 hover:border-red-500/60"} ${submitted ? "opacity-50 cursor-not-allowed" : ""}`}
+                          className={`flex flex-col items-center gap-1.5 py-4 cursor-pointer rounded-2xl border-2 font-black text-xs uppercase tracking-tighter transition-all hover:scale-[1.02] active:scale-[0.98] ${direction === "SELL" ? "bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20" : "bg-red-500/5 border-red-500/20 text-red-500 hover:border-red-500/60"} ${submitted ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           <TrendingDown className="w-5 h-5" />
                           SELL
@@ -634,10 +806,17 @@ export default function MarketOraclePage() {
                       {/* Submit */}
                       <button
                         onClick={handleSubmit}
-                        disabled={!canSubmit}
-                        className="w-full py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                        disabled={!canSubmit || submitting}
+                        className="w-full py-3.5 rounded-xl cursor-pointer text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 bg-primary text-primary-foreground shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                       >
-                        Submit Prediction
+                        {submitting ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          "Submit Prediction"
+                        )}
                       </button>
                     </div>
                   )}
@@ -676,7 +855,7 @@ export default function MarketOraclePage() {
                   ))}
                 </ul>
               </section>
-              <UserStatsCard />
+              <UserStatsCard stats={stats} loading={loading} />
             </div>
 
           </div>

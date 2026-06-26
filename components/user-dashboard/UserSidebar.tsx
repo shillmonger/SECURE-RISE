@@ -134,20 +134,20 @@ export default function UserSidebar({
       icon: ChartSpline,
       children: [
         {
+         name: "daily streak (XP)",
+         icon: PartyPopper,
+         href: `${basePath}/daily-streak`,
+       },
+        {
           name: "Predict Market (XP)",
           icon: Swords ,
           href: `${basePath}/predict`,
-        },
-         {
-          name: "daily streak (XP)",
-          icon: PartyPopper,
-          href: `${basePath}/daily-streak`,
         },
         { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
       ],
     },
     {
-      name: "XP Redemption",
+      name: "Redeem XP",
       icon: ArrowRightLeft,
       href: `${basePath}/redeem-xp`,
     },
