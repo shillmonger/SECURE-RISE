@@ -8,12 +8,13 @@ import {
   Users,
   Building,
   Calculator,
+  Gift,
   Star,
   ArrowRight,
   DollarSign,
   Clock,
   BarChart2,
-  CheckCircle2,
+  CheckCircle2, 
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import InvestmentModal from "@/components/user-dashboard/InvestmentModal";
+import CheapPlan from "@/components/user-dashboard/CheapPlan";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Plan {
@@ -45,8 +47,8 @@ const plans: Plan[] = [
     name: "Starter Rise",
     min: 100,
     max: 199,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <Zap className="w-5 h-5" />,
     color: "from-yellow-500/20 to-yellow-500/5",
     accent: "text-yellow-500",
@@ -59,8 +61,8 @@ const plans: Plan[] = [
     name: "Basic Growth",
     min: 200,
     max: 499,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <TrendingUp className="w-5 h-5" />,
     color: "from-green-500/20 to-green-500/5",
     accent: "text-green-500",
@@ -73,13 +75,13 @@ const plans: Plan[] = [
     name: "Pro Trader",
     min: 500,
     max: 999,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <ShieldCheck className="w-5 h-5" />,
     color: "from-blue-500/20 to-blue-500/5",
     accent: "text-blue-500",
     border: "border-blue-500/30",
-    badge: "Popular",
+    badge: "null",
     perks: ["Daily ROI payouts", "24/7 support", "Advanced analytics", "Fast withdrawals"],
   },
   {
@@ -87,13 +89,13 @@ const plans: Plan[] = [
     name: "Advanced Wealth",
     min: 1000,
     max: 4999,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <Bot className="w-5 h-5" />,
     color: "from-purple-500/20 to-purple-500/5",
     accent: "text-purple-500",
     border: "border-purple-500/30",
-    badge: null,
+    badge: "Popular",
     perks: ["Daily ROI payouts", "AI trading bot", "Dedicated manager", "Instant withdrawals"],
   },
   {
@@ -101,8 +103,8 @@ const plans: Plan[] = [
     name: "Elite Investor",
     min: 5000,
     max: 9999,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <Users className="w-5 h-5" />,
     color: "from-orange-500/20 to-orange-500/5",
     accent: "text-orange-500",
@@ -115,8 +117,8 @@ const plans: Plan[] = [
     name: "Secure Partner",
     min: 10000,
     max: null,
-    roiPerDay: 50,
-    duration: 7,
+    roiPerDay: 70,
+    duration: 14,
     icon: <Building className="w-5 h-5" />,
     color: "from-cyan-500/20 to-cyan-500/5",
     accent: "text-cyan-500",
@@ -128,14 +130,14 @@ const plans: Plan[] = [
 
 // ─── Calculator ────────────────────────────────────────────────────────────────
 // MATH:
-//   Daily earnings  = amount × 50%          → $100 × 0.50 = $50/day
-//   Total profit    = dailyEarnings × days  → $50  × 2    = $100
-//   Total returned  = amount + totalProfit  → $100 + $100 = $200
+//   Daily earnings  = amount × 70%          → $100 × 0.70 = $70/day
+//   Total profit    = dailyEarnings × days  → $70  × 2    = $140
+//   Total returned  = amount + totalProfit  → $100 + $140 = $240
 function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelectedPlan: (plan: Plan) => void; setIsModalOpen: (isOpen: boolean) => void }) {
   const [amount, setAmount] = useState(500);
-  const [days, setDays] = useState(7);
+  const [days, setDays] = useState(14);
 
-  const ROI_PER_DAY = 0.50; // 50% per day
+  const ROI_PER_DAY = 0.70; // 70% per day
   const dailyEarnings = amount * ROI_PER_DAY;
   const totalProfit = dailyEarnings * days;
   const totalReturn = amount + totalProfit;
@@ -149,7 +151,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
         <div>
           <h2 className="text-sm font-black uppercase tracking-widest">Investment Calculator</h2>
           <p className="text-[10px] text-muted-foreground uppercase font-bold">
-            50% daily ROI · drag both sliders to estimate your returns
+            70% daily ROI · drag both sliders to estimate your returns
           </p>
         </div>
       </div>
@@ -210,7 +212,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
           <div className="bg-muted/40 rounded-2xl p-4 space-y-2">
             <div className="flex justify-between text-[10px]">
               <span className="text-muted-foreground font-bold uppercase">Daily ROI Rate</span>
-              <span className="font-black text-primary">50% per day</span>
+              <span className="font-black text-primary">70% per day</span>
             </div>
             <div className="flex justify-between text-[10px]">
               <span className="text-muted-foreground font-bold uppercase">Earnings per day</span>
@@ -231,12 +233,12 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
             {/* Daily earnings */}
             <div>
               <p className="text-[9px] uppercase font-black opacity-50 mb-0.5">Daily Earnings</p>
-              <p className="text-2xl font-black italic tracking-tighter">
+              <p className="text-2xl font-black  tracking-tighter">
                 +${dailyEarnings.toFixed(2)}
                 <span className="text-sm font-bold opacity-50">/day</span>
               </p>
               <p className="text-[9px] opacity-40 font-bold uppercase mt-0.5">
-                ${amount.toLocaleString()} × 50%
+                ${amount.toLocaleString()} × 70%
               </p>
             </div>
 
@@ -247,7 +249,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
               <p className="text-[9px] uppercase font-black opacity-50 mb-0.5">
                 Total Profit After {days} {days === 1 ? "Day" : "Days"}
               </p>
-              <p className="text-2xl font-black italic tracking-tighter">
+              <p className="text-2xl font-black  tracking-tighter">
                 +${totalProfit.toFixed(2)}
               </p>
               <p className="text-[9px] opacity-40 font-bold uppercase mt-0.5">
@@ -260,7 +262,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
             {/* Total returned */}
             <div>
               <p className="text-[9px] uppercase font-black opacity-50 mb-0.5">Total Returned to Wallet</p>
-              <p className="text-3xl font-black italic tracking-tighter">
+              <p className="text-3xl font-black  text-green-400 tracking-tighter">
                 ${totalReturn.toFixed(2)}
               </p>
               <p className="text-[9px] opacity-40 font-bold uppercase mt-0.5">
@@ -276,7 +278,7 @@ function InvestmentCalculator({ setSelectedPlan, setIsModalOpen }: { setSelected
 
 // ─── Plan Card ────────────────────────────────────────────────────────────────
 function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: Plan) => void }) {
-  const dailyEarnings = plan.min * 0.50;
+  const dailyEarnings = plan.min * 0.70;
   const totalProfit = dailyEarnings * plan.duration;
   const totalReturn = plan.min + totalProfit;
 
@@ -302,7 +304,7 @@ function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: P
             {plan.icon}
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-black uppercase italic tracking-tight leading-tight">{plan.name}</h3>
+            <h3 className="text-sm font-black uppercase tracking-tight leading-tight">{plan.name}</h3>
             <p className="text-[10px] text-muted-foreground font-bold uppercase mt-1">
               Min: ${plan.min.toLocaleString()}
               {plan.max ? ` – $${plan.max.toLocaleString()}` : "+"}
@@ -312,7 +314,7 @@ function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: P
 
         {/* ROI Display */}
         <div className={`bg-gradient-to-br ${plan.color} rounded-2xl p-5 text-center border ${plan.border} shadow-inner`}>
-          <p className={`text-5xl font-black italic tracking-tighter ${plan.accent} drop-shadow-sm`}>
+          <p className={`text-5xl font-black  tracking-tighter ${plan.accent} drop-shadow-sm`}>
             {plan.roiPerDay}%
           </p>
           <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-1">
@@ -378,8 +380,18 @@ export default function InvestPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheapPlanOpen, setIsCheapPlanOpen] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [userStats, setUserStats] = useState({
+    hasFirstDeposit: false,
+    hasKyc: false,
+    totalDeposited: 0,
+    totalWithdrawn: 0,
+    hasWallet: false,
+    hasGifted: false,
+    hasCompletedProfile: false,
+  });
   const calcRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -451,17 +463,27 @@ export default function InvestPage() {
                 </h1>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-primary" />
-                  50% Daily ROI · 7-Day Plans · Daily Payouts
+                  70% Daily ROI · 14-Day Plans · Daily Payouts
                 </p>
               </div>
+
+              {/* CHEAP PLAN OFFER */}
               <button
-                onClick={scrollToCalc}
-                className="flex items-center cursor-pointer gap-2 border border-border px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all w-full md:w-auto justify-center"
+                onClick={() => setIsCheapPlanOpen(true)}
+                className="flex items-center cursor-pointer gap-2 border border-border px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest bg-primary text-primary-foreground transition-all w-full md:w-auto justify-center"
               >
-                <Calculator className="w-4 h-4" />
-                Calculate Returns
+                <Gift className="w-4 h-4" />  
+                Cheapest Plans
               </button>
             </section>
+
+            {/* Fixed Calculator Button */}
+            <button
+              onClick={scrollToCalc}
+              className="fixed bottom-13 lg:bottom-6 right-1 lg:right-8 z-50 flex items-center justify-center w-12 h-12 rounded-xl bg-[#229ED9] text-white font-bold shadow-xl hover:scale-110 transition-all duration-300 cursor-pointer"
+            >
+              <Calculator className="w-6 h-6" />
+            </button>
 
         
 
@@ -485,8 +507,8 @@ export default function InvestPage() {
             {/* Trust strip */}
             <section className="border-t border-border pt-8 grid grid-cols-2 sm:grid-cols-2 gap-4 text-center">
               {[
-                { icon: ShieldCheck,  title: "Secure & Protected",  desc: "All investments are insured and secured" },
-                { icon: Zap,          title: "Instant Activation",   desc: "Plans activate immediately after deposit" },
+                { icon: ShieldCheck,  title: "Safe & Protected",  desc: "All investments are insured and secured" },
+                { icon: Zap,          title: "Instant Activation",   desc: "Here, Plans activate immediately after deposit" },
                 // { icon: CheckCircle2, title: "Daily Withdrawals",    desc: "Withdraw your earnings every 7 days" },
               ].map((t, i) => (
                 <div key={i} className="flex flex-col items-center gap-2 p-4">
@@ -512,6 +534,13 @@ export default function InvestPage() {
           onConfirm={handleInvestConfirm}
         />
       )}
+
+      {/* Cheap Plan Modal */}
+      <CheapPlan
+        isOpen={isCheapPlanOpen}
+        onClose={() => setIsCheapPlanOpen(false)}
+        userStats={userStats}
+      />
     </div>
   );
 }

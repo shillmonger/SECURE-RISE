@@ -115,7 +115,7 @@ export default function LearnMorePage() {
                     <li><strong>Add Capital:</strong> Fund your account using cryptocurrency or gift cards</li>
                     <li><strong>Choose Plan:</strong> Select from 6 investment tiers ($100 to $10,000+)</li>
                     <li><strong>Professional Trading:</strong> Our experts trade on your behalf</li>
-                    <li><strong>Daily Accumulation:</strong> Receive daily ROI payouts for 7 days</li>
+                    <li><strong>Daily Accumulation:</strong> Receive daily ROI payouts for 14 days</li>
                     <li><strong>Easy Withdrawals:</strong> Cash out your earnings anytime</li>
                   </ul>
                 </div>
@@ -1070,7 +1070,7 @@ export default function LearnMorePage() {
 
               <div className="space-y-4 text-sm leading-relaxed">
                 <p>
-                  Our Investment Plans offer a straightforward way to grow your wealth with a fixed 50% daily ROI. Choose from 6 different plan tiers based on your investment amount. All plans run for 7 days with daily ROI payouts credited to your account balance.
+                  Our Investment Plans offer a straightforward way to grow your wealth with a fixed 70% daily ROI. Choose from 6 different plan tiers based on your investment amount. All plans run for 14 days with daily ROI payouts credited to your account balance.
                 </p>
 
                 <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
@@ -1079,7 +1079,7 @@ export default function LearnMorePage() {
                     Investment Calculator
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Use our built-in investment calculator to estimate your returns. Adjust the investment amount and duration (1-30 days) to see projected daily earnings, total profit, and total return. The calculator uses the 50% daily ROI rate for accurate projections.
+                    Use our built-in investment calculator to estimate your returns. Adjust the investment amount and duration (1-30 days) to see projected daily earnings, total profit, and total return. The calculator uses the 70% daily ROI rate for accurate projections.
                   </p>
                 </div>
 
@@ -1110,7 +1110,7 @@ export default function LearnMorePage() {
                     <li>Click "Invest Now" to open the investment modal</li>
                     <li>Enter your investment amount (must meet plan minimum)</li>
                     <li>Confirm the investment to activate the plan</li>
-                    <li>Receive daily ROI payouts for 7 days</li>
+                    <li>Receive daily ROI payouts for 14 days</li>
                   </ul>
                 </div>
 

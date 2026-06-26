@@ -464,18 +464,26 @@ export default function LiveMarkets() {
       
       <div className="container mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2">
-            Live Markets
-          </h2>
-          <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">
-            Real-time cryptocurrency and forex prices with live updates
-          </p>
-          <div className="flex items-center  gap-2 mt-4 text-sm text-muted-foreground">
-            <RefreshCw className="w-4 h-4 animate-spin text-primary" />
-            <span>Last Update: {formattedTime}</span>
-          </div>
-        </div>
+        <div className="container mx-auto">
+  {/* Header */}
+  <div className="mb-5 flex flex-col md:flex-row md:items-end md:justify-between gap-2 lg:gap-4">
+    {/* Left */}
+    <div>
+      <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-1">
+        Live Markets
+      </h2>
+      <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">
+        Real-time cryptocurrency and forex prices with live updates
+      </p>
+    </div>
+
+    {/* Right */}
+    <div className="flex items-center gap-2 text-sm text-muted-foreground md:self-end">
+      <RefreshCw className="w-4 h-4 animate-spin text-primary" />
+      <span>Last Update: {formattedTime}</span>
+    </div>
+  </div>
+</div>
 
         {/* Market Data Table */}
         <div className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl overflow-hidden shadow-xl">
@@ -599,11 +607,11 @@ export default function LiveMarkets() {
         </div>
 
         {/* Refresh Button */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-5">
           <button 
             onClick={refreshMarketData}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-xl text-sm font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             {isRefreshing ? 'Refreshing...' : 'Refresh Pairs'}

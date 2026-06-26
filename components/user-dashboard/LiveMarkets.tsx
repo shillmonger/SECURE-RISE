@@ -126,11 +126,11 @@ export default function LiveMarkets({
   };
 
   return (
-    <section className="pt-5 border-t border-border relative">
+    <section className="pt-3 border-t border-border relative">
       {/* Header Section */}
-      <div className="flex justify-between mb-5 gap-4">
+      <div className="flex justify-between mb-5 gap-2">
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
+          <h2 className="text-1xl font-black uppercase tracking-tighter flex items-center gap-2">
             <Activity className="w-6 h-6 text-primary" />
             Live Markets
           </h2>
