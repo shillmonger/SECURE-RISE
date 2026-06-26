@@ -58,12 +58,22 @@ export async function GET(request: NextRequest) {
     const userAchievements = await db.collection('userachievements').findOne({ userId: new ObjectId(userId) });
     const achievementXP = userAchievements?.totalXP || 0;
 
+    // Fetch user prediction XP (sum of xpEarned from won predictions)
+    const predictions = await db.collection('predictions')
+      .find({ 
+        userId: new ObjectId(userId),
+        status: 'won'
+      })
+      .toArray();
+    const predictionXP = predictions.reduce((sum, pred) => sum + (pred.xpEarned || 0), 0);
+
     return NextResponse.json({
       success: true,
       data: {
         accountBalance: user.accountBalance,
         dailyXP: dailyXP,
         achievementXP: achievementXP,
+        predictionXP: predictionXP,
         conversionRate: 0.02, // 100 XP = $2
       }
     });

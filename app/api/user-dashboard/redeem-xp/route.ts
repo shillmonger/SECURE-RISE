@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { xpType, xpAmount } = body;
 
-    if (!xpType || !['daily', 'achievement'].includes(xpType)) {
+    if (!xpType || !['daily', 'achievement', 'prediction'].includes(xpType)) {
       return NextResponse.json(
         { success: false, message: 'Invalid XP type' },
         { status: 400 }
@@ -79,10 +79,31 @@ export async function POST(request: NextRequest) {
       const userXP = await db.collection('userxp').findOne({ userId: userObjectId });
       currentXPBalance = userXP?.totalXP || 0;
       xpCollectionName = 'userxp';
-    } else {
+    } else if (xpType === 'achievement') {
       const userAchievements = await db.collection('userachievements').findOne({ userId: userObjectId });
       currentXPBalance = userAchievements?.totalXP || 0;
       xpCollectionName = 'userachievements';
+    } else {
+      // For prediction XP, calculate from won predictions minus already redeemed
+      const wonPredictions = await db.collection('predictions')
+        .find({ 
+          userId: userObjectId,
+          status: 'won'
+        })
+        .toArray();
+      const totalPredictionXP = wonPredictions.reduce((sum, pred) => sum + (pred.xpEarned || 0), 0);
+      
+      // Calculate already redeemed prediction XP
+      const redeemedPredictions = await db.collection('xpredemptions')
+        .find({ 
+          userId: userObjectId,
+          xpType: 'prediction'
+        })
+        .toArray();
+      const redeemedPredictionXP = redeemedPredictions.reduce((sum, red) => sum + red.xpAmount, 0);
+      
+      currentXPBalance = totalPredictionXP - redeemedPredictionXP;
+      xpCollectionName = 'predictions'; // Special handling for predictions
     }
 
     if (currentXPBalance < xpAmount) {
@@ -103,11 +124,13 @@ export async function POST(request: NextRequest) {
     
     try {
       await session.withTransaction(async () => {
-        // Debit XP from the appropriate collection
-        await db.collection(xpCollectionName).updateOne(
-          { userId: userObjectId },
-          { $inc: { totalXP: -xpAmount }, $set: { updatedAt: new Date() } }
-        );
+        // Debit XP from the appropriate collection (skip for predictions)
+        if (xpType !== 'prediction') {
+          await db.collection(xpCollectionName).updateOne(
+            { userId: userObjectId },
+            { $inc: { totalXP: -xpAmount }, $set: { updatedAt: new Date() } }
+          );
+        }
 
         // Credit USDT to user account balance
         await db.collection('users').updateOne(
@@ -118,7 +141,7 @@ export async function POST(request: NextRequest) {
         // Create redemption history record
         const redemptionRecord: Omit<XPRedemption, '_id'> = {
           userId: userObjectId,
-          xpType: xpType as 'daily' | 'achievement',
+          xpType: xpType as 'daily' | 'achievement' | 'prediction',
           xpAmount,
           usdtAmount,
           conversionRate: CONVERSION_RATE,
@@ -134,7 +157,7 @@ export async function POST(request: NextRequest) {
       // Send email notification
       try {
         await sendXPRedemptionEmail(user.email, user.username, {
-          xpType,
+          xpType: xpType as 'daily' | 'achievement' | 'prediction',
           xpAmount,
           usdtAmount,
           transactionId,

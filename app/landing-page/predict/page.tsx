@@ -6,16 +6,15 @@ import Header from "@/components/landing-page/Header";
 import Footer from "@/components/landing-page/Footer";
 import CookieConsent from "@/components/landing-page/CookieConsent";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
-import FAQ from "@/components/landing-page/faq";
-import HeroSection from "@/components/landing-page/hero-section";
+import HeroSection from "@/components/landing-page/PredictMarketPage/HeroSection";
 import Promo from "@/components/landing-page/promo";
-import HowItWorks from "@/components/landing-page/how-It-works";
-import CoreCapabilities from "@/components/landing-page/CoreCapabilities";
-import RiskProtection from "@/components/landing-page/risk-protection";
-import Network from "@/components/landing-page/Network";
+import LiveMarkets from "@/components/landing-page/LiveMarkets";
+import NumbersThatSpeaks from "@/components/landing-page/PredictMarketPage/numbers-that-speaks";
+import HowItWorks from "@/components/landing-page/PredictMarketPage/how-It-works";
+import CoreCapabilities from "@/components/landing-page/PredictMarketPage/CoreCapabilities";
+import Network from "@/components/landing-page/PredictMarketPage/Network";
 import TradingView from "@/components/landing-page/trading-view-slide";
-import ProfitBlueprint from "@/components/landing-page/profit-blueprint";
-import NumbersThatSpeaks from "@/components/landing-page/numbers-that-speaks";
+import FAQ from "@/components/landing-page/PredictMarketPage/faq";
 import JoinTelegram from "@/components/landing-page/JoinTelegram";
 
 
@@ -27,16 +26,15 @@ export default function HomePage() {
       <Header />
 
       <main className="min-h-screen pt-0 md:pt-10">
+        {/* section 1  */}
         <HeroSection />
         <TradingView />
         <Promo />
         <HowItWorks />
-        <CoreCapabilities />
+        <CoreCapabilities /> 
+        <Network /> 
+        <LiveMarkets />
         <NumbersThatSpeaks />
-        <TradingView />
-        <ProfitBlueprint />
-        <Network />
-        <RiskProtection />
         <FAQ />
         <JoinTelegram />
         <TradingView />

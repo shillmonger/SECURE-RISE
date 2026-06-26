@@ -34,6 +34,7 @@ import {
   RefreshCw,
   ChevronRight,
   Scale,
+  TrendingUpDown,
 } from "lucide-react";
 import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
@@ -45,6 +46,7 @@ import Link from "next/link";
 const sections = [
   { id: "welcome", title: "Welcome to Secure Rise", icon: TrendingUp },
   { id: "xp-rewards", title: "XP & Rewards System", icon: Coins },
+  { id: "predict-market", title: "Predict Market", icon: TrendingUpDown },
   { id: "gift-member", title: "Gift Member", icon: Gift },
   { id: "affiliate-network", title: "Affiliate Network", icon: Users },
   { id: "withdraw", title: "Withdraw Funds", icon: ArrowUpRight },
@@ -499,6 +501,121 @@ export default function LearnMorePage() {
             </div>
             </motion.div>
 
+          {/* Predict Market Section */}
+          <motion.div
+            id="predict-market"
+            className="scroll-mt-32 bg-card border border-border rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
+              <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
+                03
+              </span>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-500/10">
+                <TrendingUpDown className="w-4 h-4 text-cyan-500" />
+              </div>
+              <h3 className="text-base font-bold tracking-tight text-foreground">Predict Market</h3>
+            </div>
+            <div className="p-5 lg:p-6 space-y-4 text-sm leading-relaxed">
+              <p>
+                The Predict Market feature allows you to test your market analysis skills by predicting whether cryptocurrency prices will go up or down. Make one prediction per day and earn 1000 XP for every correct prediction. Your predictions are processed daily at midnight, and results are emailed to you.
+              </p>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <Target className="w-4 h-4 text-cyan-400" />
+                  How It Works
+                </h3>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li><strong>Select a Pair:</strong> Choose from supported crypto pairs (BTCUSDT, ETHUSDT, SOLUSDT, BNBUSDT)</li>
+                  <li><strong>Choose Direction:</strong> Predict if the price will go UP (BUY) or DOWN (SELL)</li>
+                  <li><strong>Set Confidence:</strong> Select your confidence level (Low, Medium, High)</li>
+                  <li><strong>Submit Prediction:</strong> Submit your prediction before the daily deadline</li>
+                  <li><strong>Daily Processing:</strong> Predictions are processed at midnight (00:00 UTC)</li>
+                  <li><strong>Receive Results:</strong> Email notification with win/loss status and XP earned</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-yellow-400" />
+                  XP Rewards
+                </h3>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li><strong>+1000 XP</strong> for each correct prediction</li>
+                  <li><strong>0 XP</strong> for incorrect predictions</li>
+                  <li><strong>Daily Limit:</strong> One prediction per day</li>
+                  <li><strong>Conversion:</strong> Prediction XP can be converted to USDT (50 XP = 1 USDT)</li>
+                  <li><strong>Example:</strong> 10 correct predictions = 10,000 XP = $200 USDT</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4 text-purple-400" />
+                  Supported Crypto Pairs
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  We support major cryptocurrency pairs for predictions. Prices are fetched from CoinGecko API to ensure accuracy.
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li><strong>BTCUSDT:</strong> Bitcoin / Tether</li>
+                  <li><strong>ETHUSDT:</strong> Ethereum / Tether</li>
+                  <li><strong>SOLUSDT:</strong> Solana / Tether</li>
+                  <li><strong>BNBUSDT:</strong> Binance Coin / Tether</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  Prediction Rules
+                </h3>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li><strong>One Per Day:</strong> You can only submit one prediction per calendar day</li>
+                  <li><strong>Entry Price:</strong> The price at the time of submission</li>
+                  <li><strong>Close Price:</strong> The price at midnight (00:00 UTC)</li>
+                  <li><strong>Win Condition:</strong> Price moves in your predicted direction by close time</li>
+                  <li><strong>Status Updates:</strong> Prediction status changes from pending to won/lost after processing</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-yellow-400" />
+                  Leaderboard
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Compete with other traders on the prediction leaderboard. Track your win rate and climb the ranks to showcase your market analysis skills.
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li><strong>Win Rate:</strong> Percentage of correct predictions</li>
+                  <li><strong>Total XP Earned:</strong> Cumulative XP from predictions</li>
+                  <li><strong>Ranking:</strong> Position on the global leaderboard</li>
+                  <li><strong>History:</strong> View all your past predictions and results</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-yellow-400" />
+                  Tips for Success
+                </h3>
+                <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                  <li>Study market trends and technical analysis before predicting</li>
+                  <li>Consider news events that might affect crypto prices</li>
+                  <li>Start with higher confidence when you're more certain</li>
+                  <li>Track your prediction history to learn from past results</li>
+                  <li>Convert your prediction XP regularly to grow your trading capital</li>
+                </ul>
+              </div>
+            </div>
+            </motion.div>
+
           {/* Gift Member Section */}
           <motion.div
             id="gift-member"
@@ -510,7 +627,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                03
+                04
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -585,7 +702,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                04
+                05
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -675,7 +792,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                05
+                06
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -750,7 +867,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                06
+                07
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -814,7 +931,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                07
+                08
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -887,7 +1004,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                08
+                09
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -960,7 +1077,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                09
+                10
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -1022,7 +1139,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                10
+                11
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -1092,7 +1209,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                11
+                12
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -1169,7 +1286,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                12
+                13
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">
@@ -1249,7 +1366,7 @@ export default function LearnMorePage() {
           >
             <div className="flex items-center gap-4 px-5 py-3 lg:py-5 border-b border-border bg-secondary/30">
               <span className="text-[10px] font-mono font-bold text-primary/60 tracking-widest leading-none">
-                13
+                14
               </span>
               <div className="w-px h-4 bg-border" />
               <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10">

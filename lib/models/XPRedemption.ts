@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 export interface XPRedemption {
   _id?: ObjectId;
   userId: ObjectId;
-  xpType: 'daily' | 'achievement';
+  xpType: 'daily' | 'achievement' | 'prediction';
   xpAmount: number;
   usdtAmount: number;
   conversionRate: number; // e.g., 0.02 for 100 XP = $2
@@ -15,7 +15,7 @@ export interface XPRedemption {
 
 export const createDefaultXPRedemption = (redemptionData: {
   userId: ObjectId;
-  xpType: 'daily' | 'achievement';
+  xpType: 'daily' | 'achievement' | 'prediction';
   xpAmount: number;
   usdtAmount: number;
   conversionRate: number;

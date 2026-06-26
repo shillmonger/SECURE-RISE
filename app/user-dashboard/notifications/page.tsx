@@ -490,7 +490,7 @@ const NotificationsPage = () => {
             {loading ? (
               /* Skeleton — two col on lg */
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+                {[...Array(10)].map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 gap-4 border-2 border-dashed border-border rounded-3xl opacity-30">

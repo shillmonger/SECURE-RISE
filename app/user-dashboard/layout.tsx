@@ -1,6 +1,6 @@
 "use client";
 
-import GiftMember from "@/components/user-dashboard/GiftMember";
+import PromotionPopup from "@/components/user-dashboard/PromotionPopup";
 import { useState, useEffect } from "react";
 
 export default function UserDashboardLayout({
@@ -22,7 +22,7 @@ export default function UserDashboardLayout({
   return (
     <>
       {children}
-      <GiftMember 
+      <PromotionPopup 
         isOpen={isGiftMemberOpen} 
         onClose={() => setIsGiftMemberOpen(false)} 
       />

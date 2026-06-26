@@ -90,9 +90,8 @@ export default function InvestmentFeatureGrid() {
 
           {/* Laptop / Dashboard Image Mockup Area */}
           <div className="absolute right-0 bottom-0 w-full md:w-[50%] h-[300px] md:h-full overflow-hidden pointer-events-none">
-            <div className="absolute bottom-0 right-0 w-[120%] h-[80%] bg-gradient-to-tl from-primary/20 to-transparent rounded-tl-[100px] blur-3xl opacity-50" />
             <img 
-              src="https://i.postimg.cc/Y0Jy39TC/install-pwa.png" // Replace with your actual laptop image URL
+              src="https://i.postimg.cc/ZqwGvCn9/1.png" // Replace with your actual laptop image URL
               alt="Trading Interface" 
               className="absolute bottom-0 right-0 w-full h-auto object-contain opacity-40 md:opacity-100 translate-x-10 translate-y-10 rotate-[-5deg]"
             />

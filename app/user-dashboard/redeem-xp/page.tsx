@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Flame,
-  Calendar,
+  TrendingUpDown,
   Zap,
   CheckCircle2,
   XCircle,
   Clock,
+  ChartSpline,
   Trophy,
   Target,
   TrendingUp,
@@ -19,6 +20,7 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   Wallet,
+  Swords,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -26,11 +28,12 @@ import UserNav from "@/components/user-dashboard/UserNav";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // ─── Types & Constants ──────────────────────────────────────────────────────
-type XPType = "daily" | "achievement";
+type XPType = "daily" | "achievement" | "prediction";
 
 interface UserBalanceData {
   dailyXP: number;
   achievementXP: number;
+  predictionXP: number;
   usdtBalance: number;
   conversionRate: number;
 }
@@ -60,6 +63,7 @@ const DailyStreakPage = () => {
   const [balances, setBalances] = useState<UserBalanceData>({
     dailyXP: 0,
     achievementXP: 0,
+    predictionXP: 0,
     usdtBalance: 0,
     conversionRate: 0.02,
   });
@@ -69,7 +73,7 @@ const DailyStreakPage = () => {
   const [xpInput, setXpInput] = useState<string>("");
 
   // Calculate live conversion values
-  const currentMaxXP = selectedXPType === "daily" ? balances.dailyXP : balances.achievementXP;
+  const currentMaxXP = selectedXPType === "daily" ? balances.dailyXP : selectedXPType === "achievement" ? balances.achievementXP : balances.predictionXP;
   const numericXPInput = Number(xpInput) || 0;
   const estimatedUSDT = (numericXPInput * EXCHANGE_RATE).toFixed(2);
 
@@ -83,6 +87,7 @@ const DailyStreakPage = () => {
           setBalances({
             dailyXP: result.data.dailyXP,
             achievementXP: result.data.achievementXP,
+            predictionXP: result.data.predictionXP || 0,
             usdtBalance: result.data.accountBalance,
             conversionRate: result.data.conversionRate,
           });
@@ -150,6 +155,7 @@ const DailyStreakPage = () => {
           ...prev,
           dailyXP: selectedXPType === "daily" ? prev.dailyXP - numericXPInput : prev.dailyXP,
           achievementXP: selectedXPType === "achievement" ? prev.achievementXP - numericXPInput : prev.achievementXP,
+          predictionXP: selectedXPType === "prediction" ? prev.predictionXP - numericXPInput : prev.predictionXP,
           usdtBalance: prev.usdtBalance + convertedUSDT,
         }));
 
@@ -191,8 +197,15 @@ const DailyStreakPage = () => {
       icon: <Flame className="w-5 h-5 text-orange-400" />,
       dark: false,
     },
+        {
+      label: "Prediction XP Balance",
+      value: `${formatNumber(balances.predictionXP)}`,
+      unit: "XP",
+      icon: <TrendingUpDown className="w-5 h-5 text-cyan-400" />,
+      dark: false,
+    },
     {
-      label: "Achv XP Balance",
+      label: "Achievement XP Balance",
       value: `${formatNumber(balances.achievementXP)}`,
       unit: "XP",
       icon: <Trophy className="w-5 h-5 text-yellow-400" />,
@@ -229,7 +242,7 @@ const DailyStreakPage = () => {
             </section>
 
             {/* ── Balance Status Grid ── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {balanceCards.map((s, i) => (
                 <div
                   key={i}
@@ -248,7 +261,7 @@ const DailyStreakPage = () => {
                       {s.unit}
                     </span>
                   </h3>
-                  <p className={`text-[9px] font-black uppercase tracking-[0.18em] mt-1 ${s.dark ? "opacity-55" : "text-muted-foreground"}`}>
+                  <p className={`text-[9px] font-black uppercase tracking-[0.18em] mt-2 ${s.dark ? "opacity-55" : "text-muted-foreground"}`}>
                     {s.label}
                   </p>
                 </div>
@@ -295,6 +308,13 @@ const DailyStreakPage = () => {
         className="px-2 py-2"
       >
         Achievement Milestone XP ({balances.achievementXP.toLocaleString()} Available)
+      </SelectItem>
+
+      <SelectItem
+        value="prediction"
+        className="px-2 py-2"
+      >
+        Prediction XP ({balances.predictionXP.toLocaleString()} Available)
       </SelectItem>
     </SelectContent>
   </Select>

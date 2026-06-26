@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Gift, Users, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ChartSpline, TrendingUp, ShieldCheck } from "lucide-react";
 
 
 const IMAGES = [
@@ -81,7 +81,7 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
   
           <div className="absolute top-5 left-5 flex gap-2 z-20">
             <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">
-              Community
+              Rewards
             </span>
             <span className="px-3 py-1 bg-primary/80 backdrop-blur-md rounded-full text-[10px] font-bold text-primary-foreground uppercase tracking-widest flex items-center gap-1">
               <ShieldCheck className="w-3 h-3" /> Secure
@@ -106,14 +106,14 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
         <div className="p-5 lg:8 space-y-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-tighter">
-              <Gift className="w-4 h-4" /> 
-              <span>Member Gifting Live</span>
+              <ChartSpline className="w-4 h-4" />
+              <span>Market Predictions Live</span>
             </div>
             <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight">
-              Empower Fellow Traders
+              Predict & Earn XP
             </h2>
             <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-              You can now gift funds directly to fellow members on the platform. Fuel their journey, support new strategies, and help the community trade stronger together.
+              Test your market analysis skills. Predict if crypto prices will go up or down. Win predictions to earn 1000 XP daily which can be converted to USDT in Redeem XP page.
             </p>
           </div>
 
@@ -121,22 +121,22 @@ export default function GiftMember({ isOpen, onClose }: { isOpen: boolean; onClo
           <div className="flex items-center justify-between py-4 border-y border-border/50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10">
-                <Users className="w-5 h-5 text-primary" />
+                <TrendingUp className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Community</p>
-                <p className="text-sm font-bold">Trading Peers</p>
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Rewards</p>
+                <p className="text-sm font-bold">1000 XP Per Win</p>
               </div>
             </div>
             <div className="text-right font-mono text-sm font-black text-primary">
-              INSTANT TRANSFER
+              DAILY CHALLENGE
             </div>
           </div>
 
           {/* Action Button */}
-          <Link href="/user-dashboard/gift-member">
+          <Link href="/user-dashboard/predict">
             <button className="group relative w-full cursor-pointer bg-[#229ED9] text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-between overflow-hidden transition-all hover:pr-8 active:scale-[0.98]">
-              <span className="relative z-10">Gift Member Now</span>
+              <span className="relative z-10">Predict Market Now</span>
               <div className="h-8 w-8 bg-background/20 rounded-full flex items-center justify-center transition-transform group-hover:rotate-45">
                 <ArrowUpRight className="w-5 h-5" />
               </div>

@@ -11,6 +11,7 @@ import {
   Package,
   ArrowRightLeft,
   Trophy,
+  TrendingUpDown,
   BanknoteArrowUp,
   Swords,
   TrendingUp,
@@ -141,7 +142,7 @@ export default function UserSidebar({
        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         {
           name: "Predict Market (XP)",
-          icon: Swords ,
+          icon: TrendingUpDown ,
           href: `${basePath}/predict`,
         },
       ],

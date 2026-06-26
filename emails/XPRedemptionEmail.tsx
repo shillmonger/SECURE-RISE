@@ -3,7 +3,7 @@ import { Html, Head, Preview, Body, Container, Text, Img, Section } from '@react
 interface XPRedemptionEmailProps {
   userEmail: string;
   username: string;
-  xpType: 'daily' | 'achievement';
+  xpType: 'daily' | 'achievement' | 'prediction';
   xpAmount: number;
   usdtAmount: number;
   transactionId: string;
@@ -105,7 +105,7 @@ export const XPRedemptionEmail: React.FC<XPRedemptionEmailProps> = ({
           
           <div className="info-box">
             <Text>
-              <strong>XP Type:</strong> {xpType === 'daily' ? 'Daily Streak XP' : 'Achievement Milestone XP'}<br />
+              <strong>XP Type:</strong> {xpType === 'daily' ? 'Daily Streak XP' : xpType === 'achievement' ? 'Achievement Milestone XP' : 'Prediction XP'}<br />
               <strong>XP Redeemed:</strong> {xpAmount.toLocaleString()} XP<br />
               <strong>USDT Received:</strong> ${usdtAmount.toFixed(2)}<br />
               <strong>Conversion Rate:</strong> 100 XP = $2.00

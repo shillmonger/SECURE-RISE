@@ -24,24 +24,8 @@ const faqs = [
     answer: "Yes. Gifted funds received from other members can be used to activate investment plans and participate in available opportunities. Once eligibility requirements have been met and the account qualifies for withdrawals, any available profits and approved earnings may be withdrawn according to platform policies."
   },
   {
-    question: "Is there a limit to how much I can invest?",
-    answer: "There is currently no maximum investment limit. Investors can choose an investment level that matches their goals, and larger portfolios may benefit from specialized allocation strategies designed to support efficient capital management."
-  },
-  {
-    question: "Is there a limit to how much I can invest?",
-    answer: "No, there is no upper limit. However, we offer different tiers of trading algorithms based on your capital size to ensure maximum efficiency and risk management for your specific portfolio."
-  },
-  {
     question: "Why choose SECURE RISE instead of trading on my own?",
     answer: "Many investors lack the time, experience, or technical knowledge required to trade consistently. SECURE RISE provides access to experienced market participants, strategic analysis, and continuous market monitoring, allowing members to participate in the markets without actively managing trades themselves."
-  },
-  {
-    question: "How secure are my funds and account information?",
-    answer: "Security is a top priority at SECURE RISE. We implement industry-standard security measures, encrypted communications, account protection systems, and continuous monitoring to help safeguard user accounts and sensitive information."
-  },
-  {
-    question: "Do I need to deposit before withdrawing Capital?",
-    answer: "Yes. To activate full withdrawal privileges for gifted income and promotional rewards, users are required to make at least one successful deposit. This policy helps prevent abuse of promotional programs and confirms participation as an active member of the SECURE RISE investment community."
   },
   {
     question: "Can I withdraw my initial capital at any time?",
@@ -52,20 +36,12 @@ const faqs = [
     answer: "Most cryptocurrency deposits are reviewed and credited within a short period after network confirmation. Processing times may vary depending on blockchain congestion, payment method, and verification requirements."
   },
   {
-    question: "How do I track my earnings?",
-    answer: "Your dashboard provides real-time access to your account activity, investment status, transaction history, earnings, withdrawals, and overall portfolio performance."
-  },
-  {
     question: "What happens if a trade results in a loss of my capital?",
     answer: "We stand by our strategies. If a trade results in a loss of your initial capital, SECURE RISE covers it 100%. Not only do we refund your full investment immediately, but we also credit an additional 20% of your capital as compensation—fully withdrawable the moment it hits your account."
   },
   {
     question: "What payment methods are supported?",
     answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH). We also support selected gift card deposits through our approved funding channels."
-  },
-  {
-    question: "Is SECURE RISE available internationally?",
-    answer: "Yes. SECURE RISE is designed to serve users from multiple countries, allowing investors from different regions to participate using supported funding methods."
   },
   {
     question: "Can I have more than one active investment?",
@@ -104,7 +80,7 @@ export default function FAQSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* Left Column */}
         <div className="space-y-4">
-          {faqs.slice(0, 9).map((faq, index) => (
+          {faqs.slice(0, 6).map((faq, index) => (
             <FAQItem
               key={index}
               faq={faq}
@@ -116,12 +92,12 @@ export default function FAQSection() {
 
         {/* Right Column */}
         <div className="space-y-4">
-          {faqs.slice(9, 18).map((faq, index) => (
+          {faqs.slice(6, 12).map((faq, index) => (
             <FAQItem
-              key={index + 9}
+              key={index + 6}
               faq={faq}
-              isOpen={openIndex === index + 9}
-              onClick={() => setOpenIndex(openIndex === index + 9 ? null : index + 9)}
+              isOpen={openIndex === index + 6}
+              onClick={() => setOpenIndex(openIndex === index + 6 ? null : index + 6)}
             />
           ))}
         </div>

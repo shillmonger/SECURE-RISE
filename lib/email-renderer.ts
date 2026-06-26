@@ -141,7 +141,7 @@ export const renderGiftCardNotificationEmail = (props: {
 export const renderXPRedemptionEmail = (props: {
   userEmail: string;
   username: string;
-  xpType: 'daily' | 'achievement';
+  xpType: 'daily' | 'achievement' | 'prediction';
   xpAmount: number;
   usdtAmount: number;
   transactionId: string;

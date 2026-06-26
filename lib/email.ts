@@ -626,7 +626,7 @@ export const sendGiftCardStatusEmail = async (userEmail: string, giftCardData: {
 };
 
 export const sendXPRedemptionEmail = async (userEmail: string, username: string, redemptionData: {
-  xpType: 'daily' | 'achievement';
+  xpType: 'daily' | 'achievement' | 'prediction';
   xpAmount: number;
   usdtAmount: number;
   transactionId: string;

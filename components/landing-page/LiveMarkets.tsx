@@ -461,12 +461,11 @@ export default function LiveMarkets() {
   return (
     <section className="mx-auto max-w-[1400px] px-4 lg:px-8 py-16 lg:pb-20 lg:pt-0 w-full relative">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
       
       <div className="container mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-4xl md:text-4xl font-black uppercase tracking-tighter mb-2">
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2">
             Live Markets
           </h2>
           <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">

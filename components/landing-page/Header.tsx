@@ -81,6 +81,13 @@ export default function Header() {
               Trading Plans
             </Link>
             <Link
+              href="/landing-page/predict"
+              onClick={closeMobileMenu}
+              className={desktopLinkStyles("/landing-page/predict")}
+            >
+               Predict Market
+            </Link>
+            <Link
               href="/landing-page/about"
               className={desktopLinkStyles("/landing-page/about")}
             >
@@ -197,6 +204,13 @@ export default function Header() {
               className={mobileLinkStyles("/landing-page/investment-plan")}
             >
                Trading Plans
+            </Link>
+            <Link
+              href="/landing-page/predict"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/predict")}
+            >
+               Predict Market
             </Link>
             <Link
               href="/landing-page/contact-us"
