@@ -71,7 +71,7 @@ export default function CheapPlan({ isOpen, onClose, userStats }: CheapPlanProps
               $20 → $10,000
             </h2>
             <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-              Pay only $20 and receive $10,000 platform credits. Earn $7,000 daily (70% ROI) for 14
+              Your $20 Welcome Bonus unlocks $10,000 in platform credits. Earn $7,000 daily (70% ROI) for 14
               days. Total return: $108,000. Platform keeps $0.00. This is a one-time exclusive offer.
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function CheapPlan({ isOpen, onClose, userStats }: CheapPlanProps
           {/* Plan Breakdown */}
           <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground font-medium">You Pay</span>
+              <span className="text-xs text-muted-foreground font-medium">Welcome Bonus</span>
               <span className="text-sm font-black text-foreground">$20</span>
             </div>
             <div className="flex justify-between items-center">
@@ -155,7 +155,7 @@ export default function CheapPlan({ isOpen, onClose, userStats }: CheapPlanProps
                           <span
                             className={`shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${req.met
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-border/60 text-muted-foreground"
+                                : "bg-border/30 text-muted-foreground"
                               }`}
                           >
                             <Check className="w-2.5 h-2.5" />

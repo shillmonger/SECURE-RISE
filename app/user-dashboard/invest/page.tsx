@@ -484,10 +484,10 @@ export default function InvestPage() {
               {/* CHEAP PLAN OFFER */}
               <button
                 onClick={() => setIsCheapPlanOpen(true)}
-                className="flex items-center cursor-pointer gap-2 border border-border px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest bg-primary text-primary-foreground transition-all w-full md:w-auto justify-center"
+                className="flex items-center cursor-pointer gap-2 border border-border px-3 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest bg-primary text-primary-foreground transition-all w-full md:w-auto justify-center"
               >
                 <Gift className="w-4 h-4" />  
-                Cheapest Plan
+                $20 Welcome Bonus Plan
               </button>
             </section>
 
