@@ -23,6 +23,7 @@ import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import TradingView from "@/components/landing-page/trading-view-slide";
+import { InvestmentSlidePanel } from "@/components/user-dashboard/InvestmentSlidePanel";
 
 import Link from "next/link";
 
@@ -242,15 +243,17 @@ function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; 
             onClick={() => setShowDetailsModal(true)}
             className="cursor-pointer flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
           >
-            <ChevronDown className="w-3 h-3" /> View Full Details
+            View ROI History
           </button>
           <Link
-            href="/user-dashboard/invest"
-            className="cursor-pointer px-2 lg-px-4 bg-primary text-primary-foreground hover:opacity-90 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            Reinvest
-          </Link> 
+  href="/user-dashboard/invest"
+  className="cursor-pointer bg-primary text-primary-foreground hover:opacity-90 rounded-lg transition-all flex items-center justify-center gap-2 h-10 w-10 sm:h-auto sm:w-auto sm:px-4 py-3"
+>
+  <PlusCircle className="w-4 h-4 shrink-0" />
+  <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">
+    Reinvest
+  </span>
+</Link>
           <button
             onClick={() => setShowDeleteModal(true)}
             className="cursor-pointer px-3 bg-[#229ED9] text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
@@ -449,6 +452,7 @@ export default function MyInvestmentsPage() {
   const [activeTab, setActiveTab] = useState<InvestmentStatus | "all">("all");
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSlidePanel, setShowSlidePanel] = useState(false);
 
   useEffect(() => {
     fetchInvestments();
@@ -564,6 +568,7 @@ export default function MyInvestmentsPage() {
 
   {/* Toggle Button */}
   <button
+    onClick={() => setShowSlidePanel(true)}
     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/50 transition-colors hover:bg-muted cursor-pointer"
   >
     <TextAlignJustify className="h-4 w-4" />
@@ -657,6 +662,13 @@ export default function MyInvestmentsPage() {
 
       </div>
       <UserNav />
+
+      {/* Investment Slide Panel */}
+      <InvestmentSlidePanel
+        isOpen={showSlidePanel}
+        onClose={() => setShowSlidePanel(false)}
+        investments={investments}
+      />
     </div>
   );
 
