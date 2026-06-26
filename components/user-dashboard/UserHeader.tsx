@@ -606,7 +606,7 @@ export default function UserHeader({
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-[260px] sm:w-80 overflow-hidden rounded-xl lg:rounded-2xl border border-border bg-background p-2 shadow-xl z-50">
+              <div className="absolute right-0 top-full w-[260px] sm:w-80 overflow-hidden rounded-xl lg:rounded-2xl border border-border bg-background p-2 shadow-xl z-50">
                 {/* User Profiles Section */}
                 <div className="p-2">
                   <div className="mb-2 py-1">

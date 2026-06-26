@@ -535,15 +535,15 @@ export default function MyInvestmentsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto pb-20 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
             {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter ">
                   Live Investments
                 </h1>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-2">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1">
                   Manage your high-yield assets
                 </p>
               </div>
@@ -590,11 +590,11 @@ export default function MyInvestmentsPage() {
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
 
-                  <p className="text-2xl font-black tracking-tighter mt-3">
+                  <p className="text-2xl font-black tracking-tighter mt-2">
                     {stat.value}
                   </p>
 
-                  <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-1">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
                     {stat.label}
                   </p>
                 </div>
