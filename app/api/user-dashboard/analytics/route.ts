@@ -155,13 +155,19 @@ export async function GET(request: NextRequest) {
     // Filter by time range
     const now = new Date();
     let startDate = new Date();
-    
+
     switch (timeRange) {
       case "24h":
         startDate.setDate(now.getDate() - 1);
         break;
       case "7d":
         startDate.setDate(now.getDate() - 7);
+        break;
+      case "4w":
+        startDate.setDate(now.getDate() - 28);
+        break;
+      case "5m":
+        startDate.setMonth(now.getMonth() - 5);
         break;
       case "30d":
         startDate.setDate(now.getDate() - 30);

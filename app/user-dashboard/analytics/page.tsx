@@ -220,7 +220,7 @@ function BarCol({
 export default function UserAnalyticsPage() {
   const { theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [timeRange, setTimeRange] = useState("7d");
+  const [timeRange, setTimeRange] = useState("5m");
   const [refreshing, setRefreshing] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -356,7 +356,7 @@ export default function UserAnalyticsPage() {
   const deposits = useCountUp(overviewStats.totalDeposits, 1500, mounted);
   const withdrawals = useCountUp(overviewStats.totalWithdrawals, 1300, mounted);
 
-  const timeRanges = ["24h", "7d", "30d", "90d", "1y"];
+  const timeRanges = ["1y", "5m", "4w", "7d"];
 
   // Use real investment breakdown data
   const breakdown = investmentBreakdown.map((item: any) => ({
@@ -387,19 +387,86 @@ export default function UserAnalyticsPage() {
     ico: act.color,
   }));
 
-  // Generate daily bar chart data
-  const barData = profitHistory.slice(0, 7).map((profit: any, index: number) => {
-    const date = new Date(profit.timestamp);
-    const dayLabel = date.toLocaleDateString('en', { weekday: 'short' });
-    const maxValue = Math.max(...profitHistory.slice(0, 7).map((p: any) => p.amount || 0));
-    const pct = maxValue > 0 ? ((profit.amount || 0) / maxValue) * 100 : 0;
-    
-    return {
-      label: dayLabel,
-      value: fmt(profit.amount || 0),
-      pct: Math.round(pct),
-    };
-  });
+  // Generate bar chart data based on time range
+  const getBarData = () => {
+    let data: any[] = [];
+    let labelFormat: string;
+
+    switch (timeRange) {
+      case '7d':
+        // Daily bars for 7 days
+        data = profitHistory.slice(0, 7);
+        labelFormat = 'daily';
+        break;
+      case '4w':
+        // Daily bars for 28 days (4 weeks)
+        data = profitHistory.slice(0, 28);
+        labelFormat = 'daily';
+        break;
+      case '5m':
+        // Weekly bars for 5 months (approx 20 weeks)
+        const weeklyData: any[] = [];
+        for (let i = 0; i < 20; i++) {
+          const weekStart = i * 7;
+          const weekData = profitHistory.slice(weekStart, weekStart + 7);
+          const weekTotal = weekData.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+          if (weekData.length > 0) {
+            weeklyData.push({
+              timestamp: weekData[0].timestamp,
+              amount: weekTotal,
+            });
+          }
+        }
+        data = weeklyData;
+        labelFormat = 'weekly';
+        break;
+      case '1y':
+        // Monthly bars for 1 year (12 months)
+        const monthlyData: any[] = [];
+        for (let i = 0; i < 12; i++) {
+          const monthStart = i * 30;
+          const monthData = profitHistory.slice(monthStart, monthStart + 30);
+          const monthTotal = monthData.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+          if (monthData.length > 0) {
+            monthlyData.push({
+              timestamp: monthData[0].timestamp,
+              amount: monthTotal,
+            });
+          }
+        }
+        data = monthlyData;
+        labelFormat = 'monthly';
+        break;
+      default:
+        data = profitHistory.slice(0, 7);
+        labelFormat = 'daily';
+    }
+
+    const maxValue = Math.max(...data.map((p: any) => p.amount || 0));
+
+    return data.map((profit: any, index: number) => {
+      const date = new Date(profit.timestamp);
+      let label: string;
+
+      if (labelFormat === 'daily') {
+        label = date.toLocaleDateString('en', { weekday: 'short' });
+      } else if (labelFormat === 'weekly') {
+        label = `W${index + 1}`;
+      } else {
+        label = date.toLocaleDateString('en', { month: 'short' });
+      }
+
+      const pct = maxValue > 0 ? ((profit.amount || 0) / maxValue) * 100 : 0;
+
+      return {
+        label,
+        value: fmt(profit.amount || 0),
+        pct: Math.round(pct),
+      };
+    });
+  };
+
+  const barData = getBarData();
 
   // Generate sparkline data from profit history
   const sparkData = profitHistory.slice(0, 7).map((profit: any) => profit.amount || 0);
