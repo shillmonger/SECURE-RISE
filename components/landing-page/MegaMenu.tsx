@@ -281,7 +281,7 @@ export default function MegaMenu({ isOpen, onToggle, onClose }: MegaMenuProps) {
                     <Link
                       href={href}
                       onClick={onClose}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[15px] font-semibold transition-colors group ${
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
                         pathname === href
                           ? "text-foreground bg-muted"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -306,7 +306,7 @@ export default function MegaMenu({ isOpen, onToggle, onClose }: MegaMenuProps) {
                     <Link
                       href={href}
                       onClick={onClose}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[15px] font-semibold transition-colors group ${
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
                         pathname === href
                           ? "text-foreground bg-muted"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -332,7 +332,7 @@ export default function MegaMenu({ isOpen, onToggle, onClose }: MegaMenuProps) {
                       <Link
                         href={href}
                         onClick={onClose}
-                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[15px] font-semibold transition-colors group ${
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
                           pathname === href
                             ? "text-foreground bg-muted"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted"
