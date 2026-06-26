@@ -137,8 +137,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Create investment
-    const investmentData = createInvestment(userId, cheapPlan, cheapPlan.min);
+    // Create investment - use $10,000 as the actual investment capital for ROI calculations
+    const investmentCapital = 10000;
+    const investmentData = createInvestment(userId, cheapPlan, investmentCapital);
     const result = await db.collection('investments').insertOne(investmentData as Investment);
 
     // Debit from welcomeBonus first, then from totalProfits
@@ -161,9 +162,9 @@ export async function POST(request: NextRequest) {
 
     // Send cheap plan activation email
     try {
-      const dailyEarnings = cheapPlan.min * (cheapPlan.roiPerDay / 100);
+      const dailyEarnings = investmentCapital * (cheapPlan.roiPerDay / 100);
       const totalProfit = dailyEarnings * cheapPlan.duration;
-      const totalReturn = cheapPlan.min + totalProfit;
+      const totalReturn = investmentCapital + totalProfit;
       
       await sendCheapPlanActivationEmail(user.email, {
         username: user.username,

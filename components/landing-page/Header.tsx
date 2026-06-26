@@ -1,20 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Montserrat } from "next/font/google";
 import {
   Menu,
   X,
-  MessagesSquare ,
-  MessageCircle,
-  Info,
-  Home,
-  Headset,
-  Briefcase,
   HelpCircle,
+  ChevronDown,
+  FileText,
+  Shield,
+  RotateCcw,
+  Phone,
+  Info,
+  TrendingUp,
+  Star,
+  LogIn,
+  UserPlus,
+  BookOpen,
+  Lock,
+  Users,
+  Briefcase,
+  Newspaper,
+  Map,
+  Coins,
+  Code,
+  BarChart2,
+  ExternalLink,
 } from "lucide-react";
 
 const montserrat = Montserrat({
@@ -22,13 +36,63 @@ const montserrat = Montserrat({
   weight: ["700", "800", "900"],
 });
 
+// ─── Mega Menu Data ────────────────────────────────────────────────────────────
+
+const LEARN_MORE_LINKS = [
+  { label: "Learn More", href: "/landing-page/learn-more", icon: BookOpen },
+  { label: "Privacy Policy", href: "/landing-page/privacy", icon: Lock },
+  { label: "Terms & Conditions", href: "/landing-page/terms", icon: FileText },
+  { label: "Refund Policy", href: "/landing-page/refund", icon: RotateCcw },
+  { label: "Security", href: "/landing-page/security", icon: Shield },
+  { label: "Roadmap", href: "/landing-page/roadmap", icon: Map },
+  { label: "API Docs", href: "/landing-page/api-docs", icon: Code },
+];
+
+const COMPANY_LINKS = [
+  { label: "About Us", href: "/landing-page/about", icon: Info },
+  { label: "Contact Us", href: "/landing-page/contact-us", icon: Phone },
+  { label: "Careers", href: "/landing-page/careers", icon: Briefcase },
+  { label: "Blog / News", href: "/landing-page/blog", icon: Newspaper },
+  { label: "Affiliate Program", href: "/landing-page/affiliate", icon: Users },
+  { label: "Testimonials", href: "/landing-page/testimonials", icon: Star },
+  { label: "FAQ", href: "/landing-page/faq", icon: HelpCircle },
+];
+
+const PLATFORM_LINKS = [
+  { label: "Investment Plans", href: "/landing-page/investment-plan", icon: TrendingUp },
+  { label: "Supported Crypto", href: "/landing-page/supported-crypto", icon: Coins },
+  { label: "Login", href: "/auth-page/login", icon: LogIn },
+  { label: "Register", href: "/auth-page/register", icon: UserPlus },
+];
+
+const TRADING_TOOLS = [
+  { label: "Exness", href: "https://www.exness.com", icon: BarChart2, external: true },
+  { label: "cTrader", href: "https://ctrader.com", icon: BarChart2, external: true },
+  { label: "MetaTrader 5 (MT5)", href: "https://www.metatrader5.com", icon: BarChart2, external: true },
+  { label: "TradeLocker", href: "https://tradelocker.com", icon: BarChart2, external: true },
+  { label: "Match Trader", href: "https://matchtrader.com", icon: BarChart2, external: true },
+];
+
+// ─── Component ─────────────────────────────────────────────────────────────────
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
-  /* Desktop pill styles — no container, just underline for active */
+  const handleMegaEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setMegaOpen(true);
+  };
+
+  const handleMegaLeave = () => {
+    timeoutRef.current = setTimeout(() => setMegaOpen(false), 120);
+  };
+
+  /* Desktop pill styles */
   const desktopLinkStyles = (href: string, exact: boolean = true) => {
     const isActive = exact ? pathname === href : pathname.startsWith(href);
     return `relative px-4 py-2 text-[14px] font-bold tracking-wide transition-all flex items-center hover:text-foreground after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:rounded-full after:transition-all after:duration-300 ${
@@ -38,7 +102,7 @@ export default function Header() {
     }`;
   };
 
-  /* Mobile underline styles — thinner active underline */
+  /* Mobile underline styles */
   const mobileLinkStyles = (href: string, exact: boolean = true) => {
     const isActive = exact ? pathname === href : pathname.startsWith(href);
     return `relative flex items-center gap-3 px-0 pt-3.5 pb-2.5 text-[15px] font-bold tracking-wide transition-colors
@@ -50,6 +114,23 @@ export default function Header() {
           : "text-muted-foreground hover:text-foreground after:w-0 hover:after:w-full hover:after:bg-border"
       }`;
   };
+
+  const aboutActive =
+    pathname === "/landing-page/about" ||
+    pathname === "/landing-page/privacy" ||
+    pathname === "/landing-page/terms" ||
+    pathname === "/landing-page/refund" ||
+    pathname === "/landing-page/contact-us" ||
+    pathname === "/landing-page/learn-more" ||
+    pathname === "/landing-page/security" ||
+    pathname === "/landing-page/faq" ||
+    pathname === "/landing-page/affiliate" ||
+    pathname === "/landing-page/careers" ||
+    pathname === "/landing-page/blog" ||
+    pathname === "/landing-page/roadmap" ||
+    pathname === "/landing-page/supported-crypto" ||
+    pathname === "/landing-page/api-docs" ||
+    pathname === "/landing-page/testimonials";
 
   return (
     <header className="fixed top-7 lg:top-9 left-0 right-0 z-[100] bg-background border-b border-border">
@@ -67,13 +148,7 @@ export default function Header() {
           </Link>
 
           {/* DESKTOP NAVIGATION */}
-          <nav className="hidden md:flex items-center gap-1">
-            {/* <Link
-              href="/"
-              className={desktopLinkStyles("/")}
-            >
-              Home
-            </Link> */}
+          <nav className="hidden md:flex items-center">
             <Link
               href="/landing-page/investment-plan"
               className={desktopLinkStyles("/landing-page/investment-plan")}
@@ -85,44 +160,173 @@ export default function Header() {
               onClick={closeMobileMenu}
               className={desktopLinkStyles("/landing-page/predict")}
             >
-               Predict Market
+              Predict Market
             </Link>
-            <Link
-              href="/landing-page/about"
-              className={desktopLinkStyles("/landing-page/about")}
+
+            {/* ABOUT US — mega menu trigger */}
+            <div
+              className="relative"
+              onMouseEnter={handleMegaEnter}
+              onMouseLeave={handleMegaLeave}
             >
-              About Us
-            </Link>
+              <button
+                className={`relative px-4 py-2 text-[14px] font-bold tracking-wide transition-all flex items-center gap-1 hover:text-foreground after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:rounded-full after:transition-all after:duration-300 ${
+                  aboutActive || megaOpen
+                    ? "text-foreground after:w-full after:bg-primary"
+                    : "text-muted-foreground after:w-0 hover:after:w-full hover:after:bg-border"
+                }`}
+              >
+                About Us
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {/* MEGA MENU PANEL */}
+              <div
+                className={`absolute top-full left-1/2 -translate-x-1/2 mt-[1px] w-[780px] bg-background border border-border shadow-2xl rounded-xl overflow-hidden transition-all duration-200 ${
+                  megaOpen
+                    ? "opacity-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 -translate-y-2 pointer-events-none"
+                }`}
+                onMouseEnter={handleMegaEnter}
+                onMouseLeave={handleMegaLeave}
+              >
+                {/* TOP ACCENT BAR */}
+                <div className="h-[3px] bg-gradient-to-r from-[#229ED9] via-[#229ED9]/60 to-transparent" />
+
+                <div className="grid grid-cols-[220px_1fr] min-h-[280px]">
+                  {/* LEFT — branded CTA panel */}
+                  <div className="bg-[#229ED9] p-6 flex flex-col justify-between">
+                    <div>
+                      <p className="text-white/60 text-[10px] font-black tracking-[0.2em] uppercase mb-2">
+                        Secure Rise
+                      </p>
+                      <h3 className="text-white font-black text-[22px] leading-tight mb-3">
+                        Everything<br />you need<br />to know
+                      </h3>
+                      <p className="text-white/75 text-[12px] leading-relaxed">
+                        Explore our platform, policies, tools, and company pages — all in one place.
+                      </p>
+                    </div>
+                    <Button
+                      asChild
+                      className="mt-4 w-full bg-white text-[#229ED9] hover:bg-white/90 font-bold text-[13px] rounded-lg"
+                    >
+                      <Link href="/landing-page/about">Learn More</Link>
+                    </Button>
+                  </div>
+
+                  {/* RIGHT — link columns */}
+                  <div className="p-5 grid grid-cols-3 gap-x-4">
+                    {/* Column 1: Learn More */}
+                    <div>
+                      <p className="text-[10px] font-black tracking-[0.15em] uppercase text-[#229ED9] mb-3">
+                        Info Pages
+                      </p>
+                      <ul className="space-y-0.5">
+                        {LEARN_MORE_LINKS.map(({ label, href, icon: Icon }) => (
+                          <li key={href}>
+                            <Link
+                              href={href}
+                              className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
+                                pathname === href
+                                  ? "text-foreground bg-muted"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5 shrink-0 text-[#229ED9] opacity-70 group-hover:opacity-100 transition-opacity" />
+                              {label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Column 2: Company */}
+                    <div>
+                      <p className="text-[10px] font-black tracking-[0.15em] uppercase text-[#229ED9] mb-3">
+                        Company
+                      </p>
+                      <ul className="space-y-0.5">
+                        {COMPANY_LINKS.map(({ label, href, icon: Icon }) => (
+                          <li key={href}>
+                            <Link
+                              href={href}
+                              className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
+                                pathname === href
+                                  ? "text-foreground bg-muted"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5 shrink-0 text-[#229ED9] opacity-70 group-hover:opacity-100 transition-opacity" />
+                              {label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Column 3: Platform + Trading Tools */}
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <p className="text-[10px] font-black tracking-[0.15em] uppercase text-[#229ED9] mb-3">
+                          Platform
+                        </p>
+                        <ul className="space-y-0.5">
+                          {PLATFORM_LINKS.map(({ label, href, icon: Icon }) => (
+                            <li key={href}>
+                              <Link
+                                href={href}
+                                className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold transition-colors group ${
+                                  pathname === href
+                                    ? "text-foreground bg-muted"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                }`}
+                              >
+                                <Icon className="h-3.5 w-3.5 shrink-0 text-[#229ED9] opacity-70 group-hover:opacity-100 transition-opacity" />
+                                {label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-black tracking-[0.15em] uppercase text-[#229ED9] mb-3">
+                          Trading Tools
+                        </p>
+                        <ul className="space-y-0.5">
+                          {TRADING_TOOLS.map(({ label, href, icon: Icon, external }) => (
+                            <li key={href}>
+                              <a
+                                href={href}
+                                target={external ? "_blank" : undefined}
+                                rel={external ? "noopener noreferrer" : undefined}
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors group"
+                              >
+                                <Icon className="h-3.5 w-3.5 shrink-0 text-[#229ED9] opacity-70 group-hover:opacity-100 transition-opacity" />
+                                {label}
+                                {external && (
+                                  <ExternalLink className="h-2.5 w-2.5 ml-auto opacity-40 group-hover:opacity-70 transition-opacity" />
+                                )}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <Link
               href="/landing-page/learn-more"
               className={desktopLinkStyles("/landing-page/learn-more")}
             >
               Learn More
             </Link>
-            {/* <Link
-              href="/landing-page/testimonials"
-              className={desktopLinkStyles("/landing-page/testimonials")}
-            >
-              Testimonials
-            </Link> */}
-            {/* <Link
-              href="/landing-page/contact-us"
-              className={desktopLinkStyles("/landing-page/contact-us")}
-            >
-              Contact Page
-            </Link> */}
-            <button
-              onClick={() => {
-                const faqSection = document.getElementById('faq');
-                if (faqSection) {
-                  faqSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className={`px-4 py-2 text-[14px] font-bold tracking-wide transition-all rounded-full flex items-center gap-2 cursor-pointer hover:text-foreground text-muted-foreground hover:bg-black/[0.03] dark:hover:bg-white/[0.03]`}
-            >
-              {/* <HelpCircle className="w-4 h-4" /> */}
-              FAQ
-            </button>
           </nav>
 
           {/* RIGHT SECTION: AUTH */}
@@ -155,18 +359,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
       {/* MOBILE MENU BACKDROP */}
       <div
@@ -203,14 +395,14 @@ export default function Header() {
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/investment-plan")}
             >
-               Trading Plans
+              Trading Plans
             </Link>
             <Link
               href="/landing-page/predict"
               onClick={closeMobileMenu}
               className={mobileLinkStyles("/landing-page/predict")}
             >
-               Predict Market
+              Predict Market
             </Link>
             <Link
               href="/landing-page/contact-us"
@@ -233,13 +425,6 @@ export default function Header() {
             >
               About Secure Rise
             </Link>
-            {/* <Link
-              href="/landing-page/testimonials"
-              onClick={closeMobileMenu}
-              className={mobileLinkStyles("/landing-page/testimonials")}
-            >
-              Traders Testimonials
-            </Link> */}
             <Link
               href="/landing-page/privacy"
               onClick={closeMobileMenu}
@@ -264,9 +449,9 @@ export default function Header() {
             <button
               onClick={() => {
                 closeMobileMenu();
-                const faqSection = document.getElementById('faq');
+                const faqSection = document.getElementById("faq");
                 if (faqSection) {
-                  faqSection.scrollIntoView({ behavior: 'smooth' });
+                  faqSection.scrollIntoView({ behavior: "smooth" });
                 }
               }}
               className="relative flex items-center gap-3 px-1 py-3.5 text-[15px] font-bold tracking-wide transition-colors border-b border-border/40 last:border-b-0 text-muted-foreground hover:text-foreground cursor-pointer"
