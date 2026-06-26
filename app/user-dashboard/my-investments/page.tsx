@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import {
   BarChart2,
-  FileText,
+  EllipsisVertical,
   PlusCircle,
   Briefcase,
   History,
@@ -14,6 +14,7 @@ import {
   ChevronUp,
   Calendar,
   DollarSign,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
@@ -64,8 +65,11 @@ interface Investment {
 }
 
 // ─── Refined Investment Card ──────────────────────────────────────────
-function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
+function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; index: number; onDelete: (id: string) => void; onRefresh: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isResuming, setIsResuming] = useState(false);
 
   const statusColors = {
     active: "bg-green-500",
@@ -75,6 +79,54 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
 
   // Cycle through images based on index
   const backgroundImage = IMAGES[index % IMAGES.length];
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/investments/${inv.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast.success('Investment deleted successfully');
+        onDelete(inv.id);
+        setShowDeleteModal(false);
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to delete investment');
+      }
+    } catch (error) {
+      console.error('Error deleting investment:', error);
+      toast.error('An error occurred while deleting the investment');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleResume = async () => {
+    setIsResuming(true);
+    try {
+      const response = await fetch(`/api/investments/${inv.id}/resume`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(data.message || 'Investment resumed successfully');
+        setShowDeleteModal(false);
+        // Refresh the investments to show updated data
+        onRefresh();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to resume investment');
+      }
+    } catch (error) {
+      console.error('Error resuming investment:', error);
+      toast.error('An error occurred while resuming the investment');
+    } finally {
+      setIsResuming(false);
+    }
+  };
 
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group">
@@ -239,9 +291,106 @@ function InvestmentCard({ inv, index }: { inv: Investment; index: number }) {
           >
             <PlusCircle className="w-3.5 h-3.5" />
             Reinvest
-          </Link>
+          </Link> 
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="cursor-pointer px-3 bg-[#229ED9] text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+            title="Delete investment"
+          >
+            <EllipsisVertical className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-500/10 rounded-lg">
+                <Trash2 className="w-5 h-5 text-red-500" />
+              </div>
+              <h3 className="text-lg font-black uppercase tracking-tighter">
+                Delete Investment
+              </h3>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-6">
+              Are you sure you want to delete this investment? This action cannot be undone and will permanently remove all investment data including profit history.
+            </p>
+
+            {inv.status === "active" ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={isDeleting}
+                  className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResume}
+                  disabled={isResuming || isDeleting}
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isResuming ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Resuming...
+                    </>
+                  ) : (
+                    'Resume'
+                  )}
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Confirm
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={isDeleting}
+                  className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Confirm
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -272,6 +421,10 @@ export default function MyInvestmentsPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteInvestment = (investmentId: string) => {
+    setInvestments((prev) => prev.filter((inv) => inv.id !== investmentId));
   };
 
   const filteredInvestments =
@@ -432,7 +585,7 @@ export default function MyInvestmentsPage() {
             ) : filteredInvestments.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {filteredInvestments.map((inv, index) => (
-                  <InvestmentCard key={inv.id} inv={inv} index={index} />
+                  <InvestmentCard key={inv.id} inv={inv} index={index} onDelete={handleDeleteInvestment} onRefresh={fetchInvestments} />
                 ))}
               </div>
             ) : (

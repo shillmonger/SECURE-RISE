@@ -212,7 +212,14 @@ export async function GET(request: NextRequest) {
     console.log('Found investments:', investments.length);
     console.log('Investment sample:', investments[0]);
 
-    return NextResponse.json({ investments });
+    // Convert ObjectId to string for frontend
+    const formattedInvestments = investments.map(inv => ({
+      ...inv,
+      id: inv._id?.toString() || '',
+      userId: inv.userId?.toString() || ''
+    }));
+
+    return NextResponse.json({ investments: formattedInvestments });
 
   } catch (error) {
     console.error('Get investments error:', error);
