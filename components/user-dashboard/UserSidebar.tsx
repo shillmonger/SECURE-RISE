@@ -9,6 +9,7 @@ import {
   BarChart3,
   BadgeCheck,
   Package,
+  Brain,
   ArrowRightLeft,
   Trophy,
   TrendingUpDown,
@@ -142,7 +143,7 @@ export default function UserSidebar({
        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         {
           name: "Predict Market (XP)",
-          icon: TrendingUpDown ,
+          icon: Brain ,
           href: `${basePath}/predict`,
         },
       ],

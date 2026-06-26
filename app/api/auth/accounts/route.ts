@@ -53,6 +53,45 @@ export async function GET(request: NextRequest) {
     // Get linked accounts from database
     const linkedAccounts = currentUser.linkedAccounts || [];
 
+    // Fetch fresh data for each linked account from database
+    const freshLinkedAccounts = await Promise.all(
+      linkedAccounts.map(async (acc: any) => {
+        try {
+          const linkedUser = await usersCollection.findOne(
+            { _id: new ObjectId(acc.id) }
+          ) as User;
+          
+          if (linkedUser) {
+            return {
+              id: linkedUser._id?.toString() || acc.id,
+              email: linkedUser.email,
+              fullName: linkedUser.fullName || linkedUser.username,
+              username: linkedUser.username,
+              isActive: false, // Linked accounts are never active
+              profileImage: linkedUser.profileImage,
+              addedAt: acc.addedAt || linkedUser.createdAt?.toISOString() || new Date().toISOString(),
+              isCurrentUser: false,
+            };
+          }
+          
+          // Fallback to cached data if user not found
+          return {
+            ...acc,
+            isActive: false,
+            isCurrentUser: false,
+          };
+        } catch (error) {
+          console.error(`Error fetching linked account ${acc.id}:`, error);
+          // Fallback to cached data on error
+          return {
+            ...acc,
+            isActive: false,
+            isCurrentUser: false,
+          };
+        }
+      })
+    );
+
     // Create accounts list with current user as active
     const accounts = [
       {
@@ -65,11 +104,7 @@ export async function GET(request: NextRequest) {
         addedAt: currentUser.createdAt?.toISOString() || new Date().toISOString(),
         isCurrentUser: true,
       },
-      ...linkedAccounts.map((acc: any) => ({
-        ...acc,
-        isActive: false, // Linked accounts are never active
-        isCurrentUser: false,
-      })),
+      ...freshLinkedAccounts,
     ];
 
     return NextResponse.json({
