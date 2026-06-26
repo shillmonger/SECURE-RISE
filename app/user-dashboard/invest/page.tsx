@@ -384,18 +384,20 @@ export default function InvestPage() {
   const [userBalance, setUserBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userStats, setUserStats] = useState({
-    hasFirstDeposit: false,
+    hasCompletedProfile: false,
     hasKyc: false,
-    totalDeposited: 0,
     totalWithdrawn: 0,
+    withdrawnOver500: false,
     hasWallet: false,
     hasGifted: false,
-    hasCompletedProfile: false,
+    totalDeposited: 0,
+    depositedOver3000: false,
   });
   const calcRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchUserBalance();
+    fetchUnlockStats();
   }, []);
 
   const fetchUserBalance = async () => {
@@ -409,6 +411,18 @@ export default function InvestPage() {
       console.error('Error fetching user balance:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchUnlockStats = async () => {
+    try {
+      const response = await fetch('/api/user/unlock-stats');
+      if (response.ok) {
+        const data = await response.json();
+        setUserStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Error fetching unlock stats:', error);
     }
   };
 
@@ -473,7 +487,7 @@ export default function InvestPage() {
                 className="flex items-center cursor-pointer gap-2 border border-border px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest bg-primary text-primary-foreground transition-all w-full md:w-auto justify-center"
               >
                 <Gift className="w-4 h-4" />  
-                Cheapest Plans
+                Cheapest Plan
               </button>
             </section>
 
