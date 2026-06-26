@@ -469,7 +469,7 @@ export default function LiveMarkets() {
   <div className="mb-5 flex flex-col md:flex-row md:items-end md:justify-between gap-2 lg:gap-4">
     {/* Left */}
     <div>
-      <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-1">
+      <h2 className="text-3xl md:text-3xl font-black uppercase tracking-tighter">
         Live Markets
       </h2>
       <p className="text-muted-foreground max-w-lg text-base md:text-lg font-light leading-relaxed">
