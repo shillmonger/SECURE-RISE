@@ -8,9 +8,12 @@ import { sendDailyROIEmail } from '@/lib/email';
 // This endpoint should be called by Vercel Cron Jobs every 24 hours
 export async function GET(request: NextRequest) {
   try {
-    // Verify this is a cron job call (you can add authentication here)
+    // Verify this is a cron job call from Vercel or manual execution with secret
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const vercelCronHeader = request.headers.get('x-vercel-cron');
+    
+    // Allow if it's a Vercel cron job OR if it has the correct bearer token
+    if (!vercelCronHeader && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
