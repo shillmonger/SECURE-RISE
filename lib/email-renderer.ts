@@ -15,6 +15,7 @@ import { WithdrawalNotificationEmail } from '../emails/WithdrawalNotificationEma
 import { GiftCardNotificationEmail } from '../emails/GiftCardNotificationEmail';
 import { XPRedemptionEmail } from '../emails/XPRedemptionEmail';
 import { ContactFormEmail } from '../emails/ContactFormEmail';
+import { PredictionResultEmail } from '../emails/PredictionResultEmail';
 
 export const renderWelcomeEmail = (props: { username: string; userEmail: string }) => {
   return render(React.createElement(WelcomeEmail, props));
@@ -157,4 +158,19 @@ export const renderContactFormEmail = (props: {
   submittedAt: string;
 }) => {
   return render(React.createElement(ContactFormEmail, props));
+};
+
+export const renderPredictionResultEmail = (props: {
+  userEmail: string;
+  username: string;
+  pair: string;
+  direction: 'BUY' | 'SELL';
+  entryPrice: number;
+  closePrice: number;
+  confidence: 'Low' | 'Medium' | 'High';
+  status: 'won' | 'lost';
+  xpEarned: number;
+  submissionDate: string;
+}) => {
+  return render(React.createElement(PredictionResultEmail, props));
 };

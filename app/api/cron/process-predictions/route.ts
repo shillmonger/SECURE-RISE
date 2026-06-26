@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { Prediction } from '@/lib/models/Prediction';
+import { sendPredictionResultEmail } from '@/lib/email';
 
 // Helper function to fetch market price from CoinGecko API
 async function fetchCryptoPrice(symbol: string): Promise<number | null> {
@@ -138,6 +139,26 @@ export async function GET(request: NextRequest) {
           wonCount++;
         } else {
           lostCount++;
+        }
+
+        // Send email notification to user
+        try {
+          const user = await db.collection('users').findOne({ _id: prediction.userId });
+          if (user && user.email && user.username) {
+            await sendPredictionResultEmail(user.email, user.username, {
+              pair: prediction.pair,
+              direction: prediction.direction,
+              entryPrice: prediction.entryPrice,
+              closePrice,
+              confidence: prediction.confidence,
+              status: result,
+              xpEarned,
+              submissionDate: prediction.submissionDate,
+            });
+          }
+        } catch (emailError) {
+          console.error(`Failed to send prediction result email for ${prediction._id}:`, emailError);
+          // Don't fail the prediction processing if email fails
         }
 
         processedCount++;

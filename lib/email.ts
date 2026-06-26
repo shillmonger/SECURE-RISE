@@ -13,7 +13,8 @@ import {
   renderWithdrawalNotificationEmail,
   renderGiftCardNotificationEmail,
   renderXPRedemptionEmail,
-  renderContactFormEmail
+  renderContactFormEmail,
+  renderPredictionResultEmail
 } from './email-renderer';
 
 const transporter = nodemailer.createTransport({
@@ -686,4 +687,36 @@ export const sendContactFormNotificationToAdmins = async (contactData: {
   });
 
   await Promise.all(emailPromises);
+};
+
+export const sendPredictionResultEmail = async (userEmail: string, username: string, predictionData: {
+  pair: string;
+  direction: 'BUY' | 'SELL';
+  entryPrice: number;
+  closePrice: number;
+  confidence: 'Low' | 'Medium' | 'High';
+  status: 'won' | 'lost';
+  xpEarned: number;
+  submissionDate: string;
+}) => {
+  const htmlContent = await renderPredictionResultEmail({
+    userEmail,
+    username,
+    ...predictionData
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Prediction Result: ${predictionData.status === 'won' ? 'Won' : 'Lost'} - ${predictionData.pair}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Prediction result email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending prediction result email:', error);
+    throw error;
+  }
 };

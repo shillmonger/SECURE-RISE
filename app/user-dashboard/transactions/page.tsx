@@ -17,6 +17,7 @@ import {
   TrendingUp,
   ArrowDownCircle,
   Coins,
+  Swords,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -24,14 +25,16 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp" | "prediction";
 type TransactionStatus =
   | "completed"
   | "pending"
   | "failed"
   | "approved"
   | "rejected"
-  | "active";
+  | "active"
+  | "won"
+  | "lost";
 
 interface Transaction {
   id: string;
@@ -83,6 +86,9 @@ export default function TransactionsPage() {
 
         const redemptionsResponse = await fetch("/api/user-dashboard/redeem-xp/history");
         const redemptionsResult = await redemptionsResponse.json();
+
+        const predictionsResponse = await fetch("/api/user-dashboard/predictions/history");
+        const predictionsResult = await predictionsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
@@ -210,6 +216,21 @@ export default function TransactionsPage() {
           });
         }
 
+        if (predictionsResult.success && predictionsResult.predictions) {
+          predictionsResult.predictions.forEach((prediction: any) => {
+            allTransactions.push({
+              id: prediction._id,
+              type: "prediction",
+              amount: prediction.xpEarned,
+              method: `${prediction.pair} - ${prediction.direction} (${prediction.confidence})`,
+              status: prediction.status,
+              date: new Date(prediction.submittedAt).toLocaleDateString(),
+              timestamp: new Date(prediction.submittedAt).toLocaleTimeString(),
+              rawData: prediction,
+            });
+          });
+        }
+
         allTransactions.sort((a, b) => {
           const dateA = new Date(
             a.rawData?.createdAt || a.rawData?.timestamp || Date.now()
@@ -307,6 +328,12 @@ export default function TransactionsPage() {
             <Coins className="w-4 h-4 text-yellow-500" />
           </div>
         );
+      case "prediction":
+        return (
+          <div className="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+            <Swords className="w-4 h-4 text-cyan-500" />
+          </div>
+        );
     }
   };
 
@@ -344,6 +371,16 @@ export default function TransactionsPage() {
         icon: <RefreshCcw className="w-3 h-3" />,
         cls: "text-blue-400 bg-blue-500/10 border border-blue-500/20",
         label: "Active",
+      },
+      won: {
+        icon: <CheckCircle2 className="w-3 h-3" />,
+        cls: "text-green-400 bg-green-500/10 border border-green-500/20",
+        label: "Won",
+      },
+      lost: {
+        icon: <XCircle className="w-3 h-3" />,
+        cls: "text-red-400 bg-red-500/10 border border-red-500/20",
+        label: "Lost",
       },
     };
 
@@ -393,6 +430,10 @@ export default function TransactionsPage() {
         label: "XP Redemption",
         cls: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20",
       },
+      prediction: {
+        label: "Prediction",
+        cls: "text-cyan-400 bg-cyan-500/10 border border-cyan-500/20",
+      },
     };
 
     const a = map[type];
@@ -412,6 +453,12 @@ export default function TransactionsPage() {
       // For gifts, check if user is sender or receiver
       return rawData?.isSender ? "text-red-400" : "text-green-400";
     }
+    if (type === "prediction") {
+      // For predictions, green if won, red if lost, yellow if pending
+      if (rawData?.status === "won") return "text-green-400";
+      if (rawData?.status === "lost") return "text-red-400";
+      return "text-yellow-400";
+    }
     return "text-foreground";
   };
 
@@ -421,6 +468,10 @@ export default function TransactionsPage() {
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
       return rawData?.isSender ? "-" : "+";
+    }
+    if (type === "prediction") {
+      // For predictions, show + if won, nothing if lost/pending
+      return rawData?.status === "won" ? "+" : "";
     }
     return "";
   };
@@ -485,7 +536,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp", "prediction"].map(
                   (type) => (
                     <button
                       key={type}

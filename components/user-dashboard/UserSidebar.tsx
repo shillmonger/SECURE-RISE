@@ -70,7 +70,7 @@ export default function UserSidebar({
     "Fund Account": true,
     "Earn Free USDT": true,
     Account: true,
-    // Community: true,
+    Community: true,
   });
 
   const basePath = "/user-dashboard";
@@ -138,12 +138,12 @@ export default function UserSidebar({
          icon: PartyPopper,
          href: `${basePath}/daily-streak`,
        },
+       { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         {
           name: "Predict Market (XP)",
           icon: Swords ,
           href: `${basePath}/predict`,
         },
-        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
       ],
     },
     {
