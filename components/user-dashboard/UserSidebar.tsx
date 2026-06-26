@@ -133,7 +133,7 @@ export default function UserSidebar({
 
 {
       name: "Earn Free USDT",
-      icon: ChartSpline,
+      icon: ChartNoAxesCombined,
       children: [
         {
          name: "daily streak (XP)",
@@ -143,7 +143,7 @@ export default function UserSidebar({
        { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
         {
           name: "Predict Market (XP)",
-          icon: Brain ,
+          icon: ChartSpline,
           href: `${basePath}/predict`,
         },
       ],
