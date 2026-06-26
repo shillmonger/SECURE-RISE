@@ -16,6 +16,7 @@ import { GiftCardNotificationEmail } from '../emails/GiftCardNotificationEmail';
 import { XPRedemptionEmail } from '../emails/XPRedemptionEmail';
 import { ContactFormEmail } from '../emails/ContactFormEmail';
 import { PredictionResultEmail } from '../emails/PredictionResultEmail';
+import { InvestmentResumeEmail } from '../emails/InvestmentResumeEmail';
 
 export const renderWelcomeEmail = (props: { username: string; userEmail: string }) => {
   return render(React.createElement(WelcomeEmail, props));
@@ -173,4 +174,23 @@ export const renderPredictionResultEmail = (props: {
   submissionDate: string;
 }) => {
   return render(React.createElement(PredictionResultEmail, props));
+};
+
+export const renderInvestmentResumeEmail = (props: {
+  userEmail: string;
+  username: string;
+  planName: string;
+  amount: number;
+  roiRate: number;
+  durationDays: number;
+  daysPassed: number;
+  missingDays: number;
+  profitEarned: number;
+  missingProfit: number;
+  totalProfit: number;
+  investmentId: string;
+  startDate: string;
+  endDate: string;
+}) => {
+  return render(React.createElement(InvestmentResumeEmail, props));
 };

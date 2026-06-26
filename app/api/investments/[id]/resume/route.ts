@@ -4,6 +4,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { Investment } from '@/lib/models/Investment';
 import { User } from '@/lib/models/User';
+import { sendInvestmentResumeEmail } from '@/lib/email';
 
 export async function POST(
   request: NextRequest,
@@ -124,6 +125,28 @@ export async function POST(
     );
 
     console.log('Resume investment - userUpdateResult:', userUpdateResult);
+
+    // Send email notification
+    try {
+      await sendInvestmentResumeEmail(user.email, {
+        username: user.fullName || user.username,
+        planName: investment.planName,
+        amount: investment.investmentAmount,
+        roiRate: investment.roiRate,
+        durationDays: investment.durationDays,
+        daysPassed: investment.daysPassed + missingDays,
+        missingDays,
+        profitEarned: investment.profitEarned + totalMissingProfit,
+        missingProfit: totalMissingProfit,
+        totalProfit: investment.profitEarned + totalMissingProfit,
+        investmentId: investmentId,
+        startDate: new Date(investment.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        endDate: new Date(investment.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      });
+    } catch (emailError) {
+      console.error('Error sending investment resume email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json({
       success: true,

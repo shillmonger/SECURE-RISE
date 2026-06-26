@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   ArrowUpRight,
   ChevronRight,
+  TextAlignJustify,
   ChevronDown,
   ChevronUp,
   Calendar,
@@ -62,6 +63,8 @@ interface Investment {
   completionPercentage: number;
   status: InvestmentStatus;
   profitHistory: ProfitHistory[];
+  endDate: string | Date;
+  lastProfitDate?: string | Date;
 }
 
 // ─── Refined Investment Card ──────────────────────────────────────────
@@ -70,6 +73,23 @@ function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
+
+  // Check if investment is outdated (stopped adding ROI before completion)
+  const isOutdated = () => {
+    const now = new Date();
+    const endDate = new Date(inv.endDate);
+    const lastProfitDate = inv.lastProfitDate ? new Date(inv.lastProfitDate) : null;
+
+    // Investment is outdated if:
+    // 1. Status is active (not completed)
+    // 2. Current date is past the end date OR
+    // 3. Days passed is less than duration days AND last profit was more than 2 days ago
+    const isPastEndDate = now > endDate;
+    const hasMissingDays = inv.daysPassed < inv.durationDays;
+    const lastProfitOld = lastProfitDate ? (now.getTime() - lastProfitDate.getTime()) > (2 * 24 * 60 * 60 * 1000) : false;
+
+    return inv.status === 'active' && (isPastEndDate || (hasMissingDays && lastProfitOld));
+  };
 
   const statusColors = {
     active: "bg-green-500",
@@ -328,20 +348,22 @@ function InvestmentCard({ inv, index, onDelete, onRefresh }: { inv: Investment; 
                 >
                   Cancel
                 </button>
-                <button
-                  onClick={handleResume}
-                  disabled={isResuming || isDeleting}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isResuming ? (
-                    <>
-                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Resuming...
-                    </>
-                  ) : (
-                    'Resume'
-                  )}
-                </button>
+                {isOutdated() && (
+                  <button
+                    onClick={handleResume}
+                    disabled={isResuming || isDeleting}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isResuming ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Resuming...
+                      </>
+                    ) : (
+                      'Resume'
+                    )}
+                  </button>
+                )}
                 <button
                   onClick={handleDelete}
                   disabled={isDeleting}
@@ -430,12 +452,9 @@ export default function MyInvestmentsPage() {
   const filteredInvestments =
     activeTab === "all"
       ? [...investments].sort((a, b) => {
-        // Active investments first, then completed
-        if (a.status === "active" && b.status !== "active") return -1;
-        if (a.status !== "active" && b.status === "active") return 1;
-        if (a.status === "completed" && b.status !== "completed") return -1;
-        if (a.status !== "completed" && b.status === "completed") return 1;
-        return 0;
+        // Active investments first, then completed, then expired
+        const statusOrder = { active: 0, completed: 1, expired: 2 };
+        return statusOrder[a.status] - statusOrder[b.status];
       })
       : investments.filter((inv) => inv.status === activeTab);
 
@@ -500,21 +519,31 @@ export default function MyInvestmentsPage() {
                 </p>
               </div>
 
-              {/* Tab Switcher */}
-              <div className="inline-flex bg-muted/50 p-1 rounded-xl border border-border">
-                {["all", "active", "completed"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab as any)}
-                    className={`cursor-pointer px-3 sm:px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex-1 sm:flex-none text-center ${activeTab === tab
-                        ? "bg-foreground text-background shadow-md"
-                        : "text-muted-foreground hover:text-foreground"
-                      }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+        <div className="flex items-center gap-3">
+  {/* Tab Switcher */}
+  <div className="inline-flex flex-1 sm:flex-none bg-muted/50 p-1 rounded-xl border border-border">
+    {["all", "active", "completed"].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab as any)}
+        className={`cursor-pointer flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-center ${
+          activeTab === tab
+            ? "bg-foreground text-background shadow-md"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+
+  {/* Toggle Button */}
+  <button
+    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/50 transition-colors hover:bg-muted cursor-pointer"
+  >
+    <TextAlignJustify className="h-4 w-4" />
+  </button>
+</div>
             </div>
 
             {/* Quick Stats */}

@@ -14,7 +14,8 @@ import {
   renderGiftCardNotificationEmail,
   renderXPRedemptionEmail,
   renderContactFormEmail,
-  renderPredictionResultEmail
+  renderPredictionResultEmail,
+  renderInvestmentResumeEmail
 } from './email-renderer';
 
 const transporter = nodemailer.createTransport({
@@ -717,6 +718,42 @@ export const sendPredictionResultEmail = async (userEmail: string, username: str
     console.log(`Prediction result email sent to ${userEmail}`);
   } catch (error) {
     console.error('Error sending prediction result email:', error);
+    throw error;
+  }
+};
+
+export const sendInvestmentResumeEmail = async (userEmail: string, resumeData: {
+  username: string;
+  planName: string;
+  amount: number;
+  roiRate: number;
+  durationDays: number;
+  daysPassed: number;
+  missingDays: number;
+  profitEarned: number;
+  missingProfit: number;
+  totalProfit: number;
+  investmentId: string;
+  startDate: string;
+  endDate: string;
+}) => {
+  const htmlContent = await renderInvestmentResumeEmail({
+    userEmail,
+    ...resumeData
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `Investment Resumed - Credits Added - ${resumeData.planName}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Investment resume email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending investment resume email:', error);
     throw error;
   }
 };
