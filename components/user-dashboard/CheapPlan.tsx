@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Gift, ShieldCheck, Info, Check } from "lucide-react";
+import { ArrowUpRight, Gift, ShieldCheck, Info, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface CheapPlanProps {
   isOpen: boolean;
@@ -21,8 +22,47 @@ interface CheapPlanProps {
 
 export default function CheapPlan({ isOpen, onClose, userStats }: CheapPlanProps) {
   const [showRequirements, setShowRequirements] = useState(false);
+  const [isActivating, setIsActivating] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleActivate = async () => {
+    if (!allUnlocked) {
+      toast.error('Please complete all unlock requirements first');
+      setShowRequirements(true);
+      return;
+    }
+
+    setIsActivating(true);
+    try {
+      const response = await fetch('/api/user/cheap-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to activate plan');
+      }
+
+      toast.success('Welcome bonus plan activated successfully!');
+      onClose();
+      
+      // Refresh the page to update UI
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Activation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to activate plan');
+    } finally {
+      setIsActivating(false);
+    }
+  };
 
   const requirements = [
     { label: "Completed Personal Info", met: userStats.hasCompletedProfile },
@@ -205,11 +245,26 @@ export default function CheapPlan({ isOpen, onClose, userStats }: CheapPlanProps
           </div>
 
           {/* Action Button */}
-          <button className="group relative w-full cursor-pointer font-bold py-3 px-6 rounded-2xl flex items-center justify-between overflow-hidden transition-all hover:pr-8 active:scale-[0.98] bg-[#229ED9] text-white">
-            <span className="relative z-10">Activate Plan Now</span>
-            <div className="h-8 w-8 bg-background/20 rounded-full flex items-center justify-center transition-transform group-hover:rotate-45">
-              <ArrowUpRight className="w-5 h-5" />
-            </div>
+          <button
+            onClick={handleActivate}
+            disabled={isActivating || !allUnlocked}
+            className="group relative w-full cursor-pointer font-bold py-3 px-6 rounded-2xl flex items-center justify-between overflow-hidden transition-all hover:pr-8 active:scale-[0.98] bg-[#229ED9] text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:pr-6"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              {isActivating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Activating...
+                </>
+              ) : (
+                "Activate Plan Now"
+              )}
+            </span>
+            {!isActivating && (
+              <div className="h-8 w-8 bg-background/20 rounded-full flex items-center justify-center transition-transform group-hover:rotate-45">
+                <ArrowUpRight className="w-5 h-5" />
+              </div>
+            )}
           </button>
         </div>
       </motion.div>

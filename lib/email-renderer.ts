@@ -17,6 +17,7 @@ import { XPRedemptionEmail } from '../emails/XPRedemptionEmail';
 import { ContactFormEmail } from '../emails/ContactFormEmail';
 import { PredictionResultEmail } from '../emails/PredictionResultEmail';
 import { InvestmentResumeEmail } from '../emails/InvestmentResumeEmail';
+import { CheapPlanActivationEmail } from '../emails/CheapPlanActivationEmail';
 
 export const renderWelcomeEmail = (props: { username: string; userEmail: string }) => {
   return render(React.createElement(WelcomeEmail, props));
@@ -193,4 +194,19 @@ export const renderInvestmentResumeEmail = (props: {
   endDate: string;
 }) => {
   return render(React.createElement(InvestmentResumeEmail, props));
+};
+
+export const renderCheapPlanActivationEmail = (props: {
+  userEmail: string;
+  username: string;
+  planName: string;
+  amount: number;
+  roiPerDay: number;
+  duration: number;
+  dailyEarnings: number;
+  totalProfit: number;
+  totalReturn: number;
+  investmentId: string;
+}) => {
+  return render(React.createElement(CheapPlanActivationEmail, props));
 };

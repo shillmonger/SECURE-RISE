@@ -15,7 +15,8 @@ import {
   renderXPRedemptionEmail,
   renderContactFormEmail,
   renderPredictionResultEmail,
-  renderInvestmentResumeEmail
+  renderInvestmentResumeEmail,
+  renderCheapPlanActivationEmail
 } from './email-renderer';
 
 const transporter = nodemailer.createTransport({
@@ -754,6 +755,38 @@ export const sendInvestmentResumeEmail = async (userEmail: string, resumeData: {
     console.log(`Investment resume email sent to ${userEmail}`);
   } catch (error) {
     console.error('Error sending investment resume email:', error);
+    throw error;
+  }
+};
+
+export const sendCheapPlanActivationEmail = async (userEmail: string, investmentData: {
+  username: string;
+  planName: string;
+  amount: number;
+  roiPerDay: number;
+  duration: number;
+  dailyEarnings: number;
+  totalProfit: number;
+  totalReturn: number;
+  investmentId: string;
+}) => {
+  const htmlContent = await renderCheapPlanActivationEmail({ 
+    userEmail, 
+    ...investmentData 
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: `🎉 Welcome Bonus Plan Activated - $20 → $10,000`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Cheap plan activation email sent to ${userEmail}`);
+  } catch (error) {
+    console.error('Error sending cheap plan activation email:', error);
     throw error;
   }
 };

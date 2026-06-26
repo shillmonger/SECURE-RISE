@@ -105,88 +105,103 @@ export default function UserSidebar({
     return () => clearTimeout(timer);
   }, [showLogoutConfirm, countdown]);
 
-  const navItems: NavItem[] = [
-    { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
-    {
-      name: "Fund Account",
-      icon: Wallet,
-      children: [
-        {
-          name: "Crypto Deposit",
-          icon: BadgeDollarSign,
-          href: `${basePath}/deposit`,
-        },
-        {
-          name: "Gift Card Deposit",
-          icon: Gift,
-          href: `${basePath}/gift-card`,
-        },
-      ],
-    },
-    { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
-    {
-      name: "My Portfolio",
-      icon: Package,
-      href: `${basePath}/my-investments`,
-    },
-    { name: "Gift Members", icon: Smile, href: `${basePath}/gift-member` },
 
-{
-      name: "Earn Free USDT",
-      icon: ChartNoAxesCombined,
-      children: [
-        {
-         name: "daily streak (XP)",
-         icon: PartyPopper,
-         href: `${basePath}/daily-streak`,
-       },
-       { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
-        {
-          name: "Predict Market (XP)",
-          icon: ChartSpline,
-          href: `${basePath}/predict`,
-        },
-      ],
-    },
-    {
-      name: "Redeem XP",
-      icon: ArrowRightLeft,
-      href: `${basePath}/redeem-xp`,
-    },
-    { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
-    {
-      name: "Community",
-      icon: Users,
-      children: [
-        { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
-        { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
-        { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },
-      ],
-    },
-    { name: "Transactions", icon: History, href: `${basePath}/transactions` },
-    { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
-    {
-      name: "Account",
-      icon: Settings,
-      children: [
-        {
-          name: "Settings & Profile",
-          icon: Settings,
-          href: `${basePath}/user-settings`,
-        },
-        { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc` },
-        ...(userRole.includes("admin")
-          ? [
-              {
-                name: "Switch to Admin",
-                icon: Lock,
-                href: `/admin-dashboard/dashboard`,
-              },
-            ]
-          : []),
-      ],
-    },
-  ];
+
+  const navItems: NavItem[] = [
+  { name: "Dashboard", icon: LayoutDashboard, href: `${basePath}/dashboard` },
+
+  {
+    name: "Fund Account",
+    icon: Wallet,
+    children: [
+      {
+        name: "Crypto Deposit",
+        icon: BadgeDollarSign,
+        href: `${basePath}/deposit`,
+      },
+      {
+        name: "Gift Card Deposit",
+        icon: Gift,
+        href: `${basePath}/gift-card`,
+      },
+    ],
+  },
+
+  { name: "Start Investing", icon: BarChart3, href: `${basePath}/invest` },
+
+  {
+    name: "My Portfolio",
+    icon: Package,
+    href: `${basePath}/my-investments`,
+  },
+
+  { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
+
+  { name: "Transactions", icon: History, href: `${basePath}/transactions` },
+
+  { name: "Trade Analytics", icon: PieChart, href: `${basePath}/analytics` },
+
+  {
+    name: "Earn Free USDT",
+    icon: ChartNoAxesCombined,
+    children: [
+      {
+        name: "daily streak (XP)",
+        icon: PartyPopper,
+        href: `${basePath}/daily-streak`,
+      },
+      { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
+      {
+        name: "Predict Market (XP)",
+        icon: ChartSpline,
+        href: `${basePath}/predict`,
+      },
+    ],
+  },
+
+  {
+    name: "Redeem XP",
+    icon: ArrowRightLeft,
+    href: `${basePath}/redeem-xp`,
+  },
+
+  { name: "Gift Members", icon: Smile, href: `${basePath}/gift-member` },
+
+  {
+    name: "Community",
+    icon: Users,
+    children: [
+      { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
+      { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
+      { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },
+    ],
+  },
+
+  {
+    name: "Account",
+    icon: Settings,
+    children: [
+      {
+        name: "Settings & Profile",
+        icon: Settings,
+        href: `${basePath}/user-settings`,
+      },
+      { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc` },
+      ...(userRole.includes("admin")
+        ? [
+            {
+              name: "Switch to Admin",
+              icon: Lock,
+              href: `/admin-dashboard/dashboard`,
+            },
+          ]
+        : []),
+    ],
+  },
+];
+
+
+
 
   useEffect(() => {
     navItems.forEach((item) => {
