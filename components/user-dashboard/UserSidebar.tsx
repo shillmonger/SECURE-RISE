@@ -146,13 +146,13 @@ export default function UserSidebar({
     icon: ChartNoAxesCombined,
     children: [
       {
-        name: "daily streak (XP)",
+        name: "daily streak",
         icon: PartyPopper,
         href: `${basePath}/daily-streak`,
       },
-      { name: "Achievements (XP)", icon: Gem, href: `${basePath}/achievements` },
+      { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
       {
-        name: "Predict Market (XP)",
+        name: "Predict Market",
         icon: ChartSpline,
         href: `${basePath}/predict`,
       },
