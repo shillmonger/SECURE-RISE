@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
       {
         $set: {
           status: 'success',
+          paystackReference: eventData.reference,
           paystackTransactionId: eventData.id?.toString(),
           customerCode: eventData.customer?.customer_code,
           metadata: eventData.metadata,
@@ -96,11 +97,12 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // Credit user wallet using reusable helper
+    // Credit user wallet using ONLY the stored USD amount
+    // The NGN amount is only for payment processing, not for wallet crediting
     await creditWalletAfterDeposit({
       db,
       userId: existingTransaction.userId,
-      amount: existingTransaction.amount,
+      amount: existingTransaction.usdAmount, // Use USD amount, not NGN
       username: existingTransaction.username,
       userEmail: existingTransaction.userEmail,
       paymentMethod: existingTransaction.paymentMethod,
@@ -118,7 +120,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    console.log('Paystack payment processed successfully:', reference);
+    console.log('Paystack payment processed successfully:', reference, 'USD amount credited:', existingTransaction.usdAmount);
 
     return NextResponse.json({ received: true });
 

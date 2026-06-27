@@ -3,37 +3,67 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { createPaystackTransaction } from '@/lib/models/PaystackTransaction';
 import { ObjectId } from 'mongodb';
 
-const MIN_DEPOSIT = 500;
-const MAX_DEPOSIT = 5000000;
+const MIN_DEPOSIT_USD = 10;
+const MAX_DEPOSIT_USD = 10000;
+
+const fetchExchangeRate = async (): Promise<number> => {
+  try {
+    const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
+    const data = await response.json();
+    
+    if (data.rates && data.rates.NGN) {
+      return data.rates.NGN;
+    }
+    throw new Error('Invalid exchange rate data');
+  } catch (error) {
+    console.error('Exchange rate fetch error:', error);
+    throw new Error('Failed to fetch exchange rate');
+  }
+};
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { amount, userId, username, userEmail } = body;
+    const { usdAmount, userId, username, userEmail } = body;
 
     // Validate required fields
-    if (!amount || !userId || !username || !userEmail) {
+    if (!usdAmount || !userId || !username || !userEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Validate amount
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount < MIN_DEPOSIT) {
+    // Validate USD amount
+    const numUsdAmount = parseFloat(usdAmount);
+    if (isNaN(numUsdAmount) || numUsdAmount < MIN_DEPOSIT_USD) {
       return NextResponse.json(
-        { error: `Amount must be at least ₦${MIN_DEPOSIT.toLocaleString()}` },
+        { error: `Amount must be at least $${MIN_DEPOSIT_USD.toLocaleString()}` },
         { status: 400 }
       );
     }
 
-    if (numAmount > MAX_DEPOSIT) {
+    if (numUsdAmount > MAX_DEPOSIT_USD) {
       return NextResponse.json(
-        { error: `Amount cannot exceed ₦${MAX_DEPOSIT.toLocaleString()}` },
+        { error: `Amount cannot exceed $${MAX_DEPOSIT_USD.toLocaleString()}` },
         { status: 400 }
       );
     }
+
+    // Fetch live exchange rate from Frankfurter API
+    let exchangeRate: number;
+    try {
+      exchangeRate = await fetchExchangeRate();
+    } catch (error) {
+      console.error('Failed to fetch exchange rate:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch exchange rate. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Calculate NGN amount
+    const ngnAmount = numUsdAmount * exchangeRate;
 
     // Get Paystack secret key
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -48,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Generate unique reference
     const reference = `SECURE-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Call Paystack Initialize Transaction API
+    // Call Paystack Initialize Transaction API with NGN amount in kobo
     const paystackResponse = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
       headers: {
@@ -57,11 +87,13 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         email: userEmail,
-        amount: numAmount * 100, // Paystack expects amount in kobo (multiply by 100)
+        amount: Math.round(ngnAmount * 100), // Convert NGN to kobo (multiply by 100)
         reference,
         metadata: {
           userId,
           username,
+          usdAmount: numUsdAmount,
+          exchangeRate,
           custom_fields: [
             {
               display_name: 'Username',
@@ -92,7 +124,9 @@ export async function POST(request: NextRequest) {
       userId: new ObjectId(userId),
       username,
       userEmail,
-      amount: numAmount,
+      usdAmount: numUsdAmount,
+      ngnAmount,
+      exchangeRate,
       reference,
       authorizationUrl: paystackData.data.authorization_url,
     });
@@ -108,6 +142,9 @@ export async function POST(request: NextRequest) {
       authorization_url: paystackData.data.authorization_url,
       reference,
       transactionId: result.insertedId.toString(),
+      exchangeRate,
+      ngnAmount,
+      usdAmount: numUsdAmount,
     });
 
   } catch (error) {
