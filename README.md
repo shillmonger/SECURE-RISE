@@ -1,24 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Secure Rise
+
+A Next.js 15 investment platform with crypto deposits, Paystack bank transfers, and wallet management.
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and configure the following variables:
+
+### Required
+- `MONGODB_URI` - MongoDB connection string
+- `NEXTAUTH_SECRET` - Secret for NextAuth session encryption
+- `NEXTAUTH_URL` - Your app URL (http://localhost:3000 for development)
+
+### Email Configuration
+- `EMAIL_HOST` - SMTP host
+- `EMAIL_PORT` - SMTP port (usually 465)
+- `EMAIL_USER` - SMTP username
+- `EMAIL_PASS` - SMTP password
+- `EMAIL_FROM` - From email address
+
+### Cloudinary (for image uploads)
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+### Paystack Payment Gateway
+- `PAYSTACK_SECRET_KEY` - Secret key from Paystack dashboard
+- `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` - Public key from Paystack dashboard
+
+### App Configuration
+- `NEXT_PUBLIC_APP_URL` - Your app URL for callbacks
+
+## Paystack Setup
+
+1. Create a Paystack account at [paystack.co](https://paystack.co)
+2. Get your API keys from the Settings > API Keys section
+3. Add the keys to your `.env.local` file
+4. Configure your webhook URL in Paystack dashboard:
+   - Production: `https://yourdomain.com/api/paystack/webhook`
+   - Development: Use ngrok or similar to expose localhost
+
+## Features
+
+- User authentication with NextAuth
+- Crypto deposits with admin approval
+- Paystack bank transfer deposits
+- Wallet balance management
+- Investment plans
+- Email notifications
+- Admin dashboard
 
 ## Learn More
 
@@ -26,8 +71,6 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { sendDepositStatusEmail } from '@/lib/email';
+import { creditWalletAfterDeposit } from '@/lib/wallet-helpers';
 import { ObjectId } from 'mongodb';
 import jwt from 'jsonwebtoken';
 
@@ -172,29 +173,29 @@ export async function PATCH(request: NextRequest) {
       { $set: updateData }
     );
 
-    // If approved, update user account balance and total deposit
+    // If approved, credit user wallet using reusable helper
     if (isApproved) {
-      await usersCollection.updateOne(
-        { _id: deposit.userId },
-        { 
-          $inc: { 
-            accountBalance: deposit.amount,
-            totalDeposit: deposit.amount
-          },
-          $set: { updatedAt: now }
-        }
-      );
+      await creditWalletAfterDeposit({
+        db,
+        userId: deposit.userId,
+        amount: deposit.amount,
+        username: deposit.username,
+        userEmail: deposit.userEmail,
+        paymentMethod: deposit.paymentMethod,
+        transactionId: deposit.transactionId,
+        approvedBy: auth.user._id,
+      });
+    } else {
+      // Send rejection email
+      await sendDepositStatusEmail(deposit.userEmail, {
+        username: deposit.username,
+        amount: deposit.amount,
+        paymentMethod: deposit.paymentMethod,
+        transactionId: deposit.transactionId,
+        status: 'rejected',
+        rejectionReason,
+      });
     }
-
-    // Send email notification to user
-    await sendDepositStatusEmail(deposit.userEmail, {
-      username: deposit.username,
-      amount: deposit.amount,
-      paymentMethod: deposit.paymentMethod,
-      transactionId: deposit.transactionId,
-      status: isApproved ? 'approved' : 'rejected',
-      rejectionReason: isApproved ? undefined : rejectionReason,
-    });
 
     return NextResponse.json({
       success: true,
