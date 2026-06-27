@@ -10,6 +10,7 @@ import {
   BadgeCheck,
   Package,
   Brain,
+  Landmark,
   ArrowRightLeft,
   Trophy,
   TrendingUpDown,
@@ -114,6 +115,11 @@ export default function UserSidebar({
     name: "Fund Account",
     icon: Wallet,
     children: [
+      {
+        name: "Bank Transfer",
+        icon: Landmark,
+        href: `${basePath}/bank-transfer`,
+      },
       {
         name: "Crypto Deposit",
         icon: BadgeDollarSign,
