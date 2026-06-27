@@ -9,12 +9,10 @@ import { sendDailyROIEmail } from '@/lib/email';
 export async function GET(request: NextRequest) {
   console.log("🔥 CRON HIT:", new Date().toISOString());
   try {
-    // Verify this is a cron job call from Vercel or manual execution with secret
+    // Verify this is a cron job call with secret
     const authHeader = request.headers.get('authorization');
-    const vercelCronHeader = request.headers.get('x-vercel-cron');
     
-    // Allow if it's a Vercel cron job OR if it has the correct bearer token
-    if (!vercelCronHeader && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
