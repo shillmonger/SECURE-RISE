@@ -6,18 +6,86 @@ import { ObjectId } from 'mongodb';
 const MIN_DEPOSIT_USD = 10;
 const MAX_DEPOSIT_USD = 10000;
 
-const fetchExchangeRate = async (): Promise<number> => {
+// Fallback exchange rate if API fails
+const FALLBACK_EXCHANGE_RATE = 1600;
+
+async function fetchFromFrankfurter(): Promise<number> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
   try {
-    const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
-    const data = await response.json();
-    
-    if (data.rates && data.rates.NGN) {
-      return data.rates.NGN;
+    const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN', {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Frankfurter API returned status: ${response.status}`);
     }
-    throw new Error('Invalid exchange rate data');
+
+    const data = await response.json();
+
+    if (!data.rates || !data.rates.NGN) {
+      throw new Error('Invalid exchange rate data structure');
+    }
+
+    return data.rates.NGN;
   } catch (error) {
-    console.error('Exchange rate fetch error:', error);
-    throw new Error('Failed to fetch exchange rate');
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
+async function fetchFromExchangerateAPI(): Promise<number> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`ExchangeRate-API returned status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.rates || !data.rates.NGN) {
+      throw new Error('Invalid exchange rate data structure');
+    }
+
+    return data.rates.NGN;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
+const fetchExchangeRate = async (): Promise<number> => {
+  // Try Frankfurter API first
+  try {
+    const rate = await fetchFromFrankfurter();
+    console.log('Fetched rate from Frankfurter:', rate);
+    return rate;
+  } catch (error) {
+    console.error('Frankfurter API failed, trying backup:', error);
+    
+    // Try backup API
+    try {
+      const rate = await fetchFromExchangerateAPI();
+      console.log('Fetched rate from ExchangeRate-API:', rate);
+      return rate;
+    } catch (backupError) {
+      console.error('Backup API also failed, using fallback:', backupError);
+      
+      // Use fallback rate
+      console.log('Using fallback exchange rate:', FALLBACK_EXCHANGE_RATE);
+      return FALLBACK_EXCHANGE_RATE;
+    }
   }
 };
 
