@@ -128,7 +128,8 @@ export default function UserSidebar({
       {
         name: "Bank Transfer",
         icon: Landmark,
-        href: `${basePath}/bank-transfer`,
+        href: `#`,
+        // href: `${basePath}/bank-transfer`,
       },
     ],
   },
@@ -178,7 +179,6 @@ export default function UserSidebar({
     icon: Users,
     children: [
       { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
-      { name: "Testimonials", icon: Crown, href: `${basePath}/testimonials` },
       { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },
     ],
   },

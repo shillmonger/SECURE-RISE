@@ -67,30 +67,28 @@ const BANNER_IMAGES = [
 // ─── Mega Menu Data ────────────────────────────────────────────────────────────
 
 const LEARN_MORE_LINKS = [
+  { label: "Account Security", href: "/landing-page/security", icon: Shield },
+  { label: "Learn More", href: "/landing-page/learn-more", icon: BookOpen },  { label: "Platform API Docs", href: "/landing-page/#", icon: Code },
+  { label: "Refund Policy", href: "/landing-page/refund", icon: RotateCcw },
   { label: "Privacy Policy", href: "/landing-page/privacy", icon: Lock },
   { label: "Terms & Conditions", href: "/landing-page/terms", icon: FileText },
-  { label: "Refund Policy", href: "/landing-page/refund", icon: RotateCcw },
-  { label: "Security", href: "/landing-page/security", icon: Shield },
-  { label: "Roadmap", href: "/landing-page/roadmap", icon: Map },
-  { label: "API Docs", href: "/landing-page/api-docs", icon: Code },
-  { label: "Learn More", href: "/landing-page/learn-more", icon: BookOpen },
 ];
 
 const COMPANY_LINKS = [
-  { label: "About Us", href: "/landing-page/about", icon: Info },
+  { label: "Careers", href: "/landing-page/blog", icon: Briefcase },
+  { label: "About Secure Rise", href: "/landing-page/about", icon: Info },
+  { label: "Blog and News", href: "/landing-page/blog", icon: Newspaper },
   { label: "Contact Us", href: "/landing-page/contact-us", icon: Phone },
-  { label: "Careers", href: "/landing-page/careers", icon: Briefcase },
-  { label: "Blog / News", href: "/landing-page/blog", icon: Newspaper },
-  { label: "Affiliate Program", href: "/landing-page/affiliate", icon: Users },
-  { label: "Testimonials", href: "/landing-page/testimonials", icon: Star },
-  { label: "FAQ", href: "/landing-page/faq", icon: HelpCircle },
+  { label: "Affiliate Program", href: "/landing-page/blog", icon: Users },
+  { label: "Traders Testimonials", href: "/landing-page/testimonials", icon: Star },
+  { label: "Frequently Asked Questions", href: "/landing-page/faq", icon: HelpCircle },
 ];
 
 const PLATFORM_LINKS = [
   { label: "Investment Plans", href: "/landing-page/investment-plan", icon: TrendingUp },
-  { label: "Supported Crypto", href: "/landing-page/supported-crypto", icon: Coins },
-  { label: "Login", href: "/auth-page/login", icon: LogIn },
-  { label: "Register", href: "/auth-page/register", icon: UserPlus },
+  { label: "About Deposition", href: "/landing-page/about-deposit", icon: Coins },
+  { label: "Login Account", href: "/auth-page/login", icon: LogIn },
+  { label: "Register Account", href: "/auth-page/register", icon: UserPlus },
 ];
 
 const TRADING_TOOLS = [
