@@ -493,7 +493,7 @@ export default function UserSettingsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-8 pb-32">
+        <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-8 pb-25">
           <div className="max-w-5xl mx-auto">
             <div className="mb-10">
               <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  text-foreground">

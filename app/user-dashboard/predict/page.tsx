@@ -585,7 +585,7 @@ export default function MarketOraclePage() {
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-8">
 
             {/* Page Header */}

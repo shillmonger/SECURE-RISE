@@ -11,6 +11,8 @@ import {
   Gift,
   Send,
   History,
+  Users,
+  DollarSign,
 } from "lucide-react";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700", "800", "900"] });
@@ -36,6 +38,20 @@ function SkeletonCard() {
         <div className="h-3 w-32 bg-muted rounded" />
         <div className="h-2.5 w-44 bg-muted rounded" />
       </div>
+    </div>
+  );
+}
+
+function StatsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="bg-card border border-border px-5 py-3 rounded-2xl animate-pulse">
+          <div className="h-8 w-8 rounded-lg bg-muted mb-2" />
+          <div className="h-8 w-20 bg-muted rounded mb-2" />
+          <div className="h-3 w-24 bg-muted rounded" />
+        </div>
+      ))}
     </div>
   );
 }
@@ -186,6 +202,7 @@ export default function GiftUserPage() {
   const [totalSent, setTotalSent] = useState(0);
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [loadingBalance, setLoadingBalance] = useState(true);
   const formatNumber = (num: number) => {
     if (num >= 1000000000) {
       return (num / 1000000000).toFixed(1) + 'B';
@@ -205,6 +222,7 @@ export default function GiftUserPage() {
   // Fetch user balance on mount
   useEffect(() => {
     const fetchBalance = async () => {
+      setLoadingBalance(true);
       try {
         const response = await fetch('/api/user-dashboard/gift/balance');
         const data = await response.json();
@@ -215,6 +233,8 @@ export default function GiftUserPage() {
         }
       } catch (error) {
         console.error('Error fetching balance:', error);
+      } finally {
+        setLoadingBalance(false);
       }
     };
     fetchBalance();
@@ -350,74 +370,78 @@ export default function GiftUserPage() {
           <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <UserNav />
 
-        <main className="flex-1 overflow-y-auto pb-32 p-4 md:p-8">
-            {/* Page Title */}
-            {/* Page Title Section */}
-<div className="mb-8 space-y-6" style={{ animation: "fadeSlideUp 0.5s ease" }}>
-  
-  {/* Header + Stats Container: Flex column on mobile, Row on desktop */}
-  <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-    
-    {/* Left Side: Title & Subtitle */}
-    <div className="space-y-1">
-      {/* Animated Badge */}
-      <div className="inline-flex items-center mb-3 gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest">
-        <span className="relative flex h-2 w-2 shrink-0">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-        </span>
-        Gift Transfer
-      </div>
-      
-      <h1 className={`${montserrat.className} text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tight leading-tight`}>
-        Send a Gift
-      </h1>
-      <p className="text-muted-foreground text-sm">
-        Find a user and send them money instantly.
-      </p>
-    </div>
+        <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
+          <div className="max-w-7xl mx-auto space-y-5">
+            {/* Page Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter ">
+                  Gift Transfer
+                </h1>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1">
+                  Send money to other users
+                </p>
+              </div>
+            </div>
 
-    {/* Right Side: Stat cards */}
-    {/* grid-cols-2 for mobile, max-w-md to prevent stretching on big screens */}
-    <div className="grid grid-cols-2 gap-3 w-full lg:max-w-md">
+            {/* Quick Stats */}
+            {loadingBalance ? (
+              <StatsSkeleton />
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+              {/* Available Balance */}
+              <div className="bg-card border border-border px-5 py-3 cursor-pointer rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="inline-flex w-fit p-2 bg-emerald-500/10 rounded-lg transition-colors">
+                  <Wallet className="w-5 h-5 text-emerald-500" />
+                </div>
+                <p className="text-2xl font-black tracking-tighter mt-2">
+                  ${formatNumber(balance)}
+                </p>
+                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
+                  Available Balance
+                </p>
+              </div>
 
-      {/* Balance Card */}
-      <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-emerald-500/40 transition-all duration-300 group">
-        <div
-          className={`p-2 bg-emerald-500 rounded-lg hover:bg-emerald-600 hover:text-white transition-colors`}
-        >
-          <Wallet className={`w-5 h-5 text-white`} />
-        </div>
-        <div className="min-w-0">
-          <p className={`text-lg md:text-xl font-black leading-none ${balance > 0 ? "text-emerald-500" : "text-muted-foreground"}`}>
-            ${formatNumber(balance)}
-          </p>
-          <p className="text-[9px] md:text-[10px]  mt-2 uppercase tracking-wider font-black text-muted-foreground/70">
-            Available Balance
-          </p>
-        </div>
-      </div>
+              {/* Total Earnings */}
+              <div className="bg-card border border-border px-5 py-3 cursor-pointer rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="inline-flex w-fit p-2 bg-[#229ED9]/10 rounded-lg transition-colors">
+                  <Gift className="w-5 h-5 text-[#229ED9]" />
+                </div>
+                <p className="text-2xl font-black tracking-tighter mt-2">
+                  ${formatNumber(giftPercents)}
+                </p>
+                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
+                  Total Earnings
+                </p>
+              </div>
 
-      {/* Gift Earnings Card */}
-      <div className="bg-card border border-border cursor-pointer rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:border-primary/40 transition-all duration-300 group">
-        <div
-          className={`p-2 bg-primary rounded-lg hover:bg-primary/80 transition-colors`}
-        >
-          <Gift className={`w-5 h-5 text-primary-foreground`} />
-        </div>
-        <div className="min-w-0">
-          <p className="text-lg md:text-xl font-black leading-none text-primary">
-            ${formatNumber(giftPercents)}
-          </p>
-          <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-black  mt-2 text-muted-foreground/70">
-            Total Earnings
-          </p>
-        </div>
-      </div>
+              {/* Gifted Members */}
+              <div className="bg-card border border-border px-5 py-3 cursor-pointer rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="inline-flex w-fit p-2 bg-blue-500/10 rounded-lg transition-colors">
+                  <Users className="w-5 h-5 text-blue-500" />
+                </div>
+                <p className="text-2xl font-black tracking-tighter mt-2">
+                  {giftHistory.length}
+                </p>
+                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
+                  Gifted Members
+                </p>
+              </div>
 
-    </div>
-  </div>
-</div>
+              {/* Amount Spent */}
+              <div className="bg-card border border-border px-5 py-3 cursor-pointer rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="inline-flex w-fit p-2 bg-purple-500/10 rounded-lg transition-colors">
+                  <DollarSign className="w-5 h-5 text-purple-500" />
+                </div>
+                <p className="text-2xl font-black tracking-tighter mt-2">
+                  ${formatNumber(giftHistory.reduce((sum, gift) => sum + (gift.amount || 0), 0))}
+                </p>
+                <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">
+                  Amount Spent
+                </p>
+              </div>
+              </div>
+            )}
 
             {/* Card */}
             <div
@@ -684,10 +708,10 @@ export default function GiftUserPage() {
 
             {/* Gift History Section */}
             <div
-              className="mt-12"
+              className="mt-10"
               style={{ animation: "fadeSlideUp 0.5s ease 0.3s both" }}
             >
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2">
                 <History className="w-5 h-5 text-primary" />
                 <h2
                   className={`${montserrat.className} text-xl font-black text-foreground uppercase`}
@@ -695,6 +719,9 @@ export default function GiftUserPage() {
                   Gift History
                 </h2>
               </div>
+              <p className="text-[13px] text-muted-foreground mb-4">
+                Showing your latest 10 gift transactions
+              </p>
 
               {loadingHistory ? (
                 <div className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -720,7 +747,7 @@ export default function GiftUserPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {[1, 2, 3].map((i) => (
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                           <tr key={i} className="animate-pulse">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
@@ -828,7 +855,8 @@ export default function GiftUserPage() {
                 </div>
               )}
             </div>
-          </main>
+          </div>
+        </main>
         </div>
       </div>
 
