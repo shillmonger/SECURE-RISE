@@ -62,6 +62,8 @@ export default function UserHeader({
   // Notification count replaces cart item count
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationLoading, setNotificationLoading] = useState(true);
+  const [accountBalance, setAccountBalance] = useState(0);
+  const [balanceLoading, setBalanceLoading] = useState(true);
 
   // Dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -408,6 +410,9 @@ export default function UserHeader({
 
           // Fetch notification count
           await fetchNotificationCount(userData.id);
+
+          // Fetch account balance
+          await fetchAccountBalance();
         } else {
           console.error("Failed to fetch user data:", data.error);
           // Keep default values if fetch fails
@@ -418,6 +423,20 @@ export default function UserHeader({
       } finally {
         setIsLoading(false);
         setNotificationLoading(false);
+        setBalanceLoading(false);
+      }
+    };
+
+    const fetchAccountBalance = async () => {
+      try {
+        const response = await fetch("/api/user-dashboard/financial-data");
+        const data = await response.json();
+
+        if (data.success) {
+          setAccountBalance(data.financialData.accountBalance);
+        }
+      } catch (error) {
+        console.error("Error fetching account balance:", error);
       }
     };
 
@@ -578,6 +597,23 @@ export default function UserHeader({
               </span>
             )}
           </Link>
+
+          {/* Account Balance - Desktop Only */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 rounded-lg">
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+              Bal:
+            </span>
+            <span className="text-xs font-black text-primary">
+              {balanceLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                `$${accountBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`
+              )}
+            </span>
+          </div>
 
           {/* User Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
