@@ -40,9 +40,9 @@ const faqs = [
     answer: "We stand by our strategies. If a trade results in a loss of your initial capital, SECURE RISE covers it 100%. Not only do we refund your full investment immediately, but we also credit an additional 20% of your capital as compensation—fully withdrawable the moment it hits your account."
   },
   {
-    question: "What payment methods are supported?",
-    answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH). We also support selected gift card deposits through our approved funding channels."
-  },
+  question: "What payment methods are supported?",
+  answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using Paystack Bank Transfer for instant local payments in supported regions. We also accept major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH), as well as selected gift card deposits through our approved funding channels."
+},
   {
     question: "Can I have more than one active investment?",
     answer: "Yes. Depending on your account status and available balance, you may activate multiple investment plans simultaneously and manage them from a single dashboard."

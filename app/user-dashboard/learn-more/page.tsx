@@ -31,6 +31,8 @@ import {
   Target,
   RefreshCw,
   TrendingUpDown,
+  Building2,
+  Landmark,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -112,7 +114,7 @@ export default function LearnMorePage() {
                   </h3>
                   <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
                     <li><strong>Create Account:</strong> Sign up and claim your $20 welcome bonus</li>
-                    <li><strong>Add Capital:</strong> Fund your account using cryptocurrency or gift cards</li>
+                    <li><strong>Add Capital:</strong> Fund your account using cryptocurrency, gift cards, or bank transfer via Paystack</li>
                     <li><strong>Choose Plan:</strong> Select from 6 investment tiers ($100 to $10,000+)</li>
                     <li><strong>Professional Trading:</strong> Our experts trade on your behalf</li>
                     <li><strong>Daily Accumulation:</strong> Receive daily ROI payouts for 14 days</li>
@@ -152,6 +154,108 @@ export default function LearnMorePage() {
               >
                 <TrendingUp className="w-4 h-4" />
                 Go to Dashboard
+              </Link>
+            </section>
+
+            {/* Payment Methods Section */}
+            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                  <Wallet className="w-6 h-6 text-emerald-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black uppercase tracking-tight">
+                    Payment Methods
+                  </h2>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Multiple ways to fund your account
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 text-sm leading-relaxed">
+                <p>
+                  Secure Rise offers multiple convenient payment methods to fund your account. Choose from cryptocurrency deposits, gift card exchanges, or bank transfer via Paystack. All payment methods are secure, fast, and designed to get you trading quickly.
+                </p>
+
+                <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-blue-400" />
+                    Cryptocurrency Deposit
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Deposit directly using major cryptocurrencies including USDT (Tether), Bitcoin (BTC), Ethereum (ETH), and Solana (SOL). Crypto deposits are processed quickly and credited to your account once confirmed on the blockchain.
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                    <li><strong>Supported Coins:</strong> USDT, BTC, ETH, SOL, and more</li>
+                    <li><strong>Fast Processing:</strong> Deposits credited after blockchain confirmation</li>
+                    <li><strong>Secure:</strong> All transactions encrypted and verified</li>
+                    <li><strong>Low Fees:</strong> Minimal network transaction fees</li>
+                  </ul>
+                </div>
+
+                <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <ShoppingBag className="w-4 h-4 text-purple-400" />
+                    Gift Card Exchange
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Convert your gift cards into account balance. We accept gift cards from major retailers including Amazon, iTunes, Google Play, Steam, and more. Gift cards are exchanged at competitive rates and credited instantly after verification.
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                    <li><strong>Accepted Cards:</strong> Amazon, iTunes, Google Play, Steam, Visa, Mastercard, and more</li>
+                    <li><strong>Instant Verification:</strong> Cards verified and credited quickly</li>
+                    <li><strong>Competitive Rates:</strong> Best exchange rates in the market</li>
+                    <li><strong>Global Support:</strong> Cards from multiple countries accepted</li>
+                  </ul>
+                </div>
+
+                <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <Landmark className="w-4 h-4 text-emerald-400" />
+                    Bank Transfer via Paystack
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Fund your account using bank transfer through Paystack, Nigeria's leading payment gateway. Paystack provides secure, instant bank transfers with real-time conversion from NGN to USD at competitive exchange rates.
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                    <li><strong>Instant Processing:</strong> Bank transfers processed and credited in real-time</li>
+                    <li><strong>NGN to USD Conversion:</strong> Automatic conversion at current exchange rates</li>
+                    <li><strong>Secure Gateway:</strong> Paystack's bank-grade security protects your transactions</li>
+                    <li><strong>Multiple Banks:</strong> Supports all major Nigerian banks</li>
+                    <li><strong>Card Payment:</strong> Also supports debit/credit card payments via Paystack</li>
+                    <li><strong>Transaction Tracking:</strong> Full transaction history and status updates</li>
+                  </ul>
+                  <div className="bg-background/50 p-3 rounded-lg mt-2">
+                    <p className="text-[9px] text-muted-foreground">
+                      <strong>How it works:</strong> Select Paystack as your payment method, enter the amount in NGN or USD, complete the bank transfer or card payment, and your account is credited instantly after successful payment confirmation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                    Payment Security
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    All payment methods are secured with industry-standard encryption and fraud protection. Your financial information is never stored on our servers, and all transactions are monitored for suspicious activity.
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
+                    <li><strong>256-bit SSL Encryption:</strong> All data encrypted in transit</li>
+                    <li><strong>PCI DSS Compliant:</strong> Payment card industry standards</li>
+                    <li><strong>Fraud Detection:</strong> Real-time transaction monitoring</li>
+                    <li><strong>Secure Storage:</strong> No sensitive payment data stored on our servers</li>
+                  </ul>
+                </div>
+              </div>
+
+              <Link
+                href="/user-dashboard/deposit"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
+              >
+                <Wallet className="w-4 h-4" />
+                Go to Deposit
               </Link>
             </section>
 
