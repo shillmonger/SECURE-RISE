@@ -39,9 +39,43 @@ import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
 import ReadAloud from "@/components/user-dashboard/read-aloud";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function LearnMorePage() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  const sections = [
+    { id: "welcome", title: "Welcome to Secure Rise" },
+    { id: "payment-methods", title: "Payment Methods" },
+    { id: "xp-rewards", title: "XP & Rewards System" },
+    { id: "predict-market", title: "Predict Market" },
+    { id: "gift-member", title: "Gift Member" },
+    { id: "affiliate-network", title: "Affiliate Network" },
+    { id: "withdraw", title: "Withdraw Funds" },
+    { id: "achievements", title: "Achievements" },
+    { id: "daily-streak", title: "Daily Streak" },
+    { id: "kyc", title: "KYC Verification" },
+    { id: "deposit", title: "Deposit Funds" },
+    { id: "gift-card", title: "Gift Card Deposit" },
+    { id: "investment", title: "Investment Plans" },
+    { id: "leaderboard", title: "Leaderboard" },
+    { id: "analytics", title: "Performance Analytics" },
+  ];
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">
@@ -57,23 +91,50 @@ export default function LearnMorePage() {
           >
             {/* Page Header */}
             <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex flex-col items-baseline gap-1">
                   <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                     Learn More
                   </h1>
-
                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
                     Detailed information about our platform features
                   </p>
                 </div>
 
-                <ReadAloud targetId="learn-more-content" />
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button className="inline-flex w-full cusor-pointer sm:w-auto items-center justify-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+        <Search className="w-4 h-4" />
+        Jump to Section
+      </button>
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent
+      align="end"
+      className="w-[var(--radix-dropdown-menu-trigger-width)] sm:w-56"
+    >
+      {sections.map((section) => (
+        <DropdownMenuItem
+          key={section.id}
+          onSelect={() => scrollToSection(section.id)}
+          className="cursor-pointer"
+        >
+          {section.title}
+        </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+
+  <div className="w-full sm:w-auto">
+    <ReadAloud targetId="learn-more-content" />
+  </div>
+</div>
               </div>
             </section>
 
             {/* Welcome to Secure Rise Section */}
-            <section className="bg-gradient-to-br from-primary/10 via-card to-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="welcome" className="bg-gradient-to-br from-primary/10 via-card to-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-primary/20 rounded-xl border border-primary/30">
                   <TrendingUp className="w-6 h-6 text-primary" />
@@ -100,7 +161,7 @@ export default function LearnMorePage() {
                   </h3>
                   <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside">
                     <li><strong>Professional Trading:</strong> Your funds are managed by expert traders using MT4, MT5, cTrader, and other top platforms</li>
-                    <li><strong>10% Average Daily ROI:</strong> Consistent daily returns on your investments</li>
+                    <li><strong>70% Average Daily ROI:</strong> Consistent daily returns on your investments</li>
                     <li><strong>256-bit AES Encryption:</strong> Military-grade security for all transactions and data</li>
                     <li><strong>Full Capital Refund:</strong> If capital is lost, we refund 100% + 20% compensation</li>
                     <li><strong>Instant $20 Bonus:</strong> Welcome bonus credited upon first investment payout</li>
@@ -158,7 +219,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Payment Methods Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="payment-methods" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                   <Wallet className="w-6 h-6 text-emerald-500" />
@@ -260,7 +321,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* XP & Rewards System Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="xp-rewards" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
                   <Coins className="w-6 h-6 text-yellow-500" />
@@ -415,7 +476,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Predict Market Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="predict-market" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
                   <TrendingUpDown className="w-6 h-6 text-cyan-500" />
@@ -527,7 +588,7 @@ export default function LearnMorePage() {
 
               <Link
                 href="/user-dashboard/predict"
-                className="inline-flex items-center gap-2 bg-cyan-500 text-white px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all cursor-pointer"
               >
                 <TrendingUpDown className="w-4 h-4" />
                 Go to Predict Market
@@ -535,7 +596,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Gift Member Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="gift-member" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
                   <Gift className="w-6 h-6 text-primary" />
@@ -615,7 +676,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Referral/Affiliate Network Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="affiliate-network" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                   <Users className="w-6 h-6 text-emerald-500" />
@@ -710,7 +771,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Withdraw Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="withdraw" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                   <ArrowUpRight className="w-6 h-6 text-red-500" />
@@ -790,7 +851,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Achievements Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="achievements" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
                   <Trophy className="w-6 h-6 text-purple-500" />
@@ -859,7 +920,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Daily Streak Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="daily-streak" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20">
                   <Flame className="w-6 h-6 text-orange-500" />
@@ -937,7 +998,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* KYC Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="kyc" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
                   <ShieldCheck className="w-6 h-6 text-blue-500" />
@@ -1015,7 +1076,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Deposit Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="deposit" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-green-500/10 rounded-xl border border-green-500/20">
                   <CreditCard className="w-6 h-6 text-green-500" />
@@ -1082,7 +1143,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Gift Card Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="gift-card" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-pink-500/10 rounded-xl border border-pink-500/20">
                   <ShoppingBag className="w-6 h-6 text-pink-500" />
@@ -1157,7 +1218,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Investment Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="investment" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
                   <TrendingUp className="w-6 h-6 text-cyan-500" />
@@ -1239,7 +1300,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Leaderboard Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="leaderboard" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
                   <Trophy className="w-6 h-6 text-amber-500" />
@@ -1324,7 +1385,7 @@ export default function LearnMorePage() {
             </section>
 
             {/* Analytics/Performance Section */}
-            <section className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
+            <section id="analytics" className="bg-card border border-border rounded-[1rem] p-6 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
                   <BarChart2 className="w-6 h-6 text-blue-500" />
