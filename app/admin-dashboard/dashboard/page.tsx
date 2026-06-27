@@ -16,7 +16,12 @@ import {
   Shield,
   Gift,
   Trophy,
-  Star
+  Star,
+  Target,
+  CreditCard,
+  Zap,
+  CreditCard as CardIcon,
+  Wallet
 } from "lucide-react";
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
@@ -68,7 +73,10 @@ export default function AdminDashboardPage() {
     Gift,
     Trophy,
     Star,
-    DollarSign
+    DollarSign,
+    Target,
+    CreditCard,
+    Zap
   };
 
   useEffect(() => {
@@ -167,7 +175,7 @@ export default function AdminDashboardPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((item) => (
                 <div key={item} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-2 rounded-xl bg-muted animate-pulse">
@@ -269,22 +277,29 @@ export default function AdminDashboardPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            {transaction.type === 'Deposit' ? (
-                              <ArrowDownLeft className="w-3 h-3 text-teal-500" />
-                            ) : (
-                              <ArrowUpRight className="w-3 h-3 text-red-500" />
-                            )}
+                            {(() => {
+                              const type = transaction.type.toLowerCase();
+                              if (type.includes('deposit') || type.includes('crypto') || type.includes('card payment')) {
+                                return <ArrowDownLeft className="w-3 h-3 text-teal-500" />;
+                              } else if (type.includes('gift card')) {
+                                return <Gift className="w-3 h-3 text-purple-500" />;
+                              } else if (type.includes('withdrawal')) {
+                                return <ArrowUpRight className="w-3 h-3 text-red-500" />;
+                              } else {
+                                return <Wallet className="w-3 h-3 text-blue-500" />;
+                              }
+                            })()}
                             <span className="text-sm text-foreground font-semibold">
                               {transaction.type}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm font-bold text-foreground">
-                          ${transaction.amount.toFixed(2)}
+                          ${(transaction.amount || 0).toFixed(2)}
                         </td>
                         <td className="px-6 py-4">
                           <span className={`px-3 py-1 text-[10px] font-bold uppercase rounded-full border ${
-                            transaction.status === 'Approved' 
+                            transaction.status === 'Approved' || transaction.status === 'Processed'
                               ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20'
                               : transaction.status === 'Pending'
                               ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20'

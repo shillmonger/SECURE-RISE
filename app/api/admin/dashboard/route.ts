@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import jwt from 'jsonwebtoken';
 import { User } from '@/lib/models/User';
+import { Target, CreditCard, TrendingUp, Zap } from 'lucide-react';
 
 export async function GET(request: NextRequest) {
   try {
@@ -122,14 +123,15 @@ export async function GET(request: NextRequest) {
     // Format withdrawal transactions
     const withdrawalTransactions = withdrawals.map(withdrawal => {
       const user = withdrawalUserMap[withdrawal.userId.toString()];
+      const method = withdrawal.crypto?.symbol || withdrawal.method || 'Unknown';
       return {
         id: withdrawal.withdrawalId || withdrawal._id.toString(),
-        type: 'Withdrawal',
+        type: `Withdrawal - ${method}`,
         amount: withdrawal.amount,
         status: withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1),
         user: user?.fullName || user?.username || 'Unknown User',
         email: user?.email || 'unknown@example.com',
-        paymentMethod: withdrawal.crypto?.symbol || 'Unknown',
+        paymentMethod: method,
         createdAt: withdrawal.createdAt
       };
     });
@@ -137,14 +139,28 @@ export async function GET(request: NextRequest) {
     // Format deposit transactions
     const depositTransactions = deposits.map(deposit => {
       const user = userMap[deposit.userId.toString()];
+      const method = deposit.paymentMethod || 'Unknown';
+      let transactionType = 'Deposit';
+      
+      // Determine specific type based on payment method
+      if (method.toLowerCase().includes('crypto') || method.toLowerCase().includes('usdt') || method.toLowerCase().includes('btc') || method.toLowerCase().includes('eth')) {
+        transactionType = 'Crypto Deposit';
+      } else if (method.toLowerCase().includes('bank') || method.toLowerCase().includes('transfer')) {
+        transactionType = 'Bank Transfer';
+      } else if (method.toLowerCase().includes('paystack')) {
+        transactionType = 'Card Payment';
+      } else {
+        transactionType = `Deposit - ${method}`;
+      }
+      
       return {
         id: deposit.transactionId || deposit._id.toString(),
-        type: 'Deposit',
+        type: transactionType,
         amount: deposit.amount,
         status: deposit.status.charAt(0).toUpperCase() + deposit.status.slice(1),
         user: user?.fullName || user?.username || 'Unknown User',
         email: user?.email || 'unknown@example.com',
-        paymentMethod: deposit.paymentMethod,
+        paymentMethod: method,
         createdAt: deposit.createdAt
       };
     });
@@ -187,7 +203,7 @@ export async function GET(request: NextRequest) {
       const user = giftCardUserMap[giftCard.userId.toString()];
       return {
         id: giftCard.transactionId,
-        type: 'Gift Card',
+        type: `Gift Card - ${giftCard.cardType}`,
         amount: giftCard.amount,
         status: giftCard.status.charAt(0).toUpperCase() + giftCard.status.slice(1),
         user: user?.fullName || user?.username || 'Unknown User',
@@ -267,6 +283,85 @@ export async function GET(request: NextRequest) {
     ]).toArray();
     const totalAchievementXP = achievementXPStats[0]?.totalAchievementXP || 0;
 
+    // Get Predictions statistics
+    const predictionsCollection = db.collection('predictions');
+    const totalPredictions = await predictionsCollection.countDocuments();
+    const wonPredictions = await predictionsCollection.countDocuments({ status: 'won' });
+    const lostPredictions = await predictionsCollection.countDocuments({ status: 'lost' });
+    const pendingPredictions = await predictionsCollection.countDocuments({ status: 'pending' });
+
+    // Total XP earned from predictions
+    const predictionXPStats = await predictionsCollection.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalXPEarned: { $sum: '$xpEarned' }
+        }
+      }
+    ]).toArray();
+    const totalPredictionXP = predictionXPStats[0]?.totalXPEarned || 0;
+
+    // Get Paystack transaction statistics
+    const paystackCollection = db.collection('paystackTransactions');
+    const totalPaystackTransactions = await paystackCollection.countDocuments();
+    const processedPaystackTransactions = await paystackCollection.countDocuments({ status: 'processed' });
+    const pendingPaystackTransactions = await paystackCollection.countDocuments({ status: 'pending' });
+
+    // Total USD amount from Paystack
+    const paystackUSDStats = await paystackCollection.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalUSD: { $sum: '$usdAmount' }
+        }
+      }
+    ]).toArray();
+    const totalPaystackUSD = paystackUSDStats[0]?.totalUSD || 0;
+
+    // Total NGN amount from Paystack
+    const paystackNGNStats = await paystackCollection.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalNGN: { $sum: '$ngnAmount' }
+        }
+      }
+    ]).toArray();
+    const totalPaystackNGN = paystackNGNStats[0]?.totalNGN || 0;
+
+    // Get recent Paystack transactions
+    const recentPaystackTransactions = await paystackCollection
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .toArray();
+    console.log('Paystack transactions fetched:', recentPaystackTransactions.length);
+
+    // Get user information for Paystack transactions
+    const paystackUserIds = recentPaystackTransactions.map(p => p.userId);
+    const paystackUsers = await usersCollection.find({ _id: { $in: paystackUserIds } }).toArray();
+    const paystackUserMap: { [key: string]: any } = {};
+    paystackUsers.forEach(user => {
+    paystackUserMap[user._id.toString()] = user;
+    });
+
+    // Format Paystack transactions
+    const paystackTransactions = recentPaystackTransactions.map(paystack => {
+      const user = paystackUserMap[paystack.userId.toString()];
+      const formatted = {
+        id: paystack.transactionId || paystack._id.toString(),
+        type: 'Card Payment',
+        amount: paystack.usdAmount,
+        status: paystack.status.charAt(0).toUpperCase() + paystack.status.slice(1),
+        user: user?.fullName || user?.username || paystack.username || 'Unknown User',
+        email: user?.email || paystack.userEmail || 'unknown@example.com',
+        paymentMethod: paystack.paymentMethod,
+        createdAt: paystack.createdAt
+      };
+      console.log('Formatted Paystack transaction:', formatted);
+      return formatted;
+    });
+
     // Format stats for frontend
     const formattedStats = [
       { label: "Total Users", value: totalUsers.toString(), icon: "Users", color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -289,12 +384,22 @@ export async function GET(request: NextRequest) {
       { label: "XP Redeemed", value: totalXPRedeemed.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
       { label: "Total Daily XP", value: totalDailyXP.toString(), icon: "Star", color: "text-blue-500", bg: "bg-blue-500/10" },
       { label: "Total Achievements XP", value: totalAchievementXP.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "Total Predictions", value: totalPredictions.toString(), icon: "Target", color: "text-cyan-500", bg: "bg-cyan-500/10" },
+      { label: "Won Predictions", value: wonPredictions.toString(), icon: "TrendingUp", color: "text-green-500", bg: "bg-green-500/10" },
+      { label: "Lost Predictions", value: lostPredictions.toString(), icon: "TrendingUp", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Prediction XP Earned", value: totalPredictionXP.toString(), icon: "Zap", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "Paystack Transactions", value: totalPaystackTransactions.toString(), icon: "CreditCard", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+      { label: "Paystack USD Total", value: `$${totalPaystackUSD.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "Processed Paystack", value: processedPaystackTransactions.toString(), icon: "CreditCard", color: "text-green-500", bg: "bg-green-500/10" },
+      { label: "Pending Paystack", value: pendingPaystackTransactions.toString(), icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
     ];
 
     // Combine and sort all transactions by date
-    const allTransactions = [...depositTransactions, ...withdrawalTransactions, ...giftCardTransactions]
+    const allTransactions = [...depositTransactions, ...withdrawalTransactions, ...giftCardTransactions, ...paystackTransactions]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 50); // Keep only 50 most recent
+    console.log('Total transactions combined:', allTransactions.length);
+    console.log('Transaction types:', allTransactions.map(t => t.type));
 
     return NextResponse.json({
       success: true,
