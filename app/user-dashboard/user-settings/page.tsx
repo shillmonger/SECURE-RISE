@@ -509,7 +509,7 @@ export default function UserSettingsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column */}
-              <div className="space-y-6">
+              <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
                 {/* Identity */}
                 {isLoading ? (
                   <IdentitySkeleton />
