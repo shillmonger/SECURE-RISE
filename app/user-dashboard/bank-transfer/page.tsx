@@ -184,17 +184,12 @@ export default function BankTransferPage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto space-y-8">
+          <div className="max-w-8xl mx-auto space-y-10 lg:space-y-10">
 
             {/* ── Header ── */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div className="space-y-1">
-                <div className="mb-2">
-                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#229ED9] border border-[#229ED9]/30 bg-[#229ED9]/10 px-2.5 py-1 rounded-full">
-                    Deposit
-                  </span>
-                </div>
-                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none text-white">
+                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none">
                   Bank Transfer
                 </h1>
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.18em]">
@@ -215,7 +210,7 @@ export default function BankTransferPage() {
             </div>
 
             {/* ── Main Grid ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
 
               {/* ── LEFT: Deposit Form ── */}
               <div className="lg:col-span-3 space-y-4">
@@ -242,7 +237,7 @@ export default function BankTransferPage() {
                           {gw.icon}
                         </div>
                         <div className="min-w-0">
-                          <p className={`text-xs font-black ${gw.enabled ? "text-white" : "text-muted-foreground"}`}>
+                          <p className={`text-xs font-black ${gw.enabled ? "" : "text-muted-foreground"}`}>
                             {gw.name}
                           </p>
                           <p className="text-[9px] text-muted-foreground truncate">{gw.tag}</p>
@@ -277,7 +272,7 @@ export default function BankTransferPage() {
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.00"
                         disabled={isLoading}
-                        className="w-full bg-background border border-border rounded-xl pl-10 pr-16 py-4 text-2xl font-black text-white focus:outline-none focus:ring-1 focus:ring-[#229ED9]/50 transition-all placeholder:text-muted-foreground/30 disabled:opacity-50"
+                        className="w-full bg-background border border-border rounded-xl pl-10 pr-16 py-4 text-2xl font-black  focus:outline-none focus:ring-1 focus:ring-[#229ED9]/50 transition-all placeholder:text-muted-foreground/30 disabled:opacity-50"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground uppercase tracking-widest select-none">
                         USD
@@ -295,8 +290,8 @@ export default function BankTransferPage() {
                             disabled={isLoading}
                             className={`py-2.5 rounded-xl text-xs font-black border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                               amount === val.toString()
-                                ? "bg-[#229ED9] border-[#229ED9] text-white"
-                                : "bg-background border-border text-muted-foreground hover:border-[#229ED9]/40 hover:text-white"
+                                ? "bg-[#229ED9] border-[#229ED9] "
+                                : "bg-background border-border text-muted-foreground hover:border-[#229ED9]/40 hover:"
                             }`}
                           >
                             ${val}
@@ -307,9 +302,9 @@ export default function BankTransferPage() {
 
                     {/* Limits row */}
                     <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground px-1">
-                      <span>Min <span className="text-white">${MIN_DEPOSIT_USD}</span></span>
+                      <span>Min <span className="">${MIN_DEPOSIT_USD}</span></span>
                       <div className="flex-1 mx-3 h-px bg-border" />
-                      <span>Max <span className="text-white">${MAX_DEPOSIT_USD.toLocaleString()}</span></span>
+                      <span>Max <span className="">${MAX_DEPOSIT_USD.toLocaleString()}</span></span>
                     </div>
 
                     {/* Exchange rate status — frontend only shows generic confirmation */}
@@ -354,7 +349,7 @@ export default function BankTransferPage() {
                             </div>
                             <div className="text-right">
                               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">You receive</p>
-                              <p className="text-lg font-black text-white">
+                              <p className="text-lg font-black ">
                                 ${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 <span className="text-xs ml-1 text-emerald-400 font-black">USD</span>
                               </p>
@@ -368,7 +363,7 @@ export default function BankTransferPage() {
                     <button
                       onClick={handleTransfer}
                       disabled={!isValidAmount() || isLoading}
-                      className="w-full flex items-center justify-center gap-2.5 bg-[#229ED9] hover:bg-[#1a8bc4] text-white rounded-xl px-5 py-4 font-black text-[11px] uppercase tracking-widest transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-[#229ED9]/20"
+                      className="w-full flex items-center cursor-pointer justify-center gap-2.5 bg-[#229ED9] hover:bg-[#1a8bc4]  rounded-xl px-5 py-4 font-black text-[11px] uppercase tracking-widest transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-[#229ED9]/20"
                     >
                       {isLoading ? (
                         <>
@@ -396,6 +391,9 @@ export default function BankTransferPage() {
                 </div>
               </div>
 
+
+
+
               {/* ── RIGHT: Transaction History ── */}
               <div className="lg:col-span-2 bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-muted/5">
@@ -408,7 +406,7 @@ export default function BankTransferPage() {
                   {transactionsLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                <div className="flex-1 overflow-y-auto p-3 py-4 lg:p-4 space-y-2">
                   {transactionsLoading ? (
                     Array.from({ length: 4 }).map((_, i) => (
                       <div key={i} className="h-16 bg-muted/20 rounded-xl animate-pulse" />
@@ -449,20 +447,20 @@ export default function BankTransferPage() {
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-black text-white">
+                            <p className="text-xs font-black ">
                               ${txAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                             </p>
                             <p className="text-[9px] text-muted-foreground truncate">{tx.reference}</p>
                           </div>
 
                           <div className="text-right shrink-0">
+                            <p className="text-[9px] text-muted-foreground">
+                              {new Date(tx.createdAt).toLocaleDateString()}
+                            </p>
                             <p className={`text-[9px] font-black uppercase tracking-widest ${
                               isProcessed ? "text-emerald-400" : isPending ? "text-yellow-400" : "text-red-400"
                             }`}>
                               {tx.status}
-                            </p>
-                            <p className="text-[9px] text-muted-foreground">
-                              {new Date(tx.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
