@@ -15,6 +15,7 @@ import {
   DollarSign,
   RefreshCw,
   AlertCircle,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import UserHeader from "@/components/user-dashboard/UserHeader";
@@ -32,6 +33,17 @@ interface ExchangeRateData {
   error: string | null;
 }
 
+interface PaystackTransaction {
+  _id: string;
+  usdAmount?: number;
+  amount?: number;
+  status: 'pending' | 'success' | 'processed' | 'failed';
+  reference: string;
+  transactionId: string;
+  createdAt: string;
+  paymentMethod: string;
+}
+
 export default function BankTransferPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [amount, setAmount] = useState("");
@@ -42,6 +54,8 @@ export default function BankTransferPage() {
     loading: false,
     error: null,
   });
+  const [transactions, setTransactions] = useState<PaystackTransaction[]>([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
 
   const fetchExchangeRate = async (usdAmount: number) => {
     if (!usdAmount || usdAmount <= 0) {
@@ -85,6 +99,31 @@ export default function BankTransferPage() {
       setExchangeRate({ rate: 0, ngnAmount: 0, loading: false, error: null });
     }
   }, [amount]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const userResponse = await fetch('/api/user/info');
+        if (!userResponse.ok) return;
+
+        const userData = await userResponse.json();
+        if (!userData.success || !userData.user) return;
+
+        const transactionsResponse = await fetch(`/api/paystack/transactions?userId=${userData.user.id}`);
+        const transactionsData = await transactionsResponse.json();
+
+        if (transactionsData.success) {
+          setTransactions(transactionsData.transactions);
+        }
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      } finally {
+        setTransactionsLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   const isValidAmount = () => {
     const numAmount = parseFloat(amount);
@@ -362,6 +401,85 @@ export default function BankTransferPage() {
                 </span>
               </div>
               <Lock className="w-4 h-4 text-muted-foreground" />
+            </div>
+
+            {/* Transaction History */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="p-6 md:p-8 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black uppercase tracking-tighter">
+                    Transaction History
+                  </h2>
+                  {transactionsLoading && (
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+
+                {transactionsLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-16 bg-muted/30 rounded-lg animate-pulse" />
+                    ))}
+                  </div>
+                ) : transactions.length === 0 ? (
+                  <div className="text-center py-8">
+                    <CreditCard className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                    <p className="text-sm font-semibold text-muted-foreground">
+                      No transactions yet
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {transactions.map((transaction) => {
+                      const amount = transaction.usdAmount || transaction.amount || 0;
+                      const isProcessed = transaction.status === 'processed' || transaction.status === 'success';
+                      const isPending = transaction.status === 'pending';
+                      const isFailed = transaction.status === 'failed';
+                      
+                      return (
+                        <div
+                          key={transaction._id}
+                          className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border border-border"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={`p-2 rounded-lg ${
+                              isProcessed ? 'bg-green-500/10' : isPending ? 'bg-yellow-500/10' : 'bg-red-500/10'
+                            }`}>
+                              {isProcessed ? (
+                                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                              ) : isPending ? (
+                                <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                              ) : (
+                                <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-black">
+                                ${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </p>
+                              <p className="text-[10px] font-semibold text-muted-foreground">
+                                {transaction.reference}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`text-[10px] font-black uppercase ${
+                              isProcessed ? 'text-green-600 dark:text-green-400' : 
+                              isPending ? 'text-yellow-600 dark:text-yellow-400' : 
+                              'text-red-600 dark:text-red-400'
+                            }`}>
+                              {transaction.status}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground">
+                              {new Date(transaction.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
           </div>
