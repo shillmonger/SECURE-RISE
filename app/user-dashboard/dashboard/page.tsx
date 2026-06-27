@@ -73,6 +73,7 @@ export default function UserOverviewPage() {
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [giftCards, setGiftCards] = useState<any[]>([]);
   const [xpRedemptions, setXpRedemptions] = useState<any[]>([]);
+  const [paystackTransactions, setPaystackTransactions] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
@@ -156,6 +157,16 @@ export default function UserOverviewPage() {
 
         if (redemptionsResult.success) {
           setXpRedemptions(redemptionsResult.redemptions);
+        }
+
+        // Fetch Paystack transactions
+        const paystackResponse = await fetch(
+          `/api/paystack/transactions?userId=${userResult.user.id}`
+        );
+        const paystackResult = await paystackResponse.json();
+
+        if (paystackResult.success && paystackResult.transactions) {
+          setPaystackTransactions(paystackResult.transactions);
         }
 
         if (Array.isArray(investments)) {
@@ -572,6 +583,7 @@ export default function UserOverviewPage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
+            
             {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
@@ -674,6 +686,7 @@ export default function UserOverviewPage() {
                   giftHistory={giftHistory}
                   giftCards={giftCards}
                   xpRedemptions={xpRedemptions}
+                  paystackTransactions={paystackTransactions}
                   activityLoading={activityLoading}
                 />
               </div>

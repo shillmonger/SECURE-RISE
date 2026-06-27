@@ -197,7 +197,7 @@ export default function BankTransferPage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-between gap-2 bg-card border border-border rounded-xl px-4 py-2.5 w-full sm:w-auto">
+              <div className="flex items-center justify-between gap-2 bg-card border border-border rounded-lg px-4 py-2.5 w-full sm:w-auto">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Secured by</span>
@@ -288,7 +288,7 @@ export default function BankTransferPage() {
                             key={val}
                             onClick={() => setAmount(val.toString())}
                             disabled={isLoading}
-                            className={`py-2.5 rounded-xl text-xs font-black border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+                            className={`py-2.5 rounded-xl text-xs cusor-pointer font-black border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                               amount === val.toString()
                                 ? "bg-[#229ED9] border-[#229ED9] "
                                 : "bg-background border-border text-muted-foreground hover:border-[#229ED9]/40 hover:"
@@ -408,7 +408,7 @@ export default function BankTransferPage() {
 
                 <div className="flex-1 overflow-y-auto p-3 py-4 lg:p-4 space-y-2">
                   {transactionsLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
+                    Array.from({ length: 7 }).map((_, i) => (
                       <div key={i} className="h-16 bg-muted/20 rounded-xl animate-pulse" />
                     ))
                   ) : transactions.length === 0 ? (
