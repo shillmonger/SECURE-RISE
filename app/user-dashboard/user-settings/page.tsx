@@ -117,6 +117,7 @@ function CryptoPayoutSkeleton() {
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
 import UserNav from "@/components/user-dashboard/UserNav";
+import ImageCropModal from "@/components/user-dashboard/ImageCropModal";
 
 import {
   DropdownMenu,
@@ -185,6 +186,10 @@ export default function UserSettingsPage() {
   // Profile image
   const [profileImage, setProfileImage] = useState<string>("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  // Image crop modal state
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
 
   // Member since
   const [memberSince, setMemberSince] = useState("");
@@ -375,16 +380,31 @@ export default function UserSettingsPage() {
     setShowAddForm(true);
   };
 
-  // Profile image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Profile image upload - show crop modal
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log('File selected:', file.name);
+
+    // Read file as data URL for crop modal
+    const reader = new FileReader();
+    reader.onload = () => {
+      console.log('File loaded, setting image src and opening modal');
+      setSelectedImageSrc(reader.result as string);
+      setShowCropModal(true);
+      console.log('Modal state set to true');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle cropped image upload
+  const handleCroppedImageUpload = async (croppedBlob: Blob) => {
     setIsUploadingImage(true);
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', croppedBlob, 'profile-image.jpg');
 
       const response = await fetch('/api/user-dashboard/profile/image', {
         method: 'POST',
@@ -404,6 +424,7 @@ export default function UserSettingsPage() {
       toast.error('Failed to upload image');
     } finally {
       setIsUploadingImage(false);
+      setSelectedImageSrc(null);
     }
   };
 
@@ -975,6 +996,17 @@ export default function UserSettingsPage() {
 
         <UserNav />
       </div>
+
+      {/* Image Crop Modal */}
+      <ImageCropModal
+        isOpen={showCropModal}
+        onClose={() => {
+          setShowCropModal(false);
+          setSelectedImageSrc(null);
+        }}
+        imageSrc={selectedImageSrc}
+        onCropComplete={handleCroppedImageUpload}
+      />
 
       {/* Custom Confirmation Dialog */}
       {deleteConfirmOpen && (
