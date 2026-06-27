@@ -7,6 +7,7 @@ import { sendDailyROIEmail } from '@/lib/email';
 
 // This endpoint should be called by Vercel Cron Jobs every 24 hours
 export async function GET(request: NextRequest) {
+  console.log("🔥 CRON HIT:", new Date().toISOString());
   try {
     // Verify this is a cron job call from Vercel or manual execution with secret
     const authHeader = request.headers.get('authorization');
