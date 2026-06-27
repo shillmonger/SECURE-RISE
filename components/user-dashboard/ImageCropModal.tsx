@@ -18,8 +18,6 @@ export default function ImageCropModal({
   imageSrc,
   onCropComplete,
 }: ImageCropModalProps) {
-  console.log('ImageCropModal rendered with isOpen:', isOpen, 'imageSrc:', !!imageSrc);
-
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);

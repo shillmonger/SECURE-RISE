@@ -12,6 +12,7 @@ import {
   Moon,
   Sun,
   Shield,
+  ShieldOff,
   AlertCircle,
   Eye,
   Phone,
@@ -190,6 +191,9 @@ export default function UserSettingsPage() {
   // Image crop modal state
   const [showCropModal, setShowCropModal] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+
+  // 2FA state
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
   // Member since
   const [memberSince, setMemberSince] = useState("");
@@ -385,15 +389,11 @@ export default function UserSettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    console.log('File selected:', file.name);
-
     // Read file as data URL for crop modal
     const reader = new FileReader();
     reader.onload = () => {
-      console.log('File loaded, setting image src and opening modal');
       setSelectedImageSrc(reader.result as string);
       setShowCropModal(true);
-      console.log('Modal state set to true');
     };
     reader.readAsDataURL(file);
   };
@@ -882,6 +882,23 @@ export default function UserSettingsPage() {
                   <h3 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
                     <Lock className="w-4 h-4 text-primary" /> Security
                   </h3>
+
+                  {/* Two-Factor Authentication */}
+                  <div className="flex items-center justify-between mb-6 pb-6 border-b border-border">
+                    <div className="flex-1">
+                      <p className="text-sm font-bold">Two-Factor Authentication</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">Add an extra layer of security</p>
+                    </div>
+                    <button
+                      onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
+                      className={`relative w-14 h-8 rounded-full cursor-pointer border border-border transition-colors ${twoFactorEnabled ? "bg-primary" : "bg-muted"}`}
+                    >
+                      <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform flex items-center justify-center ${twoFactorEnabled ? "translate-x-6" : "translate-x-1"}`}>
+                        {twoFactorEnabled ? <Shield className="w-3.5 h-3.5 text-black" /> : <ShieldOff className="w-3.5 h-3.5 text-muted-foreground" />}
+                      </div>
+                    </button>
+                  </div>
+
                   <form onSubmit={handlePasswordUpdate} className="space-y-4">
                     <div className="space-y-1">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current Password</label>
