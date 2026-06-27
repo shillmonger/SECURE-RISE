@@ -5,8 +5,12 @@ import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== Paystack Webhook Received ===');
+    
     // Get Paystack signature from headers
     const signature = request.headers.get('x-paystack-signature');
+    console.log('Signature present:', !!signature);
+    
     if (!signature) {
       console.error('Missing Paystack signature');
       return NextResponse.json(
@@ -17,9 +21,12 @@ export async function POST(request: NextRequest) {
 
     // Get raw body for signature verification
     const rawBody = await request.text();
+    console.log('Raw body length:', rawBody.length);
 
     // Verify signature
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
+    console.log('Secret key configured:', !!secretKey);
+    
     if (!secretKey) {
       console.error('PAYSTACK_SECRET_KEY not configured');
       return NextResponse.json(
@@ -32,8 +39,12 @@ export async function POST(request: NextRequest) {
     hmac.update(rawBody);
     const digest = hmac.digest('hex');
 
+    console.log('Signature match:', digest === signature);
+
     if (digest !== signature) {
       console.error('Invalid Paystack signature');
+      console.log('Expected digest:', digest);
+      console.log('Received signature:', signature);
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -42,17 +53,19 @@ export async function POST(request: NextRequest) {
 
     // Parse webhook event
     const event = JSON.parse(rawBody);
-
-    // Log event for debugging
-    console.log('Paystack webhook event:', event);
+    console.log('Event type:', event.event);
+    console.log('Event data:', JSON.stringify(event.data, null, 2));
 
     // Only process charge.success events
     if (event.event !== 'charge.success') {
+      console.log('Ignoring non-charge.success event:', event.event);
       return NextResponse.json({ received: true });
     }
 
     const eventData = event.data;
     const reference = eventData.reference;
+
+    console.log('Processing reference:', reference);
 
     if (!reference) {
       console.error('Missing reference in webhook data');
@@ -68,6 +81,9 @@ export async function POST(request: NextRequest) {
 
     // Check if transaction already processed (prevent duplicate processing)
     const existingTransaction = await paystackCollection.findOne({ reference });
+
+    console.log('Transaction found:', !!existingTransaction);
+    console.log('Transaction status:', existingTransaction?.status);
 
     if (!existingTransaction) {
       console.error('Transaction not found:', reference);
@@ -97,8 +113,12 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    console.log('Transaction updated to success');
+
     // Credit user wallet using ONLY the stored USD amount
     // The NGN amount is only for payment processing, not for wallet crediting
+    console.log('Crediting wallet with USD amount:', existingTransaction.usdAmount);
+    
     await creditWalletAfterDeposit({
       db,
       userId: existingTransaction.userId,
@@ -108,6 +128,8 @@ export async function POST(request: NextRequest) {
       paymentMethod: existingTransaction.paymentMethod,
       transactionId: existingTransaction.transactionId,
     });
+
+    console.log('Wallet credited successfully');
 
     // Mark transaction as processed
     await paystackCollection.updateOne(
