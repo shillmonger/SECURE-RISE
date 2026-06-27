@@ -4,6 +4,7 @@ import React from "react";
 import {
   Coins,
   Gift,
+  MessageCircle,
   ArrowRightLeft,
   Flame,
   Trophy,
@@ -33,6 +34,7 @@ import {
   TrendingUpDown,
   Building2,
   Landmark,
+  X,
 } from "lucide-react";
 import UserHeader from "@/components/user-dashboard/UserHeader";
 import UserSidebar from "@/components/user-dashboard/UserSidebar";
@@ -48,6 +50,24 @@ import {
 
 export default function LearnMorePage() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [showPopup, setShowPopup] = React.useState(false);
+
+  React.useEffect(() => {
+    // Show popup on page load
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 1000);
+
+    // Show popup again after 5 minutes
+    const fiveMinuteTimer = setTimeout(() => {
+      setShowPopup(true);
+    }, 5 * 60 * 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fiveMinuteTimer);
+    };
+  }, []);
 
   const sections = [
     { id: "welcome", title: "Welcome to Secure Rise" },
@@ -70,9 +90,10 @@ export default function LearnMorePage() {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
+      const offset = 80;
       window.scrollTo({
-        top: element.offsetTop - 80,
-        behavior: 'smooth'
+        top: element.offsetTop - offset,
+        behavior: "smooth",
       });
     }
   };
@@ -1517,6 +1538,60 @@ export default function LearnMorePage() {
         </main>
       </div>
       <UserNav />
+
+      {/* Contact Popup */}
+     {showPopup && (
+  <div className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
+    <div className="relative bg-[#229ED9] rounded-2xl p-5 sm:p-6 shadow-2xl w-full sm:max-w-sm border border-white/10">
+      <button
+        onClick={() => setShowPopup(false)}
+        className="absolute top-3 right-3 p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+      >
+        <X className="w-5 h-5 text-white" />
+      </button>
+
+      <div className="space-y-5">
+        <div className="flex items-start gap-3">
+
+          <div>
+            <h3 className="text-base font-bold text-white">
+              Need Help?
+            </h3>
+
+            <p className="text-sm text-white/90 mt-2 leading-6">
+              Can't find the answer you're looking for? Our support team is
+              ready to help with account questions or any technical issues you may
+              encounter. Reach out anytime and we'll guide you every step of
+              the way.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+  <Link
+    href="/landing-page/contact-us"
+    className="inline-flex flex-1 items-center justify-center gap-2 bg-white text-[#229ED9] px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/90 transition-all hover:scale-[1.02] active:scale-100"
+    onClick={() => setShowPopup(false)}
+  >
+    <Send className="w-4 h-4" />
+    Contact Us
+  </Link>
+
+  <Link
+    href="https://t.me/SecureRiseOfficial"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex flex-1 items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-900 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-100"
+    onClick={() => setShowPopup(false)}
+  >
+    <MessageCircle className="w-4 h-4" />
+    TG Support
+  </Link>
+</div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
