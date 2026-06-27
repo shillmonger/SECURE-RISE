@@ -116,11 +116,6 @@ export default function UserSidebar({
     icon: Wallet,
     children: [
       {
-        name: "Bank Transfer",
-        icon: Landmark,
-        href: `${basePath}/bank-transfer`,
-      },
-      {
         name: "Crypto Deposit",
         icon: BadgeDollarSign,
         href: `${basePath}/deposit`,
@@ -129,6 +124,11 @@ export default function UserSidebar({
         name: "Gift Card Deposit",
         icon: Gift,
         href: `${basePath}/gift-card`,
+      },
+      {
+        name: "Bank Transfer",
+        icon: Landmark,
+        href: `${basePath}/bank-transfer`,
       },
     ],
   },
