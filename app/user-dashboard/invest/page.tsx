@@ -362,7 +362,7 @@ function PlanCard({ plan, onInvestClick }: { plan: Plan; onInvestClick: (plan: P
           onClick={() => onInvestClick(plan)}
           className="block w-full text-center cursor-pointer bg-primary text-primary-foreground py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group/btn"
         >
-          Invest Now
+          Start Trading
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
         </button>
 
@@ -473,7 +473,7 @@ export default function InvestPage() {
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
-                  Investment Plans
+                  Trading Plans
                 </h1>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-primary" />

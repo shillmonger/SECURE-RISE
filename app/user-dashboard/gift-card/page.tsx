@@ -252,7 +252,7 @@ const GiftCardPage = () => {
 
               {/* Left: Step Form */}
               <div className="flex-1">
-                <div className="bg-card border border-border rounded-[1rem] px-4 md:p-6 shadow-sm">
+                <div className="bg-card border border-border rounded-[1rem] px-4 py-5 md:p-6 shadow-sm">
 
                   {/* Step header pill */}
                   <div className="inline-flex items-center gap-2 bg-foreground/5 border border-border rounded-full px-3 py-1.5 mb-5">
