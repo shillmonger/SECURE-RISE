@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!authUser.role.includes('admin')) {
+    if (!authUser.role || !authUser.role.includes('admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -647,7 +647,7 @@ export default function AdminSOCPage() {
   const [selectedUser, setSelectedUser] = useState<LiveUser | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<FloatNotif[]>([]);
-  const [seenEventIds, setSeenEventIds] = useState<Set<string>>(new Set());
+  const seenEventIdsRef = useRef<Set<string>>(new Set());
 
   // Fetch real activity data for notifications and detect new events
   useEffect(() => {
@@ -676,11 +676,30 @@ export default function AdminSOCPage() {
           // Sort by time (most recent first)
           allEvents.sort((a, b) => b.time.localeCompare(a.time));
 
+          // Filter events to only those within 50 seconds
+          const now = new Date();
+          const recentEvents = allEvents.filter(event => {
+            const eventTime = new Date(event.time);
+            const diffSeconds = (now.getTime() - eventTime.getTime()) / 1000;
+            return diffSeconds <= 50;
+          });
+
           // Find new events (events we haven't seen before)
-          const newEvents = allEvents.filter(event => !seenEventIds.has(event.eventId));
+          const newEvents = recentEvents.filter(event => !seenEventIdsRef.current.has(event.eventId));
+
+          // Deduplicate events with same action, page, and time (within 2 seconds)
+          const deduplicatedEvents = newEvents.filter((event, index, self) => {
+            const isDuplicate = self.slice(0, index).some(other => 
+              other.action === event.action &&
+              other.page === event.page &&
+              other.username === event.username &&
+              Math.abs(new Date(other.time).getTime() - new Date(event.time).getTime()) <= 2000
+            );
+            return !isDuplicate;
+          });
 
           // Show notifications for new events immediately
-          newEvents.forEach(event => {
+          deduplicatedEvents.forEach(event => {
             const id = `notif_${Date.now()}_${Math.random()}`;
             let severity: Severity = "info";
             let text = "";
@@ -718,7 +737,7 @@ export default function AdminSOCPage() {
 
           // Update seen events (keep only last 100 to avoid memory issues)
           const newSeenIds = new Set(allEvents.slice(0, 100).map(e => e.eventId));
-          setSeenEventIds(newSeenIds);
+          seenEventIdsRef.current = newSeenIds;
         }
       } catch (error) {
         console.error('Error fetching activity data:', error);
@@ -728,7 +747,7 @@ export default function AdminSOCPage() {
     fetchActivity();
     const interval = setInterval(fetchActivity, 50000);
     return () => clearInterval(interval);
-  }, [seenEventIds]);
+  }, []);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
