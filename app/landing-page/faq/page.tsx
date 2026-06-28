@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, X, Search, HelpCircle } from "lucide-react";
+import { Plus, X, Search, HelpCircle, Send, MessageCircle } from "lucide-react";
 import GiveAway from "@/components/landing-page/GiveAway";
 import Header from "@/components/landing-page/Header";
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll";
 import CookieConsent from "@/components/landing-page/CookieConsent";
 import Footer from "@/components/landing-page/Footer";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -619,6 +620,15 @@ const faqs = [
 export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredFAQs = useMemo(() => {
     if (!searchQuery.trim()) return faqs;
@@ -748,6 +758,59 @@ export default function FAQPage() {
       <ThemeAndScroll />
       <CookieConsent />
       <Footer />
+
+      {/* Contact Popup */}
+      {showPopup && (
+        <div className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
+          <div className="relative bg-[#229ED9] rounded-2xl p-5 sm:p-6 shadow-2xl w-full sm:max-w-sm border border-white/10">
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute top-3 right-3 p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            <div className="space-y-5">
+              <div className="flex items-start gap-3">
+                <div>
+                  <h3 className="text-base font-bold text-white">
+                    Need Help?
+                  </h3>
+
+                  <p className="text-sm text-white/90 mt-2 leading-6">
+                    Can't find the answer you're looking for? Our support team is
+                    ready to help with account questions or any technical issues you may
+                    encounter. Reach out anytime and we'll guide you every step of
+                    the way.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/landing-page/contact-us"
+                  className="inline-flex flex-1 items-center justify-center gap-2 bg-white text-[#229ED9] px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/90 transition-all hover:scale-[1.02] active:scale-100"
+                  onClick={() => setShowPopup(false)}
+                >
+                  <Send className="w-4 h-4" />
+                  Contact Us
+                </Link>
+
+                <Link
+                  href="https://t.me/SecureRiseOfficial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-900 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-100"
+                  onClick={() => setShowPopup(false)}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  TG Support
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
