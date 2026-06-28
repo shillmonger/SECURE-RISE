@@ -536,7 +536,7 @@ export default function MyInvestmentsPage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto space-y-7">
+          <div className="max-w-7xl mx-auto space-y-8 lg:space-y-9">
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
