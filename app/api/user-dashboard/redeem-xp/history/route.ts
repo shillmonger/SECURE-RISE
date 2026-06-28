@@ -1,36 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import jwt from 'jsonwebtoken';
+import { getAuthUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get token from cookies
-    const token = request.cookies.get('auth-token')?.value;
+    // Use getAuthUser which supports both custom token and NextAuth session
+    const authUser = await getAuthUser(request);
 
-    if (!token) {
+    if (!authUser?.userId) {
       return NextResponse.json(
-        { success: false, message: 'No auth token found' },
-        { status: 401 }
-      );
-    }
-
-    // Verify JWT token
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    const userId = decoded.userId || decoded.id;
-
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid token' },
+        { success: false, message: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -41,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch redemption history
     const redemptions = await db.collection('xpredemptions')
-      .find({ userId: new ObjectId(userId) })
+      .find({ userId: new ObjectId(authUser.userId) })
       .sort({ createdAt: -1 })
       .limit(50)
       .toArray();

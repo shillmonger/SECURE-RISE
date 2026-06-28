@@ -6,16 +6,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import Footer from "@/components/landing-page/Footer"
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [lastUsedMethod, setLastUsedMethod] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check which login method was used last
+    const lastMethod = localStorage.getItem('lastLoginMethod');
+    if (lastMethod) {
+      setLastUsedMethod(lastMethod);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,6 +61,9 @@ export default function LoginPage() {
           localStorage.setItem('user', JSON.stringify(userData));
         }
 
+        // Store last login method
+        localStorage.setItem('lastLoginMethod', 'credentials');
+
         toast.success(data.message || 'Login successful!');
         setTimeout(() => {
           router.push('/user-dashboard/dashboard');
@@ -62,6 +76,21 @@ export default function LoginPage() {
       toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      // Store last login method before redirect
+      localStorage.setItem('lastLoginMethod', 'google');
+      await signIn('google', {
+        callbackUrl: '/user-dashboard/dashboard',
+      });
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      toast.error('An error occurred with Google sign-in');
+      setIsGoogleLoading(false);
     }
   };
 
@@ -84,14 +113,14 @@ export default function LoginPage() {
 
                   <div className="grid gap-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">Email or Username</Label>
                     </div>
                     <Input
                       id="email"
                       name="email"
                       className="p-5 text-[15px]"
-                      type="email"
-                      placeholder="secure@example.com"
+                      type="text"
+                      placeholder="email or username"
                       disabled={isLoading}
                     />
                   </div>
@@ -133,20 +162,27 @@ export default function LoginPage() {
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full p-5 text-[15px] font-medium cursor-pointer"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
-                      </>
-                    ) : (
-                      'Sign In'
+                  <div className="relative">
+                    <Button
+                      type="submit"
+                      className="w-full p-5 text-[15px] font-medium cursor-pointer"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Signing in...
+                        </>
+                      ) : (
+                        'Sign In'
+                      )}
+                    </Button>
+                    {lastUsedMethod === 'credentials' && (
+                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full font-medium">
+                        LAST USED
+                      </span>
                     )}
-                  </Button>
+                  </div>
 
                   <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                     <span className="relative z-10 bg-background px-2 text-muted-foreground">
@@ -172,35 +208,44 @@ export default function LoginPage() {
                     </Button>
 
                     {/* Google */}
-                    <Button
-                      type="button"
-                      className="w-full cursor-pointer bg-white hover:bg-gray-100 border border-gray-300"
-                    >
-                      <svg
-                        className="h-7 w-7"
-                        viewBox="0 0 48 48"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <div className="relative">
+                      <Button
+                        type="button"
+                        className="w-full cursor-pointer bg-white hover:bg-gray-100 border border-gray-300"
+                        onClick={handleGoogleSignIn}
+                        disabled={isGoogleLoading || isLoading}
                       >
-                        <path
-                          fill="#FFC107"
-                          d="M43.611 20.083H42V20H24v8h11.303C33.655 32.657 29.207 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-                        />
-                        <path
-                          fill="#FF3D00"
-                          d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4c-7.682 0-14.348 4.337-17.694 10.691z"
-                        />
-                        <path
-                          fill="#4CAF50"
-                          d="M24 44c5.104 0 9.799-1.957 13.355-5.145l-6.169-5.22C29.125 35.091 26.673 36 24 36c-5.186 0-9.623-3.326-11.283-7.946l-6.52 5.025C9.505 39.556 16.227 44 24 44z"
-                        />
-                        <path
-                          fill="#1976D2"
-                          d="M43.611 20.083H42V20H24v8h11.303c-1.058 2.996-3.202 5.379-6.117 6.635l6.169 5.22C38.999 36.564 44 31 44 24c0-1.341-.138-2.65-.389-3.917z"
-                        />
-                      </svg>
+                        <svg
+                          className="h-7 w-7"
+                          viewBox="0 0 48 48"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill="#FFC107"
+                            d="M43.611 20.083H42V20H24v8h11.303C33.655 32.657 29.207 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                          />
+                          <path
+                            fill="#FF3D00"
+                            d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4c-7.682 0-14.348 4.337-17.694 10.691z"
+                          />
+                          <path
+                            fill="#4CAF50"
+                            d="M24 44c5.104 0 9.799-1.957 13.355-5.145l-6.169-5.22C29.125 35.091 26.673 36 24 36c-5.186 0-9.623-3.326-11.283-7.946l-6.52 5.025C9.505 39.556 16.227 44 24 44z"
+                          />
+                          <path
+                            fill="#1976D2"
+                            d="M43.611 20.083H42V20H24v8h11.303c-1.058 2.996-3.202 5.379-6.117 6.635l6.169 5.22C38.999 36.564 44 31 44 24c0-1.341-.138-2.65-.389-3.917z"
+                          />
+                        </svg>
 
-                      <span className="sr-only">Continue with Google</span>
-                    </Button>
+                        <span className="sr-only">Continue with Google</span>
+                      </Button>
+                      {lastUsedMethod === 'google' && (
+                        <span className="absolute -top-2 -right-1 bg-green-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full">
+                          LAST USED
+                        </span>
+                      )}
+                    </div>
 
                     {/* Facebook */}
                     <Button

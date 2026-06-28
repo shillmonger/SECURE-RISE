@@ -11,10 +11,12 @@ import { Eye, EyeOff } from "lucide-react"
 import Footer from "@/components/landing-page/Footer"
 import ThemeAndScroll from "@/components/landing-page/ThemeAndScroll"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
 
 export default function SignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -57,6 +59,19 @@ export default function SignupPage() {
       toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signIn('google', {
+        callbackUrl: '/user-dashboard/dashboard',
+      });
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      toast.error('An error occurred with Google sign-in');
+      setIsGoogleLoading(false);
     }
   };
 
@@ -179,6 +194,8 @@ export default function SignupPage() {
                     <Button
                       type="button"
                       className="w-full cursor-pointer bg-white hover:bg-gray-100 border border-gray-300"
+                      onClick={handleGoogleSignIn}
+                      disabled={isGoogleLoading || isLoading}
                     >
                       <svg
                         className="h-7 w-7"

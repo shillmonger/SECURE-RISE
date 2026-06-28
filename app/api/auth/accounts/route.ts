@@ -1,37 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { getAuthUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import { User } from '@/lib/models/User';
 import { ObjectId } from 'mongodb';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get auth token (same as existing system)
-    const token = request.cookies.get('auth-token')?.value;
+    // Use getAuthUser which supports both custom token and NextAuth session
+    const authUser = await getAuthUser(request);
 
-    if (!token) {
+    if (!authUser?.userId) {
       return NextResponse.json(
-        { success: false, error: 'No auth token found' },
-        { status: 401 }
-      );
-    }
-
-    // Verify JWT token and get current user
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    const currentUserId = decoded.userId || decoded.id;
-
-    if (!currentUserId) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
+        { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -41,7 +21,7 @@ export async function GET(request: NextRequest) {
     const db = client.db('secure-rise');
     const usersCollection = db.collection('users');
     
-    const currentUser = await usersCollection.findOne({ _id: new ObjectId(currentUserId) }) as User;
+    const currentUser = await usersCollection.findOne({ _id: new ObjectId(authUser.userId) }) as User;
     
     if (!currentUser) {
       return NextResponse.json(

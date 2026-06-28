@@ -21,14 +21,25 @@ export async function POST(request: NextRequest) {
     const db = client.db('secure-rise');
     const usersCollection = db.collection('users');
 
-    // Find user by email
-    const user = await usersCollection.findOne({ email }) as User;
+    // Find user by email or username (email field can contain either)
+    const user = await usersCollection.findOne({
+      $or: [{ email }, { username: email }]
+    }) as User;
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+      // Check if input looks like an email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: 'User with this email does not exist' },
+          { status: 401 }
+        );
+      } else {
+        return NextResponse.json(
+          { error: 'User with this username does not exist' },
+          { status: 401 }
+        );
+      }
     }
 
     // Check if user is active
@@ -44,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Incorrect password' },
         { status: 401 }
       );
     }

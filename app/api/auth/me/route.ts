@@ -1,26 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
+import { getAuthUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get token from cookie
-    const token = request.cookies.get('auth-token')?.value;
-    
-    if (!token) {
-      return NextResponse.json(
-        { error: 'No authentication token found' },
-        { status: 401 }
-      );
-    }
+    // Use getAuthUser which supports both custom token and NextAuth session
+    const authUser = await getAuthUser(request);
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
-    
-    if (!decoded.userId) {
+    if (!authUser?.userId) {
       return NextResponse.json(
-        { error: 'Invalid token' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -31,7 +21,7 @@ export async function GET(request: NextRequest) {
     const usersCollection = db.collection('users');
 
     const user = await usersCollection.findOne(
-      { _id: new ObjectId(decoded.userId) },
+      { _id: new ObjectId(authUser.userId) },
       { projection: { password: 0 } } // Exclude password from response
     );
 
@@ -56,13 +46,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Auth me error:', error);
-    
-    if (error instanceof jwt.JsonWebTokenError) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
 
     return NextResponse.json(
       { error: 'Internal server error' },
