@@ -18,53 +18,8 @@ import TrafficOverview from "@/components/admin-dashboard/Monitoring/TrafficOver
 import DeviceAnalytics from "@/components/admin-dashboard/Monitoring/DeviceAnalytics";
 import TopActiveUsersAndHeatMap from "@/components/admin-dashboard/Monitoring/TopActiveUsersAndHeatMap";
 import LiveUserActivity from "@/components/admin-dashboard/Monitoring/LiveUserActivity";
+import { LiveUser, UserStatus, ActivityEvent, ModalTab, DeviceType } from "@/types/monitoring";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type UserStatus = "online" | "offline" | "away";
-type DeviceType = "desktop" | "mobile" | "tablet";
-type ModalTab = "overview" | "activity" | "security" | "devices" | "navigation" | "timeline" | "statistics";
-
-interface ActivityEvent {
-  time: string;
-  action: string;
-  icon: React.ElementType;
-  category: "navigation" | "action" | "form" | "scroll" | "deposit" | "auth";
-}
-
-interface LiveUser {
-  id: string;
-  fullName: string;
-  username: string;
-  email: string;
-  role: "user" | "admin" | "vip";
-  status: UserStatus;
-  currentPage: string;
-  currentUrl: string;
-  lastActivity: string;
-  device: DeviceType;
-  browser: string;
-  os: string;
-  sessionDuration: string;
-  country: string;
-  city: string;
-  ipAddress: string;
-  loginTime: string;
-  avatar: string;
-  mouseActivity: "moving" | "idle" | "clicking";
-  keyboardActivity: "typing" | "idle";
-  connection: "excellent" | "good" | "poor";
-  timeOnPage: string;
-  activityFeed: ActivityEvent[];
-  pageVisitsToday: number;
-  buttonsClicked: number;
-  formsSubmitted: number;
-  scrollProgress: number;
-  navigationCount: number;
-  activityScore: number;
-  pagesVisited: string[];
-  vpnDetected: boolean;
-  newDevice: boolean;
-}
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 const PAGE_ICONS: Record<string, React.ElementType> = {
@@ -132,17 +87,10 @@ function generateUser(id: number): LiveUser {
     ipAddress: `${192 + (id % 3)}.${168}.${id % 255}.${(id * 7) % 255}`,
     loginTime: `${String(8 + (id % 4)).padStart(2, "0")}:${String(id % 60).padStart(2, "0")}:${String((id * 3) % 60).padStart(2, "0")}`,
     avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-    mouseActivity: status === "online" ? (id % 3 === 0 ? "clicking" : "moving") : "idle",
-    keyboardActivity: status === "online" && id % 4 === 0 ? "typing" : "idle",
-    connection: id % 5 === 0 ? "poor" : id % 3 === 0 ? "good" : "excellent",
     timeOnPage: durations[(id + 2) % durations.length],
     activityFeed: MOCK_ACTIVITY_FEED,
     pageVisitsToday: 3 + (id % 18),
-    buttonsClicked: 5 + (id % 40),
-    formsSubmitted: id % 5,
     scrollProgress: 20 + (id % 80),
-    navigationCount: 2 + (id % 15),
-    activityScore: 40 + (id % 60),
     pagesVisited: pages.slice(0, 3 + (id % 5)),
     vpnDetected: id % 8 === 0,
     newDevice: id % 6 === 0,
@@ -391,12 +339,6 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
           <p className="text-sm font-mono font-bold text-foreground">{user.ipAddress}</p>
           <p className="text-[9px] text-muted-foreground mt-1">Geolocation: {user.city}, {user.country}</p>
         </div>
-        <div className="p-3 bg-muted/20 rounded-xl border border-border">
-          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Connection Quality</p>
-          <div className={`text-sm font-black ${user.connection === "excellent" ? "text-emerald-400" : user.connection === "good" ? "text-amber-400" : "text-rose-400"}`}>
-            {user.connection.charAt(0).toUpperCase() + user.connection.slice(1)}
-          </div>
-        </div>
       </div>
     );
   }
@@ -445,8 +387,8 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
         </div>
         <div className="p-3 bg-muted/20 rounded-xl border border-border">
           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Navigation Stats</p>
-          <div className="grid grid-cols-3 gap-2">
-            {[["Count", user.navigationCount], ["Pages Today", user.pageVisitsToday], ["Current", user.currentPage]].map(([l, v]) => (
+          <div className="grid grid-cols-2 gap-2">
+            {[["Pages Today", user.pageVisitsToday], ["Current", user.currentPage]].map(([l, v]) => (
               <div key={l as string}><p className="text-[9px] text-muted-foreground">{l}</p><p className="text-sm font-black text-foreground">{v}</p></div>
             ))}
           </div>
@@ -460,7 +402,6 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
       <div className="relative pl-5">
         <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
         {user.activityFeed.map((ev, i) => {
-          const Icon = ev.icon;
           return (
             <div key={i} className="relative mb-4 last:mb-0">
               <div className="absolute -left-3 w-3 h-3 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
@@ -468,7 +409,6 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
               </div>
               <div className="ml-3 p-3 bg-muted/20 rounded-xl border border-border hover:border-primary/20 transition-all">
                 <div className="flex items-center gap-2 mb-1">
-                  <Icon className="w-3 h-3 text-primary" />
                   <span className="text-[10px] font-black text-foreground">{ev.action}</span>
                 </div>
                 <p className="text-[9px] font-mono text-muted-foreground">{ev.time}</p>
@@ -483,11 +423,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
   function StatisticsTab() {
     const stats = [
       { label: "Page Visits Today", value: user.pageVisitsToday, max: 30, color: "#6366f1" },
-      { label: "Buttons Clicked", value: user.buttonsClicked, max: 60, color: "#10b981" },
-      { label: "Forms Submitted", value: user.formsSubmitted, max: 10, color: "#f59e0b" },
       { label: "Scroll Progress", value: user.scrollProgress, max: 100, color: "#f43f5e", suffix: "%" },
-      { label: "Navigation Count", value: user.navigationCount, max: 20, color: "#06b6d4" },
-      { label: "Activity Score", value: user.activityScore, max: 100, color: "#8b5cf6" },
     ];
     return (
       <div className="grid grid-cols-2 gap-3">
@@ -735,7 +671,6 @@ export default function AdminSOCPage() {
 
             {/* Main Activity Table */}
             <LiveUserActivity 
-              users={filteredUsers} 
               filterStatus={filterStatus} 
               setFilterStatus={setFilterStatus} 
               onMonitor={(user) => setSelectedUser(user)} 

@@ -1,6 +1,7 @@
 "use client";
 
 import PromotionPopup from "@/components/user-dashboard/PromotionPopup";
+import ActivityTracker from "@/components/user-dashboard/ActivityTracker";
 import { useState, useEffect } from "react";
 
 export default function UserDashboardLayout({
@@ -21,6 +22,7 @@ export default function UserDashboardLayout({
 
   return (
     <>
+      <ActivityTracker />
       {children}
       <PromotionPopup 
         isOpen={isGiftMemberOpen} 

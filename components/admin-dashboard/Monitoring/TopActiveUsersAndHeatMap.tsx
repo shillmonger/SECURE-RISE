@@ -30,7 +30,6 @@ const MOCK_USERS: LiveUser[] = [
   { id: "user_4", fullName: "Yuna Park", username: "yunapark", status: "online", currentPage: "Referrals", sessionDuration: "12m 33s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=yunapark", activityScore: 71, pageVisitsToday: 9 },
   { id: "user_5", fullName: "Ethan Cole", username: "ethancole", status: "offline", currentPage: "Profile", sessionDuration: "25m", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ethancole", activityScore: 65, pageVisitsToday: 4 },
   { id: "user_6", fullName: "Priya Sharma", username: "priya_s", status: "online", currentPage: "Verification", sessionDuration: "38m 12s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya_s", activityScore: 58, pageVisitsToday: 11 },
-  { id: "user_7", fullName: "Luca Ferri", username: "lucaferri", status: "away", currentPage: "Notifications", sessionDuration: "1h 05m", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=lucaferri", activityScore: 52, pageVisitsToday: 7 },
 ];
 
 function UserLeaderboard() {
