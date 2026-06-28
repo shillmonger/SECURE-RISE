@@ -151,8 +151,8 @@ const MakePaymentPage = () => {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-8">
-            
+          <div className="max-w-7xl mx-auto space-y-6">
+
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -168,221 +168,217 @@ const MakePaymentPage = () => {
               </Link>
             </div>
 
-            
+            {/* Main flex row — matches gift card layout */}
+            <div className="flex flex-col lg:flex-row gap-7">
 
-            <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
-              {/* Method Indicator Bar */}
-              <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
-                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+              {/* LEFT: Main card — 70% */}
+              <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl lg:w-[70%]">
+                {/* Method Indicator Bar */}
+                <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-1 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
+                      <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
+                        Pay with
+                      </p>
+                      <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
+                        {paymentMethod.name}
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
+                  <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
                     <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-                      Pay with
+                      Required Amount
                     </p>
-                    <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
-                      {paymentMethod.name}
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
+                    <p className="text-lg sm:text-xl font-black tracking-tight text-green-500">
+                      ${parseFloat(amount).toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
-                  <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-                    Required Amount
-                  </p>
-                  <p className="text-lg sm:text-2xl font-black tracking-tight text-green-500">
-                    ${parseFloat(amount).toLocaleString()}
-                  </p>
-                </div>
-              </div>
 
-              <div className="p-5 md:p-8 space-y-10">
-                <div className="grid md:grid-cols-2 gap-12 items-start">
-                  
-                  {/* Left Side: Visual/QR */}
-                  <div className="space-y-6">
-                    <div className="relative group">
-                      <div className="relative flex flex-col items-center justify-center p-5 bg-background border-2 border-dashed border-border rounded-[1rem]">
-                        <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
-                          {qrCodeUrl ? (
-                            <img src={qrCodeUrl} alt="QR Code" className="w-40 h-40 invert" />
-                          ) : (
-                            <QrCode className="w-36 h-36 text-background" />
-                          )}
-                        </div>
-                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest text-center">
-                          Scan address for mobile transfer
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="p-5 md:p-6 space-y-9">
+                  <div className="grid md:grid-cols-2 gap-8 lg:gap-8 items-start">
 
-                  {/* Right Side: Copy & Upload */}
-                  <div className="space-y-8">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Official {paymentMethod.name} Address
-                      </label>
-                      <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black leading-relaxed">
-                          {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
-                        </div>
-                        <button 
-                          onClick={handleCopy}
-                          className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
-                        >
-                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="bg-primary/10 text-primary text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest">
-                          Network: {paymentMethod.network}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-6 border-t border-border">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Upload Proof of Transfer
-                      </label>
+                    {/* Left Side: QR */}
+                    <div className="space-y-6">
                       <div className="relative group">
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={handleFileSelect}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                        />
-                        <div className={`border-2 border-dashed rounded-xl p-6 lg:p-3 flex flex-col items-center justify-center gap-3 transition-all ${
-                          selectedFile ? 'border-primary bg-primary/5' : 'border-border bg-muted/10 group-hover:border-foreground/40'
-                        }`}>
-                          <Upload className={`w-6 h-6 ${selectedFile ? 'text-primary' : 'text-muted-foreground'}`} />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                            {selectedFile?.name || 'Choose Screenshot'}
+                        <div className="relative flex flex-col items-center justify-center p-5 bg-background border-2 border-dashed border-border rounded-[1rem]">
+                          <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
+                            {qrCodeUrl ? (
+                              <img src={qrCodeUrl} alt="QR Code" className="w-40 h-40 invert" />
+                            ) : (
+                              <QrCode className="w-36 h-36 text-background" />
+                            )}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest text-center">
+                            Scan address for mobile transfer
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Side: Copy & Upload */}
+                    <div className="space-y-7 lg:space-y-10">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          Official {paymentMethod.name} Address
+                        </label>
+                        <div className="group relative">
+                          <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black leading-relaxed">
+                            {paymentMethod.address.slice(0, 15)}...{paymentMethod.address.slice(-4)}
+                          </div>
+                          <button
+                            onClick={handleCopy}
+                            className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
+                          >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="bg-primary/10 text-primary text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest">
+                            Network: {paymentMethod.network}
                           </span>
                         </div>
                       </div>
+
+                      <div className="space-y-3 pt-4 border-t border-border">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          Upload Proof of Transfer
+                        </label>
+                        <div className="relative group">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                          <div className={`border-2 border-dashed rounded-xl p-6 lg:p-3 flex flex-col items-center justify-center gap-3 transition-all ${
+                            selectedFile ? 'border-primary bg-primary/5' : 'border-border bg-muted/10 group-hover:border-foreground/40'
+                          }`}>
+                            <Upload className={`w-6 h-6 ${selectedFile ? 'text-primary' : 'text-muted-foreground'}`} />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-center">
+                              {selectedFile?.name || 'Choose Screenshot'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Submit Action */}
+                      <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting || !selectedFile}
+                          className="w-full bg-foreground cursor-pointer text-background px-5 py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
+                        >
+                          {isSubmitting ? (
+                            <>Submitting <Loader2 className="w-4 h-4 animate-spin" /></>
+                          ) : (
+                            <>Submit For Review <CheckCircle2 className="w-4 h-4" /></>
+                          )}
+                        </button>
+                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-center">
+                          Review typically takes 5-30 minutes
+                        </p>
+                      </form>
                     </div>
                   </div>
                 </div>
-
-                {/* Submit Action */}
-                <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting || !selectedFile}
-                    className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
-                  >
-                    {isSubmitting ? (
-                      <>Submitting <Loader2 className="w-4 h-4 animate-spin" /></>
-                    ) : (
-                      <>Submit For Review <CheckCircle2 className="w-4 h-4" /></>
-                    )}
-                  </button>
-                  <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-center">
-                    Review typically takes 5-30 minutes
-                  </p>
-                </form>
               </div>
+
+              {/* RIGHT: Warning banner — 30% */}
+              <div className="flex flex-col lg:flex-row gap-6 items-start lg:w-[30%]">
+                <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-red-500/30 bg-gradient-to-br from-red-500/15 via-orange-500/10 to-red-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none w-full">
+
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+                  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-red-400 opacity-10" />
+
+                  <div className="relative z-10 mb-5 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-600 dark:text-red-300">
+                        Deposit Warning
+                      </p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-red-100/70">
+                        Read carefully before sending funds
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+                      <Copy className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
+                          Always Use The Copy Button
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+                          Never type the address manually. One wrong character means permanent, unrecoverable loss of funds.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-red-500/10 px-4 py-3">
+                      <Zap className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
+                          Send On The Correct Network Only
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+                          Sending on the wrong network will result in loss. Network shown:{" "}
+                          <span className="text-red-600 dark:text-red-300 font-black">
+                            {paymentMethod.network}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+                      <CheckCircle2 className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
+                          Send The Exact Amount
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+                          Under- or over-payment may delay or void your deposit pending manual review.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
+                      <Upload className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
+                          Upload Clear Proof Of Transfer
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
+                          Screenshot must show transaction hash, amount & destination address. Blurry images will be rejected.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 dark:bg-red-500/10 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
+                        Transactions Are Irreversible
+                      </span>
+                      <span className="text-[11px] font-black text-red-600 dark:text-red-400">
+                        No Exceptions
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
-
-
-            {/* ⚠️ DEPOSIT WARNING BANNER */}
-<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-red-500/30 bg-gradient-to-br from-red-500/15 via-orange-500/10 to-red-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
-
-  {/* Background Effects */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
-
-  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-red-400 opacity-10" />
-
-  {/* Header */}
-  <div className="relative z-10 mb-5 flex items-center gap-3">
-
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30">
-      <AlertTriangle className="h-5 w-5 text-red-500" />
-    </div>
-
-    <div>
-      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-600 dark:text-red-300">
-        Deposit Warning
-      </p>
-
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-red-100/70">
-        Read carefully before sending funds
-      </p>
-    </div>
-  </div>
-
-  {/* Warning Items */}
-  <div className="relative z-10 space-y-3">
-
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
-      <Copy className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
-          Always Use The Copy Button
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
-          Never type the address manually. One wrong character means permanent, unrecoverable loss of funds.
-        </p>
-      </div>
-    </div>
-
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-red-500/10 px-4 py-3">
-      <Zap className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
-          Send On The Correct Network Only
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
-          Sending on the wrong network will result in loss. Network shown:{" "}
-          <span className="text-red-600 dark:text-red-300 font-black">
-            {paymentMethod.network}
-          </span>
-        </p>
-      </div>
-    </div>
-
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
-      <CheckCircle2 className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
-          Send The Exact Amount
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
-          Under- or over-payment may delay or void your deposit pending manual review.
-        </p>
-      </div>
-    </div>
-
-    <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-black/20 px-4 py-3">
-      <Upload className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
-          Upload Clear Proof Of Transfer
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-red-100/60 leading-relaxed">
-          Screenshot must show transaction hash, amount & destination address. Blurry images will be rejected.
-        </p>
-      </div>
-    </div>
-
-    <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 dark:bg-red-500/10 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-red-100">
-        Transactions Are Irreversible
-      </span>
-      <span className="text-[11px] font-black text-red-600 dark:text-red-400">
-        No Exceptions
-      </span>
-    </div>
-
-  </div>
-</div>
           </div>
         </main>
       </div>
       <UserNav />
-      
+
       {/* Success Modal */}
       {showSuccess && (
         <div

@@ -150,16 +150,48 @@ export async function GET(request: NextRequest) {
     }).filter((user): user is NonNullable<typeof user> => user !== null);
 
     // Add anonymous users (those with userId = 'anonymous')
+    // Group anonymous sessions by IP address + device/browser combination to show one user per visitor
     const anonymousActivities = activities.filter(a => a.userId === 'anonymous');
-    const anonymousUsers = anonymousActivities.map(activity => {
-      const allEvents = allActivityEventsMap.get('anonymous') || [];
-      
+    
+    // Create a map to group anonymous sessions by unique visitor (IP + device + browser)
+    const anonymousVisitorMap = new Map<string, UserActivity[]>();
+    anonymousActivities.forEach(activity => {
+      const visitorKey = `${activity.ipAddress}_${activity.device}_${activity.browser}`;
+      const sessions = anonymousVisitorMap.get(visitorKey) || [];
+      sessions.push(activity);
+      anonymousVisitorMap.set(visitorKey, sessions);
+    });
+
+    // Create one user entry per unique anonymous visitor
+    const anonymousUsers = Array.from(anonymousVisitorMap.entries()).map(([visitorKey, visitorSessions]) => {
+      // Get the most recent session for this visitor
+      const latestSession = visitorSessions.reduce((latest, current) => 
+        current.lastActivity > latest.lastActivity ? current : latest
+      );
+
+      // Aggregate all events from all sessions for this visitor
+      const allVisitorEvents: any[] = [];
+      visitorSessions.forEach(session => {
+        const sessionEvents = session.activityEvents.map((ev: any) => ({
+          ...ev,
+          sessionId: session.sessionId,
+          sessionTime: session.loginTime.toISOString(),
+        }));
+        allVisitorEvents.push(...sessionEvents);
+      });
+
       // Sort all events by time (newest first)
-      allEvents.sort((a, b) => b.time.localeCompare(a.time));
-      
+      allVisitorEvents.sort((a, b) => b.time.localeCompare(a.time));
+
+      // Aggregate all unique pages visited across all sessions
+      const allPagesVisited = new Set<string>();
+      visitorSessions.forEach(session => {
+        session.pagesVisited.forEach(page => allPagesVisited.add(page));
+      });
+
       // Calculate status based on last activity time
       const now = new Date();
-      const lastActivityTime = new Date(activity.lastActivity);
+      const lastActivityTime = new Date(latestSession.lastActivity);
       const diffMinutes = (now.getTime() - lastActivityTime.getTime()) / (1000 * 60);
       
       let calculatedStatus: UserStatus = 'offline';
@@ -172,29 +204,29 @@ export async function GET(request: NextRequest) {
       }
 
       return {
-        id: `anon_${activity.sessionId}`,
+        id: `anon_${visitorKey}`,
         fullName: 'Anonymous User',
         username: 'anonymous',
         email: '',
         role: 'guest',
         status: calculatedStatus,
-        currentPage: activity.currentPage,
-        currentUrl: activity.currentUrl,
-        lastActivity: formatRelativeTime(activity.lastActivity),
-        device: activity.device,
-        browser: activity.browser,
-        os: activity.operatingSystem,
-        sessionDuration: formatSessionDuration(activity.loginTime),
-        country: activity.country || 'Unknown',
-        city: activity.city || 'Unknown',
-        ipAddress: activity.ipAddress || 'Unknown',
-        loginTime: activity.loginTime.toTimeString().split(' ')[0],
+        currentPage: latestSession.currentPage,
+        currentUrl: latestSession.currentUrl,
+        lastActivity: formatRelativeTime(latestSession.lastActivity),
+        device: latestSession.device,
+        browser: latestSession.browser,
+        os: latestSession.operatingSystem,
+        sessionDuration: formatSessionDuration(latestSession.loginTime),
+        country: latestSession.country || 'Unknown',
+        city: latestSession.city || 'Unknown',
+        ipAddress: latestSession.ipAddress || 'Unknown',
+        loginTime: latestSession.loginTime.toTimeString().split(' ')[0],
         avatar: 'https://i.postimg.cc/KvQVp747/anonimous.webp',
-        timeOnPage: `${activity.timeOnPage}s`,
-        activityFeed: allEvents,
-        pageVisitsToday: activity.pagesVisited.length,
-        scrollProgress: activity.scrollMilestone,
-        pagesVisited: activity.pagesVisited,
+        timeOnPage: `${latestSession.timeOnPage}s`,
+        activityFeed: allVisitorEvents,
+        pageVisitsToday: allPagesVisited.size,
+        scrollProgress: latestSession.scrollMilestone,
+        pagesVisited: Array.from(allPagesVisited),
         vpnDetected: false,
         newDevice: false,
       };

@@ -761,7 +761,7 @@ export default function FAQPage() {
 
       {/* Contact Popup */}
       {showPopup && (
-        <div className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
+        <div className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 z-900 animate-in slide-in-from-right-8 fade-in duration-500">
           <div className="relative bg-[#229ED9] rounded-2xl p-5 sm:p-6 shadow-2xl w-full sm:max-w-sm border border-white/10">
             <button
               onClick={() => setShowPopup(false)}
