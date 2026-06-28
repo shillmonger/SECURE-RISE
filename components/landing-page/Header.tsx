@@ -74,6 +74,13 @@ export default function Header() {
             <MegaMenu isOpen={megaOpen} onToggle={toggleMegaMenu} onClose={closeMegaMenu} />
 
             <Link
+              href="/landing-page/predict"
+              onClick={closeMobileMenu}
+              className={desktopLinkStyles("/landing-page/predict")}
+            >
+              Predict Market
+            </Link>
+            <Link
               href="/landing-page/learn-more"
               className={desktopLinkStyles("/landing-page/learn-more")}
             >
@@ -81,11 +88,11 @@ export default function Header() {
             </Link>
             
             <Link
-              href="/landing-page/predict"
+              href="/landing-page/faq"
               onClick={closeMobileMenu}
-              className={desktopLinkStyles("/landing-page/predict")}
+              className={desktopLinkStyles("/landing-page/faq")}
             >
-              Predict Market
+              F&Q
             </Link>
           </nav>
 
@@ -206,19 +213,13 @@ export default function Header() {
             >
               Terms &amp; Conditions
             </Link>
-            <button
-              onClick={() => {
-                closeMobileMenu();
-                const faqSection = document.getElementById("faq");
-                if (faqSection) {
-                  faqSection.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="relative flex items-center gap-3 px-1 py-3.5 text-[15px] font-bold tracking-wide transition-colors border-b border-border/40 last:border-b-0 text-muted-foreground hover:text-foreground cursor-pointer"
+            <Link
+              href="/landing-page/faq"
+              onClick={closeMobileMenu}
+              className={mobileLinkStyles("/landing-page/faq")}
             >
-              <HelpCircle className="w-5 h-5" />
               Frequently Asked Questions
-            </button>
+            </Link>
           </nav>
 
           {/* Auth buttons */}

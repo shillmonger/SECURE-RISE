@@ -82,8 +82,9 @@ export default function Footer() {
             Trading Tools
           </h3>
           <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Exness</Link></li>
             <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">C Trader</Link></li>
+            <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Exness Broker</Link></li>
+            <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Google Cloud VPS</Link></li>
             <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">MetaTrader 5 (MT5)</Link></li>
             <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Trade Locker</Link></li>
             <li><Link href="#" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Match Trader ETC</Link></li>
@@ -96,8 +97,9 @@ export default function Footer() {
           <ul className="space-y-2 text-muted-foreground">
             <li><Link href="/landing-page/investment-plan" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Investment Plans</Link></li>
             <li><Link href="/landing-page/about" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">About Secure Rise</Link></li>
-            <li><Link href="/landing-page/testimonials" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Traders Testimonials</Link></li>
             <li><Link href="/landing-page/privacy" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Privacy Policy</Link></li>
+            <li><Link href="/landing-page/security" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Security Policy</Link></li>
+            <li><Link href="/landing-page/refund" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Refunds Policy</Link></li>
             <li><Link href="/landing-page/terms" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Terms & Conditions</Link></li>
           </ul>
         </div>
@@ -108,11 +110,12 @@ export default function Footer() {
             Our Pages
           </h3>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link href="/landing-page/blog" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Blog / News</Link></li>
             <li><Link href="/landing-page/learn-more" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Learn More</Link></li>
             <li><Link href="/auth-page/login" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Investor Signin</Link></li>
             <li><Link href="/auth-page/register" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Investor Signup</Link></li>
-            <li><Link href="/landing-page/contact-us" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Contact Us</Link></li>
-            <li><Link href="/landing-page/refund" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Refunds Policy</Link></li>
+            <li><Link href="/landing-page/contact-us" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Contact Support</Link></li>
+            <li><Link href="/landing-page/testimonials" className="text-[15px] hover:text-primary transition-colors text-muted-foreground">Traders Testimonials</Link></li>
           </ul>
         </div>
       </div>
@@ -168,11 +171,20 @@ export default function Footer() {
       <div className="max-w-[1400px] mx-auto border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6">
           <p>© {new Date().getFullYear()} SECURE RISE — Elevating Wealth Safely.</p>
-          <div className="flex gap-4 text-[12px]">
-            <Link href="/landing-page/privacy" className="hover:text-primary">Privacy Policy</Link>
-            <Link href="/landing-page/terms" className="hover:text-primary">Investor Agreement</Link>
-            <Link href="/landing-page/refund" className="hover:text-primary">Refunds Policy</Link>
-          </div>
+          <div className="flex flex-wrap md:flex-nowrap justify-center md:justify-start gap-x-4 gap-y-2 text-[12px]">
+  <Link href="/landing-page/privacy" className="underline hover:text-primary whitespace-nowrap">
+    Privacy Policy
+  </Link>
+  <Link href="/landing-page/terms" className="underline hover:text-primary whitespace-nowrap">
+    Investor Agreement
+  </Link>
+  <Link href="/landing-page/refund" className="underline hover:text-primary whitespace-nowrap">
+    Refunds Policy
+  </Link>
+  <Link href="/landing-page/security" className="underline hover:text-primary whitespace-nowrap">
+    Security Policy
+  </Link>
+</div>
         </div>
         <p className="italic text-xs text-center md:text-right max-w-md opacity-60">
           All investments carry risk. SECURE RISE is not a licensed bank but a private investment platform. 

@@ -64,12 +64,12 @@ export default function SignupPage() {
    <div className="min-h-screen flex flex-col bg-background text-foreground">
          <ThemeAndScroll />
    
-         <main className="flex-grow flex items-center justify-center px-3 py-10 p-6 md:p-10 transition-colors duration-300 mb-15">
+         <main className="flex-grow flex items-center justify-center px-3 py-10 p-6 md:p-10 transition-colors duration-300 mb-10">
                   <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden">
 
         <Card className="overflow-hidden bg-card border border-border rounded-3xl shadow-lg">
           <CardContent className="p-0">
-            <form className="p-6 md:p-8" onSubmit={handleSubmit}>
+            <form className="px-6 py-3 md:px-8" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Create your account</h1>
@@ -113,6 +113,7 @@ export default function SignupPage() {
                       type={showPassword ? "text" : "password"}
                       required
                       disabled={isLoading}
+                      placeholder="SecureRise***123"
                       className="pr-10 p-5 text-[15px]"
                     />
                     <button
@@ -134,6 +135,7 @@ export default function SignupPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       required
                       disabled={isLoading}
+                      placeholder="SecureRise***123"
                       className="pr-10 p-5 text-[15px]"
                     />
                     <button
@@ -157,25 +159,69 @@ export default function SignupPage() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
-                  <Button variant="outline" className="w-full cursor-pointer" type="button">
-                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                      <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/>
-                    </svg>
-                    <span className="sr-only">Sign up with Apple</span>
-                  </Button>
-                  <Button variant="outline" className="w-full cursor-pointer" type="button">
-                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" fill="currentColor"/>
-                    </svg>
-                    <span className="sr-only">Sign up with Google</span>
-                  </Button>
-                  <Button variant="outline" className="w-full cursor-pointer" type="button">
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    <span className="sr-only">Sign up with Meta</span>
-                  </Button>
-                </div>
+                    {/* X */}
+                    <Button
+                      type="button"
+                      className="w-full cursor-pointer bg-black text-white border-0"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.637 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932 6.064-6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" />
+                      </svg>
+                      <span className="sr-only">Continue with X</span>
+                    </Button>
+
+                    {/* Google */}
+                    <Button
+                      type="button"
+                      className="w-full cursor-pointer bg-white hover:bg-gray-100 border border-gray-300"
+                    >
+                      <svg
+                        className="h-7 w-7"
+                        viewBox="0 0 48 48"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="#FFC107"
+                          d="M43.611 20.083H42V20H24v8h11.303C33.655 32.657 29.207 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                        />
+                        <path
+                          fill="#FF3D00"
+                          d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4c-7.682 0-14.348 4.337-17.694 10.691z"
+                        />
+                        <path
+                          fill="#4CAF50"
+                          d="M24 44c5.104 0 9.799-1.957 13.355-5.145l-6.169-5.22C29.125 35.091 26.673 36 24 36c-5.186 0-9.623-3.326-11.283-7.946l-6.52 5.025C9.505 39.556 16.227 44 24 44z"
+                        />
+                        <path
+                          fill="#1976D2"
+                          d="M43.611 20.083H42V20H24v8h11.303c-1.058 2.996-3.202 5.379-6.117 6.635l6.169 5.22C38.999 36.564 44 31 44 24c0-1.341-.138-2.65-.389-3.917z"
+                        />
+                      </svg>
+
+                      <span className="sr-only">Continue with Google</span>
+                    </Button>
+
+                    {/* Facebook */}
+                    <Button
+                      type="button"
+                      className="w-full cursor-pointer bg-[#1877F2] hover:bg-[#166FE5] text-white border-0"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                      <span className="sr-only">Continue with Facebook</span>
+                    </Button>
+                  </div>
 
                 <div className="text-center text-sm">
                   Already have an account?{" "}

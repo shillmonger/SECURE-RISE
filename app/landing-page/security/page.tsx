@@ -92,7 +92,7 @@ export default function SecurityPage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://i.postimg.cc/15BnDBSY/Banner-4.webp')",
+            backgroundImage: "url('https://i.postimg.cc/mk3VsGYp/2.jpg')",
           }}
         />
         {/* Dark gradient overlay */}

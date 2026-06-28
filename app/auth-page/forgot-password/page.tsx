@@ -172,14 +172,14 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <ThemeAndScroll />
 
-      <main className="flex-grow flex items-center justify-center px-3 py-10 p-6 md:p-10 transition-colors duration-300 lg:mb-15">
+      <main className="flex-grow flex items-center justify-center px-3 py-10 p-6 md:p-10 transition-colors duration-300 lg:mb-10">
         <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden">
           <ThemeAndScroll />
 
-          <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden mb-20">
+          <div className="w-full max-w-sm md:max-w-[450px] overflow-hidden">
             <Card className="overflow-hidden bg-card border border-border rounded-3xl shadow-lg">
               <CardContent className="p-0">
-                <form className="p-6 md:p-8" onSubmit={handleSubmit}>
+                <form className="px-6 py-3 md:px-8" onSubmit={handleSubmit}>
                   <div className="flex flex-col gap-6">
                     {/* Header Section */}
                     <div className="flex flex-col items-center text-center">
