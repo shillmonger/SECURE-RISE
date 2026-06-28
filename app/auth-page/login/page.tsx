@@ -19,12 +19,20 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [lastUsedMethod, setLastUsedMethod] = useState<string | null>(null);
+  const [callbackUrl, setCallbackUrl] = useState('/user-dashboard/dashboard');
 
   useEffect(() => {
     // Check which login method was used last
     const lastMethod = localStorage.getItem('lastLoginMethod');
     if (lastMethod) {
       setLastUsedMethod(lastMethod);
+    }
+
+    // Get callbackUrl from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const callback = urlParams.get('callbackUrl');
+    if (callback) {
+      setCallbackUrl(callback);
     }
   }, []);
 
@@ -66,7 +74,7 @@ export default function LoginPage() {
 
         toast.success(data.message || 'Login successful!');
         setTimeout(() => {
-          router.push('/user-dashboard/dashboard');
+          router.push(callbackUrl);
         }, 1000);
       } else {
         toast.error(data.error || 'Login failed');
@@ -85,7 +93,7 @@ export default function LoginPage() {
       // Store last login method before redirect
       localStorage.setItem('lastLoginMethod', 'google');
       await signIn('google', {
-        callbackUrl: '/user-dashboard/dashboard',
+        callbackUrl: callbackUrl,
       });
     } catch (error) {
       console.error('Google sign-in error:', error);
