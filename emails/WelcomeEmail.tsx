@@ -53,6 +53,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({ username, userEmail 
               max-width: 560px;
               height: auto;
               margin: 30px 0;
+              border-radius: 12px;
             }
           `}
         </style>
@@ -79,7 +80,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({ username, userEmail 
           </Text>
           
           <Text>
-            We've credited your account with a welcome bonus of <strong>$20.00</strong> to get you started.
+            We've credited your account with a welcome bonus of <strong style={{ color: '#22c55e' }}>$20.00</strong> to get you started.
           </Text>
           
           <Img 
