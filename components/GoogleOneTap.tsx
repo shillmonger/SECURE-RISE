@@ -38,10 +38,10 @@ export default function GoogleOneTap() {
         });
 
         window.google.accounts.id.prompt((notification: any) => {
-          if (notification.isNotDisplayed()) {
+          if (notification.isNotDisplayed) {
             console.log('Google One Tap not displayed');
           }
-          if (notification.isSkipped()) {
+          if (notification.isSkipped) {
             console.log('Google One Tap skipped');
           }
         });
