@@ -35,6 +35,8 @@ export const renderDepositStatusEmail = (props: {
   transactionId: string;
   status: 'approved' | 'rejected';
   rejectionReason?: string;
+  usdAmount?: number;
+  currency?: string;
 }) => {
   return render(React.createElement(DepositStatusEmail, props));
 };

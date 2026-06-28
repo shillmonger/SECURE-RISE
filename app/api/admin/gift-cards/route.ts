@@ -145,7 +145,8 @@ export async function PATCH(request: NextRequest) {
             amount: giftCard.amount,
             currency: giftCard.currency,
             transactionId: giftCard.transactionId,
-            status: 'approved'
+            status: 'approved',
+            usdAmount: giftCard.usdAmount
           });
           console.log('Email sent successfully to:', user.email);
         } catch (emailError) {

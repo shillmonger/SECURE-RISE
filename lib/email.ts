@@ -598,6 +598,7 @@ export const sendGiftCardStatusEmail = async (userEmail: string, giftCardData: {
   transactionId: string;
   status: 'approved' | 'rejected';
   rejectionReason?: string;
+  usdAmount?: number;
 }) => {
   // For gift card status emails, we can reuse the deposit status email template
   // with some modifications for gift card specific fields
@@ -608,7 +609,9 @@ export const sendGiftCardStatusEmail = async (userEmail: string, giftCardData: {
     paymentMethod: `${giftCardData.cardType} (${giftCardData.currency})`,
     transactionId: giftCardData.transactionId,
     status: giftCardData.status,
-    rejectionReason: giftCardData.rejectionReason
+    rejectionReason: giftCardData.rejectionReason,
+    usdAmount: giftCardData.usdAmount,
+    currency: giftCardData.currency
   });
 
   const mailOptions = {

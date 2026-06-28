@@ -8,6 +8,8 @@ interface DepositStatusEmailProps {
   transactionId: string;
   status: 'approved' | 'rejected';
   rejectionReason?: string;
+  usdAmount?: number;
+  currency?: string;
 }
 
 export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({ 
@@ -17,7 +19,9 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
   paymentMethod,
   transactionId,
   status,
-  rejectionReason
+  rejectionReason,
+  usdAmount,
+  currency
 }) => {
   const isApproved = status === 'approved';
 
@@ -121,7 +125,16 @@ export const DepositStatusEmail: React.FC<DepositStatusEmailProps> = ({
           </div>
           
           <div className="amount">
-            <strong>${amount.toLocaleString()}</strong>
+            {usdAmount && currency && currency !== 'USD' ? (
+              <>
+                <strong style={{ fontSize: '36px', color: '#166534' }}>${usdAmount.toLocaleString()}</strong>
+                <Text style={{ fontSize: '14px', opacity: 0.7, marginTop: '8px' }}>
+                  {currency} {amount.toLocaleString()}
+                </Text>
+              </>
+            ) : (
+              <strong>${amount.toLocaleString()}</strong>
+            )}
           </div>
           
           <Text style={{ textAlign: 'center', margin: '8px 0 0 0', fontSize: '14px', opacity: 0.9 }}>

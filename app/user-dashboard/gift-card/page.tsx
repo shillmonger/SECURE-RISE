@@ -176,7 +176,7 @@ const GiftCardPage = () => {
     switch (currentStep) {
       case 1: return selectedCardType !== "";
       case 2: return selectedCountry !== "";
-      case 3: return amount !== "" && parseFloat(amount) > 0;
+      case 3: return amount !== "" && parseFloat(amount) > 0 && !converting && usdAmount !== null;
       case 4: return frontImage !== null && backImage !== null;
       case 5: return cardCode !== "";
       default: return false;
