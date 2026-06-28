@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CreditCard,
   Upload,
@@ -72,6 +73,7 @@ const COUNTRIES = [
 const STEP_LABELS = ["Card Type", "Country", "Amount", "Upload", "Code"];
 
 const GiftCardPage = () => {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCardType, setSelectedCardType] = useState("");
@@ -332,7 +334,7 @@ const GiftCardPage = () => {
                               className={`flex items-center justify-between cursor-pointer px-4 py-3.5 rounded-xl border-2 transition-all duration-200 ${
                                 isSelected
                                   ? "bg-foreground border-transparent shadow-xl"
-                                  : "bg-background border-border hover:border-foreground/30"
+                                  : "bg-background border-none hover:border-foreground/30"
                               }`}
                             >
                               <div className="flex items-center gap-3">
@@ -384,7 +386,7 @@ const GiftCardPage = () => {
                             {converting ? (
                               <Loader2 className="w-4 h-4 text-primary animate-spin" />
                             ) : (
-                              <span className="text-sm font-black text-primary">
+                              <span className="text-sm font-black text-green-500">
                                 ${usdAmount.toFixed(2)}
                               </span>
                             )}
@@ -540,7 +542,15 @@ const GiftCardPage = () => {
                             : "bg-muted text-muted-foreground cursor-not-allowed"
                         }`}
                       >
-                        Continue <ArrowRight className="w-3.5 h-3.5" />
+                        {converting && currentStep === 3 ? (
+                          <>
+                            Loading <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          </>
+                        ) : (
+                          <>
+                            Continue <ArrowRight className="w-3.5 h-3.5" />
+                          </>
+                        )}
                       </button>
                     ) : (
                       <button
@@ -579,7 +589,7 @@ const GiftCardPage = () => {
                             code: cardCode,
                           });
                           
-                          window.location.href = `/user-dashboard/gift-card/submit?${params.toString()}`;
+                          router.push(`/user-dashboard/gift-card/submit?${params.toString()}`);
                         }}
                         disabled={!canProceed()}
                         className={`flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${

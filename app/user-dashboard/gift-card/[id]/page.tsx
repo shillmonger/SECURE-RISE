@@ -198,7 +198,8 @@ const GiftCardSubmitPage = () => {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-7xl mx-auto space-y-6">
+
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -217,53 +218,58 @@ const GiftCardSubmitPage = () => {
               </Link>
             </div>
 
-            <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
-              {/* Method Indicator Bar */}
-              <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-1 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="bg-primary/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
-                    {getCardImage(cardType) ? (
-                      <img
-                        src={getCardImage(cardType)}
-                        alt={cardType}
-                        className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-                      />
-                    ) : (
-                      <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
-                    )}
+            {/* Main card */}
+            <div className="flex flex-col lg:flex-row gap-7 lg:10">
+              <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl lg:w-[70%]">
+                {/* Method Indicator Bar */}
+                <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-1 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="bg-primary/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
+                      {getCardImage(cardType) ? (
+                        <img
+                          src={getCardImage(cardType)}
+                          alt={cardType}
+                          className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                        />
+                      ) : (
+                        <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
+                        Gift Card Type
+                      </p>
+                      <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
+                        {cardType} ({country})
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
+                  <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
                     <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-                      Gift Card Type
+                      Card Value
                     </p>
-                    <p className="text-sm sm:text-xl font-black uppercase tracking-tight flex items-center gap-1 sm:gap-2 truncate">
-                      {cardType} ({country})
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 opacity-40 shrink-0" />
+                    <p className="text-lg sm:text-xl font-black tracking-tight text-green-500">
+                      {currency} {parseFloat(amount).toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <div className="flex sm:block items-center justify-between sm:text-right w-full sm:w-auto">
-                  <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest opacity-60">
-                    Card Value
-                  </p>
-                  <p className="text-lg sm:text-xl font-black tracking-tight text-green-500">
-                    {currency} {parseFloat(amount).toLocaleString()}
-                  </p>
-                </div>
-              </div>
 
-              <div className="p-5 md:p-8 space-y-10">
-                <div className="grid md:grid-cols-2 gap-8 lg:gap-10 items-start">
-                  {/* Left Side: Card Details */}
-                  <div className="space-y-6">
-                    <div className="relative group">
-                      <div className="relative h-56 overflow-hidden rounded-[1rem] border border-border">
-  {/* Background Image */}
+                <div className="p-5 md:p-6 space-y-9">
+                  <div className="grid md:grid-cols-2 gap-8 lg:gap-8 items-start">
+                    {/* Left Side: Card Details */}
+                    <div className="space-y-6">
+                      <div className="relative group">
+                       <div className="relative h-50 lg:h-30 overflow-hidden rounded-xl border border-border">
+  {/* Background */}
   {getCardImage(cardType) ? (
-    <img
-      src={getCardImage(cardType)}
-      alt={cardType}
-      className="absolute inset-0 h-full w-full object-cover"
+    <div
+      className="absolute inset-0 bg-repeat bg-contain"
+      style={{
+        backgroundImage: `url(${getCardImage(cardType)})`,
+        backgroundSize: "120px auto", // Adjust size as needed
+        backgroundPosition: "center",
+      }}
     />
   ) : (
     <div className="absolute inset-0 flex items-center justify-center bg-foreground">
@@ -281,241 +287,243 @@ const GiftCardSubmitPage = () => {
     </p>
   </div>
 </div>
+                      </div>
+
+                      {/* Card Details Summary */}
+                      <div className="space-y-3 bg-muted/30 border border-border/50 rounded-xl p-4">
+                        <h4 className="text-xs font-black text-foreground mb-3">
+                          Submission Details:
+                        </h4>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Card Type:</span>
+                            <span className="font-black">{cardType}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Country:</span>
+                            <span className="font-black">{country}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Amount:</span>
+                            <span className="font-black text-primary">
+                              {currency} {amount}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Status:</span>
+                            <span className="font-black text-orange-500">
+                              Pending Review
+                            </span>
+                          </div>
+
+                          {/* Image Previews */}
+                          {(frontImageData || backImageData) && (
+                            <div className="pt-3 border-t border-border/50 mt-3">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
+                                Uploaded Images:
+                              </p>
+                              <div className="flex gap-2">
+                                {frontImageData && (
+                                  <div className="flex-1">
+                                    <img
+                                      src={frontImageData}
+                                      alt="Front"
+                                      className="w-full h-20 object-cover rounded-lg border border-border"
+                                    />
+                                    <p className="text-[9px] text-center text-muted-foreground mt-1">Front</p>
+                                  </div>
+                                )}
+                                {backImageData && (
+                                  <div className="flex-1">
+                                    <img
+                                      src={backImageData}
+                                      alt="Back"
+                                      className="w-full h-20 object-cover rounded-lg border border-border"
+                                    />
+                                    <p className="text-[9px] text-center text-muted-foreground mt-1">Back</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Card Details Summary */}
-                    <div className="space-y-3 bg-muted/30 border border-border/50 rounded-xl p-4">
-                      <h4 className="text-xs font-black text-foreground mb-3">
-                        Submission Details:
-                      </h4>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Card Type:
-                          </span>
-                          <span className="font-black">{cardType}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Country:
-                          </span>
-                          <span className="font-black">{country}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Amount:</span>
-                          <span className="font-black text-primary">
-                            {currency} {amount}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Status:</span>
-                          <span className="font-black text-orange-500">
-                            Pending Review
-                          </span>
-                        </div>
-
-                        {/* Image Previews */}
-                        {(frontImageData || backImageData) && (
-                          <div className="pt-3 border-t border-border/50 mt-3">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
-                              Uploaded Images:
-                            </p>
-                            <div className="flex gap-2">
-                              {frontImageData && (
-                                <div className="flex-1">
-                                  <img
-                                    src={frontImageData}
-                                    alt="Front"
-                                    className="w-full h-20 object-cover rounded-lg border border-border"
-                                  />
-                                  <p className="text-[9px] text-center text-muted-foreground mt-1">Front</p>
-                                </div>
-                              )}
-                              {backImageData && (
-                                <div className="flex-1">
-                                  <img
-                                    src={backImageData}
-                                    alt="Back"
-                                    className="w-full h-20 object-cover rounded-lg border border-border"
-                                  />
-                                  <p className="text-[9px] text-center text-muted-foreground mt-1">Back</p>
-                                </div>
-                              )}
-                            </div>
+                    {/* Right Side: Code & Upload */}
+                    <div className="space-y-7 lg:space-y-10">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          Gift Card Code
+                        </label>
+                        <div className="group relative">
+                          <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black tracking-wider break-all">
+                            {code}
                           </div>
-                        )}
+                          <button
+                            onClick={handleCopy}
+                            className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
+                          >
+                            {copied ? (
+                              <Check className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="bg-primary/10 text-primary text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest">
+                            Code verified by staff
+                          </span>
+                        </div>
                       </div>
+
+                      <div className="space-y-3 pt-4 border-t border-border">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          Description (Optional)
+                        </label>
+                        <textarea
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Add any additional information (address, notes, etc.)"
+                          className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 text-sm focus:border-foreground focus:outline-none transition-all placeholder:text-muted-foreground/50 resize-none"
+                          rows={3}
+                          maxLength={500}
+                        />
+                        <p className="text-[10px] text-muted-foreground">
+                          Optional: Add address or additional notes
+                        </p>
+                      </div>
+
+                      {/* Submit Action */}
+                      <form
+                        onSubmit={handleSubmit}
+                        className="flex flex-col items-center gap-4"
+                      >
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="w-full bg-foreground cursor-pointer text-background px-5 py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              Submitting <Loader2 className="w-4 h-4 animate-spin" />
+                            </>
+                          ) : (
+                            <>
+                              Submit For Review <CheckCircle2 className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-center">
+                          Review typically takes 24-48 hours
+                        </p>
+                      </form>
                     </div>
                   </div>
 
-                  {/* Right Side: Code & Upload */}
-                  <div className="space-y-8">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Gift Card Code
-                      </label>
-                      <div className="group relative">
-                        <div className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 pr-14 text-sm font-black tracking-wider break-all">
-                          {code}
-                        </div>
-                        <button
-                          onClick={handleCopy}
-                          className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-lg hover:scale-105 transition-all shadow-lg active:scale-95"
-                        >
-                          {copied ? (
-                            <Check className="w-4 h-4" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="bg-primary/10 text-primary text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest">
-                          Code verified by staff
-                        </span>
-                      </div>
+                </div>
+              </div>
+
+              {/* ── Bottom section: Submit info + Guidelines side-by-side on lg ── */}
+              <div className="flex flex-col lg:flex-row gap-6 items-start lg:w-[30%]">
+
+                {/* ⚠️ GIFT CARD WARNING BANNER */}
+                <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none w-full">
+
+                  {/* Background Effects */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+
+                  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
+
+                  {/* Header */}
+                  <div className="relative z-10 mb-5 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
+                      <AlertTriangle className="h-5 w-5 text-orange-500" />
                     </div>
-
-                    <div className="space-y-3 pt-6 border-t border-border">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Description (Optional)
-                      </label>
-
-                      {/* Description input */}
-                      <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Add any additional information (address, notes, etc.)"
-                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 text-sm focus:border-foreground focus:outline-none transition-all placeholder:text-muted-foreground/50 resize-none"
-                        rows={3}
-                        maxLength={500}
-                      />
-                      <p className="text-[10px] text-muted-foreground">
-                        Optional: Add address or additional notes
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
+                        Gift Card Guidelines
+                      </p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-orange-100/70">
+                        Read carefully before submission
                       </p>
                     </div>
                   </div>
+
+                  {/* Warning Items */}
+                  <div className="relative z-10 space-y-3">
+
+                    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                      <FileText className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                          Valid Gift Cards Only
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                          Only submit unused, valid gift cards. Used or expired cards will be rejected.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-500/10 px-4 py-3">
+                      <Camera className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                          Clear Image Required
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                          Image must show full card with code clearly visible. Blurry or cropped images will be rejected.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                      <Copy className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                          Correct Code Entry
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                          Double-check your code entry. Incorrect codes will delay verification and may result in rejection.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                      <Clock className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                          Processing Time
+                        </span>
+                        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                          Gift card verification takes 24-48 hours. You'll be notified once approved or rejected.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 dark:bg-orange-500/10 px-4 py-3">
+                      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                        No Instant Credits
+                      </span>
+                      <span className="text-[11px] font-black text-orange-600 dark:text-orange-400">
+                        Manual Review Required
+                      </span>
+                    </div>
+
+                  </div>
                 </div>
 
-                {/* Submit Action */}
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col items-center gap-4"
-                >
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        Submitting <Loader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    ) : (
-                      <>
-                        Submit For Review <CheckCircle2 className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                  <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-center">
-                    Review typically takes 24-48 hours
-                  </p>
-                </form>
               </div>
+              {/* ── End bottom section ── */}
             </div>
 
-            {/* ⚠️ GIFT CARD WARNING BANNER */}
-            <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
-
-              {/* Background Effects */}
-              <div className="absolute inset-0 bg-[ radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
-
-              <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
-
-              {/* Header */}
-              <div className="relative z-10 mb-5 flex items-center gap-3">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
-                </div>
-
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
-                    Gift Card Guidelines
-                  </p>
-
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-orange-100/70">
-                    Read carefully before submission
-                  </p>
-                </div>
-              </div>
-
-              {/* Warning Items */}
-              <div className="relative z-10 space-y-3">
-
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-                  <FileText className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-                      Valid Gift Cards Only
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-                      Only submit unused, valid gift cards. Used or expired cards will be rejected.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-500/10 px-4 py-3">
-                  <Camera className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-                      Clear Image Required
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-                      Image must show full card with code clearly visible. Blurry or cropped images will be rejected.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-                  <Copy className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-                      Correct Code Entry
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-                      Double-check your code entry. Incorrect codes will delay verification and may result in rejection.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-                  <Clock className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-                      Processing Time
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-                      Gift card verification takes 24-48 hours. You'll be notified once approved or rejected.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 dark:bg-orange-500/10 px-4 py-3">
-                  <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-                    No Instant Credits
-                  </span>
-                  <span className="text-[11px] font-black text-orange-600 dark:text-orange-400">
-                    Manual Review Required
-                  </span>
-                </div>
-
-              </div>
-            </div>
           </div>
         </main>
       </div>
       <UserNav />
+
+
 
       {/* Success Modal */}
       {showSuccess && (
@@ -523,7 +531,7 @@ const GiftCardSubmitPage = () => {
           className="fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm px-4"
           onClick={() => {
             setShowSuccess(false);
-            window.location.href = "/user-dashboard/gift-card";
+            router.push("/user-dashboard/gift-card");
           }}
         >
           <div
