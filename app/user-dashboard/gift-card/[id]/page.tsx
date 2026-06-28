@@ -30,11 +30,14 @@ import UserNav from "@/components/user-dashboard/UserNav";
 const GiftCardSubmitPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
+  const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [giftCardData, setGiftCardData] = useState<any>(null);
-  const [hasPreUploaded, setHasPreUploaded] = useState(false);
+  const [hasPreUploadedFront, setHasPreUploadedFront] = useState(false);
+  const [hasPreUploadedBack, setHasPreUploadedBack] = useState(false);
 
   const params = useParams();
   const searchParams = useSearchParams();
@@ -48,8 +51,10 @@ const GiftCardSubmitPage = () => {
   const amount = searchParams.get("amount") || "";
   const currency = searchParams.get("currency") || "USD";
   const code = searchParams.get("code") || "";
-  const hasImage = searchParams.get("hasImage") === "true";
-  const imageName = searchParams.get("imageName") || "";
+  const hasFrontImage = searchParams.get("hasFrontImage") === "true";
+  const frontImageName = searchParams.get("frontImageName") || "";
+  const hasBackImage = searchParams.get("hasBackImage") === "true";
+  const backImageName = searchParams.get("backImageName") || "";
 
   useEffect(() => {
     // If no required data, redirect back to gift card page
@@ -57,8 +62,9 @@ const GiftCardSubmitPage = () => {
       router.push("/user-dashboard/gift-card");
     }
     // Set pre-uploaded image status
-    setHasPreUploaded(hasImage);
-  }, [cardType, country, amount, code, router, hasImage]);
+    setHasPreUploadedFront(hasFrontImage);
+    setHasPreUploadedBack(hasBackImage);
+  }, [cardType, country, amount, code, router, hasFrontImage, hasBackImage]);
 
   const getCardImage = (type: string) => {
     switch (type) {
@@ -85,20 +91,31 @@ const GiftCardSubmitPage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFrontFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setSelectedFile(file);
+    if (file) setFrontFile(file);
   };
 
-  const handleRemoveImage = () => {
-    setSelectedFile(null);
-    setHasPreUploaded(false);
+  const handleBackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setBackFile(file);
+  };
+
+  const handleRemoveImages = () => {
+    setFrontFile(null);
+    setBackFile(null);
+    setHasPreUploadedFront(false);
+    setHasPreUploadedBack(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile && !hasPreUploaded) {
-      toast.error("Please upload the gift card image");
+    if (!frontFile && !hasPreUploadedFront) {
+      toast.error("Please upload the front gift card image");
+      return;
+    }
+    if (!backFile && !hasPreUploadedBack) {
+      toast.error("Please upload the back gift card image");
       return;
     }
 
@@ -129,13 +146,21 @@ const GiftCardSubmitPage = () => {
       formData.append("code", code);
       
       // For security, we need the actual file data on this page
-      // The hasPreUploaded flag only indicates they uploaded something earlier
-      if (!selectedFile) {
-        toast.error("Please upload your gift card image for verification");
+      if (!frontFile) {
+        toast.error("Please upload your front gift card image for verification");
+        return;
+      }
+      if (!backFile) {
+        toast.error("Please upload your back gift card image for verification");
         return;
       }
       
-      formData.append("cardImage", selectedFile);
+      formData.append("frontImage", frontFile);
+      formData.append("backImage", backFile);
+      
+      if (description) {
+        formData.append("description", description);
+      }
       
       formData.append("userId", user.id);
       formData.append("username", user.username);
@@ -320,35 +345,20 @@ const GiftCardSubmitPage = () => {
 
                     <div className="space-y-3 pt-6 border-t border-border">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Upload Gift Card Image
+                        Description (Optional)
                       </label>
                       
-                      {/* Upload area */}
-                      <div className="relative group">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileSelect}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        <div
-                          className={`border-2 border-dashed rounded-xl p-6 lg:p-10 flex flex-col items-center justify-center gap-3 transition-all ${
-                            selectedFile
-                              ? "border-primary bg-primary/5"
-                              : "border-border bg-muted/10 group-hover:border-foreground/40"
-                          }`}
-                        >
-                          <Camera
-                            className={`w-6 h-6 ${selectedFile ? "text-primary" : "text-muted-foreground"}`}
-                          />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                            {selectedFile ? "Image Selected: " + selectedFile.name : "Upload Gift Card Image"}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground">
-                        Front image with full card and code visible
+                      {/* Description input */}
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Add any additional information (address, notes, etc.)"
+                        className="w-full bg-muted/30 border-2 border-border rounded-xl p-4 text-sm focus:border-foreground focus:outline-none transition-all placeholder:text-muted-foreground/50 resize-none"
+                        rows={3}
+                        maxLength={500}
+                      />
+                      <p className="text-[10px] text-muted-foreground">
+                        Optional: Add address or additional notes
                       </p>
                     </div>
                   </div>
@@ -361,7 +371,7 @@ const GiftCardSubmitPage = () => {
                 >
                   <button
                     type="submit"
-                    disabled={isSubmitting || !selectedFile}
+                    disabled={isSubmitting || !frontFile || !backFile}
                     className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (

@@ -10,7 +10,10 @@ export interface GiftCard {
   amount: number;
   currency: string; // USD, GBP, CAD, AUD
   code: string; // Gift card code
-  cardImage?: string; // Cloudinary URL
+  frontImage?: string; // Cloudinary URL for front image
+  backImage?: string; // Cloudinary URL for back image
+  description?: string; // Optional description/address
+  cardImage?: string; // Cloudinary URL (deprecated, kept for backward compatibility)
   status: 'pending_review' | 'processing' | 'approved' | 'rejected';
   rejectionReason?: string;
   transactionId?: string; // Unique transaction ID
@@ -31,6 +34,9 @@ export const createGiftCard = (giftCardData: {
   amount: number;
   currency: string;
   code: string;
+  frontImage?: string;
+  backImage?: string;
+  description?: string;
   cardImage?: string;
 }): Omit<GiftCard, '_id' | 'createdAt' | 'updatedAt' | 'approvedAt' | 'approvedBy' | 'rejectedAt' | 'rejectedBy'> => {
   return {
@@ -42,6 +48,9 @@ export const createGiftCard = (giftCardData: {
     amount: giftCardData.amount,
     currency: giftCardData.currency,
     code: giftCardData.code,
+    frontImage: giftCardData.frontImage,
+    backImage: giftCardData.backImage,
+    description: giftCardData.description,
     cardImage: giftCardData.cardImage,
     status: 'pending_review',
     transactionId: `GC-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,

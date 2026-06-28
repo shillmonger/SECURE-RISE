@@ -79,6 +79,7 @@ const GiftCardPage = () => {
   const [amount, setAmount] = useState("");
   const [cardCode, setCardCode] = useState("");
   const [frontImage, setFrontImage] = useState<File | null>(null);
+  const [backImage, setBackImage] = useState<File | null>(null);
   const [giftCards, setGiftCards] = useState<GiftCardRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -122,9 +123,14 @@ const GiftCardPage = () => {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFrontImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setFrontImage(file);
+  };
+
+  const handleBackImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setBackImage(file);
   };
 
   const canProceed = () => {
@@ -132,7 +138,7 @@ const GiftCardPage = () => {
       case 1: return selectedCardType !== "";
       case 2: return selectedCountry !== "";
       case 3: return amount !== "" && parseFloat(amount) > 0;
-      case 4: return frontImage !== null;
+      case 4: return frontImage !== null && backImage !== null;
       case 5: return cardCode !== "";
       default: return false;
     }
@@ -334,35 +340,75 @@ const GiftCardPage = () => {
                   {/* ── Step 4: Upload ── */}
                   {currentStep === 4 && (
                     <div className="space-y-3">
-                      <p className="text-xs font-black uppercase tracking-tight">Upload card image</p>
-                      <input type="file" id="cardImage" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                      <label htmlFor="cardImage" className="cursor-pointer block">
-                        <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-3 transition-all ${
-                          frontImage ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
-                        }`}>
-                          {frontImage ? (
-                            <>
-                              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-primary" />
-                              </div>
-                              <div className="text-center">
-                                <p className="text-xs font-black text-foreground">{frontImage.name}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Click to replace</p>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-                                <Upload className="w-5 h-5 text-muted-foreground" />
-                              </div>
-                              <div className="text-center">
-                                <p className="text-xs font-black text-foreground">Click to upload card image</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Full card · Code visible · No blur</p>
-                              </div>
-                            </>
-                          )}
+                      <p className="text-xs font-black uppercase tracking-tight">Upload card images</p>
+                      
+                      {/* Front and Back Image Upload in Flex Layout */}
+                      <div className="flex gap-3">
+                        {/* Front Image */}
+                        <div className="flex-1">
+                          <input type="file" id="frontImage" accept="image/*" onChange={handleFrontImageUpload} className="hidden" />
+                          <label htmlFor="frontImage" className="cursor-pointer block">
+                            <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all h-full ${
+                              frontImage ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
+                            }`}>
+                              {frontImage ? (
+                                <>
+                                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[10px] font-black text-foreground">Front Image</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">{frontImage.name}</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                                    <Upload className="w-4 h-4 text-muted-foreground" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[10px] font-black text-foreground">Front Image</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Upload front</p>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </label>
                         </div>
-                      </label>
+
+                        {/* Back Image */}
+                        <div className="flex-1">
+                          <input type="file" id="backImage" accept="image/*" onChange={handleBackImageUpload} className="hidden" />
+                          <label htmlFor="backImage" className="cursor-pointer block">
+                            <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all h-full ${
+                              backImage ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
+                            }`}>
+                              {backImage ? (
+                                <>
+                                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[10px] font-black text-foreground">Back Image</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">{backImage.name}</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                                    <Upload className="w-4 h-4 text-muted-foreground" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-[10px] font-black text-foreground">Back Image</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Upload back</p>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
                       <div className="grid grid-cols-2 gap-2">
                         {["Full card visible", "readable code", "No blur or crop", "Good lighting"].map((req) => (
                           <div key={req} className="flex items-center gap-1.5 bg-muted/30 border border-border/50 rounded-lg px-3 py-2">
@@ -433,7 +479,7 @@ const GiftCardPage = () => {
                       </button>
                     ) : (
                       <Link
-                        href={`/user-dashboard/gift-card/submit?cardType=${selectedCardType}&country=${selectedCountry}&amount=${amount}&currency=${getSelectedCountryData()?.currency}&code=${cardCode}${frontImage ? `&hasImage=true&imageName=${encodeURIComponent(frontImage.name)}` : ''}`}
+                        href={`/user-dashboard/gift-card/submit?cardType=${selectedCardType}&country=${selectedCountry}&amount=${amount}&currency=${getSelectedCountryData()?.currency}&code=${cardCode}${frontImage ? `&hasFrontImage=true&frontImageName=${encodeURIComponent(frontImage.name)}` : ''}${backImage ? `&hasBackImage=true&backImageName=${encodeURIComponent(backImage.name)}` : ''}`}
                         className="flex-1"
                       >
                         <button

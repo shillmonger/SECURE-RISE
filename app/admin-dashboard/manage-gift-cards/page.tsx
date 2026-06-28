@@ -28,7 +28,10 @@ interface GiftCard {
   amount: number;
   currency: string;
   code: string;
-  cardImage: string;
+  frontImage?: string;
+  backImage?: string;
+  description?: string;
+  cardImage?: string;
   status: "pending_review" | "processing" | "approved" | "rejected";
   userId: {
     _id: string;
@@ -341,6 +344,7 @@ export default function AdminGiftCardsPage() {
                       <th className="px-6 py-4">Country</th>
                       <th className="px-6 py-4">Card Code</th>
                       <th className="px-6 py-4">Proof</th>
+                      <th className="px-6 py-4">Description</th>
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4">Status</th>
                       <th className="px-6 py-4 text-right">Actions</th>
@@ -349,7 +353,7 @@ export default function AdminGiftCardsPage() {
                   <tbody className="divide-y divide-border">
                     {filteredGiftCards.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-6 py-12">
+                        <td colSpan={10} className="px-6 py-12">
                           <div className="flex items-center justify-center py-20">
                             <div className="text-center">
                               <Gift className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -444,15 +448,48 @@ export default function AdminGiftCardsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <a
-                              href={giftCard.cardImage}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                              Proof
-                            </a>
+                            <div className="flex gap-2">
+                              {giftCard.frontImage && (
+                                <a
+                                  href={giftCard.frontImage}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
+                                  title="Front Image"
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                  Front
+                                </a>
+                              )}
+                              {giftCard.backImage && (
+                                <a
+                                  href={giftCard.backImage}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
+                                  title="Back Image"
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                  Back
+                                </a>
+                              )}
+                              {giftCard.cardImage && !giftCard.frontImage && !giftCard.backImage && (
+                                <a
+                                  href={giftCard.cardImage}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                  Proof
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs text-muted-foreground font-medium">
+                              {giftCard.description ? truncateText(giftCard.description, 20) : "—"}
+                            </span>
                           </td>
                           <td className="px-6 py-4">
                             <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">

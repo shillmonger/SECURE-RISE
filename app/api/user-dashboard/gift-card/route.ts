@@ -14,13 +14,15 @@ export async function POST(request: NextRequest) {
     const amount = parseFloat(formData.get('amount') as string);
     const currency = formData.get('currency') as string;
     const code = formData.get('code') as string;
-    const file = formData.get('cardImage') as File;
+    const frontFile = formData.get('frontImage') as File;
+    const backFile = formData.get('backImage') as File;
+    const description = formData.get('description') as string;
     const userId = formData.get('userId') as string;
     const username = formData.get('username') as string;
     const userEmail = formData.get('userEmail') as string;
 
     // Validate required fields
-    if (!cardType || !country || !amount || !currency || !code || !file || !userId || !username || !userEmail) {
+    if (!cardType || !country || !amount || !currency || !code || !frontFile || !backFile || !userId || !username || !userEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -57,11 +59,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload card image to Cloudinary
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    const cloudinaryResult = await uploadImage(buffer, 'gift-card-proofs');
+    // Upload front and back images to Cloudinary
+    const frontBytes = await frontFile.arrayBuffer();
+    const frontBuffer = Buffer.from(frontBytes);
+    const frontCloudinaryResult = await uploadImage(frontBuffer, 'gift-card-proofs');
+
+    const backBytes = await backFile.arrayBuffer();
+    const backBuffer = Buffer.from(backBytes);
+    const backCloudinaryResult = await uploadImage(backBuffer, 'gift-card-proofs');
     
     // Connect to database
     const db = await connectToDatabase();
@@ -77,7 +82,9 @@ export async function POST(request: NextRequest) {
       amount,
       currency,
       code,
-      cardImage: cloudinaryResult.secure_url,
+      frontImage: frontCloudinaryResult.secure_url,
+      backImage: backCloudinaryResult.secure_url,
+      description: description || undefined,
     });
 
     const result = await giftCardsCollection.insertOne({
@@ -96,7 +103,7 @@ export async function POST(request: NextRequest) {
       amount,
       currency,
       code,
-      cardImage: cloudinaryResult.secure_url,
+      cardImage: frontCloudinaryResult.secure_url,
       transactionId: giftCardData.transactionId!,
     });
 
