@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Award, Flame, Globe, BarChart2, ArrowDownToLine, Activity, Share2, User, ShieldCheck, Bell, Wallet, HeadphonesIcon, LogIn, CreditCard } from "lucide-react";
 import { UserStatusBadge } from "./MonitoringShared";
 
@@ -18,22 +18,55 @@ interface LiveUser {
   currentPage: string;
   sessionDuration: string;
   avatar: string;
-  activityScore: number;
   pageVisitsToday: number;
+  timeOnPage: string;
 }
 
-const MOCK_USERS: LiveUser[] = [
-  { id: "user_0", fullName: "Alexis Morgan", username: "alexism", status: "online", currentPage: "Dashboard", sessionDuration: "35s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alexism", activityScore: 95, pageVisitsToday: 12 },
-  { id: "user_1", fullName: "Darius Kane", username: "dkane99", status: "online", currentPage: "Deposit", sessionDuration: "2m 14s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=dkane99", activityScore: 88, pageVisitsToday: 8 },
-  { id: "user_2", fullName: "Sofia Reyes", username: "sofiar", status: "online", currentPage: "Trading", sessionDuration: "4m 18s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sofiar", activityScore: 82, pageVisitsToday: 15 },
-  { id: "user_3", fullName: "Marcus Bell", username: "marcusb", status: "away", currentPage: "Wallet", sessionDuration: "8m 05s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=marcusb", activityScore: 76, pageVisitsToday: 6 },
-  { id: "user_4", fullName: "Yuna Park", username: "yunapark", status: "online", currentPage: "Referrals", sessionDuration: "12m 33s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=yunapark", activityScore: 71, pageVisitsToday: 9 },
-  { id: "user_5", fullName: "Ethan Cole", username: "ethancole", status: "offline", currentPage: "Profile", sessionDuration: "25m", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ethancole", activityScore: 65, pageVisitsToday: 4 },
-  { id: "user_6", fullName: "Priya Sharma", username: "priya_s", status: "online", currentPage: "Verification", sessionDuration: "38m 12s", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya_s", activityScore: 58, pageVisitsToday: 11 },
-];
 
 function UserLeaderboard() {
-  const top = [...MOCK_USERS].sort((a, b) => b.activityScore - a.activityScore).slice(0, 8);
+  const [users, setUsers] = useState<LiveUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const allUsers = data.users || [];
+          // Calculate activity score based on page visits and time on page
+          const usersWithScore = allUsers.map((user: any) => ({
+            ...user,
+            activityScore: Math.min(100, (user.pageVisitsToday * 10) + (parseInt(user.timeOnPage) / 10))
+          }));
+          // Sort by activity score and take top 5
+          setUsers(usersWithScore.sort((a: any, b: any) => b.activityScore - a.activityScore).slice(0, 5));
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+    const interval = setInterval(fetchUsers, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h3 className="text-sm font-black uppercase tracking-tight flex items-center gap-2">
+            <Award className="w-4 h-4 text-amber-400" />
+            Top Active Users
+          </h3>
+        </div>
+        <div className="p-5 text-center text-muted-foreground text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
@@ -44,8 +77,9 @@ function UserLeaderboard() {
         </h3>
       </div>
       <div className="divide-y divide-border/50">
-        {top.map((user, i) => {
+        {users.map((user: any, i) => {
           const PageIcon = PAGE_ICONS[user.currentPage] || Globe;
+          const activityScore = Math.min(100, (user.pageVisitsToday * 10) + (parseInt(user.timeOnPage) / 10));
           return (
             <div key={user.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20 transition-colors">
               <span className={`text-[10px] font-black w-5 text-center ${i === 0 ? "text-amber-400" : i === 1 ? "text-slate-300" : i === 2 ? "text-amber-700" : "text-muted-foreground"}`}>
@@ -69,9 +103,9 @@ function UserLeaderboard() {
               </div>
               <div className="flex items-center gap-1 w-20">
                 <div className="flex-1 h-1.5 bg-muted/40 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all" style={{ width: `${user.activityScore}%` }} />
+                  <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all" style={{ width: `${activityScore}%` }} />
                 </div>
-                <span className="text-[9px] font-black text-primary w-7 text-right">{user.activityScore}</span>
+                <span className="text-[9px] font-black text-primary w-7 text-right">{Math.round(activityScore)}</span>
               </div>
             </div>
           );
@@ -82,19 +116,74 @@ function UserLeaderboard() {
 }
 
 function HeatMap() {
-  const pages = ["Dashboard", "Deposit", "Trading", "Wallet", "Referrals", "Withdraw", "Profile", "Support", "Verification", "Notifications"];
-  const visits = [312, 289, 245, 198, 167, 143, 122, 89, 76, 44];
-  const max = visits[0];
+  const [pageData, setPageData] = useState<{ page: string; visits: number }[]>([]);
+  const [metrics, setMetrics] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const metrics = [
-    { label: "Most Visited", value: "Dashboard", sub: "312 visits today" },
-    { label: "Least Visited", value: "Notifications", sub: "44 visits today" },
-    { label: "Avg Session", value: "18m 32s", sub: "per user" },
-    { label: "Avg Scroll", value: "62%", sub: "page depth" },
-    { label: "Avg Clicks", value: "27", sub: "per session" },
-    { label: "Bounce Rate", value: "14%", sub: "below average ✓" },
-    { label: "Peak Hour", value: "14:00", sub: "most active" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const users = data.users || [];
+          
+          // Count page visits
+          const pageCount = new Map<string, number>();
+          users.forEach((user: any) => {
+            user.pagesVisited.forEach((page: string) => {
+              pageCount.set(page, (pageCount.get(page) || 0) + 1);
+            });
+          });
+
+          const sortedPages = Array.from(pageCount.entries())
+            .map(([page, visits]) => ({ page, visits }))
+            .sort((a, b) => b.visits - a.visits)
+            .slice(0, 10);
+
+          setPageData(sortedPages);
+
+          // Calculate metrics
+          const allPages = sortedPages;
+          const totalVisits = allPages.reduce((sum, p) => sum + p.visits, 0);
+          const avgVisits = totalVisits / (allPages.length || 1);
+          
+          const newMetrics = [
+            { label: "Most Visited", value: allPages[0]?.page || "N/A", sub: `${allPages[0]?.visits || 0} visits today` },
+            { label: "Least Visited", value: allPages[allPages.length - 1]?.page || "N/A", sub: `${allPages[allPages.length - 1]?.visits || 0} visits today` },
+            { label: "Active Users", value: users.length.toString(), sub: "currently online" },
+            { label: "Avg Pages/Session", value: avgVisits.toFixed(1), sub: "per user" },
+          ];
+
+          setMetrics(newMetrics);
+        }
+      } catch (error) {
+        console.error('Error fetching heatmap data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-sm font-black uppercase tracking-tight flex items-center gap-2">
+            <Flame className="w-4 h-4 text-orange-400" />
+            Platform Heat Map
+          </h3>
+        </div>
+        <div className="p-5 text-center text-muted-foreground text-sm">Loading...</div>
+      </div>
+    );
+  }
+
+  const max = pageData[0]?.visits || 1;
 
   return (
     <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
@@ -105,33 +194,24 @@ function HeatMap() {
         </h3>
       </div>
       <div className="px-5 py-4 space-y-2 border-b border-border">
-        {pages.map((page, i) => (
-          <div key={page} className="flex items-center gap-3">
-            <span className="text-[9px] font-black uppercase text-muted-foreground w-20 text-right truncate">{page}</span>
+        {pageData.map((item, i) => (
+          <div key={item.page} className="flex items-center gap-3">
+            <span className="text-[9px] font-black uppercase text-muted-foreground w-20 text-right truncate">{item.page}</span>
             <div className="flex-1 h-2 bg-muted/30 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-1000"
                 style={{
-                  width: `${(visits[i] / max) * 100}%`,
+                  width: `${(item.visits / max) * 100}%`,
                   background: `hsl(${160 - i * 15}, 70%, 50%)`,
                 }}
               />
             </div>
-            <span className="text-[9px] font-mono text-muted-foreground w-8">{visits[i]}</span>
+            <span className="text-[9px] font-mono text-muted-foreground w-8">{item.visits}</span>
           </div>
         ))}
       </div>
       <div className="grid grid-cols-4 divide-x divide-border border-t border-border">
         {metrics.slice(0, 4).map(({ label, value, sub }) => (
-          <div key={label} className="px-4 py-3 hover:bg-muted/10 transition-colors">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
-            <p className="text-sm font-black tracking-tighter text-foreground">{value}</p>
-            <p className="text-[8px] text-muted-foreground/60 mt-0.5">{sub}</p>
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 divide-x divide-border border-t border-border">
-        {metrics.slice(4).map(({ label, value, sub }) => (
           <div key={label} className="px-4 py-3 hover:bg-muted/10 transition-colors">
             <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
             <p className="text-sm font-black tracking-tighter text-foreground">{value}</p>

@@ -1,33 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Map } from "lucide-react";
 import { UserStatusBadge } from "./MonitoringShared";
 
 interface MapPin {
   country: string;
   city: string;
-  lat: number;
-  lng: number;
   users: number;
   status: "online" | "offline" | "away";
   topUser: string;
   device: string;
   page: string;
 }
-
-const MOCK_MAP_PINS: MapPin[] = [
-  { country: "Nigeria", city: "Lagos", lat: 6.5, lng: 3.4, users: 12, status: "online", topUser: "Amara D.", device: "Mobile", page: "Trading" },
-  { country: "United States", city: "New York", lat: 40.7, lng: -74, users: 9, status: "online", topUser: "Marcus B.", device: "Desktop", page: "Deposit" },
-  { country: "United Kingdom", city: "London", lat: 51.5, lng: -0.1, users: 7, status: "online", topUser: "Isla S.", device: "Desktop", page: "Dashboard" },
-  { country: "Germany", city: "Berlin", lat: 52.5, lng: 13.4, users: 5, status: "away", topUser: "Felix B.", device: "Desktop", page: "Wallet" },
-  { country: "India", city: "Mumbai", lat: 19.1, lng: 72.9, users: 8, status: "online", topUser: "Priya S.", device: "Mobile", page: "Referrals" },
-  { country: "Brazil", city: "São Paulo", lat: -23.5, lng: -46.6, users: 4, status: "online", topUser: "Luna C.", device: "Mobile", page: "Withdraw" },
-  { country: "Japan", city: "Tokyo", lat: 35.7, lng: 139.7, users: 6, status: "online", topUser: "Riku T.", device: "Desktop", page: "Trading" },
-  { country: "Canada", city: "Toronto", lat: 43.7, lng: -79.4, users: 3, status: "away", topUser: "Ben O.", device: "Tablet", page: "Profile" },
-  { country: "France", city: "Paris", lat: 48.9, lng: 2.3, users: 4, status: "online", topUser: "Chloe M.", device: "Desktop", page: "Verification" },
-  { country: "South Africa", city: "Johannesburg", lat: -26.2, lng: 28.0, users: 5, status: "online", topUser: "Kwame A.", device: "Mobile", page: "Deposit" },
-];
 
 const pinPositions: Record<string, { x: number; y: number }> = {
   "Nigeria": { x: 500, y: 280 },
@@ -254,6 +239,79 @@ function WorldMapBackground() {
 export default function LiveGlobalConnections() {
   const [hovered, setHovered] = useState<MapPin | null>(null);
   const [hoveredPos, setHoveredPos] = useState({ x: 0, y: 0 });
+  const [mapPins, setMapPins] = useState<MapPin[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const users = data.users || [];
+
+          // Group users by country
+          const countryMap: Record<string, { users: any[]; online: number }> = {};
+          users.forEach((user: any) => {
+            const country = user.country || 'Unknown';
+            if (!countryMap[country]) {
+              countryMap[country] = { users: [], online: 0 };
+            }
+            const group = countryMap[country];
+            group.users.push(user);
+            if (user.status === 'online') {
+              group.online++;
+            }
+          });
+
+          // Convert to map pins
+          const pins: MapPin[] = Object.entries(countryMap)
+            .map(([country, group]: [string, { users: any[]; online: number }]) => {
+              const topUser = group.users[0];
+              const onlineCount = group.online;
+              const status: "online" | "offline" | "away" = onlineCount > 0 ? 'online' : 'away';
+              return {
+                country,
+                city: topUser.city || 'Unknown',
+                users: group.users.length,
+                status,
+                topUser: topUser.username || 'Unknown',
+                device: topUser.device || 'Unknown',
+                page: topUser.currentPage || 'Unknown',
+              };
+            })
+            .filter((pin) => pin.country !== 'Unknown')
+            .slice(0, 10);
+
+          setMapPins(pins);
+        }
+      } catch (error) {
+        console.error('Error fetching map data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-card border border-border rounded-[1rem] overflow-hidden relative shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+              <Map className="w-4 h-4 text-primary" />
+              Live Global Connections
+            </h3>
+          </div>
+        </div>
+        <div className="p-5 text-center text-muted-foreground text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card border border-border rounded-[1rem] overflow-hidden relative shadow-sm">
@@ -265,7 +323,7 @@ export default function LiveGlobalConnections() {
             Live Global Connections
           </h3>
           <p className="text-xs font-medium text-muted-foreground mt-0.5">
-            {MOCK_MAP_PINS.reduce((a, b) => a + b.users, 0)} active connections across {MOCK_MAP_PINS.length} countries
+            {mapPins.reduce((a, b) => a + b.users, 0)} active connections across {mapPins.length} countries
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground">
@@ -286,7 +344,7 @@ export default function LiveGlobalConnections() {
         {/* Pins layer */}
         <div className="absolute inset-0 p-4">
           <svg viewBox="0 0 1000 500" className="w-full" style={{ maxHeight: 300 }}>
-            {MOCK_MAP_PINS.map((pin, i) => {
+            {mapPins.map((pin, i) => {
               const pos = pinPositions[pin.country] || { x: 500, y: 250 };
               const isOnline = pin.status === "online";
               return (
@@ -352,7 +410,7 @@ export default function LiveGlobalConnections() {
 
       {/* ── Country chips ── */}
       <div className="px-6 py-4 border-t border-border flex gap-2 flex-wrap bg-muted/20">
-        {MOCK_MAP_PINS.map((pin, i) => (
+        {mapPins.map((pin, i) => (
           <div
             key={i}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all hover:border-primary/40 cursor-default shadow-sm

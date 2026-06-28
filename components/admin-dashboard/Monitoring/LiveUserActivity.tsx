@@ -16,9 +16,10 @@ interface LiveUserActivityProps {
   filterStatus: "all" | UserStatus;
   setFilterStatus: (status: "all" | UserStatus) => void;
   onMonitor: (user: LiveUser) => void;
+  activeFilters?: string[];
 }
 
-export default function LiveUserActivity({ filterStatus, setFilterStatus, onMonitor }: LiveUserActivityProps) {
+export default function LiveUserActivity({ filterStatus, setFilterStatus, onMonitor, activeFilters = [] }: LiveUserActivityProps) {
   const [users, setUsers] = useState<LiveUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,12 +27,48 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/activity?status=${filterStatus}`);
+      const response = await fetch(`/api/admin/activity`);
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
       const data = await response.json();
-      setUsers(data.users || []);
+      let filteredUsers = data.users || [];
+
+      // Apply status filter
+      if (filterStatus !== 'all') {
+        filteredUsers = filteredUsers.filter((u: LiveUser) => u.status === filterStatus);
+      }
+
+      // Apply quick filters
+      if (activeFilters.length > 0) {
+        filteredUsers = filteredUsers.filter((u: LiveUser) => {
+          return activeFilters.some(filter => {
+            // Status filters
+            if (filter === 'Online' && u.status === 'online') return true;
+            if (filter === 'Offline' && u.status === 'offline') return true;
+            if (filter === 'Idle' && u.status === 'away') return true;
+            
+            // Device filters
+            if (filter === 'Desktop' && u.device === 'desktop') return true;
+            if (filter === 'Mobile' && u.device === 'mobile') return true;
+            if (filter === 'Chrome' && u.browser?.toLowerCase().includes('chrome')) return true;
+            if (filter === 'Edge' && u.browser?.toLowerCase().includes('edge')) return true;
+            if (filter === 'Firefox' && u.browser?.toLowerCase().includes('firefox')) return true;
+            
+            // Page filters
+            if (filter === 'Deposit' && u.currentPage?.toLowerCase().includes('deposit')) return true;
+            if (filter === 'Withdraw' && u.currentPage?.toLowerCase().includes('withdraw')) return true;
+            if (filter === 'Trading' && u.currentPage?.toLowerCase().includes('trading')) return true;
+            if (filter === 'Wallet' && u.currentPage?.toLowerCase().includes('wallet')) return true;
+            if (filter === 'Verification' && u.currentPage?.toLowerCase().includes('verification')) return true;
+            if (filter === 'Support' && u.currentPage?.toLowerCase().includes('support')) return true;
+            
+            return false;
+          });
+        });
+      }
+
+      setUsers(filteredUsers);
       setError(null);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -48,9 +85,7 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
     const interval = setInterval(fetchUsers, 10000);
     
     return () => clearInterval(interval);
-  }, [filterStatus]);
-
-  const filteredUsers = filterStatus === "all" ? users : users.filter(u => u.status === filterStatus);
+  }, [filterStatus, activeFilters]);
 
   return (
     <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
@@ -79,7 +114,7 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
           <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
             <Users className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h3 className="text-sm font-black uppercase italic text-muted-foreground">Loading user activity...</h3>
+          <h3 className="text-sm font-black uppercase text-muted-foreground">Loading user activity...</h3>
         </div>
       )}
       
@@ -110,7 +145,7 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredUsers.map((user) => {
+                {users.map((user) => {
                   const PageIcon = PAGE_ICONS[user.currentPage] || Globe;
                   const DeviceIcon = user.device === "mobile" ? Smartphone : Laptop;
                   const roleColors: Record<string, string> = {
@@ -171,7 +206,7 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
               </tbody>
             </table>
           </div>
-          {filteredUsers.length === 0 && (
+          {users.length === 0 && (
             <div className="p-20 text-center">
               <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-6 h-6 text-muted-foreground" />

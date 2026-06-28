@@ -81,6 +81,14 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Sort by status: online first, then away, then offline
+    const statusOrder = { online: 0, away: 1, offline: 2 };
+    liveUsers.sort((a, b) => {
+      const statusA = statusOrder[a.status as keyof typeof statusOrder] ?? 3;
+      const statusB = statusOrder[b.status as keyof typeof statusOrder] ?? 3;
+      return statusA - statusB;
+    });
+
     return NextResponse.json({ users: liveUsers });
   } catch (error) {
     console.error('Admin activity API error:', error);

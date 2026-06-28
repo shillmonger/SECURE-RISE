@@ -63,6 +63,8 @@ function LiveStats() {
     away: 0,
     countries: 0,
     sessions: 0,
+    totalEvents: 0,
+    totalPageVisits: 0,
   });
 
   useEffect(() => {
@@ -72,12 +74,17 @@ function LiveStats() {
         if (response.ok) {
           const data = await response.json();
           const users = data.users || [];
+          const totalEvents = users.reduce((sum: number, u: any) => sum + (u.activityFeed?.length || 0), 0);
+          const totalPageVisits = users.reduce((sum: number, u: any) => sum + (u.pagesVisited?.length || 0), 0);
+          
           setStats({
             online: users.filter((u: LiveUser) => u.status === 'online').length,
             offline: users.filter((u: LiveUser) => u.status === 'offline').length,
             away: users.filter((u: LiveUser) => u.status === 'away').length,
             countries: new Set(users.map((u: LiveUser) => u.country)).size,
             sessions: users.length,
+            totalEvents,
+            totalPageVisits,
           });
         }
       } catch (error) {
@@ -96,25 +103,40 @@ function LiveStats() {
     { label: "Idle / Away", value: stats.away, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
     { label: "Countries", value: stats.countries, icon: Globe, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
     { label: "Active Sessions", value: stats.sessions, icon: Layers, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-    { label: "Events / Min", value: 0, icon: Activity, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-    { label: "Requests", value: 0, icon: Zap, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+    { label: "Total Events", value: stats.totalEvents, icon: Activity, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    { label: "Page Visits", value: stats.totalPageVisits, icon: Zap, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
     { label: "Security Score", value: 94, suffix: "%", icon: ShieldCheck, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-      {statsArray.map((s, i) => (
-        <div key={i} className={`bg-card border ${s.border} rounded-xl px-4 py-3 hover:scale-[1.02] transition-all group relative overflow-hidden`}>
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(ellipse at top left, rgba(255,255,255,0.02), transparent 70%)" }} />
-          <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>
-            <s.icon className={`w-4 h-4 ${s.color}`} />
+    <div className="space-y-3">
+      {/* Column Headers */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 px-2">
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Status</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Status</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Status</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Location</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Sessions</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Activity</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Pages</div>
+        <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center">Security</div>
+      </div>
+      
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {statsArray.map((s, i) => (
+          <div key={i} className={`bg-card border ${s.border} rounded-xl px-4 py-3 hover:scale-[1.02] transition-all group relative overflow-hidden`}>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(ellipse at top left, rgba(255,255,255,0.02), transparent 70%)" }} />
+            <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>
+              <s.icon className={`w-4 h-4 ${s.color}`} />
+            </div>
+            <p className={`text-xl font-black tracking-tighter ${s.color}`}>
+              <AnimatedCounter target={s.value} suffix={(s as any).suffix || ""} />
+            </p>
+            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">{s.label}</p>
           </div>
-          <p className={`text-xl font-black tracking-tighter ${s.color}`}>
-            <AnimatedCounter target={s.value} suffix={(s as any).suffix || ""} />
-          </p>
-          <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">{s.label}</p>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -164,7 +186,7 @@ function NotificationCenter({ notifications, onDismiss }: { notifications: Float
 }
 
 // ─── SECTION 10+11: Quick Filters + Search Bar ──────────────────────────────────
-function QuickFilters({ active, onToggle }: { active: string[]; onToggle: (f: string) => void }) {
+function QuickFilters({ active, onToggle, onReset }: { active: string[]; onToggle: (f: string) => void; onReset: () => void }) {
   const groups = [
     { label: "Status", chips: ["Online", "Offline", "Idle"] },
     { label: "Device", chips: ["Desktop", "Mobile", "Chrome", "Edge", "Firefox"] },
@@ -191,6 +213,14 @@ function QuickFilters({ active, onToggle }: { active: string[]; onToggle: (f: st
           ))}
         </div>
       ))}
+      {active.length > 0 && (
+        <button
+          onClick={onReset}
+          className="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer"
+        >
+          Reset
+        </button>
+      )}
     </div>
   );
 }
@@ -470,13 +500,14 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
 
 
 // ─── SOC HEADER ───────────────────────────────────────────────────────────────
-function SOCHeader({ searchTerm, setSearchTerm, onRefresh, isRefreshing, activeFilters, onToggleFilter }: {
+function SOCHeader({ searchTerm, setSearchTerm, onRefresh, isRefreshing, activeFilters, onToggleFilter, onResetFilters }: {
   searchTerm: string;
   setSearchTerm: (v: string) => void;
   onRefresh: () => void;
   isRefreshing: boolean;
   activeFilters: string[];
   onToggleFilter: (f: string) => void;
+  onResetFilters: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -521,23 +552,12 @@ function SOCHeader({ searchTerm, setSearchTerm, onRefresh, isRefreshing, activeF
           </div>
         </div>
       </div>
-      <QuickFilters active={activeFilters} onToggle={onToggleFilter} />
+      <QuickFilters active={activeFilters} onToggle={onToggleFilter} onReset={onResetFilters} />
     </div>
   );
 }
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
-const NOTIF_POOL = [
-  { text: "John Doe logged in from Chrome / Windows 11", severity: "info" as Severity },
-  { text: "Sophia opened Withdraw — $2,500 pending", severity: "warning" as Severity },
-  { text: "Michael changed account password", severity: "info" as Severity },
-  { text: "Sarah completed deposit of $750 ✓", severity: "success" as Severity },
-  { text: "Admin approved KYC for @yunapark", severity: "success" as Severity },
-  { text: "VPN detected for @tariqh — IP flagged", severity: "danger" as Severity },
-  { text: "Multiple login attempts on @dkane99", severity: "danger" as Severity },
-  { text: "New device login: @sofiar / iPhone 15 Pro", severity: "warning" as Severity },
-];
-
 export default function AdminSOCPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -546,20 +566,90 @@ export default function AdminSOCPage() {
   const [selectedUser, setSelectedUser] = useState<LiveUser | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<FloatNotif[]>([]);
-  const notifCounter = useRef(0);
+  const [activityData, setActivityData] = useState<any[]>([]);
 
-
-  // Simulate float notifications
+  // Fetch real activity data for notifications
   useEffect(() => {
-    const interval = setInterval(() => {
-      const n = NOTIF_POOL[notifCounter.current % NOTIF_POOL.length];
-      const id = `notif_${Date.now()}`;
-      setNotifications(prev => [...prev, { id, text: n.text, severity: n.severity }]);
-      notifCounter.current++;
-      setTimeout(() => setNotifications(prev => prev.filter(x => x.id !== id)), 5000);
-    }, 8000);
+    const fetchActivity = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const users = data.users || [];
+          
+          // Collect recent activity events from all users
+          const recentEvents: any[] = [];
+          users.forEach((user: any) => {
+            if (user.activityFeed && user.activityFeed.length > 0) {
+              user.activityFeed.forEach((event: any) => {
+                recentEvents.push({
+                  ...event,
+                  username: user.username,
+                  fullName: user.fullName,
+                });
+              });
+            }
+          });
+
+          // Sort by time (most recent first) and take latest 20
+          recentEvents.sort((a, b) => b.time.localeCompare(a.time));
+          setActivityData(recentEvents.slice(0, 20));
+        }
+      } catch (error) {
+        console.error('Error fetching activity data:', error);
+      }
+    };
+
+    fetchActivity();
+    const interval = setInterval(fetchActivity, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  // Generate notifications from real activity data
+  useEffect(() => {
+    if (activityData.length === 0) return;
+
+    const interval = setInterval(() => {
+      // Pick a random recent activity to show as notification
+      const randomEvent = activityData[Math.floor(Math.random() * Math.min(activityData.length, 5))];
+      if (randomEvent) {
+        const id = `notif_${Date.now()}`;
+        let severity: Severity = "info";
+        let text = "";
+
+        // Determine severity and format text based on event category
+        switch (randomEvent.category) {
+          case "form":
+            severity = "success";
+            text = `${randomEvent.fullName} submitted form on ${randomEvent.page}`;
+            break;
+          case "navigation":
+            severity = "info";
+            text = `${randomEvent.fullName} navigated to ${randomEvent.page}`;
+            break;
+          case "scroll":
+            severity = "info";
+            text = `${randomEvent.fullName} scrolled on ${randomEvent.page}`;
+            break;
+          case "deposit":
+            severity = "success";
+            text = `${randomEvent.fullName} made a deposit`;
+            break;
+          case "auth":
+            severity = "warning";
+            text = `${randomEvent.fullName} authentication activity`;
+            break;
+          default:
+            severity = "info";
+            text = `${randomEvent.fullName}: ${randomEvent.action}`;
+        }
+
+        setNotifications(prev => [...prev, { id, text, severity }]);
+        setTimeout(() => setNotifications(prev => prev.filter(x => x.id !== id)), 5000);
+      }
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [activityData]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -568,6 +658,10 @@ export default function AdminSOCPage() {
 
   const toggleFilter = (f: string) => {
     setActiveFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
+  };
+
+  const resetFilters = () => {
+    setActiveFilters([]);
   };
 
   return (
@@ -589,6 +683,7 @@ export default function AdminSOCPage() {
               isRefreshing={isRefreshing}
               activeFilters={activeFilters}
               onToggleFilter={toggleFilter}
+              onResetFilters={resetFilters}
             />
 
             {/* Section 1: Live Stats */}
@@ -611,6 +706,7 @@ export default function AdminSOCPage() {
               filterStatus={filterStatus} 
               setFilterStatus={setFilterStatus} 
               onMonitor={(user) => setSelectedUser(user)} 
+              activeFilters={activeFilters}
             />
 
           </div>

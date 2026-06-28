@@ -1,28 +1,103 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PieChart } from "lucide-react";
 
 export default function DeviceAnalytics() {
-  const donutData = [
-    { label: "Desktop", value: 52, color: "#6366f1" },
-    { label: "Mobile", value: 38, color: "#10b981" },
-    { label: "Tablet", value: 10, color: "#f59e0b" },
-  ];
-  const osData = [
-    { label: "Windows 11", value: 38, color: "#3b82f6" },
-    { label: "macOS 14", value: 24, color: "#8b5cf6" },
-    { label: "Android 14", value: 18, color: "#10b981" },
-    { label: "iOS 17", value: 14, color: "#f43f5e" },
-    { label: "Linux", value: 6, color: "#f59e0b" },
-  ];
-  const browserData = [
-    { label: "Chrome", value: 56, color: "#f59e0b" },
-    { label: "Safari", value: 22, color: "#3b82f6" },
-    { label: "Firefox", value: 12, color: "#f97316" },
-    { label: "Edge", value: 8, color: "#06b6d4" },
-    { label: "Brave", value: 2, color: "#6366f1" },
-  ];
+  const [donutData, setDonutData] = useState<{ label: string; value: number; color: string }[]>([]);
+  const [osData, setOsData] = useState<{ label: string; value: number; color: string }[]>([]);
+  const [browserData, setBrowserData] = useState<{ label: string; value: number; color: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const colors = ["#6366f1", "#10b981", "#f59e0b", "#f43f5e", "#3b82f6", "#8b5cf6", "#06b6d4", "#f97316"];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const users = data.users || [];
+
+          // Count devices
+          const deviceCount = new Map<string, number>();
+          users.forEach((user: any) => {
+            deviceCount.set(user.device, (deviceCount.get(user.device) || 0) + 1);
+          });
+
+          const deviceTotal = users.length;
+          const newDonutData = Array.from(deviceCount.entries())
+            .map(([label, count], i) => ({
+              label: label.charAt(0).toUpperCase() + label.slice(1),
+              value: Math.round((count / deviceTotal) * 100),
+              color: colors[i % colors.length],
+            }))
+            .sort((a, b) => b.value - a.value);
+
+          setDonutData(newDonutData);
+
+          // Count OS
+          const osCount = new Map<string, number>();
+          users.forEach((user: any) => {
+            osCount.set(user.os, (osCount.get(user.os) || 0) + 1);
+          });
+
+          const osTotal = users.length;
+          const newOsData = Array.from(osCount.entries())
+            .map(([label, count], i) => ({
+              label,
+              value: Math.round((count / osTotal) * 100),
+              color: colors[i % colors.length],
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 5);
+
+          setOsData(newOsData);
+
+          // Count browsers
+          const browserCount = new Map<string, number>();
+          users.forEach((user: any) => {
+            const browserName = user.browser.split(' ')[0];
+            browserCount.set(browserName, (browserCount.get(browserName) || 0) + 1);
+          });
+
+          const browserTotal = users.length;
+          const newBrowserData = Array.from(browserCount.entries())
+            .map(([label, count], i) => ({
+              label,
+              value: Math.round((count / browserTotal) * 100),
+              color: colors[i % colors.length],
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 5);
+
+          setBrowserData(newBrowserData);
+        }
+      } catch (error) {
+        console.error('Error fetching device data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-card border border-border rounded-[1rem] overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-sm font-black uppercase tracking-tight flex items-center gap-2">
+            <PieChart className="w-4 h-4 text-violet-400" />
+            Device Analytics
+          </h3>
+        </div>
+        <div className="p-5 text-center text-muted-foreground text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   function DonutChart({ data, size = 80 }: { data: typeof donutData; size?: number }) {
     const r = (size - 16) / 2;
