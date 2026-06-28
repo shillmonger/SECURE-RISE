@@ -11,12 +11,11 @@ export function middleware(request: NextRequest) {
   const isAuthPage = pathname.startsWith('/auth-page/login');
   
   if (isProtectedRoute && !isAuthPage) {
-    // Get the session token from cookies
-    const sessionToken = request.cookies.get('next-auth.session-token') || 
-                       request.cookies.get('__Secure-next-auth.session-token');
+    // Get the auth token from cookies (custom JWT authentication)
+    const authToken = request.cookies.get('auth-token');
     
-    // If no session token, redirect to login
-    if (!sessionToken) {
+    // If no auth token, redirect to login
+    if (!authToken) {
       const loginUrl = new URL('/auth-page/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
