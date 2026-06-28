@@ -58,14 +58,14 @@ const GiftCardSubmitPage = () => {
     // Retrieve image data from sessionStorage
     const frontImage = sessionStorage.getItem('giftCardFrontImage') || '';
     const backImage = sessionStorage.getItem('giftCardBackImage') || '';
-    
+
     if (frontImage) {
       setFrontImageData(frontImage);
     }
     if (backImage) {
       setBackImageData(backImage);
     }
-    
+
     // Clear sessionStorage after retrieving data
     sessionStorage.removeItem('giftCardFrontImage');
     sessionStorage.removeItem('giftCardBackImage');
@@ -144,18 +144,18 @@ const GiftCardSubmitPage = () => {
       formData.append("amount", amount);
       formData.append("currency", currency);
       formData.append("code", code);
-      
+
       // Convert base64 to File objects
       const frontFile = base64ToFile(frontImageData, 'front-image.jpg');
       const backFile = base64ToFile(backImageData, 'back-image.jpg');
-      
+
       formData.append("frontImage", frontFile);
       formData.append("backImage", backFile);
-      
+
       if (description) {
         formData.append("description", description);
       }
-      
+
       formData.append("userId", user.id);
       formData.append("username", user.username);
       formData.append("userEmail", user.email);
@@ -198,12 +198,12 @@ const GiftCardSubmitPage = () => {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-8">
+          <div className="max-w-4xl mx-auto space-y-6">
             {/* Nav Header */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">
-                 Checkout
+                  Checkout
                 </h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <ShieldCheck className="w-3 h-3 text-primary" /> Secure Gift
@@ -219,12 +219,12 @@ const GiftCardSubmitPage = () => {
 
             <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl">
               {/* Method Indicator Bar */}
-              <div className="bg-foreground p-3 sm:p-4 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+              <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-1 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="bg-primary/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
                     {getCardImage(cardType) ? (
-                      <img 
-                        src={getCardImage(cardType)} 
+                      <img
+                        src={getCardImage(cardType)}
                         alt={cardType}
                         className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                       />
@@ -253,26 +253,34 @@ const GiftCardSubmitPage = () => {
               </div>
 
               <div className="p-5 md:p-8 space-y-10">
-                <div className="grid md:grid-cols-2 gap-12 items-start">
+                <div className="grid md:grid-cols-2 gap-8 lg:gap-10 items-start">
                   {/* Left Side: Card Details */}
                   <div className="space-y-6">
                     <div className="relative group">
-                      <div className="relative flex flex-col items-center justify-center p-5 bg-background border-2 border-dashed border-border rounded-[1rem]">
-                        <div className="bg-foreground p-4 rounded-xl shadow-xl mb-6">
-                          {getCardImage(cardType) ? (
-                            <img 
-                              src={getCardImage(cardType)} 
-                              alt={cardType}
-                              className="w-16 h-16 object-contain"
-                            />
-                          ) : (
-                            <Gift className="w-16 h-16 text-background" />
-                          )}
-                        </div>
-                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest text-center">
-                          Gift Card Information
-                        </p>
-                      </div>
+                      <div className="relative h-56 overflow-hidden rounded-[1rem] border border-border">
+  {/* Background Image */}
+  {getCardImage(cardType) ? (
+    <img
+      src={getCardImage(cardType)}
+      alt={cardType}
+      className="absolute inset-0 h-full w-full object-cover"
+    />
+  ) : (
+    <div className="absolute inset-0 flex items-center justify-center bg-foreground">
+      <Gift className="w-16 h-16 text-background" />
+    </div>
+  )}
+
+  {/* Dark Gradient Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+
+  {/* Content */}
+  <div className="relative z-10 flex h-full flex-col items-center justify-end p-6">
+    <p className="text-center text-xs font-black uppercase tracking-[0.35em] text-white drop-shadow-lg">
+      Gift Card Information
+    </p>
+  </div>
+</div>
                     </div>
 
                     {/* Card Details Summary */}
@@ -305,7 +313,7 @@ const GiftCardSubmitPage = () => {
                             Pending Review
                           </span>
                         </div>
-                        
+
                         {/* Image Previews */}
                         {(frontImageData || backImageData) && (
                           <div className="pt-3 border-t border-border/50 mt-3">
@@ -315,9 +323,9 @@ const GiftCardSubmitPage = () => {
                             <div className="flex gap-2">
                               {frontImageData && (
                                 <div className="flex-1">
-                                  <img 
-                                    src={frontImageData} 
-                                    alt="Front" 
+                                  <img
+                                    src={frontImageData}
+                                    alt="Front"
                                     className="w-full h-20 object-cover rounded-lg border border-border"
                                   />
                                   <p className="text-[9px] text-center text-muted-foreground mt-1">Front</p>
@@ -325,9 +333,9 @@ const GiftCardSubmitPage = () => {
                               )}
                               {backImageData && (
                                 <div className="flex-1">
-                                  <img 
-                                    src={backImageData} 
-                                    alt="Back" 
+                                  <img
+                                    src={backImageData}
+                                    alt="Back"
                                     className="w-full h-20 object-cover rounded-lg border border-border"
                                   />
                                   <p className="text-[9px] text-center text-muted-foreground mt-1">Back</p>
@@ -372,7 +380,7 @@ const GiftCardSubmitPage = () => {
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Description (Optional)
                       </label>
-                      
+
                       {/* Description input */}
                       <textarea
                         value={description}
@@ -417,93 +425,93 @@ const GiftCardSubmitPage = () => {
             </div>
 
             {/* ⚠️ GIFT CARD WARNING BANNER */}
-<div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
+            <div className="relative overflow-hidden rounded-[1.2rem] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/15 via-yellow-500/10 to-orange-500/5 bg-white/80 dark:bg-transparent p-4 md:p-5 backdrop-blur-sm shadow-sm dark:shadow-none">
 
-  {/* Background Effects */}
-  <div className="absolute inset-0 bg-[ radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
+              {/* Background Effects */}
+              <div className="absolute inset-0 bg-[ radial-gradient(circle_at_top_right,rgba(0,0,0,0.04),transparent_45%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_35%)]" />
 
-  <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
+              <AlertTriangle className="absolute -right-5 -top-5 h-28 w-28 text-orange-400 opacity-10" />
 
-  {/* Header */}
-  <div className="relative z-10 mb-5 flex items-center gap-3">
+              {/* Header */}
+              <div className="relative z-10 mb-5 flex items-center gap-3">
 
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
-      <AlertTriangle className="h-5 w-5 text-orange-500" />
-    </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 border border-orange-500/30">
+                  <AlertTriangle className="h-5 w-5 text-orange-500" />
+                </div>
 
-    <div>
-      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
-        Gift Card Guidelines
-      </p>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
+                    Gift Card Guidelines
+                  </p>
 
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-orange-100/70">
-        Read carefully before submission
-      </p>
-    </div>
-  </div>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-700 dark:text-orange-100/70">
+                    Read carefully before submission
+                  </p>
+                </div>
+              </div>
 
-  {/* Warning Items */}
-  <div className="relative z-10 space-y-3">
+              {/* Warning Items */}
+              <div className="relative z-10 space-y-3">
 
-    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-      <FileText className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-          Valid Gift Cards Only
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-          Only submit unused, valid gift cards. Used or expired cards will be rejected.
-        </p>
-      </div>
-    </div>
+                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                  <FileText className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                      Valid Gift Cards Only
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                      Only submit unused, valid gift cards. Used or expired cards will be rejected.
+                    </p>
+                  </div>
+                </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-500/10 px-4 py-3">
-      <Camera className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-          Clear Image Required
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-          Image must show full card with code clearly visible. Blurry or cropped images will be rejected.
-        </p>
-      </div>
-    </div>
+                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-500/10 px-4 py-3">
+                  <Camera className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                      Clear Image Required
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                      Image must show full card with code clearly visible. Blurry or cropped images will be rejected.
+                    </p>
+                  </div>
+                </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-      <Copy className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-          Correct Code Entry
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-          Double-check your code entry. Incorrect codes will delay verification and may result in rejection.
-        </p>
-      </div>
-    </div>
+                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                  <Copy className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                      Correct Code Entry
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                      Double-check your code entry. Incorrect codes will delay verification and may result in rejection.
+                    </p>
+                  </div>
+                </div>
 
-    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
-      <Clock className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-      <div>
-        <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-          Processing Time
-        </span>
-        <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
-          Gift card verification takes 24-48 hours. You'll be notified once approved or rejected.
-        </p>
-      </div>
-    </div>
+                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 dark:bg-black/20 px-4 py-3">
+                  <Clock className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                      Processing Time
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-gray-600 dark:text-orange-100/60 leading-relaxed">
+                      Gift card verification takes 24-48 hours. You'll be notified once approved or rejected.
+                    </p>
+                  </div>
+                </div>
 
-    <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 dark:bg-orange-500/10 px-4 py-3">
-      <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
-        No Instant Credits
-      </span>
-      <span className="text-[11px] font-black text-orange-600 dark:text-orange-400">
-        Manual Review Required
-      </span>
-    </div>
+                <div className="flex items-center justify-between rounded-xl border border-orange-500/20 bg-orange-500/10 dark:bg-orange-500/10 px-4 py-3">
+                  <span className="text-[11px] font-black uppercase tracking-tight text-gray-900 dark:text-orange-100">
+                    No Instant Credits
+                  </span>
+                  <span className="text-[11px] font-black text-orange-600 dark:text-orange-400">
+                    Manual Review Required
+                  </span>
+                </div>
 
-  </div>
-</div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
