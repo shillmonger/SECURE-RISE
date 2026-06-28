@@ -409,21 +409,23 @@ const GiftCardPage = () => {
                         <div className="flex-1">
                           <input type="file" id="frontImage" accept="image/*" onChange={handleFrontImageUpload} className="hidden" />
                           <label htmlFor="frontImage" className="cursor-pointer block">
-                            <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all h-full ${
+                            <div className={`border-2 border-dashed rounded-xl overflow-hidden transition-all h-40 ${
                               frontImage ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
                             }`}>
                               {frontImage ? (
-                                <>
-                                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                                <div className="w-full h-full relative">
+                                  <img 
+                                    src={URL.createObjectURL(frontImage)} 
+                                    alt="Front preview" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
+                                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                                    <p className="text-[10px] font-black text-white">Front Uploaded</p>
                                   </div>
-                                  <div className="text-center">
-                                    <p className="text-[10px] font-black text-foreground">Front Image</p>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">{frontImage.name}</p>
-                                  </div>
-                                </>
+                                </div>
                               ) : (
-                                <>
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-6">
                                   <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                                     <Upload className="w-4 h-4 text-muted-foreground" />
                                   </div>
@@ -431,7 +433,7 @@ const GiftCardPage = () => {
                                     <p className="text-[10px] font-black text-foreground">Front Image</p>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Upload front</p>
                                   </div>
-                                </>
+                                </div>
                               )}
                             </div>
                           </label>
@@ -441,21 +443,23 @@ const GiftCardPage = () => {
                         <div className="flex-1">
                           <input type="file" id="backImage" accept="image/*" onChange={handleBackImageUpload} className="hidden" />
                           <label htmlFor="backImage" className="cursor-pointer block">
-                            <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all h-full ${
+                            <div className={`border-2 border-dashed rounded-xl overflow-hidden transition-all h-40 ${
                               backImage ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
                             }`}>
                               {backImage ? (
-                                <>
-                                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                                <div className="w-full h-full relative">
+                                  <img 
+                                    src={URL.createObjectURL(backImage)} 
+                                    alt="Back preview" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
+                                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                                    <p className="text-[10px] font-black text-white">Back Uploaded</p>
                                   </div>
-                                  <div className="text-center">
-                                    <p className="text-[10px] font-black text-foreground">Back Image</p>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">{backImage.name}</p>
-                                  </div>
-                                </>
+                                </div>
                               ) : (
-                                <>
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-6">
                                   <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                                     <Upload className="w-4 h-4 text-muted-foreground" />
                                   </div>
@@ -463,7 +467,7 @@ const GiftCardPage = () => {
                                     <p className="text-[10px] font-black text-foreground">Back Image</p>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Upload back</p>
                                   </div>
-                                </>
+                                </div>
                               )}
                             </div>
                           </label>
@@ -539,21 +543,56 @@ const GiftCardPage = () => {
                         Continue <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <Link
-                        href={`/user-dashboard/gift-card/submit?cardType=${selectedCardType}&country=${selectedCountry}&amount=${amount}&currency=${getSelectedCountryData()?.currency}&code=${cardCode}${frontImage ? `&hasFrontImage=true&frontImageName=${encodeURIComponent(frontImage.name)}` : ''}${backImage ? `&hasBackImage=true&backImageName=${encodeURIComponent(backImage.name)}` : ''}`}
-                        className="flex-1"
+                      <button
+                        onClick={async () => {
+                          if (!canProceed()) return;
+                          
+                          // Convert images to base64 for passing to submit page
+                          let frontImageData = '';
+                          let backImageData = '';
+                          
+                          if (frontImage) {
+                            frontImageData = await new Promise<string>((resolve) => {
+                              const reader = new FileReader();
+                              reader.onloadend = () => resolve(reader.result as string);
+                              reader.readAsDataURL(frontImage);
+                            });
+                          }
+                          
+                          if (backImage) {
+                            backImageData = await new Promise<string>((resolve) => {
+                              const reader = new FileReader();
+                              reader.onloadend = () => resolve(reader.result as string);
+                              reader.readAsDataURL(backImage);
+                            });
+                          }
+                          
+                          const params = new URLSearchParams({
+                            cardType: selectedCardType,
+                            country: selectedCountry,
+                            amount: amount,
+                            currency: getSelectedCountryData()?.currency || 'USD',
+                            code: cardCode,
+                          });
+                          
+                          if (frontImageData) {
+                            params.append('frontImage', frontImageData);
+                          }
+                          if (backImageData) {
+                            params.append('backImage', backImageData);
+                          }
+                          
+                          window.location.href = `/user-dashboard/gift-card/submit?${params.toString()}`;
+                        }}
+                        disabled={!canProceed()}
+                        className={`flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
+                          canProceed()
+                            ? "bg-foreground text-background cursor-pointer hover:opacity-90 shadow-xl"
+                            : "bg-muted text-muted-foreground cursor-not-allowed"
+                        }`}
                       >
-                        <button
-                          disabled={!canProceed()}
-                          className={`w-full py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${
-                            canProceed()
-                              ? "bg-foreground text-background cursor-pointer hover:opacity-90 shadow-xl"
-                              : "bg-muted text-muted-foreground cursor-not-allowed"
-                          }`}
-                        >
-                          Submit <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </Link>
+                        Submit <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
                     )}
                   </div>
                 </div>

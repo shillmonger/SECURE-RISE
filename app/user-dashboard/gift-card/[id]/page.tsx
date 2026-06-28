@@ -30,14 +30,12 @@ import UserNav from "@/components/user-dashboard/UserNav";
 const GiftCardSubmitPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [backFile, setBackFile] = useState<File | null>(null);
+  const [frontImageData, setFrontImageData] = useState<string>("");
+  const [backImageData, setBackImageData] = useState<string>("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [giftCardData, setGiftCardData] = useState<any>(null);
-  const [hasPreUploadedFront, setHasPreUploadedFront] = useState(false);
-  const [hasPreUploadedBack, setHasPreUploadedBack] = useState(false);
 
   const params = useParams();
   const searchParams = useSearchParams();
@@ -51,20 +49,22 @@ const GiftCardSubmitPage = () => {
   const amount = searchParams.get("amount") || "";
   const currency = searchParams.get("currency") || "USD";
   const code = searchParams.get("code") || "";
-  const hasFrontImage = searchParams.get("hasFrontImage") === "true";
-  const frontImageName = searchParams.get("frontImageName") || "";
-  const hasBackImage = searchParams.get("hasBackImage") === "true";
-  const backImageName = searchParams.get("backImageName") || "";
+  const frontImageBase64 = searchParams.get("frontImage") || "";
+  const backImageBase64 = searchParams.get("backImage") || "";
 
   useEffect(() => {
     // If no required data, redirect back to gift card page
     if (!cardType || !country || !amount || !code) {
       router.push("/user-dashboard/gift-card");
     }
-    // Set pre-uploaded image status
-    setHasPreUploadedFront(hasFrontImage);
-    setHasPreUploadedBack(hasBackImage);
-  }, [cardType, country, amount, code, router, hasFrontImage, hasBackImage]);
+    // Set image data from URL params
+    if (frontImageBase64) {
+      setFrontImageData(frontImageBase64);
+    }
+    if (backImageBase64) {
+      setBackImageData(backImageBase64);
+    }
+  }, [cardType, country, amount, code, router, frontImageBase64, backImageBase64]);
 
   const getCardImage = (type: string) => {
     switch (type) {
@@ -91,30 +91,25 @@ const GiftCardSubmitPage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleFrontFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setFrontFile(file);
-  };
-
-  const handleBackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setBackFile(file);
-  };
-
-  const handleRemoveImages = () => {
-    setFrontFile(null);
-    setBackFile(null);
-    setHasPreUploadedFront(false);
-    setHasPreUploadedBack(false);
+  const base64ToFile = (base64: string, filename: string): File => {
+    const arr = base64.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!frontFile && !hasPreUploadedFront) {
+    if (!frontImageData) {
       toast.error("Please upload the front gift card image");
       return;
     }
-    if (!backFile && !hasPreUploadedBack) {
+    if (!backImageData) {
       toast.error("Please upload the back gift card image");
       return;
     }
@@ -145,15 +140,9 @@ const GiftCardSubmitPage = () => {
       formData.append("currency", currency);
       formData.append("code", code);
       
-      // For security, we need the actual file data on this page
-      if (!frontFile) {
-        toast.error("Please upload your front gift card image for verification");
-        return;
-      }
-      if (!backFile) {
-        toast.error("Please upload your back gift card image for verification");
-        return;
-      }
+      // Convert base64 to File objects
+      const frontFile = base64ToFile(frontImageData, 'front-image.jpg');
+      const backFile = base64ToFile(backImageData, 'back-image.jpg');
       
       formData.append("frontImage", frontFile);
       formData.append("backImage", backFile);
@@ -311,6 +300,37 @@ const GiftCardSubmitPage = () => {
                             Pending Review
                           </span>
                         </div>
+                        
+                        {/* Image Previews */}
+                        {(frontImageData || backImageData) && (
+                          <div className="pt-3 border-t border-border/50 mt-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
+                              Uploaded Images:
+                            </p>
+                            <div className="flex gap-2">
+                              {frontImageData && (
+                                <div className="flex-1">
+                                  <img 
+                                    src={frontImageData} 
+                                    alt="Front" 
+                                    className="w-full h-20 object-cover rounded-lg border border-border"
+                                  />
+                                  <p className="text-[9px] text-center text-muted-foreground mt-1">Front</p>
+                                </div>
+                              )}
+                              {backImageData && (
+                                <div className="flex-1">
+                                  <img 
+                                    src={backImageData} 
+                                    alt="Back" 
+                                    className="w-full h-20 object-cover rounded-lg border border-border"
+                                  />
+                                  <p className="text-[9px] text-center text-muted-foreground mt-1">Back</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -345,71 +365,6 @@ const GiftCardSubmitPage = () => {
 
                     <div className="space-y-3 pt-6 border-t border-border">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Upload Card Images
-                      </label>
-                      
-                      {/* Front and Back Image Upload */}
-                      <div className="flex gap-3">
-                        {/* Front Image */}
-                        <div className="flex-1">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFrontFileSelect}
-                            className="hidden"
-                            id="frontImageUpload"
-                          />
-                          <label htmlFor="frontImageUpload" className="cursor-pointer block">
-                            <div className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${
-                              frontFile ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
-                            }`}>
-                              {frontFile ? (
-                                <>
-                                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Front Uploaded</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Camera className="w-4 h-4 text-muted-foreground" />
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Front Image</span>
-                                </>
-                              )}
-                            </div>
-                          </label>
-                        </div>
-
-                        {/* Back Image */}
-                        <div className="flex-1">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleBackFileSelect}
-                            className="hidden"
-                            id="backImageUpload"
-                          />
-                          <label htmlFor="backImageUpload" className="cursor-pointer block">
-                            <div className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${
-                              backFile ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
-                            }`}>
-                              {backFile ? (
-                                <>
-                                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Back Uploaded</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Camera className="w-4 h-4 text-muted-foreground" />
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Back Image</span>
-                                </>
-                              )}
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-6 border-t border-border">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Description (Optional)
                       </label>
                       
@@ -436,7 +391,7 @@ const GiftCardSubmitPage = () => {
                 >
                   <button
                     type="submit"
-                    disabled={isSubmitting || !frontFile || !backFile}
+                    disabled={isSubmitting}
                     className="w-full md:w-auto bg-foreground cursor-pointer text-background px-5 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed group"
                   >
                     {isSubmitting ? (

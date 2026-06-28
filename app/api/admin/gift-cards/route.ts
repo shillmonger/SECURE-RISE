@@ -121,12 +121,13 @@ export async function PATCH(request: NextRequest) {
       updateData.approvedAt = new Date();
       updateData.status = 'approved';
       
-      // Update user balance
-      console.log('Updating user balance for userId:', giftCard.userId, 'amount:', giftCard.amount);
+      // Update user balance with USD amount (fallback to amount for backward compatibility)
+      const amountToCredit = giftCard.usdAmount || giftCard.amount;
+      console.log('Updating user balance for userId:', giftCard.userId, 'usdAmount:', amountToCredit);
       const balanceUpdate = await usersCollection.updateOne(
         { _id: giftCard.userId },
         { 
-          $inc: { accountBalance: giftCard.amount },
+          $inc: { accountBalance: amountToCredit },
           $set: { updatedAt: new Date() }
         }
       );
