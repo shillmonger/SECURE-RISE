@@ -185,7 +185,7 @@ export default function AdminUsersPage() {
       bg: "bg-red-500/10",
     },
     {
-      label: "Total Deposited Users",
+      label: "Users Deposited",
       value: "0",
       icon: Briefcase,
       color: "text-purple-600",
@@ -505,7 +505,7 @@ export default function AdminUsersPage() {
                 <table className="w-full text-left">
                   <tbody>
                     <tr>
-                      <td colSpan={5} className="px-6 py-12">
+                      <td colSpan={5} className="px-6 py-10">
                         <div className="flex items-center justify-center py-20">
                           <div className="text-center">
                             <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />

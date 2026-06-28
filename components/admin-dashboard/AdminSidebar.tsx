@@ -9,7 +9,7 @@ import {
   Wallet,
   Settings,
   User,
-  Briefcase,
+  ScreenShare,
   CircleDollarSign,
   BadgeCheck,
   Gift,
@@ -65,9 +65,10 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       name: "Users",
       icon: Users,
       children: [
-        { name: "User Management", icon: Users, href: `${basePath}/user-management` },
+        { name: "Monitor Users", icon: ScreenShare, href: `${basePath}/monitor-users` },
         { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
         { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc-verification` },
+        { name: "User Management", icon: Users, href: `${basePath}/user-management` },
       ],
     },
 
