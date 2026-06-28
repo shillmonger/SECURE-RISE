@@ -85,7 +85,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       icon: Settings,
       children: [
         { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
-        { name: "Switch to Investor", icon: User, href: "/user-dashboard/dashboard" },
+        { name: "Switch to Trader", icon: User, href: "/user-dashboard/dashboard" },
       ],
     },
   ];

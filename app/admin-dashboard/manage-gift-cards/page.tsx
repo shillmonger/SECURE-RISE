@@ -13,6 +13,7 @@ import {
   CreditCard,
   AlertTriangle,
   Copy,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -101,6 +102,7 @@ export default function AdminGiftCardsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; action: 'approve' | 'reject'; giftCardId: string; userName: string; amount: number; currency: string } | null>(null);
+  const [selectedGiftCard, setSelectedGiftCard] = useState<GiftCard | null>(null);
 
   useEffect(() => {
     fetchGiftCards();
@@ -341,11 +343,8 @@ export default function AdminGiftCardsPage() {
                     <tr>
                       <th className="px-6 py-4">User Details</th>
                       <th className="px-6 py-4">Card Type</th>
-                      <th className="px-6 py-4">Amount</th>
                       <th className="px-6 py-4">Country</th>
                       <th className="px-6 py-4">Card Code</th>
-                      <th className="px-6 py-4">Proof</th>
-                      <th className="px-6 py-4">Description</th>
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4">Status</th>
                       <th className="px-6 py-4 text-right">Actions</th>
@@ -354,7 +353,7 @@ export default function AdminGiftCardsPage() {
                   <tbody className="divide-y divide-border">
                     {filteredGiftCards.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="px-6 py-12">
+                        <td colSpan={7} className="px-6 py-12">
                           <div className="flex items-center justify-center py-20">
                             <div className="text-center">
                               <Gift className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -422,21 +421,6 @@ export default function AdminGiftCardsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="text-xs font-bold text-foreground">
-                                {giftCard.currency}{" "}
-                                <span className="text-sm text-green-600 dark:text-green-400">
-                                  {giftCard.amount.toLocaleString()}
-                                </span>
-                              </span>
-                              {giftCard.usdAmount && giftCard.currency !== 'USD' && (
-                                <span className="text-[10px] text-muted-foreground">
-                                  ≈ ${giftCard.usdAmount.toFixed(2)} USD
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
                             <span className="text-xs font-medium text-muted-foreground px-2 py-1 bg-muted rounded-md">
                               {giftCard.country}
                             </span>
@@ -456,50 +440,6 @@ export default function AdminGiftCardsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex gap-2">
-                              {giftCard.frontImage && (
-                                <a
-                                  href={giftCard.frontImage}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
-                                  title="Front Image"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                  Front
-                                </a>
-                              )}
-                              {giftCard.backImage && (
-                                <a
-                                  href={giftCard.backImage}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
-                                  title="Back Image"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                  Back
-                                </a>
-                              )}
-                              {giftCard.cardImage && !giftCard.frontImage && !giftCard.backImage && (
-                                <a
-                                  href={giftCard.cardImage}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:text-foreground text-xs font-medium underline flex items-center gap-1 transition-colors"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                  Proof
-                                </a>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-xs text-muted-foreground font-medium">
-                              {giftCard.description ? truncateText(giftCard.description, 20) : "—"}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
                             <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
                               {formatDate(giftCard.createdAt)}
                             </span>
@@ -509,6 +449,12 @@ export default function AdminGiftCardsPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => setSelectedGiftCard(giftCard)}
+                                className="p-3 bg-muted/50 rounded-lg text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                              >
+                                <Eye className="w-5 h-5" />
+                              </button>
                               {giftCard.status === "pending_review" ? (
                                 <>
                                   <button
@@ -561,6 +507,222 @@ export default function AdminGiftCardsPage() {
 
         <AdminNav />
       </div>
+
+      {/* Gift Card Detail Popup */}
+      {selectedGiftCard && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl flex flex-col" style={{ height: '90vh' }}>
+
+            {/* Fixed Header */}
+            <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-3">
+                <h3 className="text-sm font-medium text-foreground">Gift Card Details</h3>
+                <StatusPill status={selectedGiftCard.status} />
+              </div>
+              <button
+                onClick={() => setSelectedGiftCard(null)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+              {/* User hero */}
+              <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border">
+                <img
+                  src={selectedGiftCard.userId?.profileImage || defaultProfileImage}
+                  alt={selectedGiftCard.userId?.fullName || "Unknown User"}
+                  className="w-13 h-13 rounded-xl object-cover border border-border flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-medium text-foreground">{selectedGiftCard.userId?.fullName || "Unknown User"}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    @{selectedGiftCard.userId?.username} · {selectedGiftCard.userId?.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Card Information */}
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+                  Card Information
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Card Type</p>
+                    <div className="flex items-center gap-2">
+                      {getCardIcon(selectedGiftCard.cardType)}
+                      <p className="text-sm font-medium text-foreground">{selectedGiftCard.cardType}</p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Country</p>
+                    <p className="text-sm font-medium text-foreground">{selectedGiftCard.country}</p>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Amount</p>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium text-foreground">
+                        {selectedGiftCard.currency} {selectedGiftCard.amount.toLocaleString()}
+                      </p>
+                      {selectedGiftCard.usdAmount && selectedGiftCard.currency !== 'USD' && (
+                        <p className="text-[10px] text-muted-foreground">
+                          ≈ ${selectedGiftCard.usdAmount.toFixed(2)} USD
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Transaction ID</p>
+                    <p className="text-sm font-medium text-foreground font-mono">{selectedGiftCard.transactionId}</p>
+                  </div>
+                </div>
+              </div>
+
+              <hr className="border-border" />
+
+              {/* Card Code */}
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+                  Card Code
+                </p>
+                <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-foreground font-mono flex-1 break-all">{selectedGiftCard.code}</p>
+                    <button
+                      onClick={() => copyToClipboard(selectedGiftCard.code)}
+                      className="p-2 bg-foreground/10 hover:bg-foreground/20 rounded-lg transition-colors cursor-pointer"
+                      title="Copy code"
+                    >
+                      <Copy className="w-4 h-4 text-foreground" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              {selectedGiftCard.description && (
+                <>
+                  <hr className="border-border" />
+                  <div>
+                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+                      Description
+                    </p>
+                    <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                      <p className="text-sm font-medium text-foreground">{selectedGiftCard.description}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <hr className="border-border" />
+
+              {/* Proof Images */}
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+                  Proof Images
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {selectedGiftCard.frontImage && (
+                    <div className="rounded-lg border border-border overflow-hidden bg-muted/30">
+                      <p className="text-[11px] text-muted-foreground px-3 pt-2.5 pb-1.5">Front Image</p>
+                      <img
+                        src={selectedGiftCard.frontImage}
+                        alt="Front of gift card"
+                        className="w-full h-36 object-cover border-t border-border cursor-pointer"
+                        onClick={() => window.open(selectedGiftCard.frontImage, '_blank')}
+                      />
+                    </div>
+                  )}
+                  {selectedGiftCard.backImage && (
+                    <div className="rounded-lg border border-border overflow-hidden bg-muted/30">
+                      <p className="text-[11px] text-muted-foreground px-3 pt-2.5 pb-1.5">Back Image</p>
+                      <img
+                        src={selectedGiftCard.backImage}
+                        alt="Back of gift card"
+                        className="w-full h-36 object-cover border-t border-border cursor-pointer"
+                        onClick={() => window.open(selectedGiftCard.backImage, '_blank')}
+                      />
+                    </div>
+                  )}
+                  {selectedGiftCard.cardImage && !selectedGiftCard.frontImage && !selectedGiftCard.backImage && (
+                    <div className="rounded-lg border border-border overflow-hidden bg-muted/30">
+                      <p className="text-[11px] text-muted-foreground px-3 pt-2.5 pb-1.5">Card Image</p>
+                      <img
+                        src={selectedGiftCard.cardImage}
+                        alt="Gift card proof"
+                        className="w-full h-36 object-cover border-t border-border cursor-pointer"
+                        onClick={() => window.open(selectedGiftCard.cardImage, '_blank')}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <hr className="border-border" />
+
+              {/* Submission Details */}
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+                  Submission Details
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Submitted</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {new Date(selectedGiftCard.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                    <p className="text-[11px] text-muted-foreground mb-1">Last Updated</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {new Date(selectedGiftCard.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Fixed Footer */}
+            <div className="flex-shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
+              {selectedGiftCard.status === "pending_review" ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setSelectedGiftCard(null);
+                      openConfirmModal('reject', selectedGiftCard._id, selectedGiftCard.userId?.fullName || "Unknown User", selectedGiftCard.amount, selectedGiftCard.currency);
+                    }}
+                    className="text-xs font-medium px-4 py-2 rounded-lg border border-red-500/30 bg-red-500/10 text-red-600 hover:opacity-80 transition-opacity cursor-pointer"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedGiftCard(null);
+                      openConfirmModal('approve', selectedGiftCard._id, selectedGiftCard.userId?.fullName || "Unknown User", selectedGiftCard.amount, selectedGiftCard.currency);
+                    }}
+                    className="text-xs font-medium px-4 py-2 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-600 hover:opacity-80 transition-opacity cursor-pointer"
+                  >
+                    Approve
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setSelectedGiftCard(null)}
+                  className="text-xs font-medium px-4 py-2 rounded-lg border border-border bg-muted text-foreground hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  Close
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {confirmModal && (
