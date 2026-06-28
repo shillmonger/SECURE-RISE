@@ -174,7 +174,7 @@ const MakePaymentPage = () => {
               {/* LEFT: Main card — 70% */}
               <div className="bg-card border border-border rounded-[1rem] overflow-hidden shadow-2xl lg:w-[70%]">
                 {/* Method Indicator Bar */}
-                <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-1 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
+                <div className="bg-foreground p-3 py-2 sm:px-4 sm:py-2 text-background flex justify-between flex-wrap items-center gap-1 sm:gap-4">
                   <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                     <div className="bg-yellow-500/20 p-2 sm:p-3 rounded-xl flex items-center justify-center">
                       <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
