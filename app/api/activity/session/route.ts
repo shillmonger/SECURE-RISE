@@ -92,7 +92,17 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body: UpdateActivitySession & { sessionId: string } = await request.json();
+    let body: UpdateActivitySession & { sessionId: string };
+    try {
+      const text = await request.text();
+      if (!text || text.trim() === '') {
+        return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+      }
+      body = JSON.parse(text);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
     const { sessionId, ...updateData } = body;
 
     if (!sessionId) {

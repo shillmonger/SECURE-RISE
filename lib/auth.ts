@@ -28,15 +28,23 @@ export const getAuthUser = async (request: NextRequest): Promise<AuthUser | null
     // If no custom token, try NextAuth session by making a request to session endpoint
     // This is a fallback for Google OAuth users
     try {
-      const sessionUrl = `${process.env.NEXTAUTH_URL}/api/auth/session`;
+      const sessionUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/session`;
+      const cookieHeader = request.headers.get('cookie') || '';
+      
+      console.log('Attempting session fallback, cookie length:', cookieHeader.length);
+      
       const sessionResponse = await fetch(sessionUrl, {
         headers: {
-          cookie: request.headers.get('cookie') || '',
+          cookie: cookieHeader,
         },
       });
 
+      console.log('Session response status:', sessionResponse.status);
+
       if (sessionResponse.ok) {
         const session = await sessionResponse.json();
+        console.log('Session data:', session);
+        
         if (session?.user?.id && session?.user?.email) {
           // Get user from database to get role
           const { connectToDatabase } = await import('./mongodb');
@@ -48,6 +56,7 @@ export const getAuthUser = async (request: NextRequest): Promise<AuthUser | null
           });
 
           if (user) {
+            console.log('Found user from session:', user.email, 'role:', user.role);
             return {
               userId: user._id.toString(),
               email: user.email,
@@ -60,6 +69,7 @@ export const getAuthUser = async (request: NextRequest): Promise<AuthUser | null
       console.error('Session fallback error:', sessionError);
     }
 
+    console.log('No auth found, returning null');
     return null;
   } catch (error) {
     console.error('Auth error:', error);

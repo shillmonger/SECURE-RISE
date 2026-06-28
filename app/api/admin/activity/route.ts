@@ -10,7 +10,12 @@ import { formatSessionDuration, formatRelativeTime } from '@/lib/activity-tracke
 export async function GET(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request);
-    if (!authUser || !authUser.role.includes('admin')) {
+    
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    if (!authUser.role.includes('admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
