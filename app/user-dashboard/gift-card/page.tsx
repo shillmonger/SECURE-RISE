@@ -250,7 +250,7 @@ const GiftCardPage = () => {
 
               {/* Left: Step Form */}
               <div className="flex-1">
-                <div className="bg-card border border-border rounded-[1rem] p-5 md:p-6 shadow-sm">
+                <div className="bg-card border border-border rounded-[1rem] px-4 md:p-6 shadow-sm">
 
                   {/* Step header pill */}
                   <div className="inline-flex items-center gap-2 bg-foreground/5 border border-border rounded-full px-3 py-1.5 mb-5">
@@ -322,7 +322,7 @@ const GiftCardPage = () => {
                   {currentStep === 2 && (
                     <div className="space-y-3">
                       <p className="text-xs font-black uppercase tracking-tight">Select card region</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                         {COUNTRIES.map((country) => {
                           const isSelected = selectedCountry === country.name;
                           return (
@@ -547,7 +547,7 @@ const GiftCardPage = () => {
                         onClick={async () => {
                           if (!canProceed()) return;
                           
-                          // Convert images to base64 for passing to submit page
+                          // Convert images to base64 and store in sessionStorage
                           let frontImageData = '';
                           let backImageData = '';
                           
@@ -567,6 +567,10 @@ const GiftCardPage = () => {
                             });
                           }
                           
+                          // Store image data in sessionStorage
+                          sessionStorage.setItem('giftCardFrontImage', frontImageData);
+                          sessionStorage.setItem('giftCardBackImage', backImageData);
+                          
                           const params = new URLSearchParams({
                             cardType: selectedCardType,
                             country: selectedCountry,
@@ -574,13 +578,6 @@ const GiftCardPage = () => {
                             currency: getSelectedCountryData()?.currency || 'USD',
                             code: cardCode,
                           });
-                          
-                          if (frontImageData) {
-                            params.append('frontImage', frontImageData);
-                          }
-                          if (backImageData) {
-                            params.append('backImage', backImageData);
-                          }
                           
                           window.location.href = `/user-dashboard/gift-card/submit?${params.toString()}`;
                         }}

@@ -49,22 +49,27 @@ const GiftCardSubmitPage = () => {
   const amount = searchParams.get("amount") || "";
   const currency = searchParams.get("currency") || "USD";
   const code = searchParams.get("code") || "";
-  const frontImageBase64 = searchParams.get("frontImage") || "";
-  const backImageBase64 = searchParams.get("backImage") || "";
 
   useEffect(() => {
     // If no required data, redirect back to gift card page
     if (!cardType || !country || !amount || !code) {
       router.push("/user-dashboard/gift-card");
     }
-    // Set image data from URL params
-    if (frontImageBase64) {
-      setFrontImageData(frontImageBase64);
+    // Retrieve image data from sessionStorage
+    const frontImage = sessionStorage.getItem('giftCardFrontImage') || '';
+    const backImage = sessionStorage.getItem('giftCardBackImage') || '';
+    
+    if (frontImage) {
+      setFrontImageData(frontImage);
     }
-    if (backImageBase64) {
-      setBackImageData(backImageBase64);
+    if (backImage) {
+      setBackImageData(backImage);
     }
-  }, [cardType, country, amount, code, router, frontImageBase64, backImageBase64]);
+    
+    // Clear sessionStorage after retrieving data
+    sessionStorage.removeItem('giftCardFrontImage');
+    sessionStorage.removeItem('giftCardBackImage');
+  }, [cardType, country, amount, code, router]);
 
   const getCardImage = (type: string) => {
     switch (type) {
