@@ -81,8 +81,8 @@ export default function LiveUserActivity({ filterStatus, setFilterStatus, onMoni
   useEffect(() => {
     fetchUsers();
     
-    // Refresh every 10 seconds
-    const interval = setInterval(fetchUsers, 10000);
+    // Refresh every 50 seconds
+    const interval = setInterval(fetchUsers, 50000);
     
     return () => clearInterval(interval);
   }, [filterStatus, activeFilters]);

@@ -37,7 +37,7 @@ export default function TrafficOverview() {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 10000);
+    const interval = setInterval(fetchData, 50000);
     return () => clearInterval(interval);
   }, []);
 

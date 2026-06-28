@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Search, RefreshCw, Users, Wifi, WifiOff, Clock, Navigation, ScrollText, Shield, BarChart,
   X, Smartphone, Laptop, Globe, Eye, ShieldCheck, Zap, EyeOff, Network, 
-  BarChart2, Activity, Layers, Radar, Terminal,
+  BarChart2, Activity, Layers, Radar, Terminal, Play, Pause,
   SlidersHorizontal, Info, CheckCircle, AlertTriangle, AlertCircle, ShieldAlert,
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
@@ -93,7 +93,7 @@ function LiveStats() {
     };
 
     fetchStats();
-    const interval = setInterval(fetchStats, 10000);
+    const interval = setInterval(fetchStats, 50000);
     return () => clearInterval(interval);
   }, []);
 
@@ -228,6 +228,41 @@ function QuickFilters({ active, onToggle, onReset }: { active: string[]; onToggl
 // ─── SECTION 12: Enhanced Monitor Modal ───────────────────────────────────────
 function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => void }) {
   const [tab, setTab] = useState<ModalTab>("overview");
+  const [currentUser, setCurrentUser] = useState<LiveUser>(user);
+  const [isPaused, setIsPaused] = useState(false);
+  const [seenEventIds, setSeenEventIds] = useState<Set<string>>(new Set());
+
+  // Refresh user data every 10 seconds when not paused
+  useEffect(() => {
+    if (isPaused) return;
+
+    const refreshUserData = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const updatedUser = data.users?.find((u: LiveUser) => u.id === user.id);
+          if (updatedUser) {
+            setCurrentUser(updatedUser);
+            
+            // Mark all current events as seen
+            const newSeenIds = new Set(seenEventIds);
+            updatedUser.activityFeed.forEach((ev: any) => {
+              const eventId = `${ev.time}_${ev.action}_${ev.page}`;
+              newSeenIds.add(eventId);
+            });
+            setSeenEventIds(newSeenIds);
+          }
+        }
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    };
+
+    refreshUserData();
+    const interval = setInterval(refreshUserData, 10000);
+    return () => clearInterval(interval);
+  }, [user.id, isPaused, seenEventIds]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -247,12 +282,12 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
 
   function OverviewTab() {
     const items = [
-      { l: "Full Name", v: user.fullName }, { l: "Username", v: `@${user.username}` },
-      { l: "Email", v: user.email }, { l: "Role", v: user.role.toUpperCase() },
-      { l: "Country", v: user.country }, { l: "City", v: user.city },
-      { l: "IP Address", v: user.ipAddress }, { l: "Login Time", v: user.loginTime },
-      { l: "Session", v: user.sessionDuration }, { l: "Current Page", v: user.currentPage },
-      { l: "Browser", v: user.browser }, { l: "OS", v: user.os },
+      { l: "Full Name", v: currentUser.fullName }, { l: "Username", v: `@${currentUser.username}` },
+      { l: "Email", v: currentUser.email }, { l: "Role", v: currentUser.role.toUpperCase() },
+      { l: "Country", v: currentUser.country }, { l: "City", v: currentUser.city },
+      { l: "IP Address", v: currentUser.ipAddress }, { l: "Login Time", v: currentUser.loginTime },
+      { l: "Session", v: currentUser.sessionDuration }, { l: "Current Page", v: currentUser.currentPage },
+      { l: "Browser", v: currentUser.browser }, { l: "OS", v: currentUser.os },
     ];
     return (
       <div className="grid grid-cols-2 gap-2">
@@ -271,20 +306,55 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
       navigation: "text-cyan-400", action: "text-emerald-400", form: "text-violet-400",
       scroll: "text-amber-400", deposit: "text-emerald-300", auth: "text-rose-400",
     };
+
+    // Format activity text to be more descriptive
+    const formatActivityText = (ev: any) => {
+      const username = currentUser.fullName || currentUser.username;
+      switch (ev.category) {
+        case "navigation":
+          return `${username} navigated to ${ev.page || ev.action}`;
+        case "form":
+          return `${username} submitted form on ${ev.page || ev.action}`;
+        case "scroll":
+          return `${username} scrolled to ${ev.action} on ${ev.page}`;
+        case "deposit":
+          return `${username} made a deposit action`;
+        case "auth":
+          return `${username} performed authentication activity`;
+        default:
+          return `${username}: ${ev.action}`;
+      }
+    };
+
+    // Check if event is new (not seen before)
+    const isNewEvent = (ev: any) => {
+      const eventId = `${ev.time}_${ev.action}_${ev.page}`;
+      return !seenEventIds.has(eventId);
+    };
+
     return (
       <div className="bg-black/40 rounded-xl border border-emerald-500/20 p-4 h-full overflow-y-auto" style={{ minHeight: 300 }}>
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-emerald-500/20">
           <Terminal className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-emerald-400 text-[10px] font-bold tracking-widest font-mono">ACTIVITY_STREAM v2.4.1</span>
-          <span className="ml-auto inline-block w-2 h-3 bg-emerald-400 animate-pulse" />
+          <span className={`ml-auto inline-block w-2 h-3 ${isPaused ? "bg-amber-400" : "bg-emerald-400 animate-pulse"}`} />
+          <button
+            onClick={() => setIsPaused(!isPaused)}
+            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${isPaused ? "border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20" : "border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20"}`}
+            title={isPaused ? "Resume refresh" : "Pause refresh"}
+          >
+            {isPaused ? <Play className="w-3 h-3 text-emerald-400" /> : <Pause className="w-3 h-3 text-amber-400" />}
+          </button>
         </div>
-        {user.activityFeed.map((ev, i) => {
-          const col = catColor[ev.category] || "text-emerald-400";
+        {currentUser.activityFeed.map((ev, i) => {
+          const isNew = isNewEvent(ev);
+          const col = isNew ? "text-emerald-400" : "text-amber-700"; // Green for new, brown for old
+          const formattedText = formatActivityText(ev);
           return (
-            <div key={i} className="flex items-start gap-3 py-2 border-b border-emerald-500/10 last:border-0 group hover:bg-emerald-500/5 transition-all px-2 rounded-lg">
-              <span className="text-emerald-500/60 text-[10px] font-mono shrink-0 w-16 pt-0.5">{ev.time}</span>
+            <div key={i} className={`flex items-start gap-3 py-2 border-b ${isNew ? "border-emerald-500/10" : "border-amber-900/20"} last:border-0 group hover:bg-emerald-500/5 transition-all px-2 rounded-lg`}>
+              <span className={`${isNew ? "text-emerald-500/60" : "text-amber-700/60"} text-[10px] font-mono shrink-0 w-16 pt-0.5`}>{ev.time}</span>
               <Globe className={`w-3 h-3 shrink-0 mt-0.5 ${col}`} />
-              <span className={`${col} text-[11px] font-mono leading-snug`}>{ev.action}</span>
+              <span className={`${col} text-[11px] font-mono leading-snug`}>{formattedText}</span>
             </div>
           );
         })}
@@ -294,8 +364,8 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
 
   function SecurityTab() {
     const flags = [
-      { label: "VPN Detected", value: user.vpnDetected, icon: EyeOff },
-      { label: "New Device", value: user.newDevice, icon: Smartphone },
+      { label: "VPN Detected", value: currentUser.vpnDetected, icon: EyeOff },
+      { label: "New Device", value: currentUser.newDevice, icon: Smartphone },
       { label: "Multiple IPs", value: false, icon: Network },
       { label: "Failed Logins", value: false, icon: Shield },
     ];
@@ -314,8 +384,8 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
         </div>
         <div className="p-3 bg-muted/20 rounded-xl border border-border">
           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">IP Address</p>
-          <p className="text-sm font-mono font-bold text-foreground">{user.ipAddress}</p>
-          <p className="text-[9px] text-muted-foreground mt-1">Geolocation: {user.city}, {user.country}</p>
+          <p className="text-sm font-mono font-bold text-foreground">{currentUser.ipAddress}</p>
+          <p className="text-[9px] text-muted-foreground mt-1">Geolocation: {currentUser.city}, {currentUser.country}</p>
         </div>
       </div>
     );
@@ -325,19 +395,19 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
     return (
       <div className="space-y-3">
         <div className="p-4 bg-muted/20 rounded-xl border border-primary/20 flex items-start gap-4">
-          {user.device === "mobile" ? <Smartphone className="w-8 h-8 text-primary" /> : <Laptop className="w-8 h-8 text-primary" />}
+          {currentUser.device === "mobile" ? <Smartphone className="w-8 h-8 text-primary" /> : <Laptop className="w-8 h-8 text-primary" />}
           <div>
             <p className="text-xs font-black text-foreground uppercase tracking-tight">Current Device</p>
-            <p className="text-sm font-bold text-primary">{user.device.charAt(0).toUpperCase() + user.device.slice(1)}</p>
-            <p className="text-[10px] text-muted-foreground mt-1">{user.os} · {user.browser}</p>
-            <p className="text-[9px] font-mono text-muted-foreground mt-0.5">{user.ipAddress}</p>
-            {user.newDevice && <span className="inline-block mt-1.5 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-black uppercase rounded">New Device</span>}
+            <p className="text-sm font-bold text-primary">{currentUser.device.charAt(0).toUpperCase() + currentUser.device.slice(1)}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">{currentUser.os} · {currentUser.browser}</p>
+            <p className="text-[9px] font-mono text-muted-foreground mt-0.5">{currentUser.ipAddress}</p>
+            {currentUser.newDevice && <span className="inline-block mt-1.5 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-black uppercase rounded">New Device</span>}
           </div>
         </div>
         <div className="p-3 bg-muted/20 rounded-xl border border-border">
           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Session Info</p>
           <div className="grid grid-cols-2 gap-2">
-            {[["Login Time", user.loginTime], ["Duration", user.sessionDuration], ["Browser", user.browser], ["OS", user.os]].map(([l, v]) => (
+            {[["Login Time", currentUser.loginTime], ["Duration", currentUser.sessionDuration], ["Browser", currentUser.browser], ["OS", currentUser.os]].map(([l, v]) => (
               <div key={l}><p className="text-[9px] text-muted-foreground">{l}</p><p className="text-xs font-bold text-foreground">{v}</p></div>
             ))}
           </div>
@@ -351,7 +421,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
       <div className="space-y-3">
         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Pages Visited This Session</p>
         <div className="space-y-2">
-          {user.pagesVisited.map((page, i) => {
+          {currentUser.pagesVisited.map((page, i) => {
             return (
               <div key={page} className="flex items-center gap-3 p-3 bg-muted/20 rounded-xl border border-border hover:border-primary/20 transition-all">
                 <span className="text-[9px] text-muted-foreground font-mono w-4">{i + 1}</span>
@@ -365,7 +435,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
         <div className="p-3 bg-muted/20 rounded-xl border border-border">
           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Navigation Stats</p>
           <div className="grid grid-cols-2 gap-2">
-            {[["Pages Today", user.pageVisitsToday], ["Current", user.currentPage]].map(([l, v]) => (
+            {[["Pages Today", currentUser.pageVisitsToday], ["Current", currentUser.currentPage]].map(([l, v]) => (
               <div key={l as string}><p className="text-[9px] text-muted-foreground">{l}</p><p className="text-sm font-black text-foreground">{v}</p></div>
             ))}
           </div>
@@ -378,7 +448,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
     return (
       <div className="relative pl-5">
         <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
-        {user.activityFeed.map((ev, i) => {
+        {currentUser.activityFeed.map((ev, i) => {
           return (
             <div key={i} className="relative mb-4 last:mb-0">
               <div className="absolute -left-3 w-3 h-3 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
@@ -399,8 +469,8 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
 
   function StatisticsTab() {
     const stats = [
-      { label: "Page Visits Today", value: user.pageVisitsToday, max: 30, color: "#6366f1" },
-      { label: "Scroll Progress", value: user.scrollProgress, max: 100, color: "#f43f5e", suffix: "%" },
+      { label: "Page Visits Today", value: currentUser.pageVisitsToday, max: 30, color: "#6366f1" },
+      { label: "Scroll Progress", value: currentUser.scrollProgress, max: 100, color: "#f43f5e", suffix: "%" },
     ];
     return (
       <div className="grid grid-cols-2 gap-3">
@@ -566,9 +636,9 @@ export default function AdminSOCPage() {
   const [selectedUser, setSelectedUser] = useState<LiveUser | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<FloatNotif[]>([]);
-  const [activityData, setActivityData] = useState<any[]>([]);
+  const [seenEventIds, setSeenEventIds] = useState<Set<string>>(new Set());
 
-  // Fetch real activity data for notifications
+  // Fetch real activity data for notifications and detect new events
   useEffect(() => {
     const fetchActivity = async () => {
       try {
@@ -577,23 +647,67 @@ export default function AdminSOCPage() {
           const data = await response.json();
           const users = data.users || [];
           
-          // Collect recent activity events from all users
-          const recentEvents: any[] = [];
+          // Collect all activity events from all users
+          const allEvents: any[] = [];
           users.forEach((user: any) => {
             if (user.activityFeed && user.activityFeed.length > 0) {
               user.activityFeed.forEach((event: any) => {
-                recentEvents.push({
+                allEvents.push({
                   ...event,
                   username: user.username,
                   fullName: user.fullName,
+                  eventId: `${user.username}_${event.time}_${event.action}` // Unique identifier
                 });
               });
             }
           });
 
-          // Sort by time (most recent first) and take latest 20
-          recentEvents.sort((a, b) => b.time.localeCompare(a.time));
-          setActivityData(recentEvents.slice(0, 20));
+          // Sort by time (most recent first)
+          allEvents.sort((a, b) => b.time.localeCompare(a.time));
+
+          // Find new events (events we haven't seen before)
+          const newEvents = allEvents.filter(event => !seenEventIds.has(event.eventId));
+
+          // Show notifications for new events immediately
+          newEvents.forEach(event => {
+            const id = `notif_${Date.now()}_${Math.random()}`;
+            let severity: Severity = "info";
+            let text = "";
+
+            // Determine severity and format text based on event category
+            switch (event.category) {
+              case "form":
+                severity = "success";
+                text = `${event.fullName} submitted form on ${event.page}`;
+                break;
+              case "navigation":
+                severity = "info";
+                text = `${event.fullName} navigated to ${event.page}`;
+                break;
+              case "scroll":
+                severity = "info";
+                text = `${event.fullName} scrolled on ${event.page}`;
+                break;
+              case "deposit":
+                severity = "success";
+                text = `${event.fullName} made a deposit`;
+                break;
+              case "auth":
+                severity = "warning";
+                text = `${event.fullName} authentication activity`;
+                break;
+              default:
+                severity = "info";
+                text = `${event.fullName}: ${event.action}`;
+            }
+
+            setNotifications(prev => [...prev, { id, text, severity }]);
+            setTimeout(() => setNotifications(prev => prev.filter(x => x.id !== id)), 5000);
+          });
+
+          // Update seen events (keep only last 100 to avoid memory issues)
+          const newSeenIds = new Set(allEvents.slice(0, 100).map(e => e.eventId));
+          setSeenEventIds(newSeenIds);
         }
       } catch (error) {
         console.error('Error fetching activity data:', error);
@@ -601,55 +715,9 @@ export default function AdminSOCPage() {
     };
 
     fetchActivity();
-    const interval = setInterval(fetchActivity, 10000);
+    const interval = setInterval(fetchActivity, 50000);
     return () => clearInterval(interval);
-  }, []);
-
-  // Generate notifications from real activity data
-  useEffect(() => {
-    if (activityData.length === 0) return;
-
-    const interval = setInterval(() => {
-      // Pick a random recent activity to show as notification
-      const randomEvent = activityData[Math.floor(Math.random() * Math.min(activityData.length, 5))];
-      if (randomEvent) {
-        const id = `notif_${Date.now()}`;
-        let severity: Severity = "info";
-        let text = "";
-
-        // Determine severity and format text based on event category
-        switch (randomEvent.category) {
-          case "form":
-            severity = "success";
-            text = `${randomEvent.fullName} submitted form on ${randomEvent.page}`;
-            break;
-          case "navigation":
-            severity = "info";
-            text = `${randomEvent.fullName} navigated to ${randomEvent.page}`;
-            break;
-          case "scroll":
-            severity = "info";
-            text = `${randomEvent.fullName} scrolled on ${randomEvent.page}`;
-            break;
-          case "deposit":
-            severity = "success";
-            text = `${randomEvent.fullName} made a deposit`;
-            break;
-          case "auth":
-            severity = "warning";
-            text = `${randomEvent.fullName} authentication activity`;
-            break;
-          default:
-            severity = "info";
-            text = `${randomEvent.fullName}: ${randomEvent.action}`;
-        }
-
-        setNotifications(prev => [...prev, { id, text, severity }]);
-        setTimeout(() => setNotifications(prev => prev.filter(x => x.id !== id)), 5000);
-      }
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [activityData]);
+  }, [seenEventIds]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);

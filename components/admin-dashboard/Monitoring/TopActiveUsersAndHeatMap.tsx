@@ -50,7 +50,7 @@ function UserLeaderboard() {
     };
 
     fetchUsers();
-    const interval = setInterval(fetchUsers, 10000);
+    const interval = setInterval(fetchUsers, 50000);
     return () => clearInterval(interval);
   }, []);
 
