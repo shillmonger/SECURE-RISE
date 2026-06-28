@@ -68,6 +68,22 @@ export async function GET(request: NextRequest) {
       // Sort all events by time (newest first)
       allEvents.sort((a, b) => b.time.localeCompare(a.time));
       
+      // Calculate status based on last activity time
+      let calculatedStatus: UserStatus = 'offline';
+      if (activity) {
+        const now = new Date();
+        const lastActivityTime = new Date(activity.lastActivity);
+        const diffMinutes = (now.getTime() - lastActivityTime.getTime()) / (1000 * 60);
+        
+        if (diffMinutes <= 10) {
+          calculatedStatus = 'online';
+        } else if (diffMinutes > 10 && diffMinutes <= 30) {
+          calculatedStatus = 'away';
+        } else {
+          calculatedStatus = 'offline';
+        }
+      }
+      
       // If user has no activity, show as offline with default values
       if (!activity) {
         return {
@@ -100,7 +116,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Apply status filter if needed
-      if (statusFilter && statusFilter !== 'all' && activity.status !== statusFilter) {
+      if (statusFilter && statusFilter !== 'all' && calculatedStatus !== statusFilter) {
         return null;
       }
       
@@ -110,7 +126,7 @@ export async function GET(request: NextRequest) {
         username: user.username || 'unknown',
         email: user.email || '',
         role: user.role?.includes('admin') ? 'admin' : user.role?.includes('vip') ? 'vip' : 'user',
-        status: activity.status,
+        status: calculatedStatus,
         currentPage: activity.currentPage,
         currentUrl: activity.currentUrl,
         lastActivity: formatRelativeTime(activity.lastActivity),

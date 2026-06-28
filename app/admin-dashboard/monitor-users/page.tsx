@@ -231,6 +231,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
   const [currentUser, setCurrentUser] = useState<LiveUser>(user);
   const [isPaused, setIsPaused] = useState(false);
   const [seenEventIds, setSeenEventIds] = useState<Set<string>>(new Set());
+  const activityScrollRef = useRef<HTMLDivElement>(null);
 
   // Refresh user data every 10 seconds when not paused
   useEffect(() => {
@@ -238,6 +239,9 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
 
     const refreshUserData = async () => {
       try {
+        // Save scroll position before refresh
+        const scrollPosition = activityScrollRef.current?.scrollTop || 0;
+
         const response = await fetch('/api/admin/activity');
         if (response.ok) {
           const data = await response.json();
@@ -252,6 +256,13 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
               newSeenIds.add(eventId);
             });
             setSeenEventIds(newSeenIds);
+
+            // Restore scroll position after refresh
+            setTimeout(() => {
+              if (activityScrollRef.current) {
+                activityScrollRef.current.scrollTop = scrollPosition;
+              }
+            }, 0);
           }
         }
       } catch (error) {
@@ -260,7 +271,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
     };
 
     refreshUserData();
-    const interval = setInterval(refreshUserData, 10000);
+    const interval = setInterval(refreshUserData, 20000);
     return () => clearInterval(interval);
   }, [user.id, isPaused, seenEventIds]);
 
@@ -333,7 +344,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
     };
 
     return (
-      <div className="bg-black/40 rounded-xl border border-emerald-500/20 p-4 h-full overflow-y-auto" style={{ minHeight: 300 }}>
+      <div ref={activityScrollRef} className="bg-black/40 rounded-xl border border-emerald-500/20 p-4 h-full overflow-y-auto" style={{ minHeight: 300 }}>
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-emerald-500/20">
           <Terminal className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-emerald-400 text-[10px] font-bold tracking-widest font-mono">ACTIVITY_STREAM v2.4.1</span>
