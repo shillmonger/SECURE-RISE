@@ -21,84 +21,6 @@ import LiveUserActivity from "@/components/admin-dashboard/Monitoring/LiveUserAc
 import { LiveUser, UserStatus, ActivityEvent, ModalTab, DeviceType } from "@/types/monitoring";
 
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const PAGE_ICONS: Record<string, React.ElementType> = {
-  Dashboard: BarChart2, Deposit: Activity, Withdraw: Activity,
-  Trading: Activity, Referrals: Activity, Profile: Globe, Verification: ShieldCheck,
-  Notifications: Globe, Wallet: Globe, Support: Globe, "Login Page": Globe,
-};
-
-const MOCK_ACTIVITY_FEED: ActivityEvent[] = [
-  { time: "08:32:12", action: "Opened Notifications", icon: Globe, category: "navigation" },
-  { time: "08:31:55", action: "Returned to Dashboard", icon: BarChart2, category: "navigation" },
-  { time: "08:31:20", action: "Opened Referral Page", icon: Activity, category: "navigation" },
-  { time: "08:31:10", action: "Viewed Wallet", icon: Globe, category: "navigation" },
-  { time: "08:30:37", action: "Redirected to Payment", icon: Activity, category: "action" },
-  { time: "08:30:35", action: "Submitted Deposit $500", icon: Activity, category: "form" },
-  { time: "08:30:31", action: "Entered Amount: $500", icon: Activity, category: "form" },
-  { time: "08:30:28", action: "Opened Deposit Modal", icon: Activity, category: "action" },
-  { time: "08:30:24", action: "Scrolled to 65%", icon: Activity, category: "scroll" },
-  { time: "08:30:20", action: "Clicked Deposit", icon: Activity, category: "action" },
-  { time: "08:30:15", action: "Opened Dashboard", icon: BarChart2, category: "navigation" },
-];
-
-function generateUser(id: number): LiveUser {
-  const names = [
-    ["Alexis Morgan", "alexism"], ["Darius Kane", "dkane99"], ["Sofia Reyes", "sofiar"],
-    ["Marcus Bell", "marcusb"], ["Yuna Park", "yunapark"], ["Ethan Cole", "ethancole"],
-    ["Priya Sharma", "priya_s"], ["Luca Ferri", "lucaferri"], ["Amara Diallo", "amarad"],
-    ["Noah Chen", "noahchen"], ["Isla Stewart", "islast"], ["Jamal Okafor", "jamalo"],
-    ["Mia Johansson", "mia_j"], ["Riku Tanaka", "riketanaka"], ["Chloe Martin", "chloem"],
-    ["Finn Walsh", "finnw"], ["Zara Ali", "zara_ali"], ["Oscar Pham", "oscarp"],
-    ["Nia Jackson", "niajax"], ["Leo Russo", "leor"], ["Hana Kim", "hanakm"],
-    ["Dante Cruz", "dantecruz"], ["Vera Popov", "verapop"], ["Kwame Asante", "kwamea"],
-    ["Aria Nguyen", "ariangn"], ["Felix Bauer", "felixb"], ["Sienna Moore", "sienna_m"],
-    ["Tariq Hassan", "tariqh"], ["Luna Castillo", "lunac"], ["Ben O'Brien", "benob"],
-  ];
-  const pages = ["Dashboard", "Deposit", "Withdraw", "Trading", "Referrals", "Profile", "Verification", "Notifications", "Wallet", "Support"];
-  const statuses: UserStatus[] = ["online", "online", "online", "away", "offline"];
-  const devices: DeviceType[] = ["desktop", "mobile", "tablet"];
-  const browsers = ["Chrome 124", "Firefox 125", "Safari 17", "Edge 124", "Brave 1.65"];
-  const oss = ["Windows 11", "macOS 14", "Ubuntu 22.04", "iOS 17", "Android 14"];
-  const countries = ["Nigeria", "United States", "United Kingdom", "Germany", "Japan", "Brazil", "France", "Canada", "Australia", "UAE"];
-  const cities = ["Lagos", "New York", "London", "Berlin", "Tokyo", "São Paulo", "Paris", "Toronto", "Sydney", "Dubai"];
-  const durations = ["35s", "2m 14s", "4m 18s", "8m 05s", "12m 33s", "25m", "38m 12s", "1h 05m", "1h 42m", "2h 11m"];
-  const lastActivities = ["Just now", "4 seconds ago", "12 seconds ago", "30 seconds ago", "1 minute ago", "2 minutes ago", "5 minutes ago", "12 minutes ago"];
-
-  const [fullName, username] = names[id % names.length];
-  const status = statuses[id % statuses.length];
-
-  return {
-    id: `user_${id}`,
-    fullName,
-    username,
-    email: `${username}@riseplatform.io`,
-    role: id % 7 === 0 ? "vip" : id % 11 === 0 ? "admin" : "user",
-    status,
-    currentPage: pages[id % pages.length],
-    currentUrl: `/dashboard/${pages[id % pages.length].toLowerCase()}`,
-    lastActivity: lastActivities[id % lastActivities.length],
-    device: devices[id % devices.length],
-    browser: browsers[id % browsers.length],
-    os: oss[id % oss.length],
-    sessionDuration: durations[id % durations.length],
-    country: countries[id % countries.length],
-    city: cities[id % cities.length],
-    ipAddress: `${192 + (id % 3)}.${168}.${id % 255}.${(id * 7) % 255}`,
-    loginTime: `${String(8 + (id % 4)).padStart(2, "0")}:${String(id % 60).padStart(2, "0")}:${String((id * 3) % 60).padStart(2, "0")}`,
-    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-    timeOnPage: durations[(id + 2) % durations.length],
-    activityFeed: MOCK_ACTIVITY_FEED,
-    pageVisitsToday: 3 + (id % 18),
-    scrollProgress: 20 + (id % 80),
-    pagesVisited: pages.slice(0, 3 + (id % 5)),
-    vpnDetected: id % 8 === 0,
-    newDevice: id % 6 === 0,
-  };
-}
-
-const MOCK_USERS: LiveUser[] = Array.from({ length: 30 }, (_, i) => generateUser(i));
-
 // ─── Helper Components ────────────────────────────────────────────────────────
 
 function UserStatusBadge({ status }: { status: UserStatus }) {
@@ -135,24 +57,53 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 }
 
 function LiveStats() {
-  const onlineCount = MOCK_USERS.filter(u => u.status === "online").length;
-  const offlineCount = MOCK_USERS.filter(u => u.status === "offline").length;
-  const awayCount = MOCK_USERS.filter(u => u.status === "away").length;
+  const [stats, setStats] = useState({
+    online: 0,
+    offline: 0,
+    away: 0,
+    countries: 0,
+    sessions: 0,
+  });
 
-  const stats = [
-    { label: "Active Users", value: onlineCount, icon: Wifi, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-    { label: "Offline", value: offlineCount, icon: WifiOff, color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
-    { label: "Idle / Away", value: awayCount, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-    { label: "Countries", value: 10, icon: Globe, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
-    { label: "Active Sessions", value: 30, icon: Layers, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-    { label: "Events / Min", value: 48, icon: Activity, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-    { label: "Requests", value: 312, icon: Zap, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/admin/activity');
+        if (response.ok) {
+          const data = await response.json();
+          const users = data.users || [];
+          setStats({
+            online: users.filter((u: LiveUser) => u.status === 'online').length,
+            offline: users.filter((u: LiveUser) => u.status === 'offline').length,
+            away: users.filter((u: LiveUser) => u.status === 'away').length,
+            countries: new Set(users.map((u: LiveUser) => u.country)).size,
+            sessions: users.length,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+
+    fetchStats();
+    const interval = setInterval(fetchStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const statsArray = [
+    { label: "Active Users", value: stats.online, icon: Wifi, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    { label: "Offline", value: stats.offline, icon: WifiOff, color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
+    { label: "Idle / Away", value: stats.away, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+    { label: "Countries", value: stats.countries, icon: Globe, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
+    { label: "Active Sessions", value: stats.sessions, icon: Layers, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+    { label: "Events / Min", value: 0, icon: Activity, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    { label: "Requests", value: 0, icon: Zap, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
     { label: "Security Score", value: 94, suffix: "%", icon: ShieldCheck, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
   ];
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-      {stats.map((s, i) => (
+      {statsArray.map((s, i) => (
         <div key={i} className={`bg-card border ${s.border} rounded-xl px-4 py-3 hover:scale-[1.02] transition-all group relative overflow-hidden`}>
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(ellipse at top left, rgba(255,255,255,0.02), transparent 70%)" }} />
           <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>
@@ -264,8 +215,6 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
     { key: "statistics", label: "Statistics", icon: BarChart },
   ];
 
-  const PageIcon = PAGE_ICONS[user.currentPage] || Globe;
-
   function OverviewTab() {
     const items = [
       { l: "Full Name", v: user.fullName }, { l: "Username", v: `@${user.username}` },
@@ -300,12 +249,11 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
           <span className="ml-auto inline-block w-2 h-3 bg-emerald-400 animate-pulse" />
         </div>
         {user.activityFeed.map((ev, i) => {
-          const Icon = ev.icon;
           const col = catColor[ev.category] || "text-emerald-400";
           return (
             <div key={i} className="flex items-start gap-3 py-2 border-b border-emerald-500/10 last:border-0 group hover:bg-emerald-500/5 transition-all px-2 rounded-lg">
               <span className="text-emerald-500/60 text-[10px] font-mono shrink-0 w-16 pt-0.5">{ev.time}</span>
-              <Icon className={`w-3 h-3 shrink-0 mt-0.5 ${col}`} />
+              <Globe className={`w-3 h-3 shrink-0 mt-0.5 ${col}`} />
               <span className={`${col} text-[11px] font-mono leading-snug`}>{ev.action}</span>
             </div>
           );
@@ -374,11 +322,10 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Pages Visited This Session</p>
         <div className="space-y-2">
           {user.pagesVisited.map((page, i) => {
-            const Icon = PAGE_ICONS[page] || Globe;
             return (
               <div key={page} className="flex items-center gap-3 p-3 bg-muted/20 rounded-xl border border-border hover:border-primary/20 transition-all">
                 <span className="text-[9px] text-muted-foreground font-mono w-4">{i + 1}</span>
-                <div className="p-1.5 bg-primary/10 rounded-lg"><Icon className="w-3.5 h-3.5 text-primary" /></div>
+                <div className="p-1.5 bg-primary/10 rounded-lg"><Globe className="w-3.5 h-3.5 text-primary" /></div>
                 <span className="text-xs font-black uppercase tracking-tight text-foreground">{page}</span>
                 {i === 0 && <span className="ml-auto text-[8px] font-black uppercase text-muted-foreground">current</span>}
               </div>
@@ -473,7 +420,7 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">@{user.username} · {user.country}</p>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/30 border border-border rounded-lg">
-              <PageIcon className="w-3.5 h-3.5 text-primary" />
+              <Globe className="w-3.5 h-3.5 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-wider text-foreground">{user.currentPage}</span>
             </div>
             {user.vpnDetected && (
@@ -622,16 +569,6 @@ export default function AdminSOCPage() {
   const toggleFilter = (f: string) => {
     setActiveFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
   };
-
-  const filteredUsers = MOCK_USERS.filter((u) => {
-    const q = searchTerm.toLowerCase();
-    const matchSearch = !q || u.fullName.toLowerCase().includes(q) || u.username.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) || u.country.toLowerCase().includes(q) ||
-      u.ipAddress.includes(q) || u.device.toLowerCase().includes(q) || u.browser.toLowerCase().includes(q) ||
-      u.currentPage.toLowerCase().includes(q);
-    const matchStatus = filterStatus === "all" || u.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
 
   return (
     <div className="flex h-screen overflow-hidden bg-background font-sans">

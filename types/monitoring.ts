@@ -7,7 +7,6 @@ export type ModalTab = "overview" | "activity" | "security" | "devices" | "navig
 export interface ActivityEvent {
   time: string;
   action: string;
-  icon: React.ElementType;
   category: "navigation" | "action" | "form" | "scroll" | "deposit" | "auth" | "withdraw" | "trading";
   page?: string;
   metadata?: Record<string, any>;
@@ -39,11 +38,4 @@ export interface LiveUser {
   pagesVisited: string[];
   vpnDetected: boolean;
   newDevice: boolean;
-  buttonsClicked: number;
-  formsSubmitted: number;
-  navigationCount: number;
-  activityScore: number;
-  connection: "excellent" | "good" | "poor";
-  mouseActivity: string;
-  keyboardActivity: string;
 }
