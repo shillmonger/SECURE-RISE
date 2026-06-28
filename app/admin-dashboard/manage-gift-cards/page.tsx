@@ -27,6 +27,7 @@ interface GiftCard {
   country: string;
   amount: number;
   currency: string;
+  usdAmount?: number;
   code: string;
   frontImage?: string;
   backImage?: string;
@@ -421,12 +422,19 @@ export default function AdminGiftCardsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs font-bold text-foreground">
-                              {giftCard.currency}{" "}
-                              <span className="text-sm text-green-600 dark:text-green-400">
-                                {giftCard.amount.toLocaleString()}
+                            <div className="flex flex-col">
+                              <span className="text-xs font-bold text-foreground">
+                                {giftCard.currency}{" "}
+                                <span className="text-sm text-green-600 dark:text-green-400">
+                                  {giftCard.amount.toLocaleString()}
+                                </span>
                               </span>
-                            </span>
+                              {giftCard.usdAmount && giftCard.currency !== 'USD' && (
+                                <span className="text-[10px] text-muted-foreground">
+                                  ≈ ${giftCard.usdAmount.toFixed(2)} USD
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className="text-xs font-medium text-muted-foreground px-2 py-1 bg-muted rounded-md">

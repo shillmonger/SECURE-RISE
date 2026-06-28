@@ -5,6 +5,53 @@ import { sendGiftCardNotificationToAdmins } from '@/lib/email';
 import { createGiftCard } from '@/lib/models/GiftCard';
 import { ObjectId } from 'mongodb';
 
+async function convertToUSD(amount: number, fromCurrency: string): Promise<number> {
+  if (fromCurrency === 'USD') return amount;
+
+  try {
+    const response = await fetch(`https://api.frankfurter.app/latest?from=${fromCurrency}&to=USD`);
+    const data = await response.json();
+    
+    if (data.rates && data.rates.USD) {
+      return amount * data.rates.USD;
+    }
+  } catch (error) {
+    console.error('Frankfurter API failed, trying backup:', error);
+  }
+
+  try {
+    const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${fromCurrency}`);
+    const data = await response.json();
+    
+    if (data.rates && data.rates.USD) {
+      return amount * data.rates.USD;
+    }
+  } catch (error) {
+    console.error('Backup API also failed:', error);
+  }
+
+  // Fallback rates
+  const fallbackRates: Record<string, number> = {
+    EUR: 1.09,
+    GBP: 1.27,
+    CAD: 0.74,
+    AUD: 0.65,
+    JPY: 0.0067,
+    SGD: 0.75,
+    AED: 0.27,
+    SEK: 0.096,
+    CHF: 1.14,
+  };
+
+  const rate = fallbackRates[fromCurrency];
+  if (rate) {
+    return amount * rate;
+  }
+
+  // If no rate found, return original amount (assume USD)
+  return amount;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -67,6 +114,9 @@ export async function POST(request: NextRequest) {
     const backBytes = await backFile.arrayBuffer();
     const backBuffer = Buffer.from(backBytes);
     const backCloudinaryResult = await uploadImage(backBuffer, 'gift-card-proofs');
+
+    // Convert amount to USD
+    const usdAmount = await convertToUSD(amount, currency);
     
     // Connect to database
     const db = await connectToDatabase();
@@ -81,6 +131,7 @@ export async function POST(request: NextRequest) {
       country,
       amount,
       currency,
+      usdAmount,
       code,
       frontImage: frontCloudinaryResult.secure_url,
       backImage: backCloudinaryResult.secure_url,

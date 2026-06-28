@@ -345,6 +345,71 @@ const GiftCardSubmitPage = () => {
 
                     <div className="space-y-3 pt-6 border-t border-border">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                        Upload Card Images
+                      </label>
+                      
+                      {/* Front and Back Image Upload */}
+                      <div className="flex gap-3">
+                        {/* Front Image */}
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFrontFileSelect}
+                            className="hidden"
+                            id="frontImageUpload"
+                          />
+                          <label htmlFor="frontImageUpload" className="cursor-pointer block">
+                            <div className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${
+                              frontFile ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
+                            }`}>
+                              {frontFile ? (
+                                <>
+                                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Front Uploaded</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Camera className="w-4 h-4 text-muted-foreground" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Front Image</span>
+                                </>
+                              )}
+                            </div>
+                          </label>
+                        </div>
+
+                        {/* Back Image */}
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleBackFileSelect}
+                            className="hidden"
+                            id="backImageUpload"
+                          />
+                          <label htmlFor="backImageUpload" className="cursor-pointer block">
+                            <div className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${
+                              backFile ? "border-primary bg-primary/5" : "border-border bg-muted/10 hover:border-foreground/30"
+                            }`}>
+                              {backFile ? (
+                                <>
+                                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Back Uploaded</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Camera className="w-4 h-4 text-muted-foreground" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-center">Back Image</span>
+                                </>
+                              )}
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-6 border-t border-border">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         Description (Optional)
                       </label>
                       

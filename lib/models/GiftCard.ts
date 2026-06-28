@@ -9,6 +9,7 @@ export interface GiftCard {
   country: string; // USA, UK, Canada, Australia
   amount: number;
   currency: string; // USD, GBP, CAD, AUD
+  usdAmount?: number; // Amount converted to USD
   code: string; // Gift card code
   frontImage?: string; // Cloudinary URL for front image
   backImage?: string; // Cloudinary URL for back image
@@ -33,6 +34,7 @@ export const createGiftCard = (giftCardData: {
   country: string;
   amount: number;
   currency: string;
+  usdAmount?: number;
   code: string;
   frontImage?: string;
   backImage?: string;
@@ -47,6 +49,7 @@ export const createGiftCard = (giftCardData: {
     country: giftCardData.country,
     amount: giftCardData.amount,
     currency: giftCardData.currency,
+    usdAmount: giftCardData.usdAmount,
     code: giftCardData.code,
     frontImage: giftCardData.frontImage,
     backImage: giftCardData.backImage,

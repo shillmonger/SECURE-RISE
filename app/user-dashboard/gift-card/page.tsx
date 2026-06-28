@@ -82,10 +82,49 @@ const GiftCardPage = () => {
   const [backImage, setBackImage] = useState<File | null>(null);
   const [giftCards, setGiftCards] = useState<GiftCardRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usdAmount, setUsdAmount] = useState<number | null>(null);
+  const [converting, setConverting] = useState(false);
 
   useEffect(() => {
     fetchGiftCards();
   }, []);
+
+  useEffect(() => {
+    const convertToUSD = async () => {
+      if (!amount || !selectedCountry) {
+        setUsdAmount(null);
+        return;
+      }
+
+      const currency = getSelectedCountryData()?.currency || 'USD';
+      const numAmount = parseFloat(amount);
+
+      if (isNaN(numAmount) || numAmount <= 0) {
+        setUsdAmount(null);
+        return;
+      }
+
+      if (currency === 'USD') {
+        setUsdAmount(numAmount);
+        return;
+      }
+
+      setConverting(true);
+      try {
+        const response = await fetch(`/api/currency-convert?amount=${numAmount}&from=${currency}`);
+        const data = await response.json();
+        if (data.success) {
+          setUsdAmount(data.usdAmount);
+        }
+      } catch (error) {
+        console.error('Currency conversion error:', error);
+      } finally {
+        setConverting(false);
+      }
+    };
+
+    convertToUSD();
+  }, [amount, selectedCountry]);
 
   const fetchGiftCards = async () => {
     try {
@@ -331,6 +370,28 @@ const GiftCardPage = () => {
                           placeholder="0.00"
                         />
                       </div>
+                      
+                      {/* USD Conversion Display */}
+                      {usdAmount && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                              USD Value
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            {converting ? (
+                              <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                            ) : (
+                              <span className="text-sm font-black text-primary">
+                                ${usdAmount.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
                       <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
                         Enter the exact denomination printed on the card
                       </p>
