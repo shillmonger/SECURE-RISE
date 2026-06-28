@@ -2,6 +2,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 import { Geist, Geist_Mono } from "next/font/google";
+import GoogleOneTap from "@/components/GoogleOneTap";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground font-sans">
         <Providers>
+          <GoogleOneTap />
           <div className="min-h-screen transition-colors duration-300">
             {children}
 

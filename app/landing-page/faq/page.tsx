@@ -675,8 +675,7 @@ export default function FAQPage() {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-5 text-white leading-none"
           >
-            Frequently Asked{" "}
-            <span className="text-primary">Questions</span>
+            Frequently Asked Questions
           </motion.h1>
 
           <motion.p
