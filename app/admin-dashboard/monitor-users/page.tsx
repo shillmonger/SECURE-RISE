@@ -515,11 +515,11 @@ function LiveMonitorModal({ user, onClose }: { user: LiveUser; onClose: () => vo
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-0" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
       <div
-        className="relative bg-card border border-border rounded-2xl flex flex-col overflow-hidden"
-        style={{ width: "80%", height: "80vh" }}
+        className="relative bg-card border border-border flex flex-col overflow-hidden"
+        style={{ width: "100%", height: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow top line */}
@@ -600,9 +600,6 @@ function SOCHeader({ searchTerm, setSearchTerm, onRefresh, isRefreshing, activeF
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-xl border border-primary/20">
-              <Radar className="w-5 h-5 text-primary" />
-            </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                 SOC Dashboard
