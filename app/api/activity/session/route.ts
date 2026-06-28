@@ -7,10 +7,6 @@ import { CreateActivitySession, UpdateActivitySession, UserActivity } from '@/li
 export async function POST(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request);
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body: CreateActivitySession = await request.json();
     const { sessionId, currentPage, currentRoute, currentUrl, device, browser, operatingSystem, country, city, ipAddress } = body;
 
@@ -47,9 +43,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, session: existingSession });
     }
 
-    // Create new session
+    // Create new session (allow anonymous users)
     const newSession: Omit<UserActivity, '_id'> = {
-      userId: authUser.userId,
+      userId: authUser?.userId || 'anonymous',
       sessionId,
       currentPage,
       currentRoute,
@@ -88,10 +84,6 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request);
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     let body: UpdateActivitySession & { sessionId: string };
     try {
       const text = await request.text();
@@ -112,10 +104,8 @@ export async function PUT(request: NextRequest) {
     const db = await connectToDatabase();
     const activityCollection = db.collection<UserActivity>('userActivity');
 
-    const existingSession = await activityCollection.findOne({ 
-      sessionId, 
-      userId: authUser.userId 
-    });
+    // Find session by sessionId only (allow anonymous users)
+    const existingSession = await activityCollection.findOne({ sessionId });
 
     if (!existingSession) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
@@ -133,7 +123,7 @@ export async function PUT(request: NextRequest) {
     }
 
     await activityCollection.updateOne(
-      { sessionId, userId: authUser.userId },
+      { sessionId },
       { $set: updatePayload }
     );
 

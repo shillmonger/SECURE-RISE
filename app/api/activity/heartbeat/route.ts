@@ -6,11 +6,6 @@ import { UserActivity, UserStatus } from '@/lib/models/UserActivity';
 // POST - Update heartbeat
 export async function POST(request: NextRequest) {
   try {
-    const authUser = await getAuthUser(request);
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { sessionId, status } = body;
 
@@ -31,8 +26,9 @@ export async function POST(request: NextRequest) {
       updateData.status = status as UserStatus;
     }
 
+    // Find by sessionId only (allow anonymous users)
     const result = await activityCollection.updateOne(
-      { sessionId, userId: authUser.userId },
+      { sessionId },
       { $set: updateData }
     );
 

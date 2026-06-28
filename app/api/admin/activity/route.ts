@@ -32,9 +32,9 @@ export async function GET(request: NextRequest) {
     // Get all user IDs
     const userIds = allUsers.map(u => u._id.toString());
 
-    // Fetch all activity sessions for these users
+    // Fetch all activity sessions for these users AND anonymous users
     const activities = await activityCollection
-      .find({ userId: { $in: userIds } })
+      .find({ $or: [{ userId: { $in: userIds } }, { userId: 'anonymous' }] })
       .sort({ lastActivity: -1 })
       .toArray();
 
@@ -149,15 +149,69 @@ export async function GET(request: NextRequest) {
       };
     }).filter((user): user is NonNullable<typeof user> => user !== null);
 
+    // Add anonymous users (those with userId = 'anonymous')
+    const anonymousActivities = activities.filter(a => a.userId === 'anonymous');
+    const anonymousUsers = anonymousActivities.map(activity => {
+      const allEvents = allActivityEventsMap.get('anonymous') || [];
+      
+      // Sort all events by time (newest first)
+      allEvents.sort((a, b) => b.time.localeCompare(a.time));
+      
+      // Calculate status based on last activity time
+      const now = new Date();
+      const lastActivityTime = new Date(activity.lastActivity);
+      const diffMinutes = (now.getTime() - lastActivityTime.getTime()) / (1000 * 60);
+      
+      let calculatedStatus: UserStatus = 'offline';
+      if (diffMinutes <= 10) {
+        calculatedStatus = 'online';
+      } else if (diffMinutes > 10 && diffMinutes <= 30) {
+        calculatedStatus = 'away';
+      } else {
+        calculatedStatus = 'offline';
+      }
+
+      return {
+        id: `anon_${activity.sessionId}`,
+        fullName: 'Anonymous User',
+        username: 'anonymous',
+        email: '',
+        role: 'guest',
+        status: calculatedStatus,
+        currentPage: activity.currentPage,
+        currentUrl: activity.currentUrl,
+        lastActivity: formatRelativeTime(activity.lastActivity),
+        device: activity.device,
+        browser: activity.browser,
+        os: activity.operatingSystem,
+        sessionDuration: formatSessionDuration(activity.loginTime),
+        country: activity.country || 'Unknown',
+        city: activity.city || 'Unknown',
+        ipAddress: activity.ipAddress || 'Unknown',
+        loginTime: activity.loginTime.toTimeString().split(' ')[0],
+        avatar: 'https://i.postimg.cc/KvQVp747/anonimous.webp',
+        timeOnPage: `${activity.timeOnPage}s`,
+        activityFeed: allEvents,
+        pageVisitsToday: activity.pagesVisited.length,
+        scrollProgress: activity.scrollMilestone,
+        pagesVisited: activity.pagesVisited,
+        vpnDetected: false,
+        newDevice: false,
+      };
+    });
+
+    // Combine registered users and anonymous users
+    const allLiveUsers = [...liveUsers, ...anonymousUsers];
+
     // Sort by status: online first, then away, then offline
     const statusOrder = { online: 0, away: 1, offline: 2 };
-    liveUsers.sort((a, b) => {
+    allLiveUsers.sort((a, b) => {
       const statusA = statusOrder[a.status as keyof typeof statusOrder] ?? 3;
       const statusB = statusOrder[b.status as keyof typeof statusOrder] ?? 3;
       return statusA - statusB;
     });
 
-    return NextResponse.json({ users: liveUsers });
+    return NextResponse.json({ users: allLiveUsers });
   } catch (error) {
     console.error('Admin activity API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

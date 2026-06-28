@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 import { Geist, Geist_Mono } from "next/font/google";
 import GoogleOneTap from "@/components/GoogleOneTap";
+import PublicActivityTracker from "@/components/PublicActivityTracker";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground font-sans">
         <Providers>
+          <PublicActivityTracker />
           <GoogleOneTap />
           <div className="min-h-screen transition-colors duration-300">
             {children}

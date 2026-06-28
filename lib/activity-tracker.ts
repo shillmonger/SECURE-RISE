@@ -113,9 +113,20 @@ export function detectOS(): string {
 // Get current page name from URL
 export function getPageNameFromPath(path: string): string {
   const segments = path.split("/").filter(Boolean);
-  if (segments.length === 0) return "Dashboard";
+  if (segments.length === 0) return "Home";
   
   const pageMap: Record<string, string> = {
+    // Public pages
+    "": "Home",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "pricing": "Pricing",
+ "features": "Features",
+    // Dashboard pages
     "dashboard": "Dashboard",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
@@ -132,6 +143,9 @@ export function getPageNameFromPath(path: string): string {
     "achievements": "Achievements",
     "leaderboard": "Leaderboard",
     "analytics": "Analytics",
+    // Admin pages
+    "monitor-users": "Monitor Users",
+    "admin-dashboard": "Admin Dashboard",
   };
   
   const lastSegment = segments[segments.length - 1];
