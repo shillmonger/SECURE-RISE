@@ -4,6 +4,19 @@ import React, { useState, useEffect } from "react";
 import { Map } from "lucide-react";
 import { UserStatusBadge } from "./MonitoringShared";
 
+const pulseAnimation = `
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+`;
+
 interface MapPin {
   userId: string;
   username: string;
@@ -19,16 +32,36 @@ interface MapPin {
 }
 
 const pinPositions: Record<string, { x: number; y: number }> = {
-  "Nigeria": { x: 500, y: 280 },
-  "United States": { x: 190, y: 200 },
-  "United Kingdom": { x: 462, y: 150 },
-  "Germany": { x: 490, y: 148 },
-  "India": { x: 650, y: 240 },
-  "Brazil": { x: 270, y: 330 },
-  "Japan": { x: 790, y: 195 },
-  "Canada": { x: 190, y: 155 },
-  "France": { x: 472, y: 158 },
-  "South Africa": { x: 510, y: 360 },
+  "Nigeria":        { x: 510, y: 310 },
+  "United States":  { x: 170, y: 210 },
+  "United Kingdom": { x: 455, y: 130 },
+  "Germany":        { x: 490, y: 125 },
+  "India":          { x: 670, y: 235 },
+  "Brazil":         { x: 255, y: 355 },
+  "Japan":          { x: 810, y: 185 },
+  "Canada":         { x: 160, y: 140 },
+  "France":         { x: 468, y: 138 },
+  "South Africa":   { x: 515, y: 390 },
+  "Australia":      { x: 790, y: 380 },
+  "Mexico":         { x: 170, y: 260 },
+  "Argentina":      { x: 240, y: 410 },
+  "Russia":         { x: 640, y: 110 },
+  "China":          { x: 740, y: 200 },
+  "Indonesia":      { x: 760, y: 320 },
+  "Egypt":          { x: 535, y: 235 },
+  "Kenya":          { x: 555, y: 320 },
+  "Spain":          { x: 455, y: 158 },
+  "Italy":          { x: 497, y: 158 },
+  "Pakistan":       { x: 640, y: 215 },
+  "Bangladesh":     { x: 686, y: 235 },
+  "Ethiopia":       { x: 555, y: 295 },
+  "Turkey":         { x: 548, y: 175 },
+  "Saudi Arabia":   { x: 575, y: 250 },
+  "UAE":            { x: 600, y: 255 },
+  "Ghana":          { x: 478, y: 305 },
+  "Cameroon":       { x: 500, y: 305 },
+  "Senegal":        { x: 455, y: 280 },
+  "Tanzania":       { x: 553, y: 340 },
 };
 
 export default function LiveGlobalConnections() {
@@ -38,6 +71,13 @@ export default function LiveGlobalConnections() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = pulseAnimation;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/admin/activity');
@@ -45,28 +85,38 @@ export default function LiveGlobalConnections() {
           const data = await response.json();
           const users = data.users || [];
 
-          // Create individual user pins scattered across the map
           const pins: MapPin[] = users
-            .filter((user: any) => user.country !== 'Unknown')
-            .map((user: any) => {
-              const countryPos = pinPositions[user.country] || { x: 500, y: 250 };
-              // Add some randomness to scatter users within country area
-              const randomOffset = () => (Math.random() - 0.5) * 40;
+            .map((user: any, index: number) => {
+              let x, y;
+
+              if (user.country && user.country !== 'Unknown' && pinPositions[user.country]) {
+                const countryPos = pinPositions[user.country];
+                const randomOffset = () => (Math.random() - 0.5) * 40;
+                x = countryPos.x + randomOffset();
+                y = countryPos.y + randomOffset();
+              } else {
+                const cols = 8;
+                const col = index % cols;
+                const row = Math.floor(index / cols) % 5;
+                x = 80 + col * 110 + (Math.random() - 0.5) * 40;
+                y = 80 + row * 80  + (Math.random() - 0.5) * 30;
+              }
+
               return {
                 userId: user.id,
                 username: user.username,
                 fullName: user.fullName,
                 avatar: user.avatar,
-                country: user.country,
+                country: user.country || 'Unknown',
                 city: user.city || 'Unknown',
                 status: user.status,
                 device: user.device,
                 page: user.currentPage,
-                x: countryPos.x + randomOffset(),
-                y: countryPos.y + randomOffset(),
+                x,
+                y,
               };
             })
-            .slice(0, 50); // Limit to 50 users to avoid overcrowding
+            .slice(0, 50);
 
           setMapPins(pins);
         }
@@ -100,6 +150,7 @@ export default function LiveGlobalConnections() {
 
   return (
     <div className="bg-card border border-border rounded-[1rem] overflow-hidden relative shadow-sm">
+
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div>
@@ -114,6 +165,7 @@ export default function LiveGlobalConnections() {
         <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground">
           <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />Online</div>
           <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />Away</div>
+          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" />Offline</div>
         </div>
       </div>
 
@@ -123,62 +175,76 @@ export default function LiveGlobalConnections() {
         style={{ minHeight: 340 }}
         onMouseLeave={() => setHovered(null)}
       >
-        {/* World map background image */}
+        {/* World map — grayscale filter applied */}
         <img
           src="https://i.postimg.cc/1zx34ZSL/map.jpg"
           alt="World Map"
           className="absolute inset-0 w-full h-full object-cover"
+          style={{ filter: "grayscale(100%)" }}
         />
 
         {/* Pins layer */}
         <div className="absolute inset-0 p-4">
-          <svg viewBox="0 0 1000 500" className="w-full" style={{ maxHeight: 300 }}>
-            <defs>
-              <clipPath id="avatarClip">
-                <rect x="0" y="0" width="40" height="80" rx="8" />
-              </clipPath>
-            </defs>
-            {mapPins.map((pin, i) => {
-              const borderColor = pin.status === "online" ? "#3b82f6" : pin.status === "offline" ? "#ef4444" : "#f97316";
-              return (
-                <g
-                  key={i}
-                  style={{ cursor: "pointer" }}
-                  onMouseEnter={() => {
-                    setHovered(pin);
-                    setHoveredPos({ x: pin.x / 10, y: pin.y / 5 });
+          {mapPins.map((pin, i) => {
+            const borderColor =
+              pin.status === "online"  ? "#3b82f6" :
+              pin.status === "offline" ? "#ef4444" : "#f97316";
+
+            const leftPercent = (pin.x / 1000) * 100;
+            const topPercent  = (pin.y / 500)  * 100;
+
+            return (
+              <div
+                key={i}
+                className="absolute cursor-pointer"
+                style={{
+                  left: `${leftPercent}%`,
+                  top:  `${topPercent}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+                onMouseEnter={() => {
+                  setHovered(pin);
+                  setHoveredPos({ x: leftPercent, y: topPercent });
+                }}
+              >
+                {/* Pulse ring for online users */}
+                {pin.status === "online" && (
+                  <div
+                    className="absolute rounded-full"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      border: `2px solid #3b82f6`,
+                      opacity: 0.4,
+                      animation: "pulse 2.5s infinite",
+                    }}
+                  />
+                )}
+
+                {/* ── Avatar: rounded-full, w-10 h-10 ── */}
+                <div
+                  className="w-10 h-10 rounded-full overflow-hidden"
+                  style={{
+                    border: `2.5px solid ${borderColor}`,
+                    boxShadow: `0 0 8px ${borderColor}60`,
                   }}
                 >
-                  {/* Animated pulse for online users */}
-                  {pin.status === "online" && (
-                    <circle cx={pin.x} cy={pin.y} r="30" fill="none" stroke="#3b82f6" strokeWidth="1.2" opacity="0.3">
-                      <animate attributeName="r" values="20;35;20" dur="2.5s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite" />
-                    </circle>
-                  )}
-                  {/* User profile image with colored border */}
-                  <foreignObject x={pin.x - 20} y={pin.y - 40} width="40" height="80">
-                    <div
-                      className="relative w-10 h-20 rounded-lg overflow-hidden"
-                      style={{ 
-                        border: `3px solid ${borderColor}`,
-                        boxShadow: `0 0 10px ${borderColor}40`
-                      }}
-                    >
-                      <img
-                        src={pin.avatar}
-                        alt={pin.username}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pin.username}`;
-                        }}
-                      />
-                    </div>
-                  </foreignObject>
-                </g>
-              );
-            })}
-          </svg>
+                  <img
+                    src={pin.avatar}
+                    alt={pin.username}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${pin.username}`;
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Tooltip */}
@@ -187,7 +253,7 @@ export default function LiveGlobalConnections() {
             className="absolute z-10 bg-card/95 border border-emerald-500/30 rounded-xl p-3 shadow-xl backdrop-blur-sm pointer-events-none min-w-[190px]"
             style={{
               left: `${hoveredPos.x}%`,
-              top: `${hoveredPos.y}%`,
+              top:  `${hoveredPos.y}%`,
               transform: "translate(-50%, -110%)",
             }}
           >
@@ -197,7 +263,12 @@ export default function LiveGlobalConnections() {
             </div>
             <p className="text-[11px] text-muted-foreground font-mono px-0.5">@{hovered.username}</p>
             <div className="mt-2 pt-2 border-t border-border space-y-1.5">
-              {([["Country", hovered.country], ["City", hovered.city], ["Device", hovered.device], ["Page", hovered.page]] as [string, string][]).map(([l, v]) => (
+              {([
+                ["Country", hovered.country],
+                ["City",    hovered.city],
+                ["Device",  hovered.device],
+                ["Page",    hovered.page],
+              ] as [string, string][]).map(([l, v]) => (
                 <div key={l} className="flex justify-between gap-3 items-center">
                   <span className="text-[11px] text-muted-foreground">{l}</span>
                   <span className="text-[11px] font-semibold text-foreground">{v}</span>
@@ -226,13 +297,15 @@ export default function LiveGlobalConnections() {
               alt={pin.username}
               className="w-5 h-5 rounded-full object-cover"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${pin.username}`;
+                (e.target as HTMLImageElement).src =
+                  `https://api.dicebear.com/7.x/avataaars/svg?seed=${pin.username}`;
               }}
             />
             <span>{pin.username}</span>
           </div>
         ))}
       </div>
+
     </div>
   );
 }
