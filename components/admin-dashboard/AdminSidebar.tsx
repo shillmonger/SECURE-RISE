@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import {
   LayoutDashboard,
   AlarmClockMinus,
+  AlarmClock,
   Wallet,
   Settings,
   User,
@@ -86,7 +87,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       icon: Settings,
       children: [
         { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
-        { name: "Live API Alerts", icon: AlarmClockMinus, href: `${basePath}/alerts` },
+        { name: "Live API Alerts", icon: AlarmClock , href: `${basePath}/alerts` },
         { name: "Switch to Trader", icon: User, href: "/user-dashboard/dashboard" },
       ],
     },

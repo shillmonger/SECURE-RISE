@@ -134,94 +134,106 @@ export default function AdminNotificationCenterPage() {
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ─── Fetch alert settings from database ───────────────────────────────────
+  const fetchAlertSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/alert-settings');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.settings) {
+          setMuted(data.settings.muted);
+          setVolume(data.settings.volume);
+          setGlobalSound(data.settings.globalSound);
+          setPollingInterval(data.settings.pollingInterval);
+          setDesktopNotifs(data.settings.desktopNotifs);
+          setEvents(data.settings.events);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch alert settings:', error);
+    }
+  }, []);
+
+  // ─── Save alert settings to database ─────────────────────────────────────
+  const saveAlertSettings = useCallback(async () => {
+    try {
+      await fetch('/api/admin/alert-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          muted,
+          volume,
+          globalSound,
+          pollingInterval,
+          desktopNotifs,
+          events,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to save alert settings:', error);
+    }
+  }, [muted, volume, globalSound, pollingInterval, desktopNotifs, events]);
+
   // ─── Fetch all stats ─────────────────────────────────────────────────────
   const fetchStats = useCallback(async (silent = false) => {
     if (!silent) setRefreshing(true);
     try {
-      const [
-        usersRes, depositsRes, withdrawalsRes,
-        giftcardsRes, investmentsRes, kycRes, paystackRes,
-      ] = await Promise.allSettled([
-        fetch("/api/admin/users"),
-        fetch("/api/user-dashboard/deposit"),
-        fetch("/api/withdraw"),
-        fetch("/api/user-dashboard/gift-card"),
-        fetch("/api/investments"),
-        fetch("/api/admin/kyc"),
-        fetch("/api/admin/paystack-transactions"),
-      ]);
+      const res = await fetch("/api/admin/stats");
+      if (!res.ok) {
+        throw new Error("Failed to fetch stats");
+      }
+      const data = await res.json();
+      
+      if (data.success && data.stats) {
+        const newStats: PlatformStats = {
+          totalUsers: data.stats.totalUsers,
+          totalDeposits: data.stats.totalDeposits,
+          totalWithdrawals: data.stats.totalWithdrawals,
+          totalGiftCards: data.stats.totalGiftCards,
+          totalInvestments: data.stats.totalInvestments,
+          totalKYC: data.stats.totalKYC,
+          totalPaystack: data.stats.totalPaystack,
+        };
 
-      const getValue = async (res: PromiseSettledResult<Response>, key: string): Promise<number> => {
-        if (res.status === "fulfilled" && res.value.ok) {
-          try {
-            const j = await res.value.json();
-            // Try common shapes
-            return (
-              j?.total ?? j?.count ?? j?.[key]?.length ??
-              (Array.isArray(j) ? j.length : null) ??
-              (Array.isArray(j?.data) ? j.data.length : null) ??
-              (Array.isArray(j?.users) ? j.users.length : null) ??
-              (Array.isArray(j?.deposits) ? j.deposits.length : null) ??
-              (Array.isArray(j?.withdrawals) ? j.withdrawals.length : null) ??
-              (Array.isArray(j?.giftCards) ? j.giftCards.length : null) ??
-              (Array.isArray(j?.investments) ? j.investments.length : null) ??
-              (Array.isArray(j?.kycSubmissions) ? j.kycSubmissions.length : null) ??
-              (Array.isArray(j?.transactions) ? j.transactions.length : null) ??
-              0
-            );
-          } catch { return 0; }
-        }
-        return 0;
-      };
+        // Compare with previous & fire alerts
+        const prev = prevStatsRef.current;
+        if (prev) {
+          const checks: { key: keyof PlatformStats; cfg: EventConfig }[] = events.map((e) => ({
+            key: e.countKey,
+            cfg: e,
+          }));
 
-      const newStats: PlatformStats = {
-        totalUsers:       await getValue(usersRes, "users"),
-        totalDeposits:    await getValue(depositsRes, "deposits"),
-        totalWithdrawals: await getValue(withdrawalsRes, "withdrawals"),
-        totalGiftCards:   await getValue(giftcardsRes, "giftCards"),
-        totalInvestments: await getValue(investmentsRes, "investments"),
-        totalKYC:         await getValue(kycRes, "kycSubmissions"),
-        totalPaystack:    await getValue(paystackRes, "transactions"),
-      };
-
-      // Compare with previous & fire alerts
-      const prev = prevStatsRef.current;
-      if (prev) {
-        const checks: { key: keyof PlatformStats; cfg: EventConfig }[] = events.map((e) => ({
-          key: e.countKey,
-          cfg: e,
-        }));
-
-        for (const { key, cfg } of checks) {
-          if (!cfg.enabled) continue;
-          const diff = (newStats[key] as number) - (prev[key] as number);
-          if (diff > 0) {
-            for (let i = 0; i < diff; i++) {
-              if (!muted) {
-                const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
-                soundFn();
-              }
-              const newAlert: AlertEvent = {
-                id: `${Date.now()}-${Math.random()}`,
-                type: cfg.key,
-                emoji: cfg.emoji,
-                label: cfg.label,
-                detail: `+${diff} new record${diff > 1 ? "s" : ""}`,
-                timestamp: new Date(),
-              };
-              setAlerts((prev) => [newAlert, ...prev].slice(0, 50));
-              if (desktopNotifs && "Notification" in window && Notification.permission === "granted") {
-                new Notification(`${cfg.emoji} ${cfg.label}`, { body: newAlert.detail });
+          for (const { key, cfg } of checks) {
+            if (!cfg.enabled) continue;
+            const diff = (newStats[key] as number) - (prev[key] as number);
+            if (diff > 0) {
+              for (let i = 0; i < diff; i++) {
+                if (!muted) {
+                  const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
+                  soundFn();
+                }
+                const newAlert: AlertEvent = {
+                  id: `${Date.now()}-${Math.random()}`,
+                  type: cfg.key,
+                  emoji: cfg.emoji,
+                  label: cfg.label,
+                  detail: `+${diff} new record${diff > 1 ? "s" : ""}`,
+                  timestamp: new Date(),
+                };
+                setAlerts((prev) => [newAlert, ...prev].slice(0, 50));
+                if (desktopNotifs && "Notification" in window && Notification.permission === "granted") {
+                  new Notification(`${cfg.emoji} ${cfg.label}`, { body: newAlert.detail });
+                }
               }
             }
           }
         }
-      }
 
-      prevStatsRef.current = newStats;
-      setStats(newStats);
-      setLastRefresh(new Date());
-      setCountdown(pollingInterval);
+        prevStatsRef.current = newStats;
+        setStats(newStats);
+        setLastRefresh(new Date());
+        setCountdown(pollingInterval);
+      }
     } catch (err) {
       toast.error("Failed to refresh stats");
     } finally {
@@ -229,6 +241,16 @@ export default function AdminNotificationCenterPage() {
       setRefreshing(false);
     }
   }, [events, muted, desktopNotifs, pollingInterval]);
+
+  // ─── Initialize settings on mount ─────────────────────────────────────────
+  useEffect(() => {
+    fetchAlertSettings();
+  }, [fetchAlertSettings]);
+
+  // ─── Save settings whenever they change ───────────────────────────────────
+  useEffect(() => {
+    saveAlertSettings();
+  }, [saveAlertSettings]);
 
   // ─── Polling ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -248,32 +270,49 @@ export default function AdminNotificationCenterPage() {
 
   const handleManualRefresh = () => {
     fetchStats();
+    fetchAlertSettings();
+    setAlerts([]);
     if (pollingRef.current) clearInterval(pollingRef.current);
     pollingRef.current = setInterval(() => fetchStats(true), pollingInterval * 1000);
+    toast.success('Refreshed successfully');
   };
 
   const testSound = (soundName?: string) => {
     if (muted) { toast.info("Unmute to test sound"); return; }
     const fn = SOUNDS[soundName ?? globalSound] ?? SOUNDS["Notification Bell"];
     fn();
+    toast.success('Sound test played');
   };
 
   const toggleEvent = (key: string) => {
-    setEvents((prev) => prev.map((e) => e.key === key ? { ...e, enabled: !e.enabled } : e));
+    setEvents((prev) => {
+      const updated = prev.map((e) => e.key === key ? { ...e, enabled: !e.enabled } : e);
+      const event = updated.find(e => e.key === key);
+      if (event) {
+        toast.success(`${event.label} ${event.enabled ? 'disabled' : 'enabled'}`);
+      }
+      return updated;
+    });
   };
 
   const setEventSound = (key: string, sound: string) => {
     setEvents((prev) => prev.map((e) => e.key === key ? { ...e, sound } : e));
     setOpenSoundDropdowns({});
+    toast.success(`Sound updated to ${sound}`);
   };
 
   const requestDesktopPerms = async (checked: boolean) => {
     if (checked && "Notification" in window) {
       const perm = await Notification.requestPermission();
       setDesktopNotifs(perm === "granted");
-      if (perm !== "granted") toast.error("Desktop notifications blocked by browser");
+      if (perm === "granted") {
+        toast.success('Desktop notifications enabled');
+      } else {
+        toast.error("Desktop notifications blocked by browser");
+      }
     } else {
       setDesktopNotifs(false);
+      toast.success('Desktop notifications disabled');
     }
   };
 
@@ -335,7 +374,13 @@ export default function AdminNotificationCenterPage() {
 
                 {/* Mute toggle */}
                 <button
-                  onClick={() => setMuted((m) => !m)}
+                  onClick={() => {
+                    setMuted((m) => {
+                      const newState = !m;
+                      toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
+                      return newState;
+                    });
+                  }}
                   className={`p-2.5 border-2 rounded-xl transition-all cursor-pointer ${muted ? "bg-rose-500/10 border-rose-500/30 text-rose-500" : "bg-muted/30 border-border text-muted-foreground hover:border-foreground/40"}`}
                   title={muted ? "Unmute" : "Mute"}
                 >
@@ -365,14 +410,14 @@ export default function AdminNotificationCenterPage() {
             <div className="flex flex-col lg:flex-row gap-7">
 
               {/* LEFT: Events Table */}
-              <div className="lg:w-[60%] bg-card border border-border rounded-[1rem] shadow-sm overflow-hidden">
+              <div className="lg:w-[60%] bg-card border border-border rounded-[1rem] shadow-sm overflow-visible">
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                   <div>
                     <h2 className="text-sm font-black uppercase tracking-tight text-foreground">Event Alerts</h2>
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-0.5">
                       Configure which events trigger a sound
                     </p>
-                  </div>
+                  </div> 
                   <Zap className="w-4 h-4 text-amber-500" />
                 </div>
 
@@ -387,7 +432,7 @@ export default function AdminNotificationCenterPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {events.map((ev) => (
+                      {events.map((ev, index) => (
                         <tr key={ev.key} className="group hover:bg-muted/30 transition-colors">
                           {/* Event label */}
                           <td className="px-6 py-4">
@@ -410,7 +455,7 @@ export default function AdminNotificationCenterPage() {
                                 <ChevronDown className="w-3 h-3 text-muted-foreground" />
                               </button>
                               {openSoundDropdowns[ev.key] && (
-                                <div className="absolute z-50 left-0 bottom-full mb-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden min-w-[160px]">
+                                <div className={`absolute z-500 left-0 ${index < 3 ? 'top-full mt-1' : 'bottom-full mb-1'} bg-card border border-border rounded-xl shadow-xl overflow-visible min-w-[160px]`}>
                                   {SOUND_OPTIONS.map((s) => (
                                     <button
                                       key={s}
@@ -493,7 +538,13 @@ export default function AdminNotificationCenterPage() {
                       Test Sound
                     </button>
                     <button
-                      onClick={() => setMuted((m) => !m)}
+                      onClick={() => {
+                        setMuted((m) => {
+                          const newState = !m;
+                          toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
+                          return newState;
+                        });
+                      }}
                       className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all cursor-pointer ${muted ? "border-emerald-500 text-emerald-500 hover:bg-emerald-500/10" : "border-rose-500 text-rose-500 hover:bg-rose-500/10"}`}
                     >
                       {muted ? "Unmute" : "Mute"}
@@ -506,7 +557,10 @@ export default function AdminNotificationCenterPage() {
                   <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                     <h2 className="text-sm font-black uppercase tracking-tight text-foreground">Recent Alerts</h2>
                     {alerts.length > 0 && (
-                      <button onClick={() => setAlerts([])} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                      <button onClick={() => {
+                        setAlerts([]);
+                        toast.success('Alerts cleared');
+                      }} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                         Clear
                       </button>
                     )}
@@ -554,7 +608,10 @@ export default function AdminNotificationCenterPage() {
                 {/* Left: Toggles */}
                 <div className="space-y-4">
                   {[
-                    { label: "Play sound on new event", value: !muted, onChange: (v: boolean) => setMuted(!v) },
+                    { label: "Play sound on new event", value: !muted, onChange: (v: boolean) => {
+                      setMuted(!v);
+                      toast.success(!v ? 'Sound enabled' : 'Sound disabled');
+                    } },
                     { label: "Desktop notifications", value: desktopNotifs, onChange: requestDesktopPerms },
                   ].map(({ label, value, onChange }) => (
                     <label key={label} className="flex items-center justify-between cursor-pointer group">
@@ -578,7 +635,11 @@ export default function AdminNotificationCenterPage() {
                       type="range"
                       min={0} max={1} step={0.05}
                       value={volume}
-                      onChange={(e) => setVolume(parseFloat(e.target.value))}
+                      onChange={(e) => {
+                        const newVolume = parseFloat(e.target.value);
+                        setVolume(newVolume);
+                        toast.success(`Volume set to ${Math.round(newVolume * 100)}%`);
+                      }}
                       className="w-full accent-foreground"
                     />
                   </div>
@@ -605,7 +666,11 @@ export default function AdminNotificationCenterPage() {
                           {SOUND_OPTIONS.map((s) => (
                             <button
                               key={s}
-                              onClick={() => { setGlobalSound(s); setGlobalDropdownOpen(false); }}
+                              onClick={() => {
+                                setGlobalSound(s);
+                                setGlobalDropdownOpen(false);
+                                toast.success(`Default sound set to ${s}`);
+                              }}
                               className={`w-full text-left px-4 py-3 text-xs font-black uppercase tracking-tight hover:bg-muted/50 transition-colors cursor-pointer ${globalSound === s ? "text-primary" : "text-foreground"}`}
                             >
                               {s}
@@ -635,7 +700,11 @@ export default function AdminNotificationCenterPage() {
                           {[5, 10, 15, 30, 60].map((sec) => (
                             <button
                               key={sec}
-                              onClick={() => { setPollingInterval(sec); setIntervalDropdownOpen(false); }}
+                              onClick={() => {
+                                setPollingInterval(sec);
+                                setIntervalDropdownOpen(false);
+                                toast.success(`Polling interval set to ${sec} seconds`);
+                              }}
                               className={`w-full text-left px-4 py-3 text-xs font-black uppercase tracking-tight hover:bg-muted/50 transition-colors cursor-pointer ${pollingInterval === sec ? "text-primary" : "text-foreground"}`}
                             >
                               {sec} seconds
