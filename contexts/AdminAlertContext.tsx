@@ -140,7 +140,7 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
   const saveAlertSettings = useCallback(async () => {
     try {
       await fetch('/api/admin/alert-settings', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           muted,
