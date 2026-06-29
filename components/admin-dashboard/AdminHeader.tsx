@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, AlarmClock, AlarmClockOff } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useTheme } from "@/components/custom-theme-provider";
@@ -26,6 +26,7 @@ export default function AdminHeader({ sidebarOpen, setSidebarOpen }: HeaderProps
     profileImage: "",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [alertsActive, setAlertsActive] = useState(false);
 
   const mounted = useMounted();
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -63,6 +64,37 @@ export default function AdminHeader({ sidebarOpen, setSidebarOpen }: HeaderProps
     fetchUserData();
   }, []);
 
+  // Listen for alert activity from the alerts page
+  useEffect(() => {
+    const checkAlertsActive = () => {
+      const isActive = localStorage.getItem('alerts-active') === 'true';
+      setAlertsActive(isActive);
+    };
+
+    // Check on mount
+    checkAlertsActive();
+
+    // Listen for changes
+    const handleStorageChange = () => {
+      checkAlertsActive();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events from the same page
+    const handleAlertEvent = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setAlertsActive(customEvent.detail === 'active');
+    };
+
+    window.addEventListener('alerts-activity', handleAlertEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('alerts-activity', handleAlertEvent);
+    };
+  }, []);
+
   return (
     <>
       <header className="h-15 lg:h-15 border-b border-border flex items-center justify-between gap-4 px-4 sm:px-10 bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -86,6 +118,13 @@ export default function AdminHeader({ sidebarOpen, setSidebarOpen }: HeaderProps
         </div>
 
         <div className="flex items-center gap-4">
+          <button className="p-2 hover:bg-secondary rounded-full cursor-pointer">
+            {alertsActive ? (
+              <AlarmClock className="h-5 w-5 text-emerald-500" />
+            ) : (
+              <AlarmClockOff className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
           <button className="p-2 hover:bg-secondary rounded-full cursor-pointer">
             {mounted && (
               <div

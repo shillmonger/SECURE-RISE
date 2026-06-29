@@ -207,6 +207,10 @@ export default function AdminNotificationCenterPage() {
             if (!cfg.enabled) continue;
             const diff = (newStats[key] as number) - (prev[key] as number);
             if (diff > 0) {
+              // Notify header that alerts are active
+              localStorage.setItem('alerts-active', 'true');
+              window.dispatchEvent(new CustomEvent('alerts-activity', { detail: 'active' }));
+              
               for (let i = 0; i < diff; i++) {
                 if (!muted) {
                   const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
