@@ -120,9 +120,11 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
   // Fetch alert settings from database
   const fetchAlertSettings = useCallback(async () => {
     try {
+      console.log('[Alert Context] Fetching alert settings...');
       const res = await fetch('/api/admin/alert-settings');
       if (res.ok) {
         const data = await res.json();
+        console.log('[Alert Context] Fetched settings:', data);
         if (data.success && data.settings) {
           setMuted(data.settings.muted);
           setVolume(data.settings.volume);
@@ -255,7 +257,7 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
   // Save settings whenever they change
   useEffect(() => {
     saveAlertSettings();
-  }, [saveAlertSettings]);
+  }, [muted, volume, pollingInterval, desktopNotifs, events]);
 
   // Clear sound intervals when muted
   useEffect(() => {

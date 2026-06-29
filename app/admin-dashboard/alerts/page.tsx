@@ -171,10 +171,13 @@ export default function AdminNotificationCenterPage() {
   };
 
   const requestDesktopPerms = async (checked: boolean) => {
+    console.log('[Alerts Page] requestDesktopPerms called with:', checked);
     if (checked && "Notification" in window) {
       const perm = await Notification.requestPermission();
-      setDesktopNotifs(perm === "granted");
-      if (perm === "granted") {
+      console.log('[Alerts Page] Notification permission:', perm);
+      const granted = perm === "granted";
+      setDesktopNotifs(granted);
+      if (granted) {
         toast.success('Desktop notifications enabled');
       } else {
         toast.error("Desktop notifications blocked by browser");
