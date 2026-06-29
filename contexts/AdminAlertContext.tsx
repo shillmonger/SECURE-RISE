@@ -49,46 +49,57 @@ interface AdminAlertContextType {
 
 const AdminAlertContext = createContext<AdminAlertContextType | undefined>(undefined);
 
-// Sound functions
+// ─── Sound Engine (Web Audio API) ─────────────────────────────────────────────
+let audioCtx: AudioContext | null = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freqs: number[], durations: number[], volume = 0.4) {
+  try {
+    const ctx = getAudioCtx();
+    let t = ctx.currentTime;
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(volume, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + durations[i]);
+      osc.start(t);
+      osc.stop(t + durations[i]);
+      t += durations[i] * 0.9;
+    });
+  } catch (_) {}
+}
+
 const SOUNDS: Record<string, () => void> = {
-  "Notification Bell": () => {
-    const audio = new Audio("/sounds/notification-bell.mp3");
-    audio.play();
-  },
-  "Cash Register": () => {
-    const audio = new Audio("/sounds/cash-register.mp3");
-    audio.play();
-  },
-  "Chime": () => {
-    const audio = new Audio("/sounds/chime.mp3");
-    audio.play();
-  },
-  "Ding": () => {
-    const audio = new Audio("/sounds/ding.mp3");
-    audio.play();
-  },
-  "Alert": () => {
-    const audio = new Audio("/sounds/alert.mp3");
-    audio.play();
-  },
-  "Success": () => {
-    const audio = new Audio("/sounds/success.mp3");
-    audio.play();
-  },
-  "Pop": () => {
-    const audio = new Audio("/sounds/pop.mp3");
-    audio.play();
-  },
+  "Notification Bell": () => playTone([880, 1100, 880], [0.12, 0.08, 0.1]),
+  "Cash Register": () => playTone([1200, 1600, 1400, 1800], [0.06, 0.06, 0.06, 0.1]),
+  "Soft Ping": () => playTone([1000], [0.25]),
+  "Double Beep": () => { playTone([800], [0.08]); setTimeout(() => playTone([800], [0.08]), 180); },
+  "Alert Chime": () => playTone([523, 659, 784, 1047], [0.1, 0.1, 0.1, 0.2]),
+  "Low Buzz": () => playTone([300, 250], [0.15, 0.15]),
+  "Success Tone": () => playTone([523, 784, 1047], [0.1, 0.1, 0.2]),
+  "Chime": () => playTone([523, 659, 784], [0.15, 0.15, 0.2]),
+  "Ding": () => playTone([1200], [0.3]),
+  "Alert": () => playTone([440, 880], [0.1, 0.2]),
+  "Success": () => playTone([523, 659, 784, 1047], [0.1, 0.1, 0.1, 0.25]),
+  "Pop": () => playTone([800], [0.05]),
 };
 
 const DEFAULT_EVENTS: EventConfig[] = [
-  { key: "newUser", label: "New User", emoji: "👤", countKey: "totalUsers", enabled: true, sound: "Notification Bell" },
-  { key: "newDeposit", label: "New Deposit", emoji: "💰", countKey: "totalDeposits", enabled: true, sound: "Cash Register" },
-  { key: "newWithdrawal", label: "New Withdrawal", emoji: "💸", countKey: "totalWithdrawals", enabled: true, sound: "Chime" },
-  { key: "newGiftCard", label: "New Gift Card", emoji: "🎁", countKey: "totalGiftCards", enabled: true, sound: "Ding" },
-  { key: "newInvestment", label: "New Investment", emoji: "📈", countKey: "totalInvestments", enabled: true, sound: "Alert" },
-  { key: "newKYC", label: "New KYC", emoji: "🪪", countKey: "totalKYC", enabled: true, sound: "Success" },
-  { key: "newPaystack", label: "New Paystack Txn", emoji: "💳", countKey: "totalPaystack", enabled: true, sound: "Pop" },
+  { key: "newDeposit", label: "New Deposit", emoji: "�", countKey: "totalDeposits", enabled: true, sound: "Cash Register" },
+  { key: "newWithdrawal", label: "New Withdrawal", emoji: "�", countKey: "totalWithdrawals", enabled: true, sound: "Alert Chime" },
+  { key: "newUser", label: "New User", emoji: "�", countKey: "totalUsers", enabled: true, sound: "Notification Bell" },
+  { key: "newKYC", label: "New KYC", emoji: "🛡️", countKey: "totalKYC", enabled: true, sound: "Soft Ping" },
+  { key: "newInvestment", label: "New Investment", emoji: "📈", countKey: "totalInvestments", enabled: true, sound: "Success Tone" },
+  { key: "newGiftCard", label: "New Gift Card", emoji: "🎁", countKey: "totalGiftCards", enabled: true, sound: "Double Beep" },
+  { key: "newPaystack", label: "New Paystack Txn", emoji: "💳", countKey: "totalPaystack", enabled: true, sound: "Notification Bell" },
 ];
 
 export function AdminAlertProvider({ children }: { children: React.ReactNode }) {
@@ -103,6 +114,8 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
   const prevStatsRef = useRef<PlatformStats | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const soundIntervalRef = useRef<Record<string, NodeJS.Timeout>>({});
+
+  console.log('[Alert Context] Provider mounted');
 
   // Fetch alert settings from database
   const fetchAlertSettings = useCallback(async () => {
@@ -175,6 +188,8 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
             if (!cfg.enabled) continue;
             const diff = (newStats[key] as number) - (prev[key] as number);
             if (diff > 0) {
+              console.log(`[Alert Context] New data detected: ${cfg.label}, diff: ${diff}, sound: ${cfg.sound}`);
+              
               // Notify header that alerts are active
               localStorage.setItem('alerts-active', 'true');
               window.dispatchEvent(new CustomEvent('alerts-activity', { detail: 'active' }));
@@ -184,6 +199,7 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
                 
                 if (!muted) {
                   const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
+                  console.log(`[Alert Context] Playing sound: ${cfg.sound}`);
                   // Play sound immediately
                   soundFn();
                   // Start repeating sound every 3 seconds for 1 minute
