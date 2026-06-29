@@ -125,6 +125,8 @@ export default function AdminNotificationCenterPage() {
   const [desktopNotifs, setDesktopNotifs] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [loadingAlerts, setLoadingAlerts] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const [openSoundDropdowns, setOpenSoundDropdowns] = useState<Record<string, boolean>>({});
   const [globalDropdownOpen, setGlobalDropdownOpen] = useState(false);
@@ -177,6 +179,8 @@ export default function AdminNotificationCenterPage() {
   // ─── Fetch all stats ─────────────────────────────────────────────────────
   const fetchStats = useCallback(async (silent = false) => {
     if (!silent) setRefreshing(true);
+    setLoadingStats(true);
+    setLoadingAlerts(true);
     try {
       const res = await fetch("/api/admin/stats");
       if (!res.ok) {
@@ -242,6 +246,8 @@ export default function AdminNotificationCenterPage() {
       toast.error("Failed to refresh stats");
     } finally {
       setLoading(false);
+      setLoadingStats(false);
+      setLoadingAlerts(false);
       setRefreshing(false);
     }
   }, [events, muted, desktopNotifs, pollingInterval]);
@@ -398,10 +404,14 @@ export default function AdminNotificationCenterPage() {
               {statCards.map((s, i) => (
                 <div key={i} className="bg-card border border-border rounded-[1rem] px-4 py-3 shadow-sm hover:shadow-md transition-all">
                   <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
-                    <s.icon className={`w-4 h-4 ${s.color}`} />
+                    {loadingStats ? (
+                      <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                    ) : (
+                      <s.icon className={`w-4 h-4 ${s.color}`} />
+                    )}
                   </div>
                   <p className="text-2xl font-black tracking-tighter text-foreground">
-                    {loading ? "—" : s.value.toLocaleString()}
+                    {loadingStats ? "—" : s.value.toLocaleString()}
                   </p>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground leading-tight mt-0.5">
                     {s.label}
@@ -571,7 +581,14 @@ export default function AdminNotificationCenterPage() {
                   </div>
 
                   <div className="max-h-72 overflow-y-auto divide-y divide-border">
-                    {alerts.length === 0 ? (
+                    {loadingAlerts ? (
+                      <div className="p-10 text-center">
+                        <div className="w-10 h-10 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto mb-3" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                          Loading alerts...
+                        </p>
+                      </div>
+                    ) : alerts.length === 0 ? (
                       <div className="p-10 text-center">
                         <div className="w-10 h-10 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-3">
                           <Bell className="w-4 h-4 text-muted-foreground" />
