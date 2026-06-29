@@ -28,6 +28,7 @@ import { toast, Toaster } from "sonner";
 import AdminHeader from "@/components/admin-dashboard/AdminHeader";
 import AdminSidebar from "@/components/admin-dashboard/AdminSidebar";
 import AdminNav from "@/components/admin-dashboard/AdminNav";
+import { useAdminAlerts } from "@/contexts/AdminAlertContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface PlatformStats {
@@ -113,209 +114,36 @@ const DEFAULT_EVENTS: EventConfig[] = [
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function AdminNotificationCenterPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [stats, setStats] = useState<PlatformStats | null>(null);
-  const [prevStats, setPrevStats] = useState<PlatformStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<EventConfig[]>(DEFAULT_EVENTS);
-  const [alerts, setAlerts] = useState<AlertEvent[]>([]);
-  const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [globalSound, setGlobalSound] = useState("Notification Bell");
-  const [pollingInterval, setPollingInterval] = useState(30);
-  const [desktopNotifs, setDesktopNotifs] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [refreshing, setRefreshing] = useState(false);
-  const [loadingStats, setLoadingStats] = useState(false);
-  const [loadingAlerts, setLoadingAlerts] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const [openSoundDropdowns, setOpenSoundDropdowns] = useState<Record<string, boolean>>({});
   const [globalDropdownOpen, setGlobalDropdownOpen] = useState(false);
   const [intervalDropdownOpen, setIntervalDropdownOpen] = useState(false);
+  const [globalSound, setGlobalSound] = useState("Notification Bell");
 
-  const prevStatsRef = useRef<PlatformStats | null>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
-  const soundIntervalRef = useRef<Record<string, NodeJS.Timeout>>({});
 
-  // ─── Fetch alert settings from database ───────────────────────────────────
-  const fetchAlertSettings = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/alert-settings');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.settings) {
-          setMuted(data.settings.muted);
-          setVolume(data.settings.volume);
-          setGlobalSound(data.settings.globalSound);
-          setPollingInterval(data.settings.pollingInterval);
-          setDesktopNotifs(data.settings.desktopNotifs);
-          setEvents(data.settings.events);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch alert settings:', error);
-    }
-  }, []);
+  // Use the global alert context
+  const {
+    stats,
+    alerts,
+    muted,
+    setMuted,
+    volume,
+    setVolume,
+    pollingInterval,
+    setPollingInterval,
+    events,
+    setEvents,
+    desktopNotifs,
+    setDesktopNotifs,
+    clearAlerts,
+  } = useAdminAlerts();
 
-  // ─── Save alert settings to database ─────────────────────────────────────
-  const saveAlertSettings = useCallback(async () => {
-    try {
-      await fetch('/api/admin/alert-settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          muted,
-          volume,
-          globalSound,
-          pollingInterval,
-          desktopNotifs,
-          events,
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to save alert settings:', error);
-    }
-  }, [muted, volume, globalSound, pollingInterval, desktopNotifs, events]);
-
-  // ─── Fetch all stats ─────────────────────────────────────────────────────
-  const fetchStats = useCallback(async (silent = false) => {
-    if (!silent) setRefreshing(true);
-    setLoadingStats(true);
-    setLoadingAlerts(true);
-    try {
-      const res = await fetch("/api/admin/stats");
-      if (!res.ok) {
-        throw new Error("Failed to fetch stats");
-      }
-      const data = await res.json();
-      
-      if (data.success && data.stats) {
-        const newStats: PlatformStats = {
-          totalUsers: data.stats.totalUsers,
-          totalDeposits: data.stats.totalDeposits,
-          totalWithdrawals: data.stats.totalWithdrawals,
-          totalGiftCards: data.stats.totalGiftCards,
-          totalInvestments: data.stats.totalInvestments,
-          totalKYC: data.stats.totalKYC,
-          totalPaystack: data.stats.totalPaystack,
-        };
-
-        // Compare with previous & fire alerts
-        const prev = prevStatsRef.current;
-        if (prev) {
-          const checks: { key: keyof PlatformStats; cfg: EventConfig }[] = events.map((e) => ({
-            key: e.countKey,
-            cfg: e,
-          }));
-
-          for (const { key, cfg } of checks) {
-            if (!cfg.enabled) continue;
-            const diff = (newStats[key] as number) - (prev[key] as number);
-            if (diff > 0) {
-              // Notify header that alerts are active
-              localStorage.setItem('alerts-active', 'true');
-              window.dispatchEvent(new CustomEvent('alerts-activity', { detail: 'active' }));
-              
-              for (let i = 0; i < diff; i++) {
-                const alertId = `${Date.now()}-${Math.random()}`;
-                
-                if (!muted) {
-                  const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
-                  // Play sound immediately
-                  soundFn();
-                  // Start repeating sound every 3 seconds for 1 minute
-                  soundIntervalRef.current[alertId] = setInterval(() => {
-                    if (!muted) {
-                      soundFn();
-                    }
-                  }, 3000);
-                  // Stop after 1 minute
-                  setTimeout(() => {
-                    if (soundIntervalRef.current[alertId]) {
-                      clearInterval(soundIntervalRef.current[alertId]);
-                      delete soundIntervalRef.current[alertId];
-                    }
-                  }, 60000);
-                }
-                
-                const newAlert: AlertEvent = {
-                  id: alertId,
-                  type: cfg.key,
-                  emoji: cfg.emoji,
-                  label: cfg.label,
-                  detail: `+${diff} new record${diff > 1 ? "s" : ""}`,
-                  timestamp: new Date(),
-                };
-                setAlerts((prev) => [newAlert, ...prev].slice(0, 50));
-                if (desktopNotifs && "Notification" in window && Notification.permission === "granted") {
-                  new Notification(`${cfg.emoji} ${cfg.label}`, { body: newAlert.detail });
-                }
-              }
-            }
-          }
-        }
-
-        prevStatsRef.current = newStats;
-        setStats(newStats);
-        setLastRefresh(new Date());
-        setCountdown(pollingInterval);
-      }
-    } catch (err) {
-      toast.error("Failed to refresh stats");
-    } finally {
-      setLoading(false);
-      setLoadingStats(false);
-      setLoadingAlerts(false);
-      setRefreshing(false);
-    }
-  }, [events, muted, desktopNotifs, pollingInterval]);
-
-  // ─── Initialize settings on mount ─────────────────────────────────────────
-  useEffect(() => {
-    fetchAlertSettings();
-  }, [fetchAlertSettings]);
-
-  // ─── Save settings whenever they change ───────────────────────────────────
-  useEffect(() => {
-    saveAlertSettings();
-  }, [saveAlertSettings]);
-
-  // ─── Clear sound intervals when muted ─────────────────────────────────────
-  useEffect(() => {
-    if (muted) {
-      // Clear all sound intervals when muted
-      Object.values(soundIntervalRef.current).forEach(interval => clearInterval(interval));
-      soundIntervalRef.current = {};
-    }
-  }, [muted]);
-
-  // ─── Polling ──────────────────────────────────────────────────────────────
-  useEffect(() => {
-    fetchStats();
-    pollingRef.current = setInterval(() => fetchStats(true), pollingInterval * 1000);
-    return () => { 
-      if (pollingRef.current) clearInterval(pollingRef.current);
-      // Clear all sound intervals on unmount
-      Object.values(soundIntervalRef.current).forEach(interval => clearInterval(interval));
-      soundIntervalRef.current = {};
-    };
-  }, [pollingInterval]);
-
-  // Countdown ticker
-  useEffect(() => {
-    setCountdown(pollingInterval);
-    countdownRef.current = setInterval(() => {
-      setCountdown((c) => (c <= 1 ? pollingInterval : c - 1));
-    }, 1000);
-    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
-  }, [pollingInterval, lastRefresh]);
-
+  // ─── Manual refresh ─────────────────────────────────────────────────────────────
   const handleManualRefresh = () => {
-    fetchStats();
-    fetchAlertSettings();
-    setAlerts([]);
-    if (pollingRef.current) clearInterval(pollingRef.current);
-    pollingRef.current = setInterval(() => fetchStats(true), pollingInterval * 1000);
+    setLastRefresh(new Date());
     toast.success('Refreshed successfully');
   };
 
@@ -327,18 +155,17 @@ export default function AdminNotificationCenterPage() {
   };
 
   const toggleEvent = (key: string) => {
-    setEvents((prev) => {
-      const updated = prev.map((e) => e.key === key ? { ...e, enabled: !e.enabled } : e);
-      const event = updated.find(e => e.key === key);
-      if (event) {
-        toast.success(`${event.label} ${event.enabled ? 'disabled' : 'enabled'}`);
-      }
-      return updated;
-    });
+    const updated = events.map((e) => e.key === key ? { ...e, enabled: !e.enabled } : e);
+    setEvents(updated);
+    const event = updated.find(e => e.key === key);
+    if (event) {
+      toast.success(`${event.label} ${event.enabled ? 'disabled' : 'enabled'}`);
+    }
   };
 
   const setEventSound = (key: string, sound: string) => {
-    setEvents((prev) => prev.map((e) => e.key === key ? { ...e, sound } : e));
+    const updated = events.map((e) => e.key === key ? { ...e, sound } : e);
+    setEvents(updated);
     setOpenSoundDropdowns({});
     toast.success(`Sound updated to ${sound}`);
   };
@@ -357,6 +184,15 @@ export default function AdminNotificationCenterPage() {
       toast.success('Desktop notifications disabled');
     }
   };
+
+  // ─── Countdown ticker ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    setCountdown(pollingInterval);
+    countdownRef.current = setInterval(() => {
+      setCountdown((c) => (c <= 1 ? pollingInterval : c - 1));
+    }, 1000);
+    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+  }, [pollingInterval]);
 
   // ─── Stats config ─────────────────────────────────────────────────────────
   const statCards = [
@@ -417,11 +253,9 @@ export default function AdminNotificationCenterPage() {
                 {/* Mute toggle */}
                 <button
                   onClick={() => {
-                    setMuted((m) => {
-                      const newState = !m;
-                      toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
-                      return newState;
-                    });
+                    const newState = !muted;
+                    setMuted(newState);
+                    toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
                   }}
                   className={`p-2.5 border-2 rounded-xl transition-all cursor-pointer ${muted ? "bg-rose-500/10 border-rose-500/30 text-rose-500" : "bg-muted/30 border-border text-muted-foreground hover:border-foreground/40"}`}
                   title={muted ? "Unmute" : "Mute"}
@@ -436,14 +270,10 @@ export default function AdminNotificationCenterPage() {
               {statCards.map((s, i) => (
                 <div key={i} className="bg-card border border-border rounded-[1rem] px-4 py-3 shadow-sm hover:shadow-md transition-all">
                   <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
-                    {loadingStats ? (
-                      <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
-                    ) : (
-                      <s.icon className={`w-4 h-4 ${s.color}`} />
-                    )}
+                    <s.icon className={`w-4 h-4 ${s.color}`} />
                   </div>
                   <p className="text-2xl font-black tracking-tighter text-foreground">
-                    {loadingStats ? "—" : s.value.toLocaleString()}
+                    {stats ? s.value.toLocaleString() : "—"}
                   </p>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground leading-tight mt-0.5">
                     {s.label}
@@ -585,11 +415,9 @@ export default function AdminNotificationCenterPage() {
                     </button>
                     <button
                       onClick={() => {
-                        setMuted((m) => {
-                          const newState = !m;
-                          toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
-                          return newState;
-                        });
+                        const newState = !muted;
+                        setMuted(newState);
+                        toast.success(newState ? 'Muted successfully' : 'Unmuted successfully');
                       }}
                       className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all cursor-pointer ${muted ? "border-emerald-500 text-emerald-500 hover:bg-emerald-500/10" : "border-rose-500 text-rose-500 hover:bg-rose-500/10"}`}
                     >
@@ -604,7 +432,7 @@ export default function AdminNotificationCenterPage() {
                     <h2 className="text-sm font-black uppercase tracking-tight text-foreground">Recent Alerts</h2>
                     {alerts.length > 0 && (
                       <button onClick={() => {
-                        setAlerts([]);
+                        clearAlerts();
                         toast.success('Alerts cleared');
                       }} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                         Clear
@@ -613,14 +441,7 @@ export default function AdminNotificationCenterPage() {
                   </div>
 
                   <div className="max-h-72 overflow-y-auto divide-y divide-border">
-                    {loadingAlerts ? (
-                      <div className="p-10 text-center">
-                        <div className="w-10 h-10 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto mb-3" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                          Loading alerts...
-                        </p>
-                      </div>
-                    ) : alerts.length === 0 ? (
+                    {alerts.length === 0 ? (
                       <div className="p-10 text-center">
                         <div className="w-10 h-10 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-3">
                           <Bell className="w-4 h-4 text-muted-foreground" />
