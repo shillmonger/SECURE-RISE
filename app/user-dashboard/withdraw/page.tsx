@@ -118,6 +118,7 @@ export default function WithdrawPage() {
   const [selectedCrypto, setSelectedCrypto] = useState(SUPPORTED_CRYPTOS[0]);
   const [amount, setAmount] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpExpires, setOtpExpires] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -198,6 +199,7 @@ export default function WithdrawPage() {
         toast.error(data.error);
       } else {
         toast.success("OTP sent to your email");
+        setOtpExpires(data.otpExpires);
       }
     } catch (error) {
       toast.error("Failed to send OTP");
@@ -237,6 +239,7 @@ export default function WithdrawPage() {
           crypto: selectedCrypto,
           destinationAddress,
           otp,
+          otpExpires,
         }),
       });
 

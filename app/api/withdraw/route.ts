@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, crypto, destinationAddress, otp } = await request.json();
+    const { amount, crypto, destinationAddress, otp, otpExpires } = await request.json();
 
     // Validation
     if (!amount || !crypto || !destinationAddress || !otp) {
@@ -84,37 +84,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
     }
 
-    // Check if there's a pending withdrawal with OTP
-    const pendingWithdrawal = await withdrawalsCollection.findOne({
-      userId: user._id,
-      status: 'pending',
-      otpCode: otp,
-      otpExpires: { $gt: new Date() }
-    });
-
-    if (!pendingWithdrawal) {
-      return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 });
+    // Verify OTP hasn't expired
+    if (otpExpires && new Date(otpExpires) < new Date()) {
+      return NextResponse.json({ error: 'OTP has expired. Please request a new OTP.' }, { status: 400 });
     }
 
-    // Update withdrawal status to pending (awaiting admin approval)
-    await withdrawalsCollection.updateOne(
-      { _id: pendingWithdrawal._id },
-      {
-        $set: {
-          status: 'pending',
-          amount,
-          crypto,
-          destinationAddress,
-          updatedAt: new Date(),
-          otpCode: undefined, // Clear OTP after successful verification
-          otpExpires: undefined
-        }
-      }
-    );
+    // Generate withdrawal ID
+    const withdrawalId = generateWithdrawalId();
+
+    // Create withdrawal record
+    const withdrawalData: Withdrawal = {
+      userId: user._id,
+      username: user.username,
+      userEmail: user.email,
+      amount,
+      crypto,
+      destinationAddress,
+      status: 'pending',
+      withdrawalId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    await withdrawalsCollection.insertOne(withdrawalData);
 
     // Send notification to admins
     await sendWithdrawalNotificationToAdmins({
-      withdrawalId: pendingWithdrawal.withdrawalId,
+      withdrawalId,
       username: user.username,
       userEmail: user.email,
       amount,
@@ -124,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Withdrawal request submitted successfully',
-      withdrawalId: pendingWithdrawal.withdrawalId
+      withdrawalId
     });
   } catch (error) {
     console.error('Error creating withdrawal:', error);

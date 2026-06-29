@@ -43,35 +43,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
     }
 
-    // Generate OTP and withdrawal record
+    // Generate OTP (not storing to DB yet)
     const otpCode = generateOTP();
-    const withdrawalId = generateWithdrawalId();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    // Create withdrawal record with OTP
-    const withdrawalData: Withdrawal = {
-      userId: user._id,
-      username: user.username,
-      userEmail: user.email,
-      amount,
-      crypto,
-      destinationAddress,
-      status: 'pending',
-      otpCode,
-      otpExpires,
-      withdrawalId,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    await withdrawalsCollection.insertOne(withdrawalData);
-
-    // Send OTP email
+    // Send OTP email only (not storing to DB)
     await sendWithdrawalOTP(user.email, user.username, otpCode, amount, crypto.name);
 
     return NextResponse.json({
       message: 'OTP sent successfully',
-      withdrawalId
+      otpCode, // In production, you might want to encrypt this or use a different approach
+      otpExpires: otpExpires.toISOString()
     });
   } catch (error) {
     console.error('Error sending withdrawal OTP:', error);
