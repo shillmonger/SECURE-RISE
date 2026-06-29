@@ -135,6 +135,7 @@ export default function AdminNotificationCenterPage() {
   const prevStatsRef = useRef<PlatformStats | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const soundIntervalRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   // ─── Fetch alert settings from database ───────────────────────────────────
   const fetchAlertSettings = useCallback(async () => {
@@ -216,12 +217,29 @@ export default function AdminNotificationCenterPage() {
               window.dispatchEvent(new CustomEvent('alerts-activity', { detail: 'active' }));
               
               for (let i = 0; i < diff; i++) {
+                const alertId = `${Date.now()}-${Math.random()}`;
+                
                 if (!muted) {
                   const soundFn = SOUNDS[cfg.sound] ?? SOUNDS["Notification Bell"];
+                  // Play sound immediately
                   soundFn();
+                  // Start repeating sound every 3 seconds for 1 minute
+                  soundIntervalRef.current[alertId] = setInterval(() => {
+                    if (!muted) {
+                      soundFn();
+                    }
+                  }, 3000);
+                  // Stop after 1 minute
+                  setTimeout(() => {
+                    if (soundIntervalRef.current[alertId]) {
+                      clearInterval(soundIntervalRef.current[alertId]);
+                      delete soundIntervalRef.current[alertId];
+                    }
+                  }, 60000);
                 }
+                
                 const newAlert: AlertEvent = {
-                  id: `${Date.now()}-${Math.random()}`,
+                  id: alertId,
                   type: cfg.key,
                   emoji: cfg.emoji,
                   label: cfg.label,
@@ -262,11 +280,25 @@ export default function AdminNotificationCenterPage() {
     saveAlertSettings();
   }, [saveAlertSettings]);
 
+  // ─── Clear sound intervals when muted ─────────────────────────────────────
+  useEffect(() => {
+    if (muted) {
+      // Clear all sound intervals when muted
+      Object.values(soundIntervalRef.current).forEach(interval => clearInterval(interval));
+      soundIntervalRef.current = {};
+    }
+  }, [muted]);
+
   // ─── Polling ──────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchStats();
     pollingRef.current = setInterval(() => fetchStats(true), pollingInterval * 1000);
-    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+    return () => { 
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      // Clear all sound intervals on unmount
+      Object.values(soundIntervalRef.current).forEach(interval => clearInterval(interval));
+      soundIntervalRef.current = {};
+    };
   }, [pollingInterval]);
 
   // Countdown ticker
