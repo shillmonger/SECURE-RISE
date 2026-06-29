@@ -175,8 +175,8 @@ export default function AdminDashboardPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((item) => (
-                <div key={item} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
+              Array.from({ length: 42 }).map((_, i) => (
+                <div key={i} className="bg-card p-5 rounded-2xl border border-border shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-2 rounded-xl bg-muted animate-pulse">
                       <div className="w-5 h-5 bg-muted-foreground/20 rounded"></div>

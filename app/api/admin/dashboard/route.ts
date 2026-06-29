@@ -87,6 +87,10 @@ export async function GET(request: NextRequest) {
     // Calculate pending deposits amount
     const pendingDepositsData = await depositsCollection.find({ status: 'pending' }).toArray();
     const pendingDepositsTotal = pendingDepositsData.reduce((sum, deposit) => sum + deposit.amount, 0);
+    const pendingDepositsCount = pendingDepositsData.length;
+
+    // Get total deposits count
+    const totalDepositsCount = await depositsCollection.countDocuments();
 
     // Get user information for deposits
     const userIds = deposits.map(d => d.userId);
@@ -107,10 +111,15 @@ export async function GET(request: NextRequest) {
     // Calculate pending withdrawals amount
     const pendingWithdrawalsData = await withdrawalsCollection.find({ status: 'pending' }).toArray();
     const pendingWithdrawalsTotal = pendingWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+    const pendingWithdrawalsCount = pendingWithdrawalsData.length;
 
     // Calculate total approved withdrawals (payouts)
     const approvedWithdrawalsData = await withdrawalsCollection.find({ status: 'approved' }).toArray();
     const totalPayout = approvedWithdrawalsData.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+    const totalPayoutCount = approvedWithdrawalsData.length;
+
+    // Get total withdrawals count
+    const totalWithdrawalsCount = await withdrawalsCollection.countDocuments();
 
     // Get user information for withdrawals
     const withdrawalUserIds = withdrawals.map(w => w.userId);
@@ -182,6 +191,13 @@ export async function GET(request: NextRequest) {
     const pendingGiftCards = await giftCardsCollection.countDocuments({ status: 'pending_review' });
     const approvedGiftCards = await giftCardsCollection.countDocuments({ status: 'approved' });
     const rejectedGiftCards = await giftCardsCollection.countDocuments({ status: 'rejected' });
+    const totalGiftCardsCount = await giftCardsCollection.countDocuments();
+
+    // Calculate gift card amounts
+    const pendingGiftCardsData = await giftCardsCollection.find({ status: 'pending_review' }).toArray();
+    const pendingGiftCardsTotal = pendingGiftCardsData.reduce((sum, card) => sum + (card.amount || 0), 0);
+    const approvedGiftCardsData = await giftCardsCollection.find({ status: 'approved' }).toArray();
+    const approvedGiftCardsTotal = approvedGiftCardsData.reduce((sum, card) => sum + (card.amount || 0), 0);
 
     // Get recent gift cards transactions
     const recentGiftCards = await giftCardsCollection
@@ -270,6 +286,7 @@ export async function GET(request: NextRequest) {
       }
     ]).toArray();
     const totalDailyXP = dailyXPStats[0]?.totalDailyXP || 0;
+    const totalDailyXPCount = await xpRedemptionCollection.countDocuments({ status: 'completed', xpType: 'daily' });
     
     // Total Achievements XP (sum of xpAmount where xpType is 'achievement')
     const achievementXPStats = await xpRedemptionCollection.aggregate([
@@ -282,6 +299,7 @@ export async function GET(request: NextRequest) {
       }
     ]).toArray();
     const totalAchievementXP = achievementXPStats[0]?.totalAchievementXP || 0;
+    const totalAchievementXPCount = await xpRedemptionCollection.countDocuments({ status: 'completed', xpType: 'achievement' });
 
     // Get Predictions statistics
     const predictionsCollection = db.collection('predictions');
@@ -300,6 +318,7 @@ export async function GET(request: NextRequest) {
       }
     ]).toArray();
     const totalPredictionXP = predictionXPStats[0]?.totalXPEarned || 0;
+    const totalPredictionXPCount = await predictionsCollection.countDocuments({ xpEarned: { $gt: 0 } });
 
     // Get Paystack transaction statistics
     const paystackCollection = db.collection('paystackTransactions');
@@ -364,30 +383,63 @@ export async function GET(request: NextRequest) {
 
     // Format stats for frontend
     const formattedStats = [
+      // User stats
       { label: "Total Users", value: totalUsers.toString(), icon: "Users", color: "text-blue-500", bg: "bg-blue-500/10" },
       { label: "Active Users", value: activeUsers.toString(), icon: "UserCheck", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Blocked Users", value: blockedUsers.toString(), icon: "UserMinus", color: "text-red-500", bg: "bg-red-500/10" },
       { label: "Investment Plans", value: investmentPlansCount.toString(), icon: "Layers", color: "text-purple-500", bg: "bg-purple-500/10" },
-      { label: "Total Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
-      { label: "Pending Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
-      { label: "Pending Withdrawal", value: `$${pendingWithdrawalsTotal.toFixed(2)}`, icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
-      { label: "Total Payout", value: `$${totalPayout.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-green-500", bg: "bg-green-500/10" },
-      { label: "Total KYC Submitted", value: totalKycSubmissions.toString(), icon: "Shield", color: "text-indigo-500", bg: "bg-indigo-500/10" },
+      
+      // Deposit stats (Amount type)
+      { label: "Total Amt Deposit", value: `$${stats.totalDeposit.toFixed(2)}`, icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "Pending Amt Deposit", value: `$${pendingDepositsTotal.toFixed(2)}`, icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Total Amt Withdrawal", value: `$${stats.totalWithdrawal.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
+      { label: "Pending Amt Withdrawal", value: `$${pendingWithdrawalsTotal.toFixed(2)}`, icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Total Amt Payout", value: `$${totalPayout.toFixed(2)}`, icon: "ArrowDownLeft", color: "text-green-500", bg: "bg-green-500/10" },
+      
+      // Deposit stats (Count type)
+      { label: "Total Deposit", value: totalDepositsCount.toString(), icon: "TrendingUp", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "Pending Deposit", value: pendingDepositsCount.toString(), icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Total Withdrawal", value: totalWithdrawalsCount.toString(), icon: "ArrowDownLeft", color: "text-primary", bg: "bg-primary/10" },
+      { label: "Pending Withdrawal", value: pendingWithdrawalsCount.toString(), icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Total Payout", value: totalPayoutCount.toString(), icon: "ArrowDownLeft", color: "text-green-500", bg: "bg-green-500/10" },
+      
+      // Gift card stats (Amount type)
+      { label: "Pending Amt Gift Cards", value: `$${pendingGiftCardsTotal.toFixed(2)}`, icon: "Gift", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Approved Amt Gift Cards", value: `$${approvedGiftCardsTotal.toFixed(2)}`, icon: "Gift", color: "text-green-500", bg: "bg-green-500/10" },
+      
+      // Gift card stats (Count type)
       { label: "Pending Gift Cards", value: pendingGiftCards.toString(), icon: "Gift", color: "text-orange-500", bg: "bg-orange-500/10" },
       { label: "Approved Gift Cards", value: approvedGiftCards.toString(), icon: "Gift", color: "text-green-500", bg: "bg-green-500/10" },
       { label: "Rejected Gift Cards", value: rejectedGiftCards.toString(), icon: "Gift", color: "text-red-500", bg: "bg-red-500/10" },
+      { label: "Total Gift Cards", value: totalGiftCardsCount.toString(), icon: "Gift", color: "text-pink-500", bg: "bg-pink-500/10" },
+      
+      // Other stats
+      { label: "Total KYC Submitted", value: totalKycSubmissions.toString(), icon: "Shield", color: "text-indigo-500", bg: "bg-indigo-500/10" },
       { label: "Total Gifts", value: totalGifts.toString(), icon: "Gift", color: "text-pink-500", bg: "bg-pink-500/10" },
       { label: "User Achievements", value: totalUserAchievements.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
       { label: "Total User XP", value: totalUserXP.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
+      
+      // XP redemption stats (Amount type)
+      { label: "USDT Amt Redeemed", value: `$${totalUSDTRedeemed.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "XP Amt Redeemed", value: totalXPRedeemed.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
+      { label: "Daily Amt XP", value: totalDailyXP.toString(), icon: "Star", color: "text-blue-500", bg: "bg-blue-500/10" },
+      { label: "Achievements Amt XP", value: totalAchievementXP.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "Prediction Amt XP", value: totalPredictionXP.toString(), icon: "Zap", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      
+      // XP redemption stats (Count type)
       { label: "Total Redeemed", value: totalRedeemed.toString(), icon: "Star", color: "text-green-500", bg: "bg-green-500/10" },
-      { label: "USDT Redeemed", value: `$${totalUSDTRedeemed.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
-      { label: "XP Redeemed", value: totalXPRedeemed.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
-      { label: "Total Daily XP", value: totalDailyXP.toString(), icon: "Star", color: "text-blue-500", bg: "bg-blue-500/10" },
-      { label: "Total Achievements XP", value: totalAchievementXP.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "USDT Redeemed", value: totalRedeemed.toString(), icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
+      { label: "XP Redeemed", value: totalRedeemed.toString(), icon: "Star", color: "text-purple-500", bg: "bg-purple-500/10" },
+      { label: "Total Daily XP", value: totalDailyXPCount.toString(), icon: "Star", color: "text-blue-500", bg: "bg-blue-500/10" },
+      { label: "Total Achievements XP", value: totalAchievementXPCount.toString(), icon: "Trophy", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      { label: "Prediction XP Earned", value: totalPredictionXPCount.toString(), icon: "Zap", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      
+      // Prediction stats
       { label: "Total Predictions", value: totalPredictions.toString(), icon: "Target", color: "text-cyan-500", bg: "bg-cyan-500/10" },
       { label: "Won Predictions", value: wonPredictions.toString(), icon: "TrendingUp", color: "text-green-500", bg: "bg-green-500/10" },
       { label: "Lost Predictions", value: lostPredictions.toString(), icon: "TrendingUp", color: "text-red-500", bg: "bg-red-500/10" },
-      { label: "Prediction XP Earned", value: totalPredictionXP.toString(), icon: "Zap", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+      
+      // Paystack stats
       { label: "Paystack Transactions", value: totalPaystackTransactions.toString(), icon: "CreditCard", color: "text-emerald-500", bg: "bg-emerald-500/10" },
       { label: "Paystack USD Total", value: `$${totalPaystackUSD.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Processed Paystack", value: processedPaystackTransactions.toString(), icon: "CreditCard", color: "text-green-500", bg: "bg-green-500/10" },
