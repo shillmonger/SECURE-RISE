@@ -31,7 +31,7 @@ export default function RiskProtection() {
         {/* Main Image Section — top of card */}
         <div className="relative w-full h-[350px] md:h-[1000px] bg-gradient-to-b from-primary/5 to-transparent">
           <Image
-            src="https://i.postimg.cc/66CDQK1B/PC-VIEW.png"
+            src="/securerise.png"
             alt="Capital Protection"
             fill
             // Removed scale-95 from mobile, added object-cover to ensure full width/height
@@ -45,7 +45,7 @@ export default function RiskProtection() {
 
         {/* Feature Highlights — bottom of card */}
         {/* We use bg-muted/50 for light mode and a darker shade for dark mode */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 py-4 md:p-12 bg-muted/30 dark:bg-black/60 border-t border-primary/10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 py-4 md:p-10 bg-muted/30 dark:bg-black/60 border-t border-primary/10">
           {/* Card 1 */}
           <div className="p-6 flex flex-col group">
             <div className="flex items-center gap-3 mb-3">

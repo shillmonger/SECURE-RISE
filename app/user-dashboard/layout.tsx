@@ -11,13 +11,18 @@ export default function UserDashboardLayout({
 }) {
   const [isGiftMemberOpen, setIsGiftMemberOpen] = useState(false);
 
-  // Auto-open the gift member modal after a short delay
+  // Auto-open the gift member modal only on login/signup (not on page navigation)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsGiftMemberOpen(true);
-    }, 2000); // Open after 2 seconds
+    const hasShownPopup = localStorage.getItem('promotionPopupShown');
+    
+    if (!hasShownPopup) {
+      const timer = setTimeout(() => {
+        setIsGiftMemberOpen(true);
+        localStorage.setItem('promotionPopupShown', 'true');
+      }, 2000); // Open after 2 seconds
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
