@@ -23,6 +23,8 @@ import AddAccountModal from "./AddAccountModal";
 import ConfirmModal from "./ConfirmModal";
 import { useTheme } from "../custom-theme-provider";
 import { useMounted } from "@/hooks/useMounted";
+import CurrencyDropdown from "./CurrencyDropdown";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -51,6 +53,8 @@ export default function UserHeader({
   sidebarOpen,
   setSidebarOpen,
 }: HeaderProps) {
+  const { currency, exchangeRate } = useCurrency();
+  
   // Fetch user data from backend
   const [user, setUser] = useState<UserData>({
     name: "Loading...",
@@ -569,7 +573,10 @@ export default function UserHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm-gap-4">
+          {/* Currency Dropdown */}
+          <CurrencyDropdown />
+
           {/* Theme toggle — icon only, white on dark / black on light */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -580,7 +587,7 @@ export default function UserHeader({
               (theme === "dark" ? (
                 <Sun className="w-5 h-5 text-white" />
               ) : (
-                <Moon className="w-5 h-5 text-black" />
+                <Moon className="w-5 h-5 text-foreground" />
               ))}
           </button>
 

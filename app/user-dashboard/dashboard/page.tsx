@@ -33,6 +33,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 import RecentActivity from "@/components/user-dashboard/RecentActivity";
 import PortfolioValue from "@/components/user-dashboard/PortfolioValue";
 import LiveMarkets from "@/components/user-dashboard/LiveMarkets";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Helper function to format numbers with K, M, B notation
 const formatNumber = (num: number): string => {
@@ -49,6 +50,7 @@ const formatNumber = (num: number): string => {
 };
 
 export default function UserOverviewPage() {
+  const { currency, exchangeRate, loading: currencyLoading } = useCurrency();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [totalDeposit, setTotalDeposit] = useState(0);
@@ -196,6 +198,7 @@ export default function UserOverviewPage() {
     {
       label: "Acc Balance",
       value: `$${formatNumber(financialData.accountBalance)}`,
+      convertedValue: currency !== "USD" ? `${formatNumber(financialData.accountBalance * exchangeRate)} ${currency}` : null,
       icon: Wallet,
       iconBg: "bg-blue-500/10",
       iconColor: "text-blue-500",
@@ -206,6 +209,7 @@ export default function UserOverviewPage() {
     {
       label: "Total Profits",
       value: `$${formatNumber(financialData.totalProfits)}`,
+      convertedValue: currency !== "USD" ? `${formatNumber(financialData.totalProfits * exchangeRate)} ${currency}` : null,
       icon: TrendingUp,
       iconBg: "bg-green-500/10",
       iconColor: "text-green-500",
@@ -216,6 +220,7 @@ export default function UserOverviewPage() {
     {
       label: "Total Deposits",
       value: `$${formatNumber(financialData.totalDeposit)}`,
+      convertedValue: currency !== "USD" ? `${formatNumber(financialData.totalDeposit * exchangeRate)} ${currency}` : null,
       icon: ArrowDownCircle,
       iconBg: "bg-orange-500/10",
       iconColor: "text-orange-500",
@@ -226,6 +231,7 @@ export default function UserOverviewPage() {
     {
       label: "My Withdrawals",
       value: `$${formatNumber(financialData.totalWithdrawal)}`,
+      convertedValue: currency !== "USD" ? `${formatNumber(financialData.totalWithdrawal * exchangeRate)} ${currency}` : null,
       icon: ArrowUpRight,
       iconBg: "bg-purple-500/10",
       iconColor: "text-purple-500",
@@ -583,7 +589,7 @@ export default function UserOverviewPage() {
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto pb-25 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-10">
-            
+
             {/* Welcome & Investment Snapshot */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
@@ -628,9 +634,11 @@ export default function UserOverviewPage() {
                   {loading ? (
                     <div className="h-8 w-16 bg-muted rounded animate-pulse mb-1"></div>
                   ) : (
-                    <p className="text-xl sm:text-2xl md:text-2xl font-black tracking-tighter mb-1">
-                      {stat.value}
-                    </p>
+                    <div className="flex flex-col justify-between items-start gap-0 sm:gap-2 sm:sm:flex-row"> <p className="text-xl sm:text-2xl md:text-2xl font-black tracking-tighter"> {stat.value} </p> {currencyLoading && currency !== "USD" ? (
+                      <p className="text-xs sm:text-xs font-bold text-muted-foreground tracking-tight"> Loading... </p>
+                    ) : stat.convertedValue && (
+                      <p className="text-xs sm:text-xs font-bold text-green-500 tracking-tight"> ({stat.convertedValue}) </p>
+                    )} </div>
                   )}
                   <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                     {stat.label}
