@@ -45,7 +45,7 @@ export default function RiskProtection() {
 
         {/* Feature Highlights — bottom of card */}
         {/* We use bg-muted/50 for light mode and a darker shade for dark mode */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 p-6 md:p-12 bg-muted/30 dark:bg-black/60 border-t border-primary/10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 py-4 md:p-12 bg-muted/30 dark:bg-black/60 border-t border-primary/10">
           {/* Card 1 */}
           <div className="p-6 flex flex-col group">
             <div className="flex items-center gap-3 mb-3">
