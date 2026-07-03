@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   AlarmClockMinus,
   AlarmClock,
+  MessageCircle,
   MailPlus,
   Landmark,
   BarChart3,
@@ -91,6 +92,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       name: "Settings",
       icon: Settings,
       children: [
+        { name: "Live Chat", icon: MessageCircle, href: `${basePath}/live-chat` },
         { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
         { name: "Live API Alerts", icon: AlarmClock , href: `${basePath}/alerts` },
         { name: "Email Distribution", icon: MailPlus, href: `${basePath}/email-distribution` },
