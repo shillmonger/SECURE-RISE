@@ -128,6 +128,32 @@ interface InvestmentPlan {
   daysCompleted: number;
 }
 
+interface ProfitHistoryEntry {
+  date: string;
+  rate: number;
+  amount: number;
+  timestamp: string;
+}
+
+interface UserInvestment {
+  id: string;
+  userId: string;
+  planId: number;
+  planName: string;
+  roiRate: number;
+  investmentAmount: number;
+  durationDays: number;
+  daysPassed: number;
+  profitEarned: number;
+  completionPercentage: number;
+  status: string;
+  profitHistory: ProfitHistoryEntry[];
+  startDate: string;
+  endDate: string;
+  lastProfitDate: string;
+  updatedAt: string;
+}
+
 interface Deposit {
   _id: string;
   paymentMethod: string;
@@ -146,6 +172,7 @@ interface UserDetails {
   withdrawals?: Withdrawal[];
   investmentPlans?: InvestmentPlan[];
   deposits?: Deposit[];
+  investments?: UserInvestment[];
 }
 
 export default function AdminUsersPage() {
@@ -362,12 +389,26 @@ export default function AdminUsersPage() {
         console.log("User data for debugging:", currentUser);
         console.log("totalProfits:", currentUser.totalProfits);
         console.log("welcomeBonus:", currentUser.welcomeBonus);
+
+        // Fetch user investments
+        let investments: UserInvestment[] = [];
+        try {
+          const investmentsResponse = await fetch(`/api/admin/users/${userId}/investments`);
+          const investmentsData = await investmentsResponse.json();
+          if (investmentsData.success) {
+            investments = investmentsData.investments || [];
+          }
+        } catch (error) {
+          console.error("Error fetching investments:", error);
+        }
+
         setSelectedUser({
           user: currentUser,
           kyc: undefined,
           withdrawals: [],
           investmentPlans: [],
           deposits: [],
+          investments: investments,
         });
       }
     } catch (error) {
@@ -838,6 +879,109 @@ export default function AdminUsersPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        <hr className="border-border" />
+
+        {/* Investment Information */}
+        <div>
+          <p className="text-[11px] font-medium text-teal-600 uppercase tracking-widest mb-3">
+            Investment Information
+          </p>
+          
+          {selectedUser.investments && selectedUser.investments.length > 0 ? (
+            <div className="space-y-3">
+              {selectedUser.investments.map((investment) => (
+                <div key={investment.id} className="p-4 bg-muted/30 rounded-xl border border-border">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{investment.planName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(investment.startDate)} - {formatDate(investment.endDate)}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                      investment.status === 'active'
+                        ? 'bg-teal-500/10 text-teal-600 border-teal-500/20'
+                        : investment.status === 'completed'
+                          ? 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+                          : 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+                    }`}>
+                      {investment.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="p-2 bg-background/50 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground mb-1">Invested</p>
+                      <p className="text-sm font-bold text-foreground">
+                        {formatCurrency(investment.investmentAmount)}
+                      </p>
+                    </div>
+                    <div className="p-2 bg-background/50 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground mb-1">Profit Earned</p>
+                      <p className="text-sm font-bold text-green-600">
+                        {formatCurrency(investment.profitEarned)}
+                      </p>
+                    </div>
+                    <div className="p-2 bg-background/50 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground mb-1">ROI Rate</p>
+                      <p className="text-sm font-bold text-foreground">
+                        {investment.roiRate}%
+                      </p>
+                    </div>
+                    <div className="p-2 bg-background/50 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground mb-1">Progress</p>
+                      <p className="text-sm font-bold text-foreground">
+                        {investment.daysPassed}/{investment.durationDays} days
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                      <span>Completion</span>
+                      <span>{investment.completionPercentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-border rounded-full h-2">
+                      <div
+                        className="bg-teal-500 h-2 rounded-full transition-all"
+                        style={{ width: `${Math.min(100, investment.completionPercentage)}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Profit History */}
+                  {investment.profitHistory && investment.profitHistory.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                        Profit History ({investment.profitHistory.length} entries)
+                      </p>
+                      <div className="max-h-32 overflow-y-auto space-y-1">
+                        {investment.profitHistory.slice(-5).reverse().map((entry, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between p-2 bg-background/50 rounded-lg text-[10px]"
+                          >
+                            <span className="text-muted-foreground">{entry.date}</span>
+                            <span className="font-bold text-green-600">
+                              +{formatCurrency(entry.amount)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 bg-muted/30 rounded-xl border border-border text-center">
+              <Wallet className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm font-medium text-muted-foreground">No investments found</p>
+            </div>
+          )}
         </div>
 
       </div>
