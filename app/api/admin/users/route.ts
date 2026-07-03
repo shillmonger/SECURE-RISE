@@ -57,10 +57,12 @@ export async function GET(request: NextRequest) {
 
     // Format users for frontend
     const formattedUsers = users.map(user => ({
+      _id: user._id.toString(),
       id: user._id.toString(),
       name: user.fullName || user.username,
       email: user.email,
       username: user.username,
+      fullName: user.fullName,
       status: user.isActive ? 'Active' : 'Blocked',
       balance: user.accountBalance.toString(),
       profit: user.totalProfits.toString(),

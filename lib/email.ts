@@ -793,3 +793,134 @@ export const sendCheapPlanActivationEmail = async (userEmail: string, investment
     throw error;
   }
 };
+
+export const sendBroadcastEmail = async (recipientEmails: string[], subject: string, body: string) => {
+  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://securerise.com';
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${subject}</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #09090b;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fafafa;
+        }
+        .container {
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 12px;
+        }
+        .title {
+          color: #09090b;
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          color: #71717a;
+          font-size: 15px;
+          margin-bottom: 24px;
+        }
+        .content {
+          color: #3f3f46;
+          font-size: 15px;
+          line-height: 1.7;
+          white-space: pre-wrap;
+        }
+        .cta-button {
+          display: block;
+          background: #09090b;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
+          margin: 32px auto;
+          text-align: center;
+          width: fit-content;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid #e4e4e7;
+          color: #71717a;
+          font-size: 13px;
+        }
+        .footer a {
+          color: #09090b;
+          text-decoration: none;
+        }
+        strong { color: #09090b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Secure Rise Logo" class="logo">
+          <h1 class="title">Secure Rise</h1>
+          <p class="subtitle">Important Update</p>
+        </div>
+
+        <div class="content">
+          ${body}
+        </div>
+
+        <a href="${appUrl}" class="cta-button">
+          Visit Secure Rise
+        </a>
+
+        <div class="footer">
+          <p>Best regards,<br><strong>The Secure Rise Team</strong></p>
+          <p style="margin-top: 20px; font-size: 11px;">
+            <a href="${appUrl}">Secure Rise</a> - Your trusted investment platform<br>
+            &copy; 2026 Secure Rise. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Send email to all recipients
+  const emailPromises = recipientEmails.map(async (email) => {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: subject,
+      html: htmlContent,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Broadcast email sent to ${email}`);
+    } catch (error) {
+      console.error(`Error sending broadcast email to ${email}:`, error);
+    }
+  });
+
+  await Promise.all(emailPromises);
+};

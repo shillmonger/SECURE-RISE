@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   AlarmClockMinus,
   AlarmClock,
+  MailPlus,
   Landmark,
   BarChart3,
   Wallet,
@@ -92,6 +93,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       children: [
         { name: "Role Settings", icon: Settings, href: `${basePath}/role-settings` },
         { name: "Live API Alerts", icon: AlarmClock , href: `${basePath}/alerts` },
+        { name: "Email Distribution", icon: MailPlus, href: `${basePath}/email-distribution` },
         { name: "Switch to Trader", icon: User, href: "/user-dashboard/dashboard" },
       ],
     },
@@ -198,7 +200,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-65 border-r h-screen sticky top-0 bg-background flex-col shadow-xl">
+      <aside className="hidden md:flex w-70 border-r h-screen sticky top-0 bg-background flex-col shadow-xl">
         <div className="flex-shrink-0 flex items-center justify-between h-15 px-6 border-b border-border">
           <div className="flex flex-col">
             <h1 className="text-xl font-black uppercase tracking-tighter text-foreground">
