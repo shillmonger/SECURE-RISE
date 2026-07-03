@@ -13,6 +13,7 @@ import {
   CircleDot,
   MoreVertical,
   CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -341,6 +342,7 @@ export default function AdminMessagesPage() {
   const [isSending, setIsSending] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedConversation = useMemo(
     () => conversations.find((c) => c.userId === selectedUserId) || null,
@@ -371,7 +373,15 @@ export default function AdminMessagesPage() {
 
   useEffect(() => {
     fetchConversations();
-  }, []);
+    // Poll for new conversations and messages every 20 seconds
+    pollingRef.current = setInterval(() => {
+      fetchConversations();
+      if (selectedUserId) fetchMessages(selectedUserId);
+    }, 20000);
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [selectedUserId]);
 
   useEffect(() => {
     if (selectedUserId) fetchMessages(selectedUserId);
@@ -476,7 +486,10 @@ export default function AdminMessagesPage() {
       <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
-        <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="hidden lg:block">
+          <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        </div>
+
 
         <main className="flex-1 overflow-hidden p-4 md:p-8 pb-25">
           <div className="max-w-7xl mx-auto h-full flex flex-col">
@@ -554,13 +567,20 @@ export default function AdminMessagesPage() {
               </div>
 
               {/* Right: thread */}
-              <div className="hidden sm:flex flex-1 flex-col bg-card border border-border rounded-[1rem] overflow-hidden">
+              <div className={`${selectedUserId ? 'flex' : 'hidden sm:flex'} flex-1 flex-col bg-card border border-border rounded-[1rem] overflow-hidden absolute sm:relative inset-0 z-10`}>
                 {!selectedConversation ? (
                   <EmptyThreadState />
                 ) : (
                   <>
                     {/* Thread header */}
                     <div className="flex items-center justify-between gap-3 p-4 border-b border-border/60 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedUserId(null)}
+                        className="sm:hidden p-2 rounded-lg hover:bg-muted/40 transition-all cursor-pointer"
+                      >
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      </button>
                       <div className="flex items-center gap-3">
                         <UserAvatar
                           name={selectedConversation.userName}

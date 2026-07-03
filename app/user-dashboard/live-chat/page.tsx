@@ -354,10 +354,16 @@ export default function SupportChatPage() {
   const [isAdminTyping, setIsAdminTyping] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const hasStarted = messages.length > 0;
 
   useEffect(() => {
     fetchMessages();
+    // Poll for new messages every 20 seconds
+    pollingRef.current = setInterval(() => fetchMessages(), 20000);
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
   }, []);
 
   useEffect(() => {

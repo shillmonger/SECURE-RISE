@@ -46,6 +46,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [countdown, setCountdown] = useState(10);
+  const [unreadCount, setUnreadCount] = useState(0);
   const basePath = "/admin-dashboard";
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -112,6 +113,28 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
     });
   }, [pathname]);
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch("/api/admin/chat/conversations");
+        const data = await response.json();
+        if (data.success && data.conversations) {
+          const unread = data.conversations.reduce(
+            (sum: number, conv: any) => sum + (conv.unreadCount || 0),
+            0
+          );
+          setUnreadCount(unread);
+        }
+      } catch (error) {
+        console.error("Error fetching unread count:", error);
+      }
+    };
+    fetchUnreadCount();
+    // Poll every 20 seconds
+    const interval = setInterval(fetchUnreadCount, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
   const toggleGroup = (name: string) => {
     setOpenGroups((prev) => ({ ...prev, [name]: !prev[name] }));
   };
@@ -175,6 +198,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
               <div className="ml-4 mt-1 mb-1 pl-4 border-l border-border space-y-0.5">
                 {item.children.map((child) => {
                   const childActive = pathname === child.href;
+                  const isLiveChat = child.name === "Live Chat";
                   return (
                     <Link
                       key={child.name}
@@ -188,6 +212,11 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
                     >
                       <child.icon className={`w-4 h-4 flex-shrink-0 transition-transform ${childActive ? "scale-110" : "group-hover:scale-110"}`} />
                       <span className="text-[11px] font-black uppercase tracking-widest">{child.name}</span>
+                      {isLiveChat && unreadCount > 0 && (
+                        <span className="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

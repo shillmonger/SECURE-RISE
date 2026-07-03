@@ -70,6 +70,7 @@ export default function UserSidebar({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [userRole, setUserRole] = useState<string[]>([]);
   const [countdown, setCountdown] = useState(10);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "Fund Account": true,
@@ -94,6 +95,27 @@ export default function UserSidebar({
       }
     };
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch("/api/chat/messages");
+        const data = await response.json();
+        if (data.success && data.messages) {
+          const unread = data.messages.filter(
+            (msg: any) => msg.sender === 'admin' && !msg.read
+          ).length;
+          setUnreadCount(unread);
+        }
+      } catch (error) {
+        console.error("Error fetching unread count:", error);
+      }
+    };
+    fetchUnreadCount();
+    // Poll every 20 seconds
+    const interval = setInterval(fetchUnreadCount, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -319,6 +341,7 @@ export default function UserSidebar({
                   <div className="ml-4 mt-1 mb-1 pl-4 border-l border-border space-y-0.5">
                     {item.children.map((child) => {
                       const childActive = pathname === child.href;
+                      const isChatWithAgent = child.name === "Chat with Agent";
                       return (
                         <Link
                           key={child.name}
@@ -339,6 +362,11 @@ export default function UserSidebar({
                           <span className="text-[11px] font-black uppercase tracking-widest">
                             {child.name}
                           </span>
+                          {isChatWithAgent && unreadCount > 0 && (
+                            <span className="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center">
+                              {unreadCount}
+                            </span>
+                          )}
                         </Link>
                       );
                     })}
@@ -455,6 +483,7 @@ export default function UserSidebar({
                       <div className="ml-4 mt-1 mb-1 pl-4 border-l border-border space-y-0.5">
                         {item.children.map((child) => {
                           const childActive = pathname === child.href;
+                          const isChatWithAgent = child.name === "Chat with Agent";
                           return (
                             <Link
                               key={child.name}
@@ -476,6 +505,11 @@ export default function UserSidebar({
                               <span className="text-[11px] font-black uppercase tracking-widest">
                                 {child.name}
                               </span>
+                              {isChatWithAgent && unreadCount > 0 && (
+                                <span className="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center">
+                                  {unreadCount}
+                                </span>
+                              )}
                             </Link>
                           );
                         })}
