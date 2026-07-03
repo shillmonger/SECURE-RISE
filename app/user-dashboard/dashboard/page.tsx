@@ -75,7 +75,6 @@ export default function UserOverviewPage() {
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [giftCards, setGiftCards] = useState<any[]>([]);
   const [xpRedemptions, setXpRedemptions] = useState<any[]>([]);
-  const [paystackTransactions, setPaystackTransactions] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
   const [alertsPage, setAlertsPage] = useState(1);
@@ -161,15 +160,6 @@ export default function UserOverviewPage() {
           setXpRedemptions(redemptionsResult.redemptions);
         }
 
-        // Fetch Paystack transactions
-        const paystackResponse = await fetch(
-          `/api/paystack/transactions?userId=${userResult.user.id}`
-        );
-        const paystackResult = await paystackResponse.json();
-
-        if (paystackResult.success && paystackResult.transactions) {
-          setPaystackTransactions(paystackResult.transactions);
-        }
 
         if (Array.isArray(investments)) {
           const activeCount = investments.filter(
@@ -694,7 +684,6 @@ export default function UserOverviewPage() {
                   giftHistory={giftHistory}
                   giftCards={giftCards}
                   xpRedemptions={xpRedemptions}
-                  paystackTransactions={paystackTransactions}
                   activityLoading={activityLoading}
                 />
               </div>

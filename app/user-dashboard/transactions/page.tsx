@@ -25,7 +25,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp" | "prediction" | "paystack" | "other_withdrawal";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp" | "prediction" | "other_withdrawal";
 type TransactionStatus =
   | "completed"
   | "pending"
@@ -90,10 +90,6 @@ export default function TransactionsPage() {
         const predictionsResponse = await fetch("/api/user-dashboard/predictions/history");
         const predictionsResult = await predictionsResponse.json();
 
-        const paystackResponse = await fetch(
-          `/api/paystack/transactions?userId=${userResult.user.id}`
-        );
-        const paystackResult = await paystackResponse.json();
 
         const otherWithdrawalsResponse = await fetch(
           `/api/user-dashboard/other-withdrawals?userId=${userResult.user.id}`
@@ -241,20 +237,6 @@ export default function TransactionsPage() {
           });
         }
 
-        if (paystackResult.success && paystackResult.transactions) {
-          paystackResult.transactions.forEach((paystackTxn: any) => {
-            allTransactions.push({
-              id: paystackTxn.transactionId || paystackTxn._id,
-              type: "paystack" as TransactionType,
-              amount: paystackTxn.usdAmount,
-              method: paystackTxn.paymentMethod || "Paystack",
-              status: paystackTxn.status === "success" ? "completed" : paystackTxn.status,
-              date: new Date(paystackTxn.createdAt).toLocaleDateString(),
-              timestamp: new Date(paystackTxn.createdAt).toLocaleTimeString(),
-              rawData: paystackTxn,
-            });
-          });
-        }
 
         if (otherWithdrawalsResult.success && otherWithdrawalsResult.withdrawals) {
           otherWithdrawalsResult.withdrawals.forEach((otherWithdrawal: any) => {
@@ -374,12 +356,6 @@ export default function TransactionsPage() {
             <Swords className="w-4 h-4 text-cyan-500" />
           </div>
         );
-      case "paystack":
-        return (
-          <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <ArrowDownCircle className="w-4 h-4 text-emerald-500" />
-          </div>
-        );
       case "other_withdrawal":
         return (
           <div className="w-8 h-8 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
@@ -486,10 +462,6 @@ export default function TransactionsPage() {
         label: "Prediction",
         cls: "text-cyan-400 bg-cyan-500/10 border border-cyan-500/20",
       },
-      paystack: {
-        label: "Paystack",
-        cls: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
-      },
       other_withdrawal: {
         label: "Other Withdrawal",
         cls: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
@@ -507,7 +479,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountColor = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp" || type === "paystack") return "text-green-400";
+    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp") return "text-green-400";
     if (type === "withdrawal" || type === "investment" || type === "other_withdrawal") return "text-red-400";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -523,7 +495,7 @@ export default function TransactionsPage() {
   };
 
   const getAmountPrefix = (type: TransactionType, rawData?: any) => {
-    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp" || type === "paystack") return "+";
+    if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp") return "+";
     if (type === "withdrawal" || type === "investment" || type === "other_withdrawal") return "-";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
@@ -596,7 +568,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp", "prediction", "paystack", "other_withdrawal"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp", "prediction", "other_withdrawal"].map(
                   (type) => (
                     <button
                       key={type}

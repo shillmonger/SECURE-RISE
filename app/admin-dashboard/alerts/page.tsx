@@ -38,7 +38,6 @@ interface PlatformStats {
   totalGiftCards: number;
   totalInvestments: number;
   totalKYC: number;
-  totalPaystack: number;
 }
 
 interface AlertEvent {
@@ -108,7 +107,6 @@ const DEFAULT_EVENTS: EventConfig[] = [
   { key: "kyc",         label: "New KYC Submission",    emoji: "🛡️", enabled: true, sound: "Soft Ping",        apiKey: "totalKYC",         countKey: "totalKYC" },
   { key: "investments", label: "New Investment",        emoji: "📈", enabled: true, sound: "Success Tone",     apiKey: "totalInvestments", countKey: "totalInvestments" },
   { key: "giftcards",   label: "New Gift Card",         emoji: "🎁", enabled: true, sound: "Double Beep",      apiKey: "totalGiftCards",   countKey: "totalGiftCards" },
-  { key: "paystack",    label: "New Paystack Txn",      emoji: "💳", enabled: true, sound: "Notification Bell", apiKey: "totalPaystack",    countKey: "totalPaystack" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -205,7 +203,6 @@ export default function AdminNotificationCenterPage() {
     { label: "Total Gift Cards",  value: stats?.totalGiftCards ?? 0,   icon: Gift,           color: "text-purple-500",  bg: "bg-purple-500/10" },
     { label: "Total Investments", value: stats?.totalInvestments ?? 0, icon: TrendingUp,     color: "text-amber-500",   bg: "bg-amber-500/10" },
     { label: "Total KYC",         value: stats?.totalKYC ?? 0,         icon: ShieldCheck,    color: "text-cyan-500",    bg: "bg-cyan-500/10" },
-    { label: "Total Paystack Txn",value: stats?.totalPaystack ?? 0,    icon: CreditCard,     color: "text-pink-500",    bg: "bg-pink-500/10" },
   ];
 
   return (

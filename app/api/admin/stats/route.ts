@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
       totalGiftCards,
       totalInvestments,
       totalKYC,
-      totalPaystack,
     ] = await Promise.all([
       db.collection('users').countDocuments({}),
       db.collection('deposits').countDocuments({}),
@@ -60,7 +59,6 @@ export async function GET(request: NextRequest) {
       db.collection('giftcards').countDocuments({}),
       db.collection('investments').countDocuments({}),
       db.collection('kyc').countDocuments({}),
-      db.collection('paystackTransactions').countDocuments({}),
     ]);
 
     return NextResponse.json({
@@ -72,7 +70,6 @@ export async function GET(request: NextRequest) {
         totalGiftCards,
         totalInvestments,
         totalKYC,
-        totalPaystack,
       },
     });
 

@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 
 interface ActivityItem {
-  type: "deposit" | "withdrawal" | "investment" | "profit" | "gift" | "giftcard" | "redeem_xp" | "paystack";
+  type: "deposit" | "withdrawal" | "investment" | "profit" | "gift" | "giftcard" | "redeem_xp";
   data: any;
   date: Date;
   icon: any;
@@ -34,7 +34,6 @@ interface RecentActivityProps {
   giftHistory: any[];
   giftCards: any[];
   xpRedemptions: any[];
-  paystackTransactions: any[];
   activityLoading: boolean;
 }
 
@@ -45,7 +44,6 @@ export default function RecentActivity({
   giftHistory,
   giftCards,
   xpRedemptions,
-  paystackTransactions,
   activityLoading,
 }: RecentActivityProps) {
   const [activityPage, setActivityPage] = useState(1);
@@ -180,22 +178,6 @@ export default function RecentActivity({
     });
   });
 
-  //.Add Paystack transactions
-  paystackTransactions.forEach((paystackTxn) => {
-    activities.push({
-      type: "paystack",
-      data: paystackTxn,
-      date: new Date(paystackTxn.createdAt),
-      icon: ArrowDownCircle,
-      iconBg: "bg-emerald-500/10",
-      iconColor: "text-emerald-500",
-      title: "Paystack Deposit",
-      subtitle: paystackTxn.paymentMethod || "Paystack",
-      amount: `+$${(paystackTxn.usdAmount || 0).toFixed(2)}`,
-      amountColor: "text-emerald-500",
-      status: paystackTxn.status === "success" ? "completed" : paystackTxn.status,
-    });
-  });
 
   // Sort by date (most recent first)
   activities.sort((a, b) => b.date.getTime() - a.date.getTime());
@@ -310,19 +292,6 @@ export default function RecentActivity({
                               : activity.status === "completed"
                                 ? "bg-green-500/10 text-green-500 border-green-500/20"
                                 : "bg-gray-500/10 text-gray-500 border-gray-500/20"
-                          }`}
-                        >
-                          {activity.status}
-                        </span>
-                      )}
-                      {activity.type === "paystack" && (
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter border ${
-                            activity.status === "completed" || activity.status === "success"
-                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                              : activity.status === "failed"
-                                ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
                           }`}
                         >
                           {activity.status}

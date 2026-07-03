@@ -125,12 +125,6 @@ export default function UserSidebar({
         icon: Gift,
         href: `${basePath}/gift-card`,
       },
-      {
-        name: "Bank Transfer",
-        icon: Landmark,
-        href: `#`,
-        // href: `${basePath}/bank-transfer`,
-      },
     ],
   },
 
@@ -154,8 +148,7 @@ export default function UserSidebar({
       {
         name: "Other Withdrawals",
         icon: Landmark,
-        href: `#`,
-        // href: `${basePath}/other-withdrawals`,
+        href: `${basePath}/other-withdrawals`,
       },
     ],
   },
