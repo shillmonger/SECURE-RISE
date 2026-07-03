@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         user._id.toString(),
         user.username || user.fullName || 'Unknown',
         user.email,
-        user.avatarUrl
+        user.profileImage
       );
       const result = await conversationsCollection.insertOne(newConversation as any);
       conversation = { ...newConversation, _id: result.insertedId.toString() };

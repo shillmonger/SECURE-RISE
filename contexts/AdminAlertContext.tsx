@@ -10,6 +10,7 @@ interface PlatformStats {
   totalGiftCards: number;
   totalInvestments: number;
   totalKYC: number;
+  totalChatMessages: number;
 }
 
 interface EventConfig {
@@ -98,6 +99,7 @@ const DEFAULT_EVENTS: EventConfig[] = [
   { key: "newKYC", label: "New KYC", emoji: "🛡️", countKey: "totalKYC", enabled: true, sound: "Soft Ping" },
   { key: "newInvestment", label: "New Investment", emoji: "📈", countKey: "totalInvestments", enabled: true, sound: "Success Tone" },
   { key: "newGiftCard", label: "New Gift Card", emoji: "🎁", countKey: "totalGiftCards", enabled: true, sound: "Double Beep" },
+  { key: "newChatMessage", label: "New Chat Message", emoji: "💬", countKey: "totalChatMessages", enabled: true, sound: "Notification Bell" },
 ];
 
 export function AdminAlertProvider({ children }: { children: React.ReactNode }) {
@@ -173,6 +175,7 @@ export function AdminAlertProvider({ children }: { children: React.ReactNode }) 
           totalGiftCards: data.stats.totalGiftCards,
           totalInvestments: data.stats.totalInvestments,
           totalKYC: data.stats.totalKYC,
+          totalChatMessages: data.stats.totalChatMessages || 0,
         };
 
         // Compare with previous & fire alerts
