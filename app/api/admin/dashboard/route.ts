@@ -320,6 +320,43 @@ export async function GET(request: NextRequest) {
     const totalPredictionXP = predictionXPStats[0]?.totalXPEarned || 0;
     const totalPredictionXPCount = await predictionsCollection.countDocuments({ xpEarned: { $gt: 0 } });
 
+    // Get otherWithdrawals statistics
+    const otherWithdrawalsCollection = db.collection('otherWithdrawals');
+    const totalOtherWithdrawals = await otherWithdrawalsCollection.countDocuments();
+    const pendingOtherWithdrawals = await otherWithdrawalsCollection.countDocuments({ status: 'pending' });
+    const approvedOtherWithdrawals = await otherWithdrawalsCollection.countDocuments({ status: 'approved' });
+    const rejectedOtherWithdrawals = await otherWithdrawalsCollection.countDocuments({ status: 'rejected' });
+
+    // Get recent otherWithdrawals transactions
+    const recentOtherWithdrawals = await otherWithdrawalsCollection
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .toArray();
+
+    // Get user information for otherWithdrawals
+    const otherWithdrawalUserIds = recentOtherWithdrawals.map(w => w.userId);
+    const otherWithdrawalUsers = await usersCollection.find({ _id: { $in: otherWithdrawalUserIds } }).toArray();
+    const otherWithdrawalUserMap: { [key: string]: any } = {};
+    otherWithdrawalUsers.forEach(user => {
+      otherWithdrawalUserMap[user._id.toString()] = user;
+    });
+
+    // Format otherWithdrawals transactions
+    const otherWithdrawalTransactions = recentOtherWithdrawals.map(withdrawal => {
+      const user = otherWithdrawalUserMap[withdrawal.userId.toString()];
+      return {
+        id: withdrawal.withdrawalId || withdrawal._id.toString(),
+        type: `Other Withdrawal - ${withdrawal.method}`,
+        amount: withdrawal.amount,
+        status: withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1),
+        user: user?.fullName || user?.username || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        paymentMethod: withdrawal.method,
+        createdAt: withdrawal.createdAt
+      };
+    });
+
     // Get Paystack transaction statistics
     const paystackCollection = db.collection('paystackTransactions');
     const totalPaystackTransactions = await paystackCollection.countDocuments();
@@ -444,10 +481,16 @@ export async function GET(request: NextRequest) {
       { label: "Paystack USD Total", value: `$${totalPaystackUSD.toFixed(2)}`, icon: "DollarSign", color: "text-teal-500", bg: "bg-teal-500/10" },
       { label: "Processed Paystack", value: processedPaystackTransactions.toString(), icon: "CreditCard", color: "text-green-500", bg: "bg-green-500/10" },
       { label: "Pending Paystack", value: pendingPaystackTransactions.toString(), icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
+
+      // Other withdrawals stats
+      { label: "Total Other Withdrawals", value: totalOtherWithdrawals.toString(), icon: "Wallet", color: "text-blue-500", bg: "bg-blue-500/10" },
+      { label: "Pending Other Withdrawals", value: pendingOtherWithdrawals.toString(), icon: "Clock", color: "text-orange-500", bg: "bg-orange-500/10" },
+      { label: "Approved Other Withdrawals", value: approvedOtherWithdrawals.toString(), icon: "ArrowDownLeft", color: "text-green-500", bg: "bg-green-500/10" },
+      { label: "Rejected Other Withdrawals", value: rejectedOtherWithdrawals.toString(), icon: "ArrowUpRight", color: "text-red-500", bg: "bg-red-500/10" },
     ];
 
     // Combine and sort all transactions by date
-    const allTransactions = [...depositTransactions, ...withdrawalTransactions, ...giftCardTransactions, ...paystackTransactions]
+    const allTransactions = [...depositTransactions, ...withdrawalTransactions, ...giftCardTransactions, ...paystackTransactions, ...otherWithdrawalTransactions]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 50); // Keep only 50 most recent
     console.log('Total transactions combined:', allTransactions.length);

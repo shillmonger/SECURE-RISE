@@ -125,12 +125,12 @@ export default function UserSidebar({
         icon: Gift,
         href: `${basePath}/gift-card`,
       },
-      {
-        name: "Bank Transfer",
-        icon: Landmark,
-        href: `#`,
-        // href: `${basePath}/bank-transfer`,
-      },
+      // {
+      //   name: "Bank Transfer",
+      //   icon: Landmark,
+      //   href: `#`,
+      //   href: `${basePath}/bank-transfer`,
+      // },
     ],
   },
 
@@ -142,7 +142,23 @@ export default function UserSidebar({
     href: `${basePath}/my-investments`,
   },
 
-  { name: "Withdrawals", icon: ArrowUpRight, href: `${basePath}/withdraw` },
+  {
+    name: "Withdrawals",
+    icon: ArrowUpRight,
+    children: [
+      {
+        name: "Crypto Withdrawal",
+        icon: Wallet,
+        href: `${basePath}/withdraw`,
+      },
+      // {
+      //   name: "Other Withdrawals",
+      //   icon: Landmark,
+      //   href: `${basePath}/other-withdrawals`,
+      // },
+    ],
+  },
+
 
   { name: "Transactions", icon: History, href: `${basePath}/transactions` },
 

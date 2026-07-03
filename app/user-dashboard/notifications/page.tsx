@@ -30,7 +30,8 @@ type NotificationType =
   | "system"
   | "gift"
   | "gift_card"
-  | "redeem_xp";
+  | "redeem_xp"
+  | "other_withdrawal";
 
 interface Notification {
   id: string;
@@ -57,13 +58,14 @@ const NotificationIcon = ({ type }: { type: NotificationType }) => {
     gift_card:   { icon: <Gift            className="w-4 h-4" />, bg: "bg-orange-500/10", border: "border-orange-500/30" },
     gift:        { icon: <Gift            className="w-4 h-4" />, bg: "bg-pink-500/10",   border: "border-pink-500/30"   },
     redeem_xp:   { icon: <Coins           className="w-4 h-4" />, bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+    other_withdrawal: { icon: <ArrowUpRight    className="w-4 h-4" />, bg: "bg-rose-500/10",   border: "border-rose-500/30"    },
     system:      { icon: <Megaphone       className="w-4 h-4" />, bg: "bg-muted",         border: "border-border"        },
   };
 
   const colorMap: Record<NotificationType, string> = {
     deposit: "text-green-500", withdrawal: "text-red-500", roi: "text-purple-500",
     investment: "text-blue-500", gift_card: "text-orange-500", gift: "text-pink-500",
-    redeem_xp: "text-yellow-500", system: "text-muted-foreground",
+    redeem_xp: "text-yellow-500", other_withdrawal: "text-rose-500", system: "text-muted-foreground",
   };
 
   const { icon, bg, border } = map[type];
@@ -95,6 +97,7 @@ const NotificationCard = ({
     gift_card: "bg-orange-500/10 text-orange-500",
     gift: "bg-pink-500/10 text-pink-500",
     redeem_xp: "bg-yellow-500/10 text-yellow-500",
+    other_withdrawal: "bg-rose-500/10 text-rose-500",
     system: "bg-muted text-muted-foreground",
   };
 
@@ -235,13 +238,14 @@ const NotificationsPage = () => {
         const userResult = await userResponse.json();
         if (userResult.success) setUserData(userResult.user);
 
-        const [depositsRes, withdrawalsRes, investmentsRes, giftsRes, giftCardsRes, redemptionsRes] = await Promise.all([
+        const [depositsRes, withdrawalsRes, investmentsRes, giftsRes, giftCardsRes, redemptionsRes, otherWithdrawalsRes] = await Promise.all([
           fetch(`/api/user-dashboard/deposit?userId=${userResult.user.id}`).then(r => r.json()),
           fetch("/api/withdraw").then(r => r.json()),
           fetch("/api/investments").then(r => r.json()),
           fetch("/api/user-dashboard/gift/history").then(r => r.json()),
           fetch(`/api/user-dashboard/gift-card?userId=${userResult.user.id}`).then(r => r.json()),
           fetch("/api/user-dashboard/redeem-xp/history").then(r => r.json()),
+          fetch(`/api/user-dashboard/other-withdrawals?userId=${userResult.user.id}`).then(r => r.json()),
         ]);
 
         const all: Notification[] = [];
@@ -347,6 +351,20 @@ const NotificationsPage = () => {
           });
         }
 
+        if (otherWithdrawalsRes.success && otherWithdrawalsRes.withdrawals) {
+          otherWithdrawalsRes.withdrawals.forEach((ow: any) => {
+            all.push({
+              id: `other-withdrawal-${ow._id}`,
+              type: "other_withdrawal",
+              title: `Other Withdrawal ${ow.status.charAt(0).toUpperCase() + ow.status.slice(1)}`,
+              message: `Your withdrawal of $${ow.amount.toFixed(2)} via ${ow.method} has been ${ow.status}. ${ow.status === 'approved' ? 'Funds have been sent to your designated wallet.' : ow.status === 'rejected' ? 'Your request was declined.' : 'Your request is being processed.'}`,
+              time: formatTimeAgo(new Date(ow.createdAt)),
+              isRead: false,
+              rawData: ow,
+            });
+          });
+        }
+
         all.sort((a, b) => {
           const da = new Date(a.rawData?.createdAt || a.rawData?.timestamp || 0).getTime();
           const db = new Date(b.rawData?.createdAt || b.rawData?.timestamp || 0).getTime();
@@ -403,7 +421,7 @@ const NotificationsPage = () => {
 
   const TYPE_LABELS: Record<NotificationType, string> = {
     deposit: "Deposit", withdrawal: "Withdrawal", roi: "ROI", investment: "Investment",
-    system: "System", gift: "Gift", gift_card: "Gift Card", redeem_xp: "XP",
+    system: "System", gift: "Gift", gift_card: "Gift Card", redeem_xp: "XP", other_withdrawal: "Other Withdrawal",
   };
 
   // Summary counts by type

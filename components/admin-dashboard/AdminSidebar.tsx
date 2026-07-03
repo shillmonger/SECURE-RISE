@@ -8,6 +8,8 @@ import {
   LayoutDashboard,
   AlarmClockMinus,
   AlarmClock,
+  Landmark,
+  BarChart3,
   Wallet,
   Settings,
   User,
@@ -71,6 +73,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
         { name: "Manage Account", icon: UserCog, href: `${basePath}/manage-account` },
         { name: "KYC Verification", icon: BadgeCheck, href: `${basePath}/kyc-verification` },
         { name: "User Management", icon: Users, href: `${basePath}/user-management` },
+        { name: "User Investments", icon: BarChart3, href: `${basePath}/user-investments` },
       ],
     },
 
@@ -78,7 +81,8 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }: SidebarPro
       name: "Finance",
       icon: CircleDollarSign,
       children: [
-        { name: "Investor Payouts", icon: CircleDollarSign, href: `${basePath}/investment-payouts` },
+        { name: "Other Payouts", icon: Landmark, href: `${basePath}/other-payouts` },
+        { name: "Crypto Payouts", icon: Wallet, href: `${basePath}/crypto-payouts` },
       ],
     },
 

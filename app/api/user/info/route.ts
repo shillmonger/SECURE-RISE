@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
         profileImage: user.profileImage,
         role: user.role,
         isActive: user.isActive,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        accountBalance: user.accountBalance || 0
       }
     });
 

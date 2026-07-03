@@ -575,7 +575,7 @@ export default function UserHeader({
 
         <div className="flex items-center gap-2 sm-gap-4">
           {/* Currency Dropdown */}
-          <CurrencyDropdown />
+          {/* <CurrencyDropdown /> */}
 
           {/* Theme toggle — icon only, white on dark / black on light */}
           <button

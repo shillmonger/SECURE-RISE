@@ -25,7 +25,7 @@ import UserNav from "@/components/user-dashboard/UserNav";
 
 // ─── Data & Types ─────────────────────────────────────────────────────────────
 
-type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp" | "prediction" | "paystack";
+type TransactionType = "deposit" | "withdrawal" | "investment" | "roi" | "gift" | "gift_card" | "redeem_xp" | "prediction" | "paystack" | "other_withdrawal";
 type TransactionStatus =
   | "completed"
   | "pending"
@@ -94,6 +94,11 @@ export default function TransactionsPage() {
           `/api/paystack/transactions?userId=${userResult.user.id}`
         );
         const paystackResult = await paystackResponse.json();
+
+        const otherWithdrawalsResponse = await fetch(
+          `/api/user-dashboard/other-withdrawals?userId=${userResult.user.id}`
+        );
+        const otherWithdrawalsResult = await otherWithdrawalsResponse.json();
 
         const allTransactions: Transaction[] = [];
 
@@ -251,6 +256,21 @@ export default function TransactionsPage() {
           });
         }
 
+        if (otherWithdrawalsResult.success && otherWithdrawalsResult.withdrawals) {
+          otherWithdrawalsResult.withdrawals.forEach((otherWithdrawal: any) => {
+            allTransactions.push({
+              id: otherWithdrawal.withdrawalId || otherWithdrawal._id,
+              type: "other_withdrawal" as TransactionType,
+              amount: otherWithdrawal.amount,
+              method: otherWithdrawal.method || "Other",
+              status: otherWithdrawal.status,
+              date: new Date(otherWithdrawal.createdAt).toLocaleDateString(),
+              timestamp: new Date(otherWithdrawal.createdAt).toLocaleTimeString(),
+              rawData: otherWithdrawal,
+            });
+          });
+        }
+
         allTransactions.sort((a, b) => {
           const dateA = new Date(
             a.rawData?.createdAt || a.rawData?.timestamp || Date.now()
@@ -360,6 +380,12 @@ export default function TransactionsPage() {
             <ArrowDownCircle className="w-4 h-4 text-emerald-500" />
           </div>
         );
+      case "other_withdrawal":
+        return (
+          <div className="w-8 h-8 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+            <ArrowUpRight className="w-4 h-4 text-rose-500" />
+          </div>
+        );
     }
   };
 
@@ -464,6 +490,10 @@ export default function TransactionsPage() {
         label: "Paystack",
         cls: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
       },
+      other_withdrawal: {
+        label: "Other Withdrawal",
+        cls: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
+      },
     };
 
     const a = map[type];
@@ -478,7 +508,7 @@ export default function TransactionsPage() {
 
   const getAmountColor = (type: TransactionType, rawData?: any) => {
     if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp" || type === "paystack") return "text-green-400";
-    if (type === "withdrawal" || type === "investment") return "text-red-400";
+    if (type === "withdrawal" || type === "investment" || type === "other_withdrawal") return "text-red-400";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
       return rawData?.isSender ? "text-red-400" : "text-green-400";
@@ -494,7 +524,7 @@ export default function TransactionsPage() {
 
   const getAmountPrefix = (type: TransactionType, rawData?: any) => {
     if (type === "deposit" || type === "roi" || type === "gift_card" || type === "redeem_xp" || type === "paystack") return "+";
-    if (type === "withdrawal" || type === "investment") return "-";
+    if (type === "withdrawal" || type === "investment" || type === "other_withdrawal") return "-";
     if (type === "gift") {
       // For gifts, check if user is sender or receiver
       return rawData?.isSender ? "-" : "+";
@@ -566,7 +596,7 @@ export default function TransactionsPage() {
 
               {/* Type filters */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-wrap">
-                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp", "prediction", "paystack"].map(
+                {["all", "deposit", "withdrawal", "investment", "roi", "gift", "gift_card", "redeem_xp", "prediction", "paystack", "other_withdrawal"].map(
                   (type) => (
                     <button
                       key={type}
