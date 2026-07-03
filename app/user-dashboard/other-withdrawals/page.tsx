@@ -177,7 +177,7 @@ function SelectInput({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-lg px-5 py-2 hover:border-foreground/50 transition-all"
+          className="w-full flex cursor-pointer items-center justify-between gap-3 bg-muted/30 border-2 border-border rounded-lg px-5 py-3 hover:border-foreground/50 transition-all"
         >
           <div className="flex items-center gap-3">
             <div className="text-left">
@@ -216,6 +216,16 @@ function WithdrawMethodCard({
   onClick: () => void;
 }) {
   const Icon = method.icon;
+
+  const methodColors: Record<MethodId, { bg: string; iconBg: string; iconBorder: string }> = {
+    bank: { bg: "bg-blue-500/10", iconBg: "bg-blue-500/20", iconBorder: "border-blue-500/30" },
+    paypal: { bg: "bg-yellow-500/10", iconBg: "bg-yellow-500/20", iconBorder: "border-yellow-500/30" },
+    payoneer: { bg: "bg-purple-500/10", iconBg: "bg-purple-500/20", iconBorder: "border-purple-500/30" },
+    momo: { bg: "bg-green-500/10", iconBg: "bg-green-500/20", iconBorder: "border-green-500/30" },
+  };
+
+  const colors = methodColors[method.id];
+
   return (
     <button
       type="button"
@@ -223,7 +233,7 @@ function WithdrawMethodCard({
       className={`relative text-left cursor-pointer rounded-[1rem] border-2 p-5 transition-all group ${
         selected
           ? "border-primary bg-primary/5 shadow-sm"
-          : "border-border bg-card hover:border-foreground/30"
+          : `border-border ${colors.bg} hover:border-foreground/30`
       }`}
     >
       {selected && (
@@ -235,11 +245,11 @@ function WithdrawMethodCard({
         className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 border transition-colors ${
           selected
             ? "bg-primary/10 border-primary/30"
-            : "bg-muted/30 border-border group-hover:border-foreground/20"
+            : `${colors.iconBg} ${colors.iconBorder} group-hover:border-foreground/20`
         }`}
       >
         <Icon
-          className={`w-5 h-5 ${selected ? "text-primary" : "text-muted-foreground"}`}
+          className={`w-5 h-5 ${selected ? "text-primary" : "text-foreground"}`}
         />
       </div>
       <p className="text-sm font-black uppercase tracking-tight leading-none mb-1.5">
@@ -957,11 +967,11 @@ export default function WithdrawOtherMethodsPage() {
       <div className="flex-1 flex flex-col overflow-hidden text-foreground">
         <UserHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-25">
           <div className="max-w-7xl mx-auto space-y-10">
             {/* Header */}
-            <section className="space-y-4">
-              <div className="space-y-2">
+            <section className="space-y-3">
+              <div className="space-y-1">
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">
                   Withdraw Funds
                 </h1>
@@ -977,7 +987,7 @@ export default function WithdrawOtherMethodsPage() {
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                 01. Select Withdrawal Method
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {WITHDRAW_METHODS.map((method) => (
                   <WithdrawMethodCard
                     key={method.id}
@@ -1096,14 +1106,14 @@ export default function WithdrawOtherMethodsPage() {
                       </div>
 
                       {/* Mobile summary */}
-                      <div className="lg:hidden">
+                      {/* <div className="lg:hidden">
                         <WithdrawalSummary
                           method={selectedMethod}
                           amount={numericAmount}
                           fee={fee}
                           receiveAmount={receiveAmount}
                         />
-                      </div>
+                      </div> */}
 
                       <button
                         onClick={handleRequestWithdrawal}
@@ -1116,7 +1126,7 @@ export default function WithdrawOtherMethodsPage() {
                   </div>
 
                   {/* Right: Summary (desktop) */}
-                  <div className="hidden lg:block w-full lg:w-[360px]">
+                  <div className="w-full lg:w-[360px]">
                     <WithdrawalSummary
                       method={selectedMethod}
                       amount={numericAmount}

@@ -10,6 +10,8 @@ import {
   BadgeCheck,
   Package,
   Brain,
+  MessagesSquare,
+  ChartColumnBig,
   Landmark,
   ArrowRightLeft,
   Trophy,
@@ -171,7 +173,7 @@ export default function UserSidebar({
       { name: "Achievements", icon: Gem, href: `${basePath}/achievements` },
       {
         name: "Predict Market",
-        icon: ChartSpline,
+        icon: ChartColumnBig,
         href: `${basePath}/predict`,
       },
     ],
@@ -189,8 +191,9 @@ export default function UserSidebar({
     name: "Community",
     icon: Users,
     children: [
-      { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
+      { name: "Chat with Agent", icon: MessagesSquare, href: `${basePath}/live-chat` },
       { name: "Learn More", icon: Lightbulb, href: `${basePath}/learn-more` },
+      { name: "Leaderboard", icon: Trophy, href: `${basePath}/leaderboard` },
     ],
   },
 
