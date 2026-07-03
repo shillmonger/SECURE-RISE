@@ -231,7 +231,7 @@ export const sendWithdrawalStatusEmail = async (userEmail: string, withdrawalDat
   status: 'approved' | 'rejected';
   rejectionReason?: string;
 }) => {
-  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  const logoUrl = 'https://i.postimg.cc/0NK6BRV6/favicon-ico.png';
   const isApproved = withdrawalData.status === 'approved';
 
   const htmlContent = `
@@ -795,7 +795,7 @@ export const sendCheapPlanActivationEmail = async (userEmail: string, investment
 };
 
 export const sendBroadcastEmail = async (recipientEmails: string[], subject: string, body: string) => {
-  const logoUrl = 'https://i.postimg.cc/8CWMKzWF/favicon_ico.png';
+  const logoUrl = 'https://i.postimg.cc/0NK6BRV6/favicon-ico.png';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://securerise.com';
 
   const htmlContent = `

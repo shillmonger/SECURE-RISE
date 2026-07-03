@@ -168,7 +168,7 @@ export default function AdminEmailDistributionPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-25">
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none flex items-center gap-4">
               Email Distribution

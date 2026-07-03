@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { getAuthUser } from '@/lib/auth';
 import { sendBroadcastEmail } from '@/lib/email';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,8 +39,9 @@ export async function POST(request: NextRequest) {
       recipientEmails = allUsers.map((u: any) => u.email);
       recipientCount = allUsers.length;
     } else {
-      // Get specific users by IDs
-      const users = await usersCollection.find({ _id: { $in: recipients } }, { projection: { email: 1, username: 1, fullName: 1 } }).toArray();
+      // Get specific users by IDs - convert string IDs to ObjectIds
+      const objectIds = recipients.map((id: string) => new ObjectId(id));
+      const users = await usersCollection.find({ _id: { $in: objectIds } }, { projection: { email: 1, username: 1, fullName: 1 } }).toArray();
       recipientEmails = users.map((u: any) => u.email);
       recipientCount = users.length;
     }
