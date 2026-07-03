@@ -41,7 +41,7 @@ const faqs = [
   },
   {
   question: "What payment methods are supported?",
-  answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. Users can deposit using Paystack Bank Transfer for instant local payments in supported regions. We also accept major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH), as well as selected gift card deposits through our approved funding channels."
+  answer: "SECURE RISE supports multiple funding methods for global accessibility and convenience. We accept major cryptocurrencies including USDT (TRC20/ERC20), Bitcoin (BTC), and Ethereum (ETH), as well as selected gift card deposits through our approved funding channels."
 },
   {
     question: "Can I have more than one active investment?",

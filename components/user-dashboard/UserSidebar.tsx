@@ -73,6 +73,7 @@ export default function UserSidebar({
     "Fund Account": true,
     "Earn Free USDT": true,
     Account: true,
+    Withdrawals: true,
     Community: true,
   });
 

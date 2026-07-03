@@ -73,7 +73,6 @@ export default function UserOverviewPage() {
   const [giftHistory, setGiftHistory] = useState<any[]>([]);
   const [giftCards, setGiftCards] = useState<any[]>([]);
   const [xpRedemptions, setXpRedemptions] = useState<any[]>([]);
-  const [paystackTransactions, setPaystackTransactions] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any[]>([]);
   const [activityPage, setActivityPage] = useState(1);
   const itemsPerPage = 6;
@@ -160,15 +159,6 @@ export default function UserOverviewPage() {
           setXpRedemptions(redemptionsResult.redemptions);
         }
 
-        // Fetch Paystack transactions
-        const paystackResponse = await fetch(
-          `/api/paystack/transactions?userId=${userResult.user.id}`
-        );
-        const paystackResult = await paystackResponse.json();
-
-        if (paystackResult.success && paystackResult.transactions) {
-          setPaystackTransactions(paystackResult.transactions);
-        }
 
         // Fetch predictions
         const predictionsResponse = await fetch("/api/user-dashboard/predictions/history");
@@ -208,11 +198,6 @@ export default function UserOverviewPage() {
   const totalXPEarned = predictions.reduce((sum, p) => sum + (p.xpEarned || 0), 0);
   const highConfidencePredictions = predictions.filter((p) => p.confidence === "High").length;
 
-  // Calculate Paystack stats
-  const totalPaystackTransactions = paystackTransactions.length;
-  const totalPaystackAmount = paystackTransactions.reduce((sum, p) => sum + (p.usdAmount || 0), 0);
-  const processedPaystack = paystackTransactions.filter((p) => p.status === "processed" || p.status === "success").length;
-  const pendingPaystack = paystackTransactions.filter((p) => p.status === "pending").length;
 
   const stats = [
     {
@@ -284,16 +269,6 @@ export default function UserOverviewPage() {
       hoverBg: "group-hover:bg-yellow-500/10",
       hoverColor: "group-hover:text-yellow-500",
       link: "/user-dashboard/predict-market",
-    },
-    {
-      label: "Paystack Dep",
-      value: `$${formatNumber(totalPaystackAmount)}`,
-      icon: DollarSign,
-      iconBg: "bg-pink-500/10",
-      iconColor: "text-pink-500",
-      hoverBg: "group-hover:bg-pink-500/10",
-      hoverColor: "group-hover:text-pink-500",
-      link: "/user-dashboard/deposit",
     },
   ];
 
@@ -748,7 +723,6 @@ export default function UserOverviewPage() {
                   giftHistory={giftHistory}
                   giftCards={giftCards}
                   xpRedemptions={xpRedemptions}
-                  paystackTransactions={paystackTransactions}
                   activityLoading={activityLoading}
                 />
               </div>
