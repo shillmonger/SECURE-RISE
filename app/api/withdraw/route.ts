@@ -73,10 +73,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if user has at least one deposit
-    const userDeposits = await depositsCollection.findOne({ userId: user._id });
+    // Check if user has at least one approved deposit
+    const userDeposits = await depositsCollection.findOne({ userId: user._id, status: 'approved' });
     if (!userDeposits) {
-      return NextResponse.json({ error: 'You must have at least one deposit on the platform to make a withdrawal' }, { status: 400 });
+      return NextResponse.json({ error: 'You must have at least one approved deposit on the platform to make a withdrawal' }, { status: 400 });
     }
 
     // Check if user has sufficient balance
